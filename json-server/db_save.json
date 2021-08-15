@@ -106,7 +106,7 @@
                     }
                 ]
             },
-            "icon": "url"
+            "icon": "https://img.fruugo.com/product/1/98/159267981_max.jpg"
         },
         {
             "id": 2,
@@ -121,7 +121,8 @@
             "einheit": "rollen",
             "mengeInhalt": null,
             "packungsInhaltEinheit": null,
-            "nutrients": null
+            "nutrients": null,
+            "icon": ""
         },
         {
             "id": 3,
