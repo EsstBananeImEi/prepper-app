@@ -3,7 +3,7 @@
         {
             "id": 1,
             "name": "Thai Kitchen Noodle Kit",
-            "menge": 5,
+            "amount": 5,
             "kategorien": [
                 "Teigwaren",
                 "Fertiggericht",
@@ -111,7 +111,7 @@
         {
             "id": 2,
             "name": "Toilettenpapier",
-            "menge": 12,
+            "amount": 12,
             "kategorien": [
                 "Haushalt",
                 "Hygiene",
@@ -127,7 +127,7 @@
         {
             "id": 3,
             "name": "Wasser",
-            "menge": 5,
+            "amount": 5,
             "kategorien": [
                 "Trinken",
                 "Lebensmittel"
