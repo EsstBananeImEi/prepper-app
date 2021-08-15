@@ -127,7 +127,7 @@
         {
             "id": 3,
             "name": "Wasser",
-            "amount": 5,
+            "amount": 0,
             "kategorien": [
                 "Trinken",
                 "Lebensmittel"
