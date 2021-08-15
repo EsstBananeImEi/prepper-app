@@ -1,0 +1,231 @@
+{
+    "storedItems": [
+        {
+            "id": 1,
+            "name": "Thai Kitchen Noodle Kit",
+            "menge": 5,
+            "kategorien": [
+                "Teigwaren",
+                "Fertiggericht",
+                "Nudeln",
+                "Lebensmittel"
+            ],
+            "minBestand": 4,
+            "einheit": "packung",
+            "mengeInhalt": "155",
+            "packungsInhaltEinheit": "g",
+            "nutrients": {
+                "description": "Inhaltstoffe sind Optional zu setzten, da gegenstände keine haben",
+                "einheit": "g",
+                "menge": 100,
+                "values": [
+                    {
+                        "name": "Energie / Brennwert",
+                        "values": [
+                            {
+                                "typ": "kj",
+                                "value": 1610.6
+                            },
+                            {
+                                "typ": "kcal",
+                                "value": 384.6
+                            }
+                        ]
+                    },
+                    {
+                        "name": "Eiweiss / Proteine",
+                        "values": [
+                            {
+                                "typ": "g",
+                                "value": 9.6
+                            }
+                        ]
+                    },
+                    {
+                        "name": "Kohlenhydrate",
+                        "values": [
+                            {
+                                "typ": "g",
+                                "value": 71.2
+                            }
+                        ]
+                    },
+                    {
+                        "name": "Zucker",
+                        "values": [
+                            {
+                                "typ": "g",
+                                "value": 13.5
+                            }
+                        ]
+                    },
+                    {
+                        "name": "Fett",
+                        "values": [
+                            {
+                                "typ": "g",
+                                "value": 7.7
+                            }
+                        ]
+                    },
+                    {
+                        "name": "gesättigte Fettsäuren",
+                        "values": [
+                            {
+                                "typ": "g",
+                                "value": 1.9
+                            }
+                        ]
+                    },
+                    {
+                        "name": "Natrium",
+                        "values": [
+                            {
+                                "typ": "g",
+                                "value": 0.3
+                            }
+                        ]
+                    },
+                    {
+                        "name": "Salz",
+                        "values": [
+                            {
+                                "typ": "g",
+                                "value": 0.7
+                            }
+                        ]
+                    },
+                    {
+                        "name": "Ballaststoffe",
+                        "values": [
+                            {
+                                "typ": "g",
+                                "value": 1.9
+                            }
+                        ]
+                    }
+                ]
+            }
+        },
+        {
+            "id": 2,
+            "name": "Toilettenpapier",
+            "menge": 12,
+            "kategorien": [
+                "Haushalt",
+                "Hygiene",
+                "Bad"
+            ],
+            "minBestand": 10,
+            "einheit": "rollen",
+            "mengeInhalt": null,
+            "packungsInhaltEinheit": null,
+            "nutrients": null
+        },
+        {
+            "id": 3,
+            "name": "Wasser",
+            "menge": 5,
+            "kategorien": [
+                "Trinken",
+                "Lebensmittel"
+            ],
+            "minBestand": 4,
+            "einheit": "Flasche",
+            "mengeInhalt": "1",
+            "packungsInhaltEinheit": "l",
+            "nutrients": {
+                "description": "Inhaltstoffe sind Optional zu setzten, da gegenstände keine haben",
+                "einheit": "ml",
+                "menge": 100,
+                "values": [
+                    {
+                        "name": "Energie / Brennwert",
+                        "values": [
+                            {
+                                "typ": "kj",
+                                "value": 0
+                            },
+                            {
+                                "typ": "kcal",
+                                "value": 0
+                            }
+                        ]
+                    },
+                    {
+                        "name": "Eiweiss / Proteine",
+                        "values": [
+                            {
+                                "typ": "g",
+                                "value": 0
+                            }
+                        ]
+                    },
+                    {
+                        "name": "Kohlenhydrate",
+                        "values": [
+                            {
+                                "typ": "g",
+                                "value": 0
+                            }
+                        ]
+                    },
+                    {
+                        "name": "Zucker",
+                        "values": [
+                            {
+                                "typ": "g",
+                                "value": 0
+                            }
+                        ]
+                    },
+                    {
+                        "name": "Fett",
+                        "values": [
+                            {
+                                "typ": "g",
+                                "value": 0
+                            }
+                        ]
+                    },
+                    {
+                        "name": "gesättigte Fettsäuren",
+                        "values": [
+                            {
+                                "typ": "g",
+                                "value": 0
+                            }
+                        ]
+                    },
+                    {
+                        "name": "Natrium",
+                        "values": [
+                            {
+                                "typ": "g",
+                                "value": 0
+                            }
+                        ]
+                    },
+                    {
+                        "name": "Salz",
+                        "values": [
+                            {
+                                "typ": "g",
+                                "value": 0
+                            }
+                        ]
+                    },
+                    {
+                        "name": "Ballaststoffe",
+                        "values": [
+                            {
+                                "typ": "g",
+                                "value": 0
+                            }
+                        ]
+                    }
+                ]
+            }
+        }
+    ]
+}
