@@ -122,7 +122,7 @@
             "mengeInhalt": null,
             "packungsInhaltEinheit": null,
             "nutrients": null,
-            "icon": ""
+            "icon": "https://media.kaufland-online.de/images/items/1024x1024/6b31a30f1d91d2404de0cd87a1a0d487.jpg"
         },
         {
             "id": 3,
@@ -227,7 +227,8 @@
                         ]
                     }
                 ]
-            }
+            },
+            "icon": "https://media.kaufland-online.de/images/items/1024x1024/6b31a30f1d91d2404de0cd87a1a0d487.jpg"
         }
     ]
 }
