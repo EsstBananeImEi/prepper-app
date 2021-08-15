@@ -3,7 +3,7 @@
         "json-server": "^0.16.3"
     },
     "scripts": {
-        "start": "json-server --watch db.json --port 3004",
+        "start": "json-server --watch db.json --port 3004 & python save_db.py",
         "reset": "cp dbcopy.json db.json"
     }
 }
