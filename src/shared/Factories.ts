@@ -1,8 +1,6 @@
 import pluralize from "pluralize"
 
 
-export function pluralFormFactory(word: string): string {
-    return pluralize(word, 2)
+export function pluralFormFactory(word: string, length: number): string {
+    return pluralize(word, length)
 }
-
-pluralFormFactory('test')

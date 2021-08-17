@@ -2,6 +2,7 @@ import { EditOutlined, ShoppingCartOutlined, InfoCircleOutlined } from '@ant-des
 import { Avatar, Card, Image } from 'antd';
 import React, { ReactElement } from 'react';
 import { Link, useHistory } from 'react-router-dom';
+import { pluralFormFactory } from '../../../shared/Factories';
 import { StorageModel } from '../StorageModel';
 
 interface Props {
@@ -14,20 +15,16 @@ export default function StorageListItem(props: Props): ReactElement {
     const history = useHistory()
 
     const getAvailable = () => {
-        const amount = storageItem.amount
-        const lowestAmount = storageItem.lowestAmount
-        const midAmount = storageItem.midAmount
-        const unit = amount > 1 ? storageItem.unit + 'en' : storageItem.unit
-        const color = { color: 'green' }
-        const message = 'Lagerbestand:'
+        const color = { color: 'red' };
 
-        if (amount < midAmount && amount >= lowestAmount) {
+        if (storageItem.amount >= storageItem.midAmount) {
+            color['color'] = 'green'
+        }
+        else if (storageItem.amount < storageItem.midAmount && storageItem.amount >= storageItem.lowestAmount) {
             color['color'] = 'orange'
         }
-        else {
-            color['color'] = 'red'
-        }
-        return <span style={color}>{message} {amount} {unit}</span>
+
+        return <span style={color}>Inventory: {storageItem.amount} {pluralFormFactory(storageItem.unit, storageItem.amount)}</span>
 
     }
 

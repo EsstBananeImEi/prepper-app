@@ -8,6 +8,9 @@ export default function Routes(): ReactElement {
             <Route path='/storedItems/:id/edit'>
                 <p >edit</p>
             </Route>
+            <Route path='/storedItems/new'>
+                <p >new</p>
+            </Route>
             <Route path='/storedItems/:id'>
                 <p >detail</p>
             </Route>

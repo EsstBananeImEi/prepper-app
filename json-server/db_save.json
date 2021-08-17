@@ -3,15 +3,16 @@
         {
             "id": 1,
             "name": "Thai Kitchen Noodle Kit",
-            "amount": 5,
-            "kategorien": [
+            "amount": 7,
+            "categories": [
                 "Teigwaren",
                 "Fertiggericht",
                 "Nudeln",
                 "Lebensmittel"
             ],
-            "minBestand": 4,
-            "einheit": "packung",
+            "lowestAmount": 4,
+            "midAmount": 6,
+            "unit": "pack",
             "mengeInhalt": "155",
             "packungsInhaltEinheit": "g",
             "nutrients": {
@@ -111,14 +112,15 @@
         {
             "id": 2,
             "name": "Toilettenpapier",
-            "amount": 12,
-            "kategorien": [
+            "amount": 11,
+            "categories": [
                 "Haushalt",
                 "Hygiene",
                 "Bad"
             ],
-            "minBestand": 10,
-            "einheit": "rollen",
+            "lowestAmount": 8,
+            "midAmount": 12,
+            "unit": "roll",
             "mengeInhalt": null,
             "packungsInhaltEinheit": null,
             "nutrients": null,
@@ -127,13 +129,14 @@
         {
             "id": 3,
             "name": "Wasser",
-            "amount": 0,
-            "kategorien": [
+            "amount": 5,
+            "categories": [
                 "Trinken",
                 "Lebensmittel"
             ],
-            "minBestand": 4,
-            "einheit": "Flasche",
+            "lowestAmount": 4,
+            "midAmount": 6,
+            "unit": "bottle",
             "mengeInhalt": "1",
             "packungsInhaltEinheit": "l",
             "nutrients": {
