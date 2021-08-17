@@ -1,17 +1,18 @@
 {
-    "storedItems": [
+    "storeditems": [
         {
             "id": 1,
             "name": "Thai Kitchen Noodle Kit",
-            "menge": 5,
-            "kategorien": [
+            "amount": 7,
+            "categories": [
                 "Teigwaren",
                 "Fertiggericht",
                 "Nudeln",
                 "Lebensmittel"
             ],
-            "minBestand": 4,
-            "einheit": "packung",
+            "lowestAmount": 4,
+            "midAmount": 6,
+            "unit": "packung",
             "mengeInhalt": "155",
             "packungsInhaltEinheit": "g",
             "nutrients": {
@@ -105,33 +106,37 @@
                         ]
                     }
                 ]
-            }
+            },
+            "icon": "https://img.fruugo.com/product/1/98/159267981_max.jpg"
         },
         {
             "id": 2,
             "name": "Toilettenpapier",
-            "menge": 12,
-            "kategorien": [
+            "amount": 11,
+            "categories": [
                 "Haushalt",
                 "Hygiene",
                 "Bad"
             ],
-            "minBestand": 10,
-            "einheit": "rollen",
+            "lowestAmount": 8,
+            "midAmount": 12,
+            "unit": "rollen",
             "mengeInhalt": null,
             "packungsInhaltEinheit": null,
-            "nutrients": null
+            "nutrients": null,
+            "icon": "https://media.kaufland-online.de/images/items/1024x1024/6b31a30f1d91d2404de0cd87a1a0d487.jpg"
         },
         {
             "id": 3,
             "name": "Wasser",
-            "menge": 5,
-            "kategorien": [
+            "amount": 5,
+            "categories": [
                 "Trinken",
                 "Lebensmittel"
             ],
-            "minBestand": 4,
-            "einheit": "Flasche",
+            "lowestAmount": 4,
+            "midAmount": 6,
+            "unit": "Flasche",
             "mengeInhalt": "1",
             "packungsInhaltEinheit": "l",
             "nutrients": {
@@ -225,7 +230,8 @@
                         ]
                     }
                 ]
-            }
+            },
+            "icon": "https://bilder.t-online.de/b/74/89/31/80/id_74893180/610/tid_da/mineralwasser-schmeckt-am-besten-wenn-es-frisch-ist-.jpg"
         }
     ]
 }

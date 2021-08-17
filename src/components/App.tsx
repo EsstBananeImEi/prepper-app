@@ -1,22 +1,21 @@
 import React, { ReactElement } from 'react';
 import logo from './logo.svg';
 import './App.css';
-import axios, { AxiosResponse } from 'axios';
-import { exec } from "child_process";
+import {
+    BrowserRouter as Router
+} from "react-router-dom";
+import Routes from './Routes';
+import Layout from './Layout';
 
 function App(): ReactElement {
 
-    const send = () => {
-        axios({ method: "DELETE", url: 'http://localhost:3004/storedItems/1/' })
-            .then((response: AxiosResponse) => {
-                console.log("finished")
-            })
-    }
-
-    return <>
-        <button className='ui button red' onClick={send}>delete</button>
-        <button className='ui button green'>reset</button>
-    </>
+    return (
+        <Router>
+            <Layout>
+                <Routes />
+            </Layout>
+        </Router>
+    )
 }
 
 export default App;

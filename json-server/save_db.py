@@ -36,16 +36,13 @@ class SaveDB:
                 os.system("mv db_save.json db_save.json.bak")
             shutil.copyfile(self.source_path, self.dest_path)
             print("copy file successfully")
+            time.sleep(2)
             self.set_date()
             if os.path.isfile("db_save.json.bak"):
                 print("remove backup file")
                 os.system("rm db_save.json.bak")
             
-            sub = subprocess.Popen("git status", shell=True, stdout=subprocess.PIPE)
-            sub_return = sub.stdout.read()
-            if not "Your branch is up to date" in sub_return:
-                os.system(f"git add db_save.json && git commit -m 'db save ${self.last_date}' && git push")
-
+            
         except shutil.SameFileError:
             print("Source and destination represents the same file.")
 
@@ -60,6 +57,14 @@ class SaveDB:
         except:
             os.system("mv db_save.json.bak db_save.json")
             print("Error occurred while copying file.")
+        finally:
+            time.sleep(3)
+            sub = subprocess.Popen("git status", shell=True, stdout=subprocess.PIPE)
+            sub_return = sub.stdout.read()
+            if "db_save.json" in sub_return.decode("utf-8"):
+                test = subprocess.Popen("git add db_save.json", shell=True, stdout=subprocess.PIPE)
+                test2 = subprocess.Popen(f"git commit -m 'db save {self.last_date}'", shell=True, stdout=subprocess.PIPE)
+                test3 = subprocess.Popen("git push", shell=True, stdout=subprocess.PIPE)
 
 
 if __name__ == '__main__':
