@@ -24,6 +24,7 @@ export default function StorageDetail(): ReactElement {
 
 
     return (
+        // Hier gehts weiter
         <div>{storageItem.name}</div>
     );
 }
