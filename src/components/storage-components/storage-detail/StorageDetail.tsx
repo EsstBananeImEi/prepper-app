@@ -28,7 +28,3 @@ export default function StorageDetail(): ReactElement {
     );
 }
 
-function useBookApi<T>(arg0: string, arg1: string): [any] {
-    throw new Error('Function not implemented.');
-}
-
