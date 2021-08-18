@@ -2,14 +2,14 @@ export interface StorageModel {
     id: number,
     name: string,
     amount: number,
-    categories: string[],
+    categories?: string[],
     lowestAmount: number,
     midAmount: number,
     unit: string,
     packageQuantity?: number,
     packageUnit?: string,
     nutrients?: NutrientModel,
-    icon: string
+    icon?: string
 }
 
 interface NutrientModel {

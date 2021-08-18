@@ -1,3 +1,4 @@
+import { Alert, Spin } from 'antd'
 import React, { ReactElement } from 'react'
 
 interface Props {
@@ -7,8 +8,11 @@ interface Props {
 export default function LoadingSpinner(props: Props): ReactElement {
 
     return (
-        <div className="ui active inverted dimmer">
-            <div className="ui text loader massive">{props.message}</div>
+        <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100%' }}>
+            <Spin size='large' tip={props.message}>
+
+            </Spin>
         </div>
+
     )
 }

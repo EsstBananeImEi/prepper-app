@@ -6,15 +6,18 @@ import {
 } from "react-router-dom";
 import Routes from './Routes';
 import Layout from './Layout';
+import { StoreProvider } from '../Store';
 
 function App(): ReactElement {
 
     return (
-        <Router>
-            <Layout>
-                <Routes />
-            </Layout>
-        </Router>
+        <StoreProvider>
+            <Router>
+                <Layout>
+                    <Routes />
+                </Layout>
+            </Router>
+        </StoreProvider>
     )
 }
 

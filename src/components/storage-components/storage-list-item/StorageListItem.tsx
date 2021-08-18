@@ -1,4 +1,4 @@
-import { EditOutlined, ShoppingCartOutlined, InfoCircleOutlined } from '@ant-design/icons';
+import { EditOutlined, ShoppingCartOutlined, InfoCircleOutlined, PlusCircleOutlined, MinusCircleOutlined } from '@ant-design/icons';
 import { Avatar, Card, Image } from 'antd';
 import React, { ReactElement } from 'react';
 import { Link, useHistory } from 'react-router-dom';
@@ -37,9 +37,11 @@ export default function StorageListItem(props: Props): ReactElement {
             style={{ width: 300 }}
             actions={
                 [
-                    <InfoCircleOutlined onClick={onGoToDetail} key="info" />,
-                    <EditOutlined onClick={onGoToEdit} key="edit" />,
-                    // <ShoppingCartOutlined disabled key="shopping" />,
+                    // <InfoCircleOutlined onClick={onGoToDetail} key="info" />,
+                    // <EditOutlined onClick={onGoToEdit} key="edit" />,
+                    <MinusCircleOutlined key='minus' />,
+                    <ShoppingCartOutlined disabled key="shopping" />,
+                    <PlusCircleOutlined key="plus" />
                 ]}
         >
             <Link to={`/storeditems/${storageItem.id}`}>

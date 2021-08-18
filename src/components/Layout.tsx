@@ -12,14 +12,14 @@ interface Props {
 export default function Layout(props: Props): ReactElement {
     const { Header, Content, Footer } = AntdLayout;
     return (
-        <AntdLayout className="layout" style={{ height: 'auto', minHeight: '100%' }}>
+        <AntdLayout className="layout" style={{ height: '100%', minHeight: '100%' }}>
             <NavBar />
             <Content style={{ padding: '10px 10px' }}>
                 <Breadcrumb separator=">">
                 </Breadcrumb>
                 {props.children}
             </Content>
-            <Footer style={{ textAlign: 'center' }}>Prepper App ©2021 Created by Sebastian Meine</Footer>
+            <Footer style={{ textAlign: 'center', padding: '0' }}>Prepper App ©2021 Created by Sebastian Meine</Footer>
         </AntdLayout>
     )
 }
