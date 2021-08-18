@@ -12,9 +12,9 @@ interface Props {
 export default function Layout(props: Props): ReactElement {
     const { Header, Content, Footer } = AntdLayout;
     return (
-        <AntdLayout className="layout" style={{ height: '100%' }}>
+        <AntdLayout className="layout" style={{ height: 'auto', minHeight: '100%' }}>
             <NavBar />
-            <Content style={{ padding: '0 10px' }}>
+            <Content style={{ padding: '10px 10px' }}>
                 <Breadcrumb separator=">">
                 </Breadcrumb>
                 {props.children}

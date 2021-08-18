@@ -13,8 +13,8 @@ export default function StorageList(): ReactElement {
     const history = useHistory();
     const [currentPage, setCurrentPage] = useState(1)
     const [minValue, setMinValue] = useState(0)
-    const [maxValue, setMaxValue] = useState(16)
-    const pageSize = 16
+    const [maxValue, setMaxValue] = useState(12)
+    const pageSize = 12
 
     if (!storageItems) { return <LoadingSpinner message="load storage items ..." /> }
     const onGoToNew = () => history.push(`/storeditems/new`)
@@ -51,12 +51,12 @@ export default function StorageList(): ReactElement {
                     <Button onClick={onGoToNew} type="primary">Store item</Button>
                 </Empty >
             }
-            <Pagination
+            <Pagination responsive
                 pageSize={pageSize}
                 current={currentPage}
                 total={storageItems.length}
                 onChange={handleChange}
-                style={{ position: 'absolute', bottom: "60px", width: "100%", display: "flex", justifyContent: "center" }}
+                style={{ width: "100%", display: "flex", justifyContent: "center", paddingTop: '20px' }}
             />
         </div >
     )
