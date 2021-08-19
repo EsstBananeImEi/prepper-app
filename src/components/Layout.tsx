@@ -1,8 +1,6 @@
-import React, { ReactElement } from 'react'
-import NavBar from './navbar-component/NavBar'
-import { Layout as AntdLayout, Menu, Breadcrumb } from 'antd';
-import { Link } from 'react-router-dom';
-import { HomeOutlined, UserOutlined } from '@ant-design/icons';
+import { Breadcrumb, Layout as AntdLayout } from 'antd';
+import React, { ReactElement } from 'react';
+import NavBar from './navbar-component/NavBar';
 
 
 interface Props {
