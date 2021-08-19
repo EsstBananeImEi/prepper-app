@@ -12,7 +12,7 @@
             ],
             "lowestAmount": 4,
             "midAmount": 6,
-            "unit": "pack",
+            "unit": "Pack",
             "packageQuantity": "155",
             "packageUnit": "Gramm",
             "nutrients": {
@@ -21,89 +21,66 @@
                 "amount": 100,
                 "values": [
                     {
-                        "name": "Energie / Brennwert",
-                        "values": [
-                            {
-                                "typ": "kj",
-                                "value": 1610.6
-                            },
-                            {
-                                "typ": "kcal",
-                                "value": 384.6
-                            }
-                        ]
+                        "id": 7,
+                        "name": "Energie",
+                        "values": {
+                            "typ": "kcal",
+                            "value": 384.6
+                        }
                     },
                     {
-                        "name": "Eiweiss / Proteine",
-                        "values": [
-                            {
-                                "typ": "g",
-                                "value": 9.6
-                            }
-                        ]
+                        "id": 1,
+                        "name": "Proteine",
+                        "color": "#FDB45C",
+                        "values": {
+                            "typ": "g",
+                            "value": 9.6
+                        }
                     },
                     {
+                        "id": 2,
                         "name": "Kohlenhydrate",
-                        "values": [
-                            {
-                                "typ": "g",
-                                "value": 71.2
-                            }
-                        ]
+                        "color": "#46BFBD",
+                        "values": {
+                            "typ": "g",
+                            "value": 71.2
+                        }
                     },
                     {
+                        "id": 4,
                         "name": "Zucker",
-                        "values": [
-                            {
-                                "typ": "g",
-                                "value": 13.5
-                            }
-                        ]
+                        "color": "#E85F5C",
+                        "values": {
+                            "typ": "g",
+                            "value": 13.5
+                        }
                     },
                     {
+                        "id": 3,
                         "name": "Fett",
-                        "values": [
-                            {
-                                "typ": "g",
-                                "value": 7.7
-                            }
-                        ]
+                        "color": "#F7464A",
+                        "values": {
+                            "typ": "g",
+                            "value": 7.7
+                        }
                     },
                     {
+                        "id": 6,
                         "name": "gesättigte Fettsäuren",
-                        "values": [
-                            {
-                                "typ": "g",
-                                "value": 1.9
-                            }
-                        ]
+                        "color": "#C1EEFF",
+                        "values": {
+                            "typ": "g",
+                            "value": 1.9
+                        }
                     },
                     {
-                        "name": "Natrium",
-                        "values": [
-                            {
-                                "typ": "g",
-                                "value": 0.3
-                            }
-                        ]
-                    },
-                    {
-                        "name": "Salz",
-                        "values": [
-                            {
-                                "typ": "g",
-                                "value": 0.7
-                            }
-                        ]
-                    },
-                    {
+                        "id": 5,
                         "name": "Ballaststoffe",
-                        "values": [
-                            {
-                                "typ": "g",
-                                "value": 1.9
-                            }
-                        ]
+                        "color": "#4D5360",
+                        "values": {
+                            "typ": "g",
+                            "value": 1.9
+                        }
                     }
                 ]
             },
@@ -145,89 +122,60 @@
                 "amount": 100,
                 "values": [
                     {
-                        "name": "Energie / Brennwert",
-                        "values": [
-                            {
-                                "typ": "kj",
-                                "value": 0
-                            },
-                            {
-                                "typ": "kcal",
-                                "value": 0
-                            }
-                        ]
+                        "id": 7,
+                        "name": "Energie",
+                        "values": {
+                            "typ": "kcal",
+                            "value": 0
+                        }
                     },
                     {
-                        "name": "Eiweiss / Proteine",
-                        "values": [
-                            {
-                                "typ": "g",
-                                "value": 0
-                            }
-                        ]
+                        "id": 1,
+                        "name": "Proteine",
+                        "values": {
+                            "typ": "g",
+                            "value": 0
+                        }
                     },
                     {
+                        "id": 2,
                         "name": "Kohlenhydrate",
-                        "values": [
-                            {
-                                "typ": "g",
-                                "value": 0
-                            }
-                        ]
+                        "values": {
+                            "typ": "g",
+                            "value": 0
+                        }
                     },
                     {
+                        "id": 3,
                         "name": "Zucker",
-                        "values": [
-                            {
-                                "typ": "g",
-                                "value": 0
-                            }
-                        ]
+                        "values": {
+                            "typ": "g",
+                            "value": 0
+                        }
                     },
                     {
+                        "id": 4,
                         "name": "Fett",
-                        "values": [
-                            {
-                                "typ": "g",
-                                "value": 0
-                            }
-                        ]
+                        "values": {
+                            "typ": "g",
+                            "value": 0
+                        }
                     },
                     {
+                        "id": 5,
                         "name": "gesättigte Fettsäuren",
-                        "values": [
-                            {
-                                "typ": "g",
-                                "value": 0
-                            }
-                        ]
+                        "values": {
+                            "typ": "g",
+                            "value": 0
+                        }
                     },
                     {
-                        "name": "Natrium",
-                        "values": [
-                            {
-                                "typ": "g",
-                                "value": 0
-                            }
-                        ]
-                    },
-                    {
-                        "name": "Salz",
-                        "values": [
-                            {
-                                "typ": "g",
-                                "value": 0
-                            }
-                        ]
-                    },
-                    {
+                        "id": 6,
                         "name": "Ballaststoffe",
-                        "values": [
-                            {
-                                "typ": "g",
-                                "value": 0
-                            }
-                        ]
+                        "values": {
+                            "typ": "g",
+                            "value": 0
+                        }
                     }
                 ]
             },
