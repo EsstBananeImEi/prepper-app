@@ -1,11 +1,11 @@
-import { Layout, Menu } from 'antd';
-import React, { ReactElement } from 'react'
-import { Link } from "react-router-dom";
 import {
     HomeOutlined,
     PlusOutlined,
     UnorderedListOutlined
 } from '@ant-design/icons';
+import { Layout, Menu } from 'antd';
+import React, { ReactElement } from 'react';
+import { Link } from "react-router-dom";
 import { useDemensions } from '../../hooks/StorageApi';
 
 export default function NavBar(): ReactElement {
