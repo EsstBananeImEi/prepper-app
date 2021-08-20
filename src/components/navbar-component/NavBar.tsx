@@ -23,6 +23,11 @@ export default function NavBar(): ReactElement {
                         <span className="nav-text">Storage</span>
                     </Link>
                 </Menu.Item>
+                <Menu.Item key='newItem'>
+                    <Link to="/storeditems/new">
+                        <span className="nav-text">Add Item</span>
+                    </Link>
+                </Menu.Item>
             </Menu>
         </Header>
     )
