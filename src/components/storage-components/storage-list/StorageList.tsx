@@ -1,13 +1,10 @@
-import React, { ReactElement, useEffect, useState } from 'react'
-import { List } from 'semantic-ui-react'
-import { classicNameResolver } from 'typescript'
-import { storageApi, useDemensions, useStorageApi } from '../../../hooks/StorageApi'
+import { Button, Empty, Pagination, Space } from 'antd'
+import React, { ReactElement, useState } from 'react'
+import { useHistory } from 'react-router-dom'
+import { useDemensions, useStorageApi } from '../../../hooks/StorageApi'
 import LoadingSpinner from '../../loading-spinner/LoadingSpinner'
 import StorageListItem from '../storage-list-item/StorageListItem'
 import { StorageModel } from '../StorageModel'
-import { Space, Empty, Button, Pagination } from 'antd';
-import { Link, useHistory } from 'react-router-dom'
-import MyErrorMessage from '../../my-error-component/MyErrorMessage'
 
 export default function StorageList(): ReactElement {
     const [storageItems, , axiosResponse] = useStorageApi<StorageModel[]>('get', '/storedItems')
@@ -30,7 +27,6 @@ export default function StorageList(): ReactElement {
     if (!storageItems) { return <LoadingSpinner message="load storage items ..." /> }
 
     const onGoToNew = () => history.push(`/storeditems/new`)
-
 
     return (
         <div className="space-align-container" style={{ justifyContent: 'center', display: 'flex', flexWrap: 'wrap' }}>
