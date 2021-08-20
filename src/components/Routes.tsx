@@ -1,6 +1,7 @@
 import React, { ReactElement } from 'react'
 import { Redirect, Route, Switch } from 'react-router-dom'
 import MyErrorMessage from './my-error-component/MyErrorMessage'
+import StorageCreateItem from './storage-components/storage-create-item/StorageCreateItem'
 import StorageDetail from './storage-components/storage-detail/StorageDetail'
 import StorageList from './storage-components/storage-list/StorageList'
 
@@ -14,7 +15,7 @@ export default function Routes(): ReactElement {
                 <p >edit</p>
             </Route>
             <Route path='/storedItems/new'>
-                <p >new</p>
+                <StorageCreateItem />
             </Route>
             <Route path='/storedItems/:id'>
                 <StorageDetail />
