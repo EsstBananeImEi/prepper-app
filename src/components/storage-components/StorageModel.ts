@@ -19,12 +19,14 @@ interface NutrientModel {
     values: NutrientValueModel[]
 }
 
-interface NutrientValueModel {
+export interface NutrientValueModel {
+    id: number,
     name: string,
-    values: NutrientTypModel[]
+    color: string,
+    values: NutrientTypModel
 }
 
-interface NutrientTypModel {
+export interface NutrientTypModel {
     typ: string,
     value: number,
 }
