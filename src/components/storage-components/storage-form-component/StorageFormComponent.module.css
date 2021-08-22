@@ -1,0 +1,20 @@
+.bookForm input:invalid {
+    background-color: #ffdddd !important;
+  }
+  
+  .bookForm input:valid {
+    background-color: #ddffdd !important;
+  }
+
+  .bookForm input:required {
+    border-color: #800000;
+    border-width: 3px;
+  }
+  
+  .bookForm input:required:invalid {
+    border-color: #c00000;
+  }
+
+  .ingredientInput {
+      max-width: 200px;
+  }
