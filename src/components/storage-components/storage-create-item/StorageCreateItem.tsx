@@ -4,7 +4,15 @@ import StorageFormComponent from '../storage-form-component/StorageFormComponent
 export default function StorageCreateItem(): ReactElement {
 
     return (
-        <StorageFormComponent />
+        <StorageFormComponent
+            name=''
+            amount=''
+            lowestAmount=''
+            midAmount=''
+            unit=''
+            isEdit={false}
+        />
+
     )
 
 

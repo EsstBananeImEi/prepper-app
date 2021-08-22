@@ -71,7 +71,7 @@ export default function StorageDetail(): ReactElement {
                     <Descriptions.Item label="Package Unit">{storageItem.packageUnit ? storageItem.packageUnit : ''}</Descriptions.Item>
 
                 </Descriptions>
-                {storageItem.nutrients &&
+                {storageItem.nutrients && storageItem.nutrients.values.length > 0 &&
                     <Descriptions
                         bordered
                         style={{ backgroundColor: "#f5f5f5", display: 'flex', justifyContent: 'center' }}

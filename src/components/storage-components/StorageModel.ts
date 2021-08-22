@@ -12,7 +12,7 @@ export interface StorageModel {
     icon?: string
 }
 
-interface NutrientModel {
+export interface NutrientModel {
     description: string,
     unit: string,
     amount: number,
