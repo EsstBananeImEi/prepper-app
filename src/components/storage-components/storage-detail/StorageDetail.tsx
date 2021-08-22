@@ -1,7 +1,7 @@
 import { Button, Descriptions, Image } from 'antd';
 import React, { ReactElement } from 'react';
 import { useHistory, useParams } from 'react-router-dom';
-import { useDemensions, useStorageApi } from '../../../hooks/StorageApi';
+import { storageApi, useDemensions, useStorageApi } from '../../../hooks/StorageApi';
 import LoadingSpinner from '../../loading-spinner/LoadingSpinner';
 import { NutrientValueModel, StorageModel } from '../StorageModel';
 import css from './StorageDetail.module.css';
@@ -34,8 +34,13 @@ export default function StorageDetail(): ReactElement {
         return array;
     };
 
+    const onGoToList = () => history.push('/storedItems')
+
     const onGoBack = () => history.goBack()
     const onGoToEdit = () => history.push(`/storedItems/${storageItem.id}/edit`)
+    const onDelete = () => storageApi('DELETE', `/storedItems/${id}`, onGoToList)
+
+
 
 
     return (
@@ -100,7 +105,7 @@ export default function StorageDetail(): ReactElement {
                 <div className={css.buttonContainer}>
                     <Button className={css.formButton} onClick={onGoBack} type="primary" >Go Back</Button>
                     <Button className={css.formButton} onClick={onGoToEdit} type="primary" >Edit</Button>
-                    <Button className={css.formButton} danger>Delete</Button>
+                    <Button className={css.formButton} onClick={onDelete} danger>Delete</Button>
                 </div>
             </div>
         </div>
