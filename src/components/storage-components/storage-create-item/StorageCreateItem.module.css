@@ -14,3 +14,7 @@
   .bookForm input:required:invalid {
     border-color: #c00000;
   }
+
+  .ingredientInput {
+      max-width: 200px;
+  }
