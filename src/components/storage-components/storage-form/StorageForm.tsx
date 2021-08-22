@@ -1,13 +1,13 @@
 import React, { ReactElement, useState } from 'react'
 import { Form, Input, InputNumber, Button, Select } from 'antd';
-import css from './StorageFormComponent.module.css'
+import css from './StorageForm.module.css'
 import { NutrientModel, NutrientValueModel, StorageModel } from '../StorageModel';
 import { storageApi } from '../../../hooks/StorageApi';
 import { useHistory } from 'react-router-dom';
 import { Method } from 'axios';
 
 interface Props {
-    id?: string
+    id?: number
     name: string
     amount: string
     lowestAmount: string

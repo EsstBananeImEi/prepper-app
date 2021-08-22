@@ -1,5 +1,5 @@
 import React, { ReactElement } from 'react';
-import StorageFormComponent from '../storage-form-component/StorageFormComponent';
+import StorageFormComponent from '../storage-form/StorageForm';
 
 export default function StorageCreateItem(): ReactElement {
 

@@ -3,6 +3,7 @@ import { Redirect, Route, Switch } from 'react-router-dom'
 import MyErrorMessage from './my-error-component/MyErrorMessage'
 import StorageCreateItem from './storage-components/storage-create-item/StorageCreateItem'
 import StorageDetail from './storage-components/storage-detail/StorageDetail'
+import StorageEditItem from './storage-components/storage-edit-item/StorageEditItem'
 import StorageList from './storage-components/storage-list/StorageList'
 
 export default function Routes(): ReactElement {
@@ -12,7 +13,7 @@ export default function Routes(): ReactElement {
                 <MyErrorMessage />
             </Route>
             <Route path='/storedItems/:id/edit'>
-                <p >edit</p>
+                <StorageEditItem />
             </Route>
             <Route path='/storedItems/new'>
                 <StorageCreateItem />
