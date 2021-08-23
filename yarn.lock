@@ -2496,6 +2496,11 @@ ansi-styles@^5.0.0:
   resolved "https://registry.yarnpkg.com/ansi-styles/-/ansi-styles-5.2.0.tgz#07449690ad45777d1924ac2abb2fc8895dba836b"
   integrity sha512-Cxwpt2SfTzTtXcfOlzGEee8O+c+MmUgGrNiBcXnuWxuFJHe6a5Hz7qwhwe5OgaSYI0IJvkLqWX1ASG+cJOkEiA==
 
+antd-button-color@^1.0.4:
+  version "1.0.4"
+  resolved "https://registry.yarnpkg.com/antd-button-color/-/antd-button-color-1.0.4.tgz#1746bf5b14ef1692929cb0332d076f7fd7b3faf6"
+  integrity sha512-KDzsvs0myFF5HLg8Kj4UW1icuw/vffXW0wwBOUWqVITrLXnrzkRpnOh6DEDmvsjxC8pwM4OCciouqfUlt5+7NA==
+
 antd@^4.16.11:
   version "4.16.11"
   resolved "https://registry.yarnpkg.com/antd/-/antd-4.16.11.tgz#924116b0de7370f914e9de6c8c5a4bf019b3d668"

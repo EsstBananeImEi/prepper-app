@@ -1,185 +1,187 @@
 {
-    "storeditems": [
-        {
+  "storeditems": [
+    {
+      "id": 1,
+      "name": "Thai Kitchen Noodle Kit",
+      "amount": "7",
+      "lowestAmount": "4",
+      "midAmount": "6",
+      "unit": "Pack",
+      "categories": [
+        "Teigwaren",
+        "Fertiggericht",
+        "Nudeln",
+        "Lebensmittel"
+      ],
+      "packageQuantity": "155",
+      "packageUnit": "Gramm",
+      "nutrients": {
+        "description": "",
+        "unit": "g",
+        "amount": 100,
+        "values": [
+          {
+            "id": 7,
+            "name": "Energie",
+            "values": {
+              "typ": "kcal",
+              "value": 384.6
+            }
+          },
+          {
             "id": 1,
-            "name": "Thai Kitchen Noodle Kit",
-            "amount": 7,
-            "categories": [
-                "Teigwaren",
-                "Fertiggericht",
-                "Nudeln",
-                "Lebensmittel"
-            ],
-            "lowestAmount": 4,
-            "midAmount": 6,
-            "unit": "Pack",
-            "packageQuantity": "155",
-            "packageUnit": "Gramm",
-            "nutrients": {
-                "description": "Inhaltstoffe sind Optional zu setzten, da gegenstände keine haben",
-                "unit": "g",
-                "amount": 100,
-                "values": [
-                    {
-                        "id": 7,
-                        "name": "Energie",
-                        "values": {
-                            "typ": "kcal",
-                            "value": 384.6
-                        }
-                    },
-                    {
-                        "id": 1,
-                        "name": "Proteine",
-                        "color": "#FDB45C",
-                        "values": {
-                            "typ": "g",
-                            "value": 9.6
-                        }
-                    },
-                    {
-                        "id": 2,
-                        "name": "Kohlenhydrate",
-                        "color": "#46BFBD",
-                        "values": {
-                            "typ": "g",
-                            "value": 71.2
-                        }
-                    },
-                    {
-                        "id": 4,
-                        "name": "Zucker",
-                        "color": "#E85F5C",
-                        "values": {
-                            "typ": "g",
-                            "value": 13.5
-                        }
-                    },
-                    {
-                        "id": 3,
-                        "name": "Fett",
-                        "color": "#F7464A",
-                        "values": {
-                            "typ": "g",
-                            "value": 7.7
-                        }
-                    },
-                    {
-                        "id": 6,
-                        "name": "gesättigte Fettsäuren",
-                        "color": "#C1EEFF",
-                        "values": {
-                            "typ": "g",
-                            "value": 1.9
-                        }
-                    },
-                    {
-                        "id": 5,
-                        "name": "Ballaststoffe",
-                        "color": "#4D5360",
-                        "values": {
-                            "typ": "g",
-                            "value": 1.9
-                        }
-                    }
-                ]
-            },
-            "icon": "https://img.fruugo.com/product/1/98/159267981_max.jpg"
-        },
-        {
+            "name": "Proteine",
+            "color": "#FDB45C",
+            "values": {
+              "typ": "g",
+              "value": 9.6
+            }
+          },
+          {
             "id": 2,
-            "name": "Toilettenpapier",
-            "amount": 11,
-            "categories": [
-                "Haushalt",
-                "Hygiene",
-                "Bad"
-            ],
-            "lowestAmount": 8,
-            "midAmount": 12,
-            "unit": "Roll",
-            "packageQuantity": null,
-            "packageUnit": null,
-            "nutrients": null,
-            "icon": "https://media.kaufland-online.de/images/items/1024x1024/6b31a30f1d91d2404de0cd87a1a0d487.jpg"
-        },
-        {
+            "name": "Kohlenhydrate",
+            "color": "#46BFBD",
+            "values": {
+              "typ": "g",
+              "value": 71.2
+            }
+          },
+          {
+            "id": 4,
+            "name": "Zucker",
+            "color": "#E85F5C",
+            "values": {
+              "typ": "g",
+              "value": 13.5
+            }
+          },
+          {
             "id": 3,
-            "name": "Wasser",
-            "amount": 5,
-            "categories": [
-                "Trinken",
-                "Lebensmittel"
-            ],
-            "lowestAmount": 4,
-            "midAmount": 6,
-            "unit": "bottle",
-            "packageQuantity": "1",
-            "packageUnit": "Liters",
-            "nutrients": {
-                "description": "Inhaltstoffe sind Optional zu setzten, da gegenstände keine haben",
-                "unit": "ml",
-                "amount": 100,
-                "values": [
-                    {
-                        "id": 7,
-                        "name": "Energie",
-                        "values": {
-                            "typ": "kcal",
-                            "value": 0
-                        }
-                    },
-                    {
-                        "id": 1,
-                        "name": "Proteine",
-                        "values": {
-                            "typ": "g",
-                            "value": 0
-                        }
-                    },
-                    {
-                        "id": 2,
-                        "name": "Kohlenhydrate",
-                        "values": {
-                            "typ": "g",
-                            "value": 0
-                        }
-                    },
-                    {
-                        "id": 3,
-                        "name": "Zucker",
-                        "values": {
-                            "typ": "g",
-                            "value": 0
-                        }
-                    },
-                    {
-                        "id": 4,
-                        "name": "Fett",
-                        "values": {
-                            "typ": "g",
-                            "value": 0
-                        }
-                    },
-                    {
-                        "id": 5,
-                        "name": "gesättigte Fettsäuren",
-                        "values": {
-                            "typ": "g",
-                            "value": 0
-                        }
-                    },
-                    {
-                        "id": 6,
-                        "name": "Ballaststoffe",
-                        "values": {
-                            "typ": "g",
-                            "value": 0
-                        }
-                    }
-                ]
-            },
-            "icon": "https://bilder.t-online.de/b/74/89/31/80/id_74893180/610/tid_da/mineralwasser-schmeckt-am-besten-wenn-es-frisch-ist-.jpg"
-        }
-    ]
+            "name": "Fett",
+            "color": "#F7464A",
+            "values": {
+              "typ": "g",
+              "value": 7.7
+            }
+          },
+          {
+            "id": 6,
+            "name": "gesättigte Fettsäuren",
+            "color": "#C1EEFF",
+            "values": {
+              "typ": "g",
+              "value": 1.9
+            }
+          },
+          {
+            "id": 5,
+            "name": "Ballaststoffe",
+            "color": "#4D5360",
+            "values": {
+              "typ": "g",
+              "value": 1.9
+            }
+          }
+        ]
+      },
+      "icon": "https://img.fruugo.com/product/1/98/159267981_max.jpg"
+    },
+    {
+      "id": 2,
+      "name": "Toilettenpapier",
+      "amount": 11,
+      "categories": [
+        "Haushalt",
+        "Hygiene",
+        "Bad"
+      ],
+      "lowestAmount": 8,
+      "midAmount": 12,
+      "unit": "Roll",
+      "packageQuantity": null,
+      "packageUnit": null,
+      "storageLocation": "Keller",
+      "nutrients": null,
+      "icon": "https://media.kaufland-online.de/images/items/1024x1024/6b31a30f1d91d2404de0cd87a1a0d487.jpg"
+    },
+    {
+      "id": 3,
+      "name": "Wasser",
+      "amount": 5,
+      "categories": [
+        "Trinken",
+        "Lebensmittel"
+      ],
+      "lowestAmount": 4,
+      "midAmount": 6,
+      "unit": "bottle",
+      "packageQuantity": "1",
+      "packageUnit": "Liters",
+      "storageLocation": "Keller",
+      "nutrients": {
+        "description": "Inhaltstoffe sind Optional zu setzten, da gegenstände keine haben",
+        "unit": "ml",
+        "amount": 100,
+        "values": [
+          {
+            "id": 7,
+            "name": "Energie",
+            "values": {
+              "typ": "kcal",
+              "value": 0
+            }
+          },
+          {
+            "id": 1,
+            "name": "Proteine",
+            "values": {
+              "typ": "g",
+              "value": 0
+            }
+          },
+          {
+            "id": 2,
+            "name": "Kohlenhydrate",
+            "values": {
+              "typ": "g",
+              "value": 0
+            }
+          },
+          {
+            "id": 3,
+            "name": "Zucker",
+            "values": {
+              "typ": "g",
+              "value": 0
+            }
+          },
+          {
+            "id": 4,
+            "name": "Fett",
+            "values": {
+              "typ": "g",
+              "value": 0
+            }
+          },
+          {
+            "id": 5,
+            "name": "gesättigte Fettsäuren",
+            "values": {
+              "typ": "g",
+              "value": 0
+            }
+          },
+          {
+            "id": 6,
+            "name": "Ballaststoffe",
+            "values": {
+              "typ": "g",
+              "value": 0
+            }
+          }
+        ]
+      },
+      "icon": "https://bilder.t-online.de/b/74/89/31/80/id_74893180/610/tid_da/mineralwasser-schmeckt-am-besten-wenn-es-frisch-ist-.jpg"
+    }
+  ]
 }

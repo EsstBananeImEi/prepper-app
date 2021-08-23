@@ -8,6 +8,7 @@ export interface StorageModel {
     unit: string,
     packageQuantity?: number,
     packageUnit?: string,
+    storageLocation: string,
     nutrients?: NutrientModel,
     icon?: string
 }

@@ -1,5 +1,6 @@
 @import 'semantic-ui-css/semantic.css';
 @import '~antd/dist/antd.css';
+@import '~antd-button-color/dist/css/style.css';
 
 #root {
     height:100%;

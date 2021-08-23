@@ -1,5 +1,6 @@
 import React, { ReactElement, useState } from 'react'
-import { Form, Input, InputNumber, Button, Select } from 'antd';
+import { Form, Input, InputNumber, Select } from 'antd';
+import Button from "antd-button-color";
 import css from './StorageForm.module.css'
 import { NutrientModel, NutrientValueModel, StorageModel } from '../StorageModel';
 import { storageApi } from '../../../hooks/StorageApi';
@@ -13,6 +14,7 @@ interface Props {
     lowestAmount: string
     midAmount: string
     unit: string
+    storageLocation: string
     isEdit: boolean
     // this attributes only required if isEdit == True
     packageQuantity?: string
@@ -22,7 +24,7 @@ interface Props {
     icon?: string
 }
 
-export default function StorageFormComponent(props: Props): ReactElement {
+export default function StorageForm(props: Props): ReactElement {
     const buildIngrientTypModel = () => ({ id: 1, name: '', color: '', values: { typ: '', value: 0 } })
     const [id, setId] = useState(props.id)
     const [name, setName] = useState(props.name)
@@ -30,6 +32,7 @@ export default function StorageFormComponent(props: Props): ReactElement {
     const [lowestAmount, setLowestAmount] = useState(props.lowestAmount)
     const [midAmount, setMidAmount] = useState(props.midAmount)
     const [unit, setUnit] = useState(props.unit)
+    const [storageLocation, setStorageLocation] = useState(props.storageLocation)
     const [packageQuantity, setPackageQuantity] = useState(props.packageQuantity ? props.packageQuantity : '') // optional !!
     const [packageUnit, setPackageUnit] = useState(props.packageUnit ? props.packageUnit : '') // optional !!
     const [categories, setCategories] = useState(props.categories ? props.categories : []) // Optional !!
@@ -47,7 +50,7 @@ export default function StorageFormComponent(props: Props): ReactElement {
 
     const getStorageApiParameters = (): [Method, string, () => void] => {
         if (props.isEdit) {
-            return ['PUT', `/storedItems/${id}`, onGoToDetails]
+            return ['PUT', `/storedItems/${id}`, onGoBack]
         }
         return ['POST', `/storedItems/`, onGoToList]
     }
@@ -60,7 +63,7 @@ export default function StorageFormComponent(props: Props): ReactElement {
     };
 
     const onGoToList = () => { history.push('/storedItems') }
-    const onGoToDetails = () => { history.push(`/storedItems/${id}`) }
+    const onGoBack = () => { history.goBack() }
 
     const onChangeNutrient = (index: number, key: string, value: string) => {
         setNutrients(currentThumbnails => {
@@ -225,9 +228,13 @@ export default function StorageFormComponent(props: Props): ReactElement {
                     </div>
 
                 </div>
+
                 <label>Nutrients</label>
-                <button onClick={onAddIngredient} className="ui mini button" type="button">+</button>
-                <button onClick={onRemoveIngredient} className="ui mini button" type="button">-</button>
+                <div>
+                    <button onClick={onAddIngredient} className="ui mini button" type="button">+</button>
+                    <button onClick={onRemoveIngredient} className="ui mini button" type="button">-</button>
+
+                </div>
                 <div>
 
                     {nutrients.length > 0 &&
@@ -271,7 +278,9 @@ export default function StorageFormComponent(props: Props): ReactElement {
                     <input type='url' value={icon} placeholder="https://baconmockup.com/800/600" onChange={(e) => setIcon(e.target.value)} />
                 </div>
 
-                <button className="ui button">Submit</button>
+                <Button type="info" htmlType='submit'>Submit</Button>
+
+                <Button onClick={onGoBack} ghost type="danger">Cancel</Button>
             </form >
 
         </div >

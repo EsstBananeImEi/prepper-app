@@ -1,4 +1,5 @@
-import { Button, Descriptions, Image } from 'antd';
+import { Descriptions, Image } from 'antd';
+import Button from 'antd-button-color';
 import React, { ReactElement } from 'react';
 import { useHistory, useParams } from 'react-router-dom';
 import { storageApi, useDemensions, useStorageApi } from '../../../hooks/StorageApi';
@@ -69,6 +70,7 @@ export default function StorageDetail(): ReactElement {
                     <Descriptions.Item label="Unit">{storageItem.unit}</Descriptions.Item>
                     <Descriptions.Item label="Package Quentitiy">{storageItem.packageQuantity ? storageItem.packageQuantity : ''}</Descriptions.Item>
                     <Descriptions.Item label="Package Unit">{storageItem.packageUnit ? storageItem.packageUnit : ''}</Descriptions.Item>
+                    <Descriptions.Item label="Storage Location">{storageItem.storageLocation ? storageItem.storageLocation : ''}</Descriptions.Item>
 
                 </Descriptions>
                 {storageItem.nutrients && storageItem.nutrients.values.length > 0 &&
@@ -79,7 +81,7 @@ export default function StorageDetail(): ReactElement {
                         <Descriptions.Item label="Nutrients" style={{ padding: '16px 20px' }}>
                             <div className={css.naehrwert_table}>
                                 <div className={css.bg_color}>
-                                    {`Angaben fürs ${storageItem.nutrients.amount} ${storageItem.nutrients.unit}`}
+                                    {`Angaben für ${storageItem.nutrients.amount} ${storageItem.nutrients.unit}`}
                                 </div>
                                 <table cellSpacing={0}>
                                     <tbody>
@@ -103,8 +105,8 @@ export default function StorageDetail(): ReactElement {
                         </Descriptions.Item>
                     </Descriptions>}
                 <div className={css.buttonContainer}>
-                    <Button className={css.formButton} onClick={onGoBack} type="primary" >Go Back</Button>
-                    <Button className={css.formButton} onClick={onGoToEdit} type="primary" >Edit</Button>
+                    <Button className={css.formButton} onClick={onGoBack} type="success" >Go Back</Button>
+                    <Button className={css.formButton} onClick={onGoToEdit} type="warning" >Edit</Button>
                     <Button className={css.formButton} onClick={onDelete} danger>Delete</Button>
                 </div>
             </div>

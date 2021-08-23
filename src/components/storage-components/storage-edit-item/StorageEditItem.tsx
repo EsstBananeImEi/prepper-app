@@ -3,7 +3,8 @@ import { ReactElement } from 'react'
 import { useParams } from 'react-router-dom'
 import { useStorageApi } from '../../../hooks/StorageApi'
 import LoadingSpinner from '../../loading-spinner/LoadingSpinner'
-import StorageFormComponent from '../storage-form/StorageForm'
+import StorageForm from '../storage-form/StorageForm'
+import StorageFormV2 from '../storage-form/StorageFormV2'
 import { StorageModel } from '../StorageModel'
 
 export default function StorageEditItem(): ReactElement {
@@ -14,14 +15,16 @@ export default function StorageEditItem(): ReactElement {
 
 
     return (
-        <StorageFormComponent
+        <StorageForm
             id={storageItem.id}
             name={storageItem.name}
             amount={String(storageItem.amount)}
             lowestAmount={String(storageItem.lowestAmount)}
             midAmount={String(storageItem.midAmount)}
             unit={storageItem.unit}
+            storageLocation={storageItem.storageLocation}
             isEdit={true}
+            categories={storageItem.categories}
             packageQuantity={String(storageItem.packageQuantity)}
             packageUnit={storageItem.packageUnit}
             nutrients={storageItem.nutrients}
