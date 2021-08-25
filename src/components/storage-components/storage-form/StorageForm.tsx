@@ -1,17 +1,13 @@
-import React, { ReactElement, useCallback, useEffect, useMemo, useState } from 'react'
-import { Form, Input, InputNumber, Select } from 'antd';
+import { Select } from 'antd';
 import Button from "antd-button-color";
-import css from './StorageForm.module.css'
-import { NutrientModel, NutrientValueModel, StorageModel } from '../StorageModel';
-import { bingImageSearchApi, storageApi, useBingImageSearchApi } from '../../../hooks/StorageApi';
-import { useHistory } from 'react-router-dom';
 import { Method } from 'axios';
-import { BingModel } from '../../../shared/Models';
-import LoadingSpinner from '../../loading-spinner/LoadingSpinner';
 import { debounce } from 'lodash';
+import React, { ReactElement, useCallback, useState } from 'react';
+import { useHistory } from 'react-router-dom';
+import { bingImageSearchApi, storageApi } from '../../../hooks/StorageApi';
 import { NutrientFactory } from '../../../shared/Factories';
-import { factory } from 'typescript';
-import { type } from 'os';
+import { NutrientModel, NutrientValueModel } from '../StorageModel';
+import css from './StorageForm.module.css';
 interface Props {
     id?: number
     name: string

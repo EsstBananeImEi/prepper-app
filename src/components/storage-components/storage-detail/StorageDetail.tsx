@@ -3,7 +3,7 @@ import Button from 'antd-button-color';
 import React, { ReactElement, SyntheticEvent } from 'react';
 import { useHistory, useParams } from 'react-router-dom';
 import { storageApi, useDemensions, useStorageApi } from '../../../hooks/StorageApi';
-import { Action, useStore } from '../../../Store';
+import { Action, useStore } from '../../../store/Store';
 import LoadingSpinner from '../../loading-spinner/LoadingSpinner';
 import { NutrientValueModel, StorageModel } from '../StorageModel';
 import css from './StorageDetail.module.css';

@@ -1,10 +1,31 @@
-import React, { ReactElement } from 'react'
+import React, { ReactElement, useCallback } from 'react'
 import { Input } from 'antd';
+import { SearchOutlined } from '@ant-design/icons';
 
+import { storageApi } from '../../../hooks/StorageApi';
+import { Setter } from '../../../types/Types';
+import { StorageModel } from '../StorageModel';
+import { debounce } from 'lodash';
 
-export default function StorageSearchItem(): ReactElement {
-    const { Search } = Input;
+interface Props {
+    callback: Setter<StorageModel[]>
+
+}
+
+export default function StorageSearchItem(props: Props): ReactElement {
+
+    const debounceHandler = useCallback(
+        debounce((searchString: string) => {
+            storageApi('get', `/storedItems?q=${searchString}`, props.callback)
+        }, 800),
+        []
+    );
+
+    const onSearch = (searchString: string) => {
+        debounceHandler(searchString)
+    }
+
     return (
-        <Search placeholder="input search loading default" />
+        <Input onChange={(e) => onSearch(e.target.value)} placeholder="input search" addonAfter={<SearchOutlined />} />
     )
 }

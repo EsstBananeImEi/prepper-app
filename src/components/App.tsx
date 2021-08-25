@@ -6,7 +6,7 @@ import {
 } from "react-router-dom";
 import Routes from './Routes';
 import Layout from './Layout';
-import { StoreProvider } from '../Store';
+import { StoreProvider } from '../store/Store';
 
 function App(): ReactElement {
 
