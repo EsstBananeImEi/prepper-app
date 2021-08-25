@@ -1,53 +1,72 @@
 import {
     HomeOutlined,
     PlusOutlined,
-    UnorderedListOutlined
+    UnorderedListOutlined,
+    ShoppingCartOutlined
 } from '@ant-design/icons';
 import { Layout, Menu } from 'antd';
 import React, { ReactElement } from 'react';
-import { Link } from "react-router-dom";
+import { NavLink, useLocation } from "react-router-dom";
 import { useDemensions } from '../../hooks/StorageApi';
 
 export default function NavBar(): ReactElement {
     const { Header } = Layout;
     const [dimensions] = useDemensions(() => 1, 0)
+    const location = useLocation()
+    const paths = [
+        { url: 'edit', name: "Edit" },
+        { url: 'storeditems', name: "List" },
+        { url: 'home', name: 'Home' },
+        { url: '', name: 'Home' },
+        { url: 'shopping', name: 'Shopping' },
+    ]
 
 
     return (
         <Header>
             {dimensions.width > 600
-                ? <Menu theme="dark" mode="horizontal" defaultSelectedKeys={['1']}>
-                    <Menu.Item key='home' >
-                        <Link to="/home">
+                ? <Menu theme="dark" mode="horizontal" defaultSelectedKeys={['Home']}>
+                    <Menu.Item key='Home' >
+                        <NavLink to="/home">
                             <span className="nav-text">Home</span>
-                        </Link>
+                        </NavLink>
                     </Menu.Item>
                     <Menu.Item key='storage' >
-                        <Link to="/storeditems">
+                        <NavLink exact to="/storeditems">
                             <span className="nav-text">Storage</span>
-                        </Link>
+                        </NavLink>
                     </Menu.Item>
                     <Menu.Item key='newItem' >
-                        <Link to="/storeditems/new">
+                        <NavLink to="/storeditems/new">
                             <span className="nav-text">Add Item</span>
-                        </Link>
+                        </NavLink>
+                    </Menu.Item>
+                    <Menu.Item key='shopping' >
+                        <NavLink to="/shopping">
+                            <span className="nav-text">Basket</span>
+                        </NavLink>
                     </Menu.Item>
                 </Menu>
-                : <Menu theme="dark" mode="horizontal" defaultSelectedKeys={['1']}>
-                    <Menu.Item key='home' style={{ alignItems: 'center', width: '65px' }}>
-                        <Link to="/home">
+                : <Menu theme="dark" mode="horizontal" defaultSelectedKeys={[document.location.pathname]}>
+                    <Menu.Item key='/home' style={{ alignItems: 'center', width: '65px' }}>
+                        <NavLink to="/home">
                             <HomeOutlined style={{ fontSize: '25px', position: 'relative', top: '5px' }} />
-                        </Link>
+                        </NavLink>
                     </Menu.Item>
-                    <Menu.Item key='storage' style={{ alignItems: 'center', width: '65px' }}>
-                        <Link to="/storeditems">
+                    <Menu.Item key='storeditems' style={{ alignItems: 'center', width: '65px' }}>
+                        <NavLink to="/storedItems">
                             <UnorderedListOutlined style={{ fontSize: '25px', position: 'relative', top: '5px' }} />
-                        </Link>
+                        </NavLink>
                     </Menu.Item>
-                    <Menu.Item key='newItem' style={{ alignItems: 'center', width: '65px' }}>
-                        <Link to="/storeditems/new">
+                    <Menu.Item key='new' style={{ alignItems: 'center', width: '65px' }}>
+                        <NavLink to="/storedItems/new">
                             <PlusOutlined style={{ fontSize: '25px', position: 'relative', top: '5px' }} />
-                        </Link>
+                        </NavLink>
+                    </Menu.Item>
+                    <Menu.Item key='shopping' style={{ alignItems: 'center', width: '65px' }}>
+                        <NavLink to="/shopping">
+                            <ShoppingCartOutlined style={{ fontSize: '25px', position: 'relative', top: '5px' }} />
+                        </NavLink>
                     </Menu.Item>
                 </Menu>
             }

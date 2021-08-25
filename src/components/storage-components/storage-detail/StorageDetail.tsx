@@ -1,8 +1,9 @@
 import { Descriptions, Image } from 'antd';
 import Button from 'antd-button-color';
-import React, { ReactElement } from 'react';
+import React, { ReactElement, SyntheticEvent } from 'react';
 import { useHistory, useParams } from 'react-router-dom';
 import { storageApi, useDemensions, useStorageApi } from '../../../hooks/StorageApi';
+import { Action, useStore } from '../../../Store';
 import LoadingSpinner from '../../loading-spinner/LoadingSpinner';
 import { NutrientValueModel, StorageModel } from '../StorageModel';
 import css from './StorageDetail.module.css';
@@ -11,10 +12,9 @@ import css from './StorageDetail.module.css';
 export default function StorageDetail(): ReactElement {
     const { id } = useParams<{ id: string }>()
     const history = useHistory()
+    const { store, dispatch } = useStore()
     const [dimensions] = useDemensions(() => 1, 0)
     const [storageItem, , axiosResponse] = useStorageApi<StorageModel>('GET', `/storeditems/${id}`)
-
-    const sequence: number[] = [1, 2, 3, 4, 5, 6, 7]
 
     const showLegend = dimensions.width > 450 ? true : false
     axiosResponse && axiosResponse.catch((e) => {
@@ -24,25 +24,22 @@ export default function StorageDetail(): ReactElement {
     if (!storageItem) { return <LoadingSpinner message="load storage items ..." /> }
 
     // mapOrder sorts the NutrientValueModel list by its id's
-    const mapOrder = (array: NutrientValueModel[], order: number[], key: string) => {
-        array.sort(function (nutrientA, nutrientB) {
-            if (order.indexOf(nutrientA.id) > order.indexOf(nutrientB.id)) {
-                return 1;
-            } else {
-                return -1;
-            }
-        });
-        return array;
+    const orderNutrients = (array: NutrientValueModel[]) => {
+        return array.sort((objA, objB) => objA.id - objB.id)
     };
 
-    const onGoToList = () => history.push('/storedItems')
+    const onChangeCard = (event: SyntheticEvent, action: Action): void => {
+        event.preventDefault()
+        dispatch(action)
+    }
 
+    const onGoToList = () => history.push('/storedItems')
     const onGoBack = () => history.goBack()
     const onGoToEdit = () => history.push(`/storedItems/${storageItem.id}/edit`)
-    const onDelete = () => storageApi('DELETE', `/storedItems/${id}`, onGoToList)
-
-
-
+    const onDelete = (event: SyntheticEvent) => {
+        onChangeCard(event, { type: 'CLEAR_ITEM_CARD', storeageItem: storageItem })
+        storageApi('DELETE', `/storedItems/${id}`, onGoToList)
+    }
 
     return (
         <div className={css.container}>
@@ -87,7 +84,7 @@ export default function StorageDetail(): ReactElement {
                                     <tbody>
                                         {
                                             storageItem.nutrients.values.length > 0
-                                                ? mapOrder(storageItem.nutrients.values, sequence, 'id')
+                                                ? orderNutrients(storageItem.nutrients.values)
                                                     .map((nutrient, index) =>
                                                         <tr key={index}>
                                                             {showLegend && <td className={css.legend}><span style={{ backgroundColor: nutrient.color }}></span></td>}
@@ -107,7 +104,7 @@ export default function StorageDetail(): ReactElement {
                 <div className={css.buttonContainer}>
                     <Button className={css.formButton} onClick={onGoBack} type="success" >Go Back</Button>
                     <Button className={css.formButton} onClick={onGoToEdit} type="warning" >Edit</Button>
-                    <Button className={css.formButton} onClick={onDelete} danger>Delete</Button>
+                    <Button className={css.formButton} onClick={(e) => onDelete(e)} danger>Delete</Button>
                 </div>
             </div>
         </div>

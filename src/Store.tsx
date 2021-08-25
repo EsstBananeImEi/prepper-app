@@ -22,13 +22,18 @@ interface RemoveFromShoppingCard {
 interface ClearCard {
     type: 'CLEAR_CARD'
 }
+interface ClearItemCard {
+    type: 'CLEAR_ITEM_CARD'
+    storeageItem: StorageModel
+}
 
-export type Action = AddToShoppingCard | RemoveFromShoppingCard | ClearCard
+export type Action = AddToShoppingCard | RemoveFromShoppingCard | ClearItemCard | ClearCard
 export type DispatchAction = React.Dispatch<Action>
 
 export function reducer(store: Store, action: Action): Store {
     switch (action.type) {
         case 'ADD_TO_CARD':
+            console.log(action.storeageItem)
             return { ...store, shoppingCard: [...store.shoppingCard, action.storeageItem] }
 
         case 'REMOVE_FROM_CARD': {
@@ -37,6 +42,11 @@ export function reducer(store: Store, action: Action): Store {
         }
         case 'CLEAR_CARD': {
             return { ...store, shoppingCard: [] }
+        }
+        case 'CLEAR_ITEM_CARD': {
+            return {
+                ...store, shoppingCard: store.shoppingCard.filter(storedItem => storedItem.id !== action.storeageItem.id)
+            }
         }
         default:
             return store

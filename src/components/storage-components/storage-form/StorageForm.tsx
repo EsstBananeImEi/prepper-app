@@ -1,12 +1,17 @@
-import React, { ReactElement, useState } from 'react'
+import React, { ReactElement, useCallback, useEffect, useMemo, useState } from 'react'
 import { Form, Input, InputNumber, Select } from 'antd';
 import Button from "antd-button-color";
 import css from './StorageForm.module.css'
 import { NutrientModel, NutrientValueModel, StorageModel } from '../StorageModel';
-import { storageApi } from '../../../hooks/StorageApi';
+import { bingImageSearchApi, storageApi, useBingImageSearchApi } from '../../../hooks/StorageApi';
 import { useHistory } from 'react-router-dom';
 import { Method } from 'axios';
-
+import { BingModel } from '../../../shared/Models';
+import LoadingSpinner from '../../loading-spinner/LoadingSpinner';
+import { debounce } from 'lodash';
+import { NutrientFactory } from '../../../shared/Factories';
+import { factory } from 'typescript';
+import { type } from 'os';
 interface Props {
     id?: number
     name: string
@@ -26,26 +31,57 @@ interface Props {
 
 export default function StorageForm(props: Props): ReactElement {
     const buildIngrientTypModel = () => ({ id: 1, name: '', color: '', values: { typ: '', value: 0 } })
+    const [bingOject, setBingObject] = useState({ value: [{ thumbnailUrl: '' }] })
+    const history = useHistory()
+    const nutrientFactory = NutrientFactory()
+
+    const handleNutrients = () => {
+        const newNutrients: NutrientValueModel[] = []
+
+        const array = nutrientFactory.map(object => {
+            const newObject: NutrientValueModel = { id: object.id, name: object.name, color: object.color, values: { typ: '', value: 0 } }
+            newNutrients.push(newObject)
+        })
+        return newNutrients
+    }
+
+    const isEdit = props.isEdit
     const [id, setId] = useState(props.id)
     const [name, setName] = useState(props.name)
-    const [amount, setAmount] = useState(props.amount)
-    const [lowestAmount, setLowestAmount] = useState(props.lowestAmount)
-    const [midAmount, setMidAmount] = useState(props.midAmount)
+    const [amount, setAmount] = useState(props.amount ? Number(props.amount) : '')
+    const [lowestAmount, setLowestAmount] = useState(props.lowestAmount ? Number(props.lowestAmount) : '')
+    const [midAmount, setMidAmount] = useState(props.midAmount ? Number(props.midAmount) : '')
     const [unit, setUnit] = useState(props.unit)
     const [storageLocation, setStorageLocation] = useState(props.storageLocation)
-    const [packageQuantity, setPackageQuantity] = useState(props.packageQuantity ? props.packageQuantity : '') // optional !!
+    const [packageQuantity, setPackageQuantity] = useState(props.packageQuantity ? Number(props.packageQuantity) : '') // optional !!
     const [packageUnit, setPackageUnit] = useState(props.packageUnit ? props.packageUnit : '') // optional !!
     const [categories, setCategories] = useState(props.categories ? props.categories : []) // Optional !!
     const [nutrientUnit, setNutrientUnit] = useState(props.nutrients ? props.nutrients.unit : '') // Optional !!
-    const [nutrientAmount, setNutrientAmount] = useState(props.nutrients ? props.nutrients.amount : '') // Optional !!
-    const [nutrients, setNutrients] = useState(props.nutrients && props.nutrients.values ? props.nutrients.values : []) // Optional !!
+    const [nutrientAmount, setNutrientAmount] = useState(props.nutrients ? Number(props.nutrients.amount) : '') // Optional !!
+    const [nutrients, setNutrients] = useState(props.nutrients && props.nutrients.values ? props.nutrients.values : handleNutrients()) // Optional !!
     const [icon, setIcon] = useState(props.icon ? props.icon : '') // Optional !!
-    const history = useHistory()
+
+    const debounceHandler = useCallback(
+        debounce((name: string) => {
+            bingImageSearchApi(name, setBingObject)
+        }, 500),
+        []
+    );
 
     const buildIngrientModel = () => ({ description: '', unit: nutrientUnit, amount: nutrientAmount, values: nutrients })
 
+    const getPicture = () => {
+        const url = 'thumbnailUrl' in bingOject.value[0] ? bingOject.value[0].thumbnailUrl : ''
+        return url
+    }
+
+    const handleChange = (name: string) => {
+        setName(name)
+        debounceHandler(name)
+    }
+
     const getStorageItem = () => {
-        return { id, name, amount, lowestAmount, midAmount, unit, categories: categories, packageQuantity, packageUnit, nutrients: buildIngrientModel(), icon }
+        return { id, name, amount, lowestAmount, midAmount, unit, categories: categories, packageQuantity, packageUnit, nutrients: buildIngrientModel(), icon: icon !== '' ? icon : getPicture() }
     }
 
     const getStorageApiParameters = (): [Method, string, () => void] => {
@@ -65,7 +101,7 @@ export default function StorageForm(props: Props): ReactElement {
     const onGoToList = () => { history.push('/storedItems') }
     const onGoBack = () => { history.goBack() }
 
-    const onChangeNutrient = (index: number, key: string, value: string) => {
+    const onChangeNutrient = (index: number, key: string, value: string | number) => {
         setNutrients(currentThumbnails => {
             const newNutrient = [...currentThumbnails]
             newNutrient[index] = { ...newNutrient[index], [key]: value }
@@ -80,9 +116,7 @@ export default function StorageForm(props: Props): ReactElement {
         })
     }
 
-    const onSetCategories = (event: string[]) => {
-        setCategories(event)
-    }
+    const onSetCategories = (event: string[]) => { setCategories(event) }
 
     const onAddIngredient = () => setNutrients(currentIngredients => [...currentIngredients, buildIngrientTypModel()])
     const onRemoveIngredient = () => {
@@ -97,7 +131,7 @@ export default function StorageForm(props: Props): ReactElement {
 
             <form className={`ui form ${css.bookForm}`} onSubmit={onSubmit}>
                 <label>Name</label>
-                <input placeholder="Titel" required value={name} onChange={(e) => setName(e.target.value)} />
+                <input placeholder="Titel" required value={name} onChange={(e) => handleChange(e.target.value)} />
 
                 <label>Categories</label>
                 <Select
@@ -134,7 +168,7 @@ export default function StorageForm(props: Props): ReactElement {
                                 <div>
 
                                     <label>Item mount</label>
-                                    <input required placeholder="123" value={amount} onChange={(e) => setAmount(e.target.value)} />
+                                    <input required placeholder="123" type='number' value={amount} onChange={(e) => setAmount(e.target.value ? Number(e.target.value) : e.target.value)} />
                                 </div>
                                 <div>
 
@@ -154,12 +188,12 @@ export default function StorageForm(props: Props): ReactElement {
                                 <div>
 
                                     <label>Warn Red</label>
-                                    <input required placeholder="123" value={lowestAmount} onChange={(e) => setLowestAmount(e.target.value)} />
+                                    <input required placeholder="123" type='number' value={lowestAmount} onChange={(e) => setLowestAmount(e.target.value ? Number(e.target.value) : e.target.value)} />
                                 </div>
                                 <div>
 
                                     <label>Warn Yellow</label>
-                                    <input required placeholder="123" value={midAmount} onChange={(e) => setMidAmount(e.target.value)} />
+                                    <input required placeholder="123" type='number' value={midAmount} onChange={(e) => setMidAmount(e.target.value ? Number(e.target.value) : e.target.value)} />
                                 </div>
                             </div>
                         </div>
@@ -195,7 +229,7 @@ export default function StorageForm(props: Props): ReactElement {
                                 <div>
 
                                     <label>package contents</label>
-                                    <input placeholder="123" value={packageQuantity} onChange={(e) => setPackageQuantity(e.target.value)} />
+                                    <input placeholder="123" type='number' value={packageQuantity} onChange={(e) => setPackageQuantity(e.target.value)} />
                                 </div>
                                 <div>
 
@@ -215,12 +249,12 @@ export default function StorageForm(props: Props): ReactElement {
                                 <div>
 
                                     <label>nutritional value</label>
-                                    <input placeholder="123" value={nutrientAmount} onChange={(e) => setNutrientAmount(Number(e.target.value))} />
+                                    <input placeholder="123" type='number' value={nutrientAmount} onChange={(e) => setNutrientAmount(e.target.value ? Number(e.target.value) : e.target.value)} />
                                 </div>
                                 <div>
 
                                     <label>nutritional value unit</label>
-                                    <input placeholder="ml/g..." value={nutrientUnit} onChange={(e) => setNutrientUnit(e.target.value)} />
+                                    <input placeholder="ml/g..." type='text' value={nutrientUnit} onChange={(e) => setNutrientUnit(e.target.value.toLowerCase())} />
                                 </div>
                             </div>
                         </div>
@@ -237,7 +271,7 @@ export default function StorageForm(props: Props): ReactElement {
                 </div>
                 <div>
 
-                    {nutrients.length > 0 &&
+                    {
                         nutrients.map((nutrient, index) =>
                             <div key={index} className="fields">
                                 <div
@@ -249,7 +283,7 @@ export default function StorageForm(props: Props): ReactElement {
                                     }}>
                                     <div>
                                         <label>Id</label>
-                                        <input className={css.ingredientInput} value={nutrient.id} placeholder="123" onChange={(e) => onChangeNutrient(index, 'id', e.target.value)} />
+                                        <input className={css.ingredientInput} type='number' value={nutrient.id} placeholder="123" onChange={(e) => onChangeNutrient(index, 'id', Number(e.target.value))} />
                                     </div>
                                     <div>
                                         <label>Name</label>
@@ -257,7 +291,7 @@ export default function StorageForm(props: Props): ReactElement {
                                     </div>
                                     <div>
                                         <label>Color</label>
-                                        <input className={css.ingredientInput} value={nutrient.color} placeholder="red / #123456" onChange={(e) => onChangeNutrient(index, 'color', e.target.value)} />
+                                        <input className={css.ingredientInput} style={{ color: nutrient.color }} value={nutrient.color} placeholder="red / #123456" onChange={(e) => onChangeNutrient(index, 'color', e.target.value)} />
                                     </div>
                                     <div>
                                         <label>Typ</label>

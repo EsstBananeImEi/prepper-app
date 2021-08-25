@@ -1,6 +1,8 @@
 import React, { ReactElement } from 'react'
 import { Redirect, Route, Switch } from 'react-router-dom'
+import Home from './home-component/Home'
 import MyErrorMessage from './my-error-component/MyErrorMessage'
+import ShoppingCard from './storage-components/shopping-card/ShoppingCard'
 import StorageCreateItem from './storage-components/storage-create-item/StorageCreateItem'
 import StorageDetail from './storage-components/storage-detail/StorageDetail'
 import StorageEditItem from './storage-components/storage-edit-item/StorageEditItem'
@@ -24,8 +26,11 @@ export default function Routes(): ReactElement {
             <Route path='/storedItems'>
                 <StorageList />
             </Route>
+            <Route path='/shopping'>
+                <ShoppingCard />
+            </Route>
             <Route path='/home'>
-                <p>Home</p>
+                <Home />
             </Route>
             <Route path='/'>
                 <Redirect to="/home" />

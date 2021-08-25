@@ -1,8 +1,10 @@
 import { EditOutlined, ShoppingCartOutlined, InfoCircleOutlined, PlusCircleOutlined, MinusCircleOutlined } from '@ant-design/icons';
-import { Avatar, Card, Image } from 'antd';
-import React, { ReactElement } from 'react';
+import { Avatar, Badge, Card, Image } from 'antd';
+import React, { ReactElement, useEffect, useState, SyntheticEvent } from 'react';
 import { Link, useHistory } from 'react-router-dom';
+import { storageApi } from '../../../hooks/StorageApi';
 import { pluralFormFactory } from '../../../shared/Factories';
+import { Action, useStore } from '../../../Store';
 import { StorageModel } from '../StorageModel';
 
 interface Props {
@@ -13,23 +15,45 @@ export default function StorageListItem(props: Props): ReactElement {
     const storageItem = props.storageItem
     const { Meta } = Card;
     const history = useHistory()
+    const { store, dispatch } = useStore()
+    const [amount, setAmount] = useState(storageItem.amount)
+    const onChangeCard = (event: SyntheticEvent, action: Action): void => {
+        event.preventDefault()
+        dispatch(action)
+    }
 
     const getAvailable = () => {
         const color = { color: 'red' };
 
-        if (storageItem.amount >= storageItem.midAmount) {
+        if (amount > storageItem.midAmount) {
             color['color'] = 'green'
         }
-        else if (storageItem.amount < storageItem.midAmount && storageItem.amount >= storageItem.lowestAmount) {
+        else if (amount <= storageItem.midAmount && amount > storageItem.lowestAmount) {
             color['color'] = 'orange'
         }
 
-        return <span style={color}>Inventory: {storageItem.amount} {pluralFormFactory(storageItem.unit, storageItem.amount)}</span>
+        return <span style={color}>Inventory: {amount} {pluralFormFactory(storageItem.unit, amount)}</span>
+
+    }
+    const countItems = (id: number) => {
+        return store.shoppingCard.filter(item => item.id === id).length
+    }
+
+    const onIncrease = (e: React.FormEvent) => {
+        e.preventDefault()
+        setAmount(currentAmount => currentAmount + 1)
+    }
+    const onDecrease = (e: React.FormEvent) => {
+        e.preventDefault()
+        setAmount(currentAmount => currentAmount > 0 ? currentAmount - 1 : currentAmount)
 
     }
 
-    const onGoToDetail = () => history.push(`/storeditems/${storageItem.id}`)
-    const onGoToEdit = () => history.push(`/storeditems/${storageItem.id}/edit`)
+    useEffect(() => {
+        const onGoToList = () => history.push(`/storeditems`)
+        storageApi('PUT', `/storedItems/${storageItem.id}`, onGoToList, { ...storageItem, amount: amount })
+    }, [amount, history, storageItem])
+
 
     return (
 
@@ -39,9 +63,12 @@ export default function StorageListItem(props: Props): ReactElement {
                 [
                     // <InfoCircleOutlined onClick={onGoToDetail} key="info" />,
                     // <EditOutlined onClick={onGoToEdit} key="edit" />,
-                    <MinusCircleOutlined key='minus' />,
-                    <ShoppingCartOutlined disabled key="shopping" />,
-                    <PlusCircleOutlined key="plus" />
+                    <MinusCircleOutlined onClick={onDecrease} key='minus' />,
+
+                    <Badge key='shopping' offset={[5, 0]} size="small" count={countItems(storageItem.id)}>
+                        <ShoppingCartOutlined key="shopping" onClick={(e) => onChangeCard(e, { type: 'ADD_TO_CARD', storeageItem: storageItem })} />
+                    </Badge>,
+                    <PlusCircleOutlined onClick={onIncrease} key="plus" />
                 ]}
         >
             <Link to={`/storeditems/${storageItem.id}`}>

@@ -1,13 +1,14 @@
-import { Button, Empty, Pagination, Space } from 'antd'
-import React, { ReactElement, useState } from 'react'
-import { useHistory } from 'react-router-dom'
-import { useDemensions, useStorageApi } from '../../../hooks/StorageApi'
-import LoadingSpinner from '../../loading-spinner/LoadingSpinner'
-import StorageListItem from '../storage-list-item/StorageListItem'
-import { StorageModel } from '../StorageModel'
+import { SearchOutlined } from '@ant-design/icons';
+import { Button, Empty, Input, Pagination, Space } from 'antd';
+import React, { ReactElement, useState } from 'react';
+import { useHistory } from 'react-router-dom';
+import { storageApi, useDemensions, useStorageApi } from '../../../hooks/StorageApi';
+import LoadingSpinner from '../../loading-spinner/LoadingSpinner';
+import StorageListItem from '../storage-list-item/StorageListItem';
+import { StorageModel } from '../StorageModel';
 
 export default function StorageList(): ReactElement {
-    const [storageItems, , axiosResponse] = useStorageApi<StorageModel[]>('get', '/storedItems')
+    const [storageItems, setStorageItems, axiosResponse] = useStorageApi<StorageModel[]>('get', '/storedItems?_sort=name')
     const history = useHistory();
     const handleChange = (page: number) => {
         setCurrentPage(page)
@@ -26,10 +27,15 @@ export default function StorageList(): ReactElement {
 
     if (!storageItems) { return <LoadingSpinner message="load storage items ..." /> }
 
+    const onSearch = (searchString: string) => {
+        storageApi('get', `/storedItems?q=${searchString}`, setStorageItems)
+    }
+
     const onGoToNew = () => history.push(`/storeditems/new`)
 
     return (
         <div className="space-align-container" style={{ justifyContent: 'center', display: 'flex', flexWrap: 'wrap' }}>
+            <Input onChange={(e) => onSearch(e.target.value)} placeholder="input search" addonAfter={<SearchOutlined />} />
             {storageItems.length !== 0
                 ? storageItems.slice(minValue, maxValue).map((storageItem, index) =>
                     <div style={{ padding: '5px' }} key={index} className="space-align-block">

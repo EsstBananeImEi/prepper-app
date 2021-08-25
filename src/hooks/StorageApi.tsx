@@ -17,6 +17,35 @@ export function storageApi<T>(method: Method, path: string, callback: Setter<T>,
 
 }
 
+export function bingImageSearchApi<T>(searchString: string, callback: Setter<T>): Promise<void> {
+    const baseUrl = 'https://bing-image-search1.p.rapidapi.com/images/search'
+    return axios({
+        method: 'GET',
+        url: baseUrl,
+        params: { q: searchString },
+        timeout: 10000,
+        headers: {
+            'x-rapidapi-host': 'bing-image-search1.p.rapidapi.com',
+            'x-rapidapi-key': 'c057980750msh897e5de14163b88p153743jsn2929c77da6b8'
+        }
+    })
+        .then((response: AxiosResponse) => {
+            callback(response.data)
+        })
+}
+
+export function useBingImageSearchApi<T>(searchString: string): [T | undefined, Setter<T>, Promise<void> | undefined] {
+    const [state, setState] = useState<T>()
+    const [axiosPromise, setAxiosPromise] = useState<Promise<void>>()
+
+    useEffect(() => {
+        setAxiosPromise(bingImageSearchApi(searchString, setState));
+    }, [searchString]);
+
+    return [state, setState, axiosPromise]
+}
+
+
 export function useStorageApi<T>(method: Method, path: string): [T | undefined, Setter<T>, Promise<void> | undefined] {
     const [state, setState] = useState<T>()
     const [axiosPromise, setAxiosPromise] = useState<Promise<void>>()
