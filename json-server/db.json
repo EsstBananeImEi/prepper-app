@@ -1004,18 +1004,23 @@
       "id": 13
     },
     {
+      "id": 14,
       "name": "Orangenmarmelade",
       "amount": 5,
       "lowestAmount": 0,
       "midAmount": 1,
       "unit": "Glas",
-      "categories": [],
+      "categories": [
+        "Lebensmittel",
+        "Marmelade",
+        "Brotaufstrich"
+      ],
       "packageQuantity": "",
       "packageUnit": "",
       "nutrients": {
         "description": "",
         "unit": "",
-        "amount": "",
+        "amount": 0,
         "values": [
           {
             "id": 1,
@@ -1082,8 +1087,7 @@
           }
         ]
       },
-      "icon": "https://tse2.mm.bing.net/th?id=OIP.4GdkQMINhMnTECNbEkpAlwHaFH&pid=Api",
-      "id": 14
+      "icon": "https://tse2.mm.bing.net/th?id=OIP.4GdkQMINhMnTECNbEkpAlwHaFH&pid=Api"
     },
     {
       "id": 15,

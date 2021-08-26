@@ -1,8 +1,6 @@
 
-import axios, { AxiosError, AxiosResponse, Method } from 'axios';
-import React, { useEffect, useState } from 'react';
-import { useHistory } from 'react-router-dom';
-import MyErrorMessage from '../components/my-error-component/MyErrorMessage';
+import axios, { AxiosResponse, Method } from 'axios';
+import { useEffect, useState } from 'react';
 import '../index.css';
 import { Dimension, Setter } from '../types/Types';
 
