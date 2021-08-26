@@ -1,32 +1,41 @@
 
-import React, { createContext, Dispatch, ReactElement, useContext, useReducer } from "react";
-import { StorageModel } from "../components/storage-components/StorageModel";
+import axios, { AxiosPromise, AxiosResponse } from "axios";
+import React, { createContext, Dispatch, ReactElement, useContext, useEffect, useReducer } from "react";
+import LoadingSpinner from "../components/loading-spinner/LoadingSpinner";
+import { BasketModel, StorageModel } from "../components/storage-components/StorageModel";
+import { useInitial, useStorageApi } from "../hooks/StorageApi";
 
 export interface Store {
-    shoppingCard: StorageModel[]
+    shoppingCard: BasketModel[]
 }
+
+
 
 export const initialState: Store = { shoppingCard: [] }
 
-interface AddToShoppingCard {
+export interface AddToShoppingCard {
     type: 'ADD_TO_CARD'
     storeageItem: StorageModel
 }
 
-interface RemoveFromShoppingCard {
+export interface RemoveFromShoppingCard {
     type: 'REMOVE_FROM_CARD'
-    storeageItem: StorageModel
+    storeageItem: BasketModel
 }
 
-interface ClearCard {
+export interface ClearCard {
     type: 'CLEAR_CARD'
 }
-interface ClearItemCard {
+export interface ClearItemCard {
     type: 'CLEAR_ITEM_CARD'
     storeageItem: StorageModel
 }
+export interface InitialCards {
+    type: 'INITIAL_CARDS'
+    storeageItem: BasketModel[] | undefined
+}
 
-export type Action = AddToShoppingCard | RemoveFromShoppingCard | ClearItemCard | ClearCard
+export type Action = AddToShoppingCard | RemoveFromShoppingCard | ClearItemCard | ClearCard | InitialCards
 export type DispatchAction = React.Dispatch<Action>
 
 export function reducer(store: Store, action: Action): Store {
@@ -35,11 +44,14 @@ export function reducer(store: Store, action: Action): Store {
             return { ...store, shoppingCard: [...store.shoppingCard, action.storeageItem] }
 
         case 'REMOVE_FROM_CARD': {
-            const index = store.shoppingCard.map(storedItem => storedItem.id).indexOf(action.storeageItem.id)
-            return { ...store, shoppingCard: store.shoppingCard.filter((storeageItem_, index_) => index !== index_) }
+            const index = store.shoppingCard.map(storedItem => Number(storedItem.id)).indexOf(Number(action.storeageItem.id))
+            return { ...store, shoppingCard: store.shoppingCard.filter((storeageItem, index_) => index !== index_ && storeageItem.id !== action.storeageItem.id) }
         }
         case 'CLEAR_CARD': {
             return { ...store, shoppingCard: [] }
+        }
+        case 'INITIAL_CARDS': {
+            return { ...store, shoppingCard: action.storeageItem ? action.storeageItem : [] }
         }
         case 'CLEAR_ITEM_CARD': {
             return {
@@ -59,8 +71,15 @@ interface StoreContextModel {
 const StoreContext = createContext({} as StoreContextModel)
 export const useStore = (): StoreContextModel => useContext(StoreContext)
 
+
+
 export function StoreProvider(props: { children: ReactElement, store?: Store }): ReactElement {
+    const [storageItems, setStorageItems, axiosResponse] = useStorageApi<BasketModel[]>('get', '/basket?_sort=name')
+
     const [store, dispatch] = useReducer(reducer, props.store || initialState)
+    useEffect(() => {
+        dispatch({ type: 'INITIAL_CARDS', storeageItem: storageItems })
+    }, [storageItems, dispatch]);
     return (
         <StoreContext.Provider value={{ store, dispatch }}>
             {props.children}

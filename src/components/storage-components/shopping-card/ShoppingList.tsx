@@ -2,12 +2,13 @@ import { DeleteOutlined, MinusCircleOutlined, PlusCircleOutlined, ShoppingCartOu
 import { Avatar, Badge, Divider, List } from 'antd'
 import React, { ReactElement, SyntheticEvent, useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
+import { actionHandler } from '../../../store/actions'
 import { Action, useStore } from '../../../store/Store'
 import { Dimension } from '../../../types/Types'
-import { StorageModel } from '../StorageModel'
+import { BasketModel, StorageModel } from '../StorageModel'
 
 interface Props {
-    storedItems: StorageModel[]
+    storedItems: BasketModel[]
     dimensions: Dimension
 }
 
@@ -15,7 +16,7 @@ export default function ShoppingList(props: Props): ReactElement {
     const { store, dispatch } = useStore()
     const onChangeCard = (event: SyntheticEvent, action: Action): void => {
         event.preventDefault()
-        dispatch(action)
+        actionHandler(action, dispatch)
     }
     const dimensions = props.dimensions
     const [descWidth, setDescWidth] = useState(900)
@@ -35,9 +36,10 @@ export default function ShoppingList(props: Props): ReactElement {
         }
     }, [dimensions])
 
-    const countItems = (id: number) => {
-        return store.shoppingCard.filter(storageItem => storageItem.id === id).length
+    const countItems = (id: string) => {
+        return store.shoppingCard.filter(storageItem => Number(storageItem.storedItemId) === Number(id)).length
     }
+
 
     return (
         <>
@@ -57,7 +59,8 @@ export default function ShoppingList(props: Props): ReactElement {
                                     <DeleteOutlined style={{ fontSize: '20px' }} onClick={(e) => onChangeCard(e, { type: 'CLEAR_ITEM_CARD', storeageItem: listItem })} disabled key="shopping" />,
                                     <PlusCircleOutlined style={{ fontSize: '20px' }} onClick={(e) => onChangeCard(e, { type: 'ADD_TO_CARD', storeageItem: listItem })} key="plus" />
                                 ]
-                            }>
+                            }
+                        >
 
                             <List.Item.Meta
                                 avatar={<Avatar src={listItem.icon} />}
@@ -68,7 +71,7 @@ export default function ShoppingList(props: Props): ReactElement {
                                 }
                                 description={listItem.categories && trimText(listItem.categories.join(', '))}
                             />
-                            <Badge size='small' count={countItems(listItem.id)} offset={[0, 0]} style={{ backgroundColor: '#52c41a' }}>
+                            <Badge size='small' count={countItems(String(listItem.storedItemId))} offset={[0, 0]} style={{ backgroundColor: '#52c41a' }}>
                                 <ShoppingCartOutlined style={{ fontSize: '20px' }} />
                             </Badge>
                         </List.Item>

@@ -4,6 +4,7 @@ import React, { ReactElement, useEffect, useState, SyntheticEvent } from 'react'
 import { Link, useHistory } from 'react-router-dom';
 import { storageApi } from '../../../hooks/StorageApi';
 import { pluralFormFactory } from '../../../shared/Factories';
+import { actionHandler } from '../../../store/actions';
 import { Action, useStore } from '../../../store/Store';
 import { StorageModel } from '../StorageModel';
 
@@ -19,7 +20,7 @@ export default function StorageCardItem(props: Props): ReactElement {
     const [amount, setAmount] = useState(storageItem.amount)
     const onChangeCard = (event: SyntheticEvent, action: Action): void => {
         event.preventDefault()
-        dispatch(action)
+        actionHandler(action, dispatch)
     }
 
     const getAvailable = () => {
@@ -36,7 +37,7 @@ export default function StorageCardItem(props: Props): ReactElement {
 
     }
     const countItems = (id: number) => {
-        return store.shoppingCard.filter(item => item.id === id).length
+        return store.shoppingCard.filter(item => Number(item.storedItemId) === id).length
     }
 
     const onIncrease = (e: React.FormEvent) => {

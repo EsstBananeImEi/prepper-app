@@ -40,7 +40,7 @@ export default function ShoppingCard(props: Props): ReactElement {
     }, [dimensions])
 
     const countItems = (id: number) => {
-        return store.shoppingCard.filter(storageItem => storageItem.id === id).length
+        return store.shoppingCard.filter(storageItem => Number(storageItem.storedItemId) === id).length
     }
 
     return (<>
@@ -52,12 +52,12 @@ export default function ShoppingCard(props: Props): ReactElement {
 
                         <Card
                             style={{ width: 300 }}
-                            actions={
-                                [
-                                    <MinusCircleOutlined onClick={(e) => onChangeCard(e, { type: 'REMOVE_FROM_CARD', storeageItem: storeageItem })} key='minus' />,
-                                    <DeleteOutlined onClick={(e) => onChangeCard(e, { type: 'CLEAR_ITEM_CARD', storeageItem: storeageItem })} disabled key="shopping" />,
-                                    <PlusCircleOutlined onClick={(e) => onChangeCard(e, { type: 'ADD_TO_CARD', storeageItem: storeageItem })} key="plus" />
-                                ]}
+                        // actions={
+                        //     [
+                        //         <MinusCircleOutlined onClick={(e) => onChangeCard(e, { type: 'REMOVE_FROM_CARD', storeageItem: storeageItem })} key='minus' />,
+                        //         <DeleteOutlined onClick={(e) => onChangeCard(e, { type: 'CLEAR_ITEM_CARD', storeageItem: storeageItem })} disabled key="shopping" />,
+                        //         <PlusCircleOutlined onClick={(e) => onChangeCard(e, { type: 'ADD_TO_CARD', storeageItem: storeageItem })} key="plus" />
+                        //     ]}
                         >
                             <Link to={`/storeditems/${storeageItem.id}`}>
                                 <Meta

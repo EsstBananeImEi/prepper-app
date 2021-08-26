@@ -4,6 +4,7 @@ import React, { ReactElement, SyntheticEvent, useEffect, useState } from 'react'
 import { Link, useHistory } from 'react-router-dom';
 import { storageApi } from '../../../hooks/StorageApi';
 import { pluralFormFactory } from '../../../shared/Factories';
+import { actionHandler } from '../../../store/actions';
 import { Action, useStore } from '../../../store/Store';
 import { StorageModel } from '../StorageModel';
 
@@ -18,7 +19,7 @@ export default function StorageListItem(props: Props): ReactElement {
     const [amount, setAmount] = useState(storageItem.amount)
     const onChangeCard = (event: SyntheticEvent, action: Action): void => {
         event.preventDefault()
-        dispatch(action)
+        actionHandler(action, dispatch)
     }
 
     const getAvailable = () => {
@@ -35,7 +36,7 @@ export default function StorageListItem(props: Props): ReactElement {
 
     }
     const countItems = (id: number) => {
-        return store.shoppingCard.filter(item => item.id === id).length
+        return store.shoppingCard.filter(item => Number(item.storedItemId) === id).length
     }
 
     const onIncrease = (e: React.FormEvent) => {
@@ -70,7 +71,7 @@ export default function StorageListItem(props: Props): ReactElement {
                                 <MinusCircleOutlined style={{ fontSize: '20px' }} onClick={onDecrease} key='minus' />,
 
                                 <Badge key='shopping' offset={[0, 0]} size="small" count={countItems(storageItem.id)} >
-                                    <ShoppingCartOutlined style={{ fontSize: '20px' }} key="shopping" onTouchMove={(e) => onChangeCard(e, { type: 'REMOVE_FROM_CARD', storeageItem: storageItem })} onClick={(e) => onChangeCard(e, { type: 'ADD_TO_CARD', storeageItem: storageItem })} />
+                                    <ShoppingCartOutlined style={{ fontSize: '20px' }} key="shopping" onTouchMove={(e) => onChangeCard(e, { type: 'REMOVE_FROM_CARD', storeageItem: { ...storageItem, storedItemId: String(storageItem.id) } })} onClick={(e) => onChangeCard(e, { type: 'ADD_TO_CARD', storeageItem: storageItem })} />
                                 </Badge>,
                                 <PlusCircleOutlined style={{ fontSize: '20px' }} onClick={onIncrease} key="plus" />
                             ]

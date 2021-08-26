@@ -3,13 +3,14 @@
     {
       "id": 1,
       "name": "Rotkohl",
-      "amount": 6,
+      "amount": 5,
       "lowestAmount": 2,
       "midAmount": 4,
       "unit": "Glas",
       "categories": [
         "Nahrungsmittel"
       ],
+      "inBasket": 2,
       "packageQuantity": 680,
       "packageUnit": "Gramm",
       "nutrients": {
@@ -78,7 +79,7 @@
     {
       "id": 2,
       "name": "Cola",
-      "amount": 2,
+      "amount": 0,
       "lowestAmount": 2,
       "midAmount": 4,
       "unit": "Bottel",
@@ -163,7 +164,7 @@
     },
     {
       "name": "Kaffee",
-      "amount": 3,
+      "amount": 2,
       "lowestAmount": 1,
       "midAmount": 3,
       "unit": "Pack",
@@ -267,7 +268,7 @@
     },
     {
       "name": "qrqqrq",
-      "amount": 5,
+      "amount": 6,
       "lowestAmount": 1,
       "midAmount": 1,
       "unit": "rq",
@@ -1006,7 +1007,7 @@
     {
       "id": 14,
       "name": "Orangenmarmelade",
-      "amount": 5,
+      "amount": 4,
       "lowestAmount": 0,
       "midAmount": 1,
       "unit": "Glas",
@@ -1092,7 +1093,7 @@
     {
       "id": 15,
       "name": "Bananenbrot",
-      "amount": 6,
+      "amount": 7,
       "lowestAmount": 0,
       "midAmount": 1,
       "unit": "Stück",

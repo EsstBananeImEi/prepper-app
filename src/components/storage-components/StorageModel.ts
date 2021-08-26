@@ -1,5 +1,13 @@
-export interface StorageModel {
+export interface StorageModel extends WithoutIdModel {
+    id: number
+}
+
+export interface BasketModel extends WithoutIdModel {
     id: number,
+    storedItemId?: string
+}
+
+interface WithoutIdModel {
     name: string,
     amount: number,
     categories?: string[],

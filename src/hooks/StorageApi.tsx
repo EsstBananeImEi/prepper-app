@@ -55,6 +55,17 @@ export function useStorageApi<T>(method: Method, path: string): [T | undefined, 
     return [state, setState, axiosPromise]
 }
 
+export function useInitial<T>(method: Method, path: string): T | undefined {
+    const [state, setState] = useState<T>()
+    const [axiosPromise, setAxiosPromise] = useState<Promise<void>>()
+
+    useEffect(() => {
+        setAxiosPromise(storageApi(method, path, setState));
+    }, [method, path]);
+
+    return state
+}
+
 export function useDemensions(func: (page: number) => void, currentPage: number): [Dimension, Setter<Dimension>] {
     const [state, setState] = useState({
         height: window.innerHeight,
