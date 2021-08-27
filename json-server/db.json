@@ -1259,6 +1259,7 @@
       "id": 16
     },
     {
+      "id": 17,
       "name": "Brot",
       "amount": 5,
       "lowestAmount": 2,
@@ -1270,7 +1271,7 @@
       "nutrients": {
         "description": "",
         "unit": "",
-        "amount": "",
+        "amount": 0,
         "values": [
           {
             "id": 1,
@@ -1337,90 +1338,7 @@
           }
         ]
       },
-      "icon": "",
-      "id": 17
-    },
-    {
-      "name": "Brot",
-      "amount": 5,
-      "lowestAmount": 2,
-      "midAmount": 4,
-      "unit": "Leib",
-      "categories": [],
-      "packageQuantity": "",
-      "packageUnit": "",
-      "nutrients": {
-        "description": "",
-        "unit": "",
-        "amount": "",
-        "values": [
-          {
-            "id": 1,
-            "name": "Proteine",
-            "color": "#FDB45C",
-            "values": {
-              "typ": "",
-              "value": 0
-            }
-          },
-          {
-            "id": 2,
-            "name": "Kohlenhydrate",
-            "color": "#46BFBD",
-            "values": {
-              "typ": "",
-              "value": 0
-            }
-          },
-          {
-            "id": 3,
-            "name": "Fett",
-            "color": "#F7464A",
-            "values": {
-              "typ": "",
-              "value": 0
-            }
-          },
-          {
-            "id": 4,
-            "name": "Zucker",
-            "color": "#E85F5C",
-            "values": {
-              "typ": "",
-              "value": 0
-            }
-          },
-          {
-            "id": 5,
-            "name": "Ballaststoffe",
-            "color": "#4D5360",
-            "values": {
-              "typ": "",
-              "value": 0
-            }
-          },
-          {
-            "id": 6,
-            "name": "gesättigte Fettsäuren",
-            "color": "#C1EEFF",
-            "values": {
-              "typ": "",
-              "value": 0
-            }
-          },
-          {
-            "id": 7,
-            "name": "Energie",
-            "color": "",
-            "values": {
-              "typ": "",
-              "value": 0
-            }
-          }
-        ]
-      },
-      "icon": "",
-      "id": 18
+      "icon": "https://tse1.mm.bing.net/th?id=OIP.5q_FHMcn4WNY4fqSLHn3dAHaEK&pid=Api"
     }
   ],
   "basket": []

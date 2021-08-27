@@ -6,7 +6,8 @@ import { Dimension, Setter } from '../types/Types';
 
 export function storageApi<T>(method: Method, path: string, callback: Setter<T>, data = {}): Promise<void> {
 
-    const baseUrl = 'http://192.168.2.68:3004'
+    // const baseUrl = 'http://192.168.2.68:3004'
+    const baseUrl = 'http://localhost:3004'
 
     return axios({ method: method, url: `${baseUrl}${path}`, data, timeout: 2000 })
         .then((response: AxiosResponse) => {
