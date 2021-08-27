@@ -2,10 +2,10 @@ import { EditOutlined, DeleteOutlined, ShoppingCartOutlined, InfoCircleOutlined,
 import { Avatar, Badge, Card, Divider, Image, List } from 'antd';
 import React, { ReactElement, useEffect, useState, SyntheticEvent } from 'react';
 import { Link, useHistory } from 'react-router-dom';
-import { storageApi } from '../../../hooks/StorageApi';
-import { pluralFormFactory } from '../../../shared/Factories';
-import { Action, useStore } from '../../../store/Store';
-import { StorageModel } from '../StorageModel';
+import { storageApi } from '../../../../hooks/StorageApi';
+import { pluralFormFactory } from '../../../../shared/Factories';
+import { Action, useStore } from '../../../../store/Store';
+import { StorageModel } from '../../StorageModel';
 
 interface Props {
     storageItem: StorageModel

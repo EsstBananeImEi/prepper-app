@@ -5,8 +5,8 @@ import { useHistory } from 'react-router-dom';
 import { storageApi, useDemensions, useStorageApi } from '../../../hooks/StorageApi';
 import LoadingSpinner from '../../loading-spinner/LoadingSpinner';
 import ShoppingList from '../shopping-card/ShoppingList';
-import StorageCardItem from '../storage-item/StorageCardItem';
-import StorageListItem from '../storage-item/StorageListItem';
+import StorageCardItem from './storage-item/StorageCardItem';
+import StorageListItem from './storage-item/StorageListItem';
 import StorageSearchItem from '../storage-search-item/StorageSearchItem';
 import { StorageModel } from '../StorageModel';
 

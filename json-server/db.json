@@ -677,7 +677,7 @@
     },
     {
       "name": "qrqqrq",
-      "amount": 5,
+      "amount": 8,
       "lowestAmount": 1,
       "midAmount": 1,
       "unit": "rq",
@@ -759,7 +759,7 @@
     },
     {
       "name": "qrqqrq",
-      "amount": 6,
+      "amount": 2,
       "lowestAmount": 1,
       "midAmount": 1,
       "unit": "rq",
@@ -841,7 +841,7 @@
     },
     {
       "name": "qrqqrq",
-      "amount": 8,
+      "amount": 3,
       "lowestAmount": 1,
       "midAmount": 1,
       "unit": "rq",
@@ -923,7 +923,7 @@
     },
     {
       "name": "qrqqrq",
-      "amount": 8,
+      "amount": 5,
       "lowestAmount": 1,
       "midAmount": 1,
       "unit": "rq",
@@ -1092,9 +1092,9 @@
     {
       "id": 15,
       "name": "Bananenbrot",
-      "amount": 6,
-      "lowestAmount": 0,
-      "midAmount": 1,
+      "amount": 8,
+      "lowestAmount": 1,
+      "midAmount": 4,
       "unit": "Stück",
       "categories": [
         "Lebensmittel"
@@ -1120,8 +1120,8 @@
             "name": "Kohlenhydrate",
             "color": "#46BFBD",
             "values": {
-              "typ": "",
-              "value": 0
+              "typ": "ml",
+              "value": "2"
             }
           },
           {
@@ -1129,8 +1129,8 @@
             "name": "Fett",
             "color": "#F7464A",
             "values": {
-              "typ": "",
-              "value": 0
+              "typ": "g",
+              "value": "2"
             }
           },
           {
@@ -1147,8 +1147,8 @@
             "name": "Ballaststoffe",
             "color": "#4D5360",
             "values": {
-              "typ": "",
-              "value": 0
+              "typ": "g",
+              "value": "7"
             }
           },
           {
@@ -1257,6 +1257,170 @@
       },
       "icon": "https://tse2.mm.bing.net/th?id=OIP.9yVpOxdlKKRqZT-U2hkvmwHaHa&pid=Api",
       "id": 16
+    },
+    {
+      "name": "Brot",
+      "amount": 5,
+      "lowestAmount": 2,
+      "midAmount": 4,
+      "unit": "Leib",
+      "categories": [],
+      "packageQuantity": "",
+      "packageUnit": "",
+      "nutrients": {
+        "description": "",
+        "unit": "",
+        "amount": "",
+        "values": [
+          {
+            "id": 1,
+            "name": "Proteine",
+            "color": "#FDB45C",
+            "values": {
+              "typ": "",
+              "value": 0
+            }
+          },
+          {
+            "id": 2,
+            "name": "Kohlenhydrate",
+            "color": "#46BFBD",
+            "values": {
+              "typ": "",
+              "value": 0
+            }
+          },
+          {
+            "id": 3,
+            "name": "Fett",
+            "color": "#F7464A",
+            "values": {
+              "typ": "",
+              "value": 0
+            }
+          },
+          {
+            "id": 4,
+            "name": "Zucker",
+            "color": "#E85F5C",
+            "values": {
+              "typ": "",
+              "value": 0
+            }
+          },
+          {
+            "id": 5,
+            "name": "Ballaststoffe",
+            "color": "#4D5360",
+            "values": {
+              "typ": "",
+              "value": 0
+            }
+          },
+          {
+            "id": 6,
+            "name": "gesättigte Fettsäuren",
+            "color": "#C1EEFF",
+            "values": {
+              "typ": "",
+              "value": 0
+            }
+          },
+          {
+            "id": 7,
+            "name": "Energie",
+            "color": "",
+            "values": {
+              "typ": "",
+              "value": 0
+            }
+          }
+        ]
+      },
+      "icon": "",
+      "id": 17
+    },
+    {
+      "name": "Brot",
+      "amount": 5,
+      "lowestAmount": 2,
+      "midAmount": 4,
+      "unit": "Leib",
+      "categories": [],
+      "packageQuantity": "",
+      "packageUnit": "",
+      "nutrients": {
+        "description": "",
+        "unit": "",
+        "amount": "",
+        "values": [
+          {
+            "id": 1,
+            "name": "Proteine",
+            "color": "#FDB45C",
+            "values": {
+              "typ": "",
+              "value": 0
+            }
+          },
+          {
+            "id": 2,
+            "name": "Kohlenhydrate",
+            "color": "#46BFBD",
+            "values": {
+              "typ": "",
+              "value": 0
+            }
+          },
+          {
+            "id": 3,
+            "name": "Fett",
+            "color": "#F7464A",
+            "values": {
+              "typ": "",
+              "value": 0
+            }
+          },
+          {
+            "id": 4,
+            "name": "Zucker",
+            "color": "#E85F5C",
+            "values": {
+              "typ": "",
+              "value": 0
+            }
+          },
+          {
+            "id": 5,
+            "name": "Ballaststoffe",
+            "color": "#4D5360",
+            "values": {
+              "typ": "",
+              "value": 0
+            }
+          },
+          {
+            "id": 6,
+            "name": "gesättigte Fettsäuren",
+            "color": "#C1EEFF",
+            "values": {
+              "typ": "",
+              "value": 0
+            }
+          },
+          {
+            "id": 7,
+            "name": "Energie",
+            "color": "",
+            "values": {
+              "typ": "",
+              "value": 0
+            }
+          }
+        ]
+      },
+      "icon": "",
+      "id": 18
     }
   ],
   "basket": []
