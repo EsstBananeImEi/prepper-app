@@ -50,7 +50,8 @@ export default function Shopping(): ReactElement {
                             style={{ width: "100%", display: "flex", justifyContent: "center", paddingTop: '10px' }}
                         />}
                 </>
-                : <ShoppingList storedItems={storedItems} dimensions={dimensions} />
+                :
+                <ShoppingList storedItems={storedItems} dimensions={dimensions} key={`list`} />
             }
         </div>
     </>

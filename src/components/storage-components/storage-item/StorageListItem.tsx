@@ -60,6 +60,7 @@ export default function StorageListItem(props: Props): ReactElement {
             size="small"
             bordered
             style={{ width: '100%', border: 'none' }}
+            key={`top${storageItem.id}`}
         >
             {storageItem &&
                 <>
@@ -67,12 +68,12 @@ export default function StorageListItem(props: Props): ReactElement {
                     <List.Item
                         actions={
                             [
-                                <MinusCircleOutlined style={{ fontSize: '20px' }} onClick={onDecrease} key='minus' />,
+                                <MinusCircleOutlined style={{ fontSize: '20px' }} onClick={onDecrease} key={`minus${storageItem.id}`} />,
 
-                                <Badge key='shopping' offset={[0, 0]} size="small" count={countItems(storageItem.id)} >
-                                    <ShoppingCartOutlined style={{ fontSize: '20px' }} key="shopping" onTouchMove={(e) => onChangeCard(e, { type: 'REMOVE_FROM_CARD', storeageItem: storageItem })} onClick={(e) => onChangeCard(e, { type: 'ADD_TO_CARD', storeageItem: storageItem })} />
+                                <Badge key={`badge${storageItem.id}`} offset={[0, 0]} size="small" count={countItems(storageItem.id)} >
+                                    <ShoppingCartOutlined style={{ fontSize: '20px' }} key={`shoppimg${storageItem.id}`} onTouchMove={(e) => onChangeCard(e, { type: 'REMOVE_FROM_CARD', storeageItem: storageItem })} onClick={(e) => onChangeCard(e, { type: 'ADD_TO_CARD', storeageItem: storageItem })} />
                                 </Badge>,
-                                <PlusCircleOutlined style={{ fontSize: '20px' }} onClick={onIncrease} key="plus" />
+                                <PlusCircleOutlined style={{ fontSize: '20px' }} onClick={onIncrease} key={`plus${storageItem.id}`} />
                             ]
                         }
                     >
@@ -81,6 +82,7 @@ export default function StorageListItem(props: Props): ReactElement {
                             avatar={<Avatar src={storageItem.icon} />}
                             title={<Link to={`/storedItems/${storageItem.id}`}>{storageItem.name}</Link>}
                             description={getAvailable()}
+                            key={`meta${storageItem.id}`}
                         />
 
                     </List.Item>

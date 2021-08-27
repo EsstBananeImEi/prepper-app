@@ -47,7 +47,7 @@ export default function ShoppingList(props: Props): ReactElement {
                 style={{ width: '100%', border: 'none' }}
             >
                 {props.storedItems && props.storedItems.map((listItem, listIndex) =>
-                    <>
+                    <div key={listIndex}>
 
                         {listIndex > 0 && <Divider />}
                         <List.Item key={listIndex}
@@ -63,7 +63,7 @@ export default function ShoppingList(props: Props): ReactElement {
                                 avatar={<Avatar src={listItem.icon} />}
                                 title={
                                     <Link to={`/storedItems/${listItem.id}`}>
-                                        <a>{listItem.name}</a>
+                                        <p>{listItem.name}</p>
                                     </Link>
                                 }
                                 description={listItem.categories && trimText(listItem.categories.join(', '))}
@@ -73,7 +73,7 @@ export default function ShoppingList(props: Props): ReactElement {
                             </Badge>
                         </List.Item>
                         {listIndex + 1 === props.storedItems.length && <Divider />}
-                    </>
+                    </div>
                 )}
             </List>}
         </>

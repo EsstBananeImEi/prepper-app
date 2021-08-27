@@ -49,17 +49,18 @@ export default function StorageList(): ReactElement {
                             no items in stock
                         </span>
                     }
+                    key={`empty`}
                 >
-                    <Button onClick={onGoToNew} type="primary">Store item</Button>
+                    <Button onClick={onGoToNew} key={`button`} type="primary">Store item</Button>
                 </Empty >}
-            <div className="space-align-container" style={{ justifyContent: 'center', display: 'flex', flexWrap: 'wrap' }}>
-                <StorageSearchItem callback={setStorageItems} />
+            <div className="space-align-container" key={`div`} style={{ justifyContent: 'center', display: 'flex', flexWrap: 'wrap' }}>
+                <StorageSearchItem callback={setStorageItems} key={`topsearch`} />
                 {dimensions.width > 450
                     ? <>
                         {storageItems.slice(minValue, maxValue).map((storageItem, index) =>
-                            <div style={{ padding: '5px' }} key={index} className="space-align-block">
-                                <Space>
-                                    <StorageCardItem storageItem={storageItem} />
+                            <div style={{ padding: '5px' }} key={`div${index}`} className="space-align-block">
+                                <Space key={`space${index}`}>
+                                    <StorageCardItem storageItem={storageItem} key={`Item${index}`} />
                                 </Space>
 
                             </div>
@@ -73,18 +74,19 @@ export default function StorageList(): ReactElement {
                                 total={storageItems.length}
                                 onChange={handleChange}
                                 style={{ width: "100%", display: "flex", justifyContent: "center", paddingTop: '10px' }}
+                                key={`pagi`}
                             />
                         }
 
                     </>
                     : <>
                         {storageItems.map((storageItem, index) =>
-                            <>
-                                {index >= 0 && <Divider />}
+                            <div key={`div${index}`} style={{ width: '100%' }}>
+                                {index >= 0 && <Divider key={`top${index}`} />}
 
                                 <StorageListItem key={index} storageItem={storageItem} />
-                                {index + 1 === storageItems.length && <Divider />}
-                            </>
+                                {index + 1 === storageItems.length && <Divider key={`bottom${index}`} />}
+                            </div>
                         )
                         }
                     </>
