@@ -6,6 +6,7 @@ import { ADD_TO_CARD } from '../types/Types'
 import { Action, AddToShoppingCard, RemoveFromShoppingCard } from './Store'
 
 export const actionHandler = (action: Action, callback: React.Dispatch<Action>): void => {
+    console.log(action.type === 'REMOVE_FROM_CARD' || action.type === 'ADD_TO_CARD' && action.storeageItem.id)
     switch (action.type) {
         case 'ADD_TO_CARD':
             sendRequest('POST', `/storedItems/${action.storeageItem.id}/basket`, action, callback)
@@ -22,6 +23,12 @@ function sendRequest(method: Method, path: string, action: AddToShoppingCard | R
     const newModel = { ...action.storeageItem, id: 0 }
     return axios({ method: method, url: `${baseUrl}${path}`, data: newModel, timeout: 2000 })
         .then((response: AxiosResponse) => {
-            callback(action)
+            if (response.config.method === 'POST' || response.config.method === 'PUT') {
+                const newAction = { ...action, storeageItem: response.data }
+                callback(newAction)
+            } else {
+
+                callback(action)
+            }
         })
 }

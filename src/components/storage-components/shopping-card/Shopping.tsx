@@ -26,7 +26,7 @@ export default function Shopping(): ReactElement {
         acc.find(storageItem_ => Number(storageItem_.storedItemId) === Number(storageItem.storedItemId)) || acc.push(storageItem)
         return acc
     }, [])
-        .sort((storageItemA, storageItemB) => Number(storageItemA.storedItemId) - Number(storageItemB.storedItemId))
+        .sort((storageItemA, storageItemB) => Number(storageItemA.id) - Number(storageItemB.id))
 
     return (<>
         {

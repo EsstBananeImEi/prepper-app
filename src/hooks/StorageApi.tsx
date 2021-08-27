@@ -8,7 +8,7 @@ export function storageApi<T>(method: Method, path: string, callback: Setter<T>,
 
     const baseUrl = 'http://192.168.2.68:3004'
 
-    return axios({ method: method, url: `${baseUrl}${path}`, data, timeout: 2000 })
+    return axios({ method: method, url: `${baseUrl}${path}`, data, timeout: 10000 })
         .then((response: AxiosResponse) => {
             callback(response.data)
         })
