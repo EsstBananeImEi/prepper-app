@@ -4,6 +4,7 @@ import Meta from 'antd/lib/card/Meta'
 import React, { ReactElement, SyntheticEvent, useEffect, useState } from 'react'
 import { Link, useHistory } from 'react-router-dom'
 import { useDemensions } from '../../../hooks/StorageApi'
+import { storedItemIdRoute } from '../../../shared/Constants'
 import { Action, useStore } from '../../../store/Store'
 import { Dimension } from '../../../types/Types'
 import { StorageModel } from '../StorageModel'
@@ -59,7 +60,7 @@ export default function ShoppingCard(props: Props): ReactElement {
                                     <PlusCircleOutlined onClick={(e) => onChangeCard(e, { type: 'ADD_TO_CARD', storeageItem: storeageItem })} key="plus" />
                                 ]}
                         >
-                            <Link to={`/storeditems/${storeageItem.id}`}>
+                            <Link to={() => storedItemIdRoute(storeageItem.id)}>
                                 <Meta
                                     avatar={<Avatar src={storeageItem.icon} />}
                                     title={storeageItem.name}

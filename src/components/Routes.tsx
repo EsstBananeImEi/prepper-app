@@ -26,7 +26,7 @@ export default function Routes(): ReactElement {
             <Route path='/storedItems'>
                 <StorageList />
             </Route>
-            <Route path='/shopping'>
+            <Route path='/basket'>
                 <Shopping />
             </Route>
             <Route path='/home'>

@@ -5,6 +5,7 @@ import { debounce } from 'lodash';
 import React, { ReactElement, useCallback, useState } from 'react';
 import { useHistory } from 'react-router-dom';
 import { bingImageSearchApi, storageApi } from '../../../hooks/StorageApi';
+import { storedItemsApi, storedItemsIdApi, storedItemsRoute } from '../../../shared/Constants';
 import { NutrientFactory } from '../../../shared/Factories';
 import { NutrientModel, NutrientValueModel } from '../StorageModel';
 import css from './StorageForm.module.css';
@@ -81,10 +82,10 @@ export default function StorageForm(props: Props): ReactElement {
     }
 
     const getStorageApiParameters = (): [Method, string, () => void] => {
-        if (props.isEdit) {
-            return ['PUT', `/storedItems/${id}`, onGoBack]
+        if (props.isEdit && id) {
+            return ['PUT', storedItemsIdApi(id), onGoBack]
         }
-        return ['POST', `/storedItems/`, onGoToList]
+        return ['POST', storedItemsApi, onGoToList]
     }
 
     const onSubmit = (e: React.FormEvent) => {
@@ -94,7 +95,7 @@ export default function StorageForm(props: Props): ReactElement {
         storageApi(method, route, onGoFunc, getStorageItem())
     };
 
-    const onGoToList = () => { history.push('/storedItems') }
+    const onGoToList = () => { history.push(storedItemsRoute) }
     const onGoBack = () => { history.goBack() }
 
     const onChangeNutrient = (index: number, key: string, value: string | number) => {

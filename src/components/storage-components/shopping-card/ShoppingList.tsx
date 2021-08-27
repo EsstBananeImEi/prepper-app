@@ -2,6 +2,7 @@ import { DeleteOutlined, MinusCircleOutlined, PlusCircleOutlined, ShoppingCartOu
 import { Avatar, Badge, Divider, List } from 'antd'
 import React, { ReactElement, SyntheticEvent, useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
+import { storedItemIdRoute } from '../../../shared/Constants'
 import { Action, useStore } from '../../../store/Store'
 import { Dimension } from '../../../types/Types'
 import { StorageModel } from '../StorageModel'
@@ -62,7 +63,7 @@ export default function ShoppingList(props: Props): ReactElement {
                             <List.Item.Meta
                                 avatar={<Avatar src={listItem.icon} />}
                                 title={
-                                    <Link to={`/storedItems/${listItem.id}`}>
+                                    <Link to={() => storedItemIdRoute(listItem.id)}>
                                         <p>{listItem.name}</p>
                                     </Link>
                                 }

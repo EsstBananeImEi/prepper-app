@@ -3,6 +3,7 @@ import Button from 'antd-button-color';
 import React, { ReactElement, SyntheticEvent } from 'react';
 import { useHistory, useParams } from 'react-router-dom';
 import { storageApi, useDemensions, useStorageApi } from '../../../hooks/StorageApi';
+import { storedEditRoute, storedErrorRoute, storedItemsIdApi, storedItemsRoute } from '../../../shared/Constants';
 import { Action, useStore } from '../../../store/Store';
 import LoadingSpinner from '../../loading-spinner/LoadingSpinner';
 import { NutrientValueModel, StorageModel } from '../StorageModel';
@@ -14,11 +15,11 @@ export default function StorageDetail(): ReactElement {
     const history = useHistory()
     const { store, dispatch } = useStore()
     const [dimensions] = useDemensions(() => 1, 0)
-    const [storageItem, , axiosResponse] = useStorageApi<StorageModel>('GET', `/storeditems/${id}`)
+    const [storageItem, , axiosResponse] = useStorageApi<StorageModel>('GET', storedItemsIdApi(id))
 
     const showLegend = dimensions.width > 450 ? true : false
     axiosResponse && axiosResponse.catch((e) => {
-        history.push(`/storeditems/error/${e.message}`)
+        history.push(storedErrorRoute(e.message))
     })
 
     if (!storageItem) { return <LoadingSpinner message="load storage items ..." /> }
@@ -33,12 +34,12 @@ export default function StorageDetail(): ReactElement {
         dispatch(action)
     }
 
-    const onGoToList = () => history.push('/storedItems')
+    const onGoToList = () => history.push(storedItemsRoute)
     const onGoBack = () => history.goBack()
-    const onGoToEdit = () => history.push(`/storedItems/${storageItem.id}/edit`)
+    const onGoToEdit = () => history.push(storedEditRoute(id))
     const onDelete = (event: SyntheticEvent) => {
         onChangeCard(event, { type: 'CLEAR_ITEM_CARD', storeageItem: storageItem })
-        storageApi('DELETE', `/storedItems/${id}`, onGoToList)
+        storageApi('DELETE', storedItemsIdApi(id), onGoToList)
     }
 
     return (

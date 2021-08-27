@@ -6,6 +6,7 @@ import { storageApi } from '../../../hooks/StorageApi';
 import { Setter } from '../../../types/Types';
 import { StorageModel } from '../StorageModel';
 import { debounce } from 'lodash';
+import { storedItemsSearchApi } from '../../../shared/Constants';
 
 interface Props {
     callback: Setter<StorageModel[]>
@@ -16,7 +17,7 @@ export default function StorageSearchItem(props: Props): ReactElement {
 
     const debounceHandler = useCallback(
         debounce((searchString: string) => {
-            storageApi('get', `/storedItems?q=${searchString}`, props.callback)
+            storageApi('get', storedItemsSearchApi(searchString), props.callback)
         }, 800),
         []
     );

@@ -9,9 +9,10 @@ import StorageCardItem from './storage-item/StorageCardItem';
 import StorageListItem from './storage-item/StorageListItem';
 import StorageSearchItem from '../storage-search-item/StorageSearchItem';
 import { StorageModel } from '../StorageModel';
+import { storedErrorRoute, storedItemsSearchApi, storedNewItemRoute } from '../../../shared/Constants';
 
 export default function StorageList(): ReactElement {
-    const [storageItems, setStorageItems, axiosResponse] = useStorageApi<StorageModel[]>('get', '/storedItems?_sort=name')
+    const [storageItems, setStorageItems, axiosResponse] = useStorageApi<StorageModel[]>('get', '/storeditems?sortBy=name')
     const history = useHistory();
     const handleChange = (page: number) => {
         setCurrentPage(page)
@@ -25,16 +26,12 @@ export default function StorageList(): ReactElement {
     const pageSize = Math.floor(Math.floor(dimensions.height - 160) / 155) * Math.floor(Math.floor(dimensions.width - 20) / 310)
 
     axiosResponse && axiosResponse.catch((e) => {
-        history.push(`/storeditems/error/${e.message}`)
+        history.push(storedErrorRoute(e.message))
     })
 
     if (!storageItems) { return <LoadingSpinner message="load storage items ..." /> }
 
-    const onSearch = (searchString: string) => {
-        storageApi('get', `/storedItems?q=${searchString}`, setStorageItems)
-    }
-
-    const onGoToNew = () => history.push(`/storeditems/new`)
+    const onGoToNew = () => history.push(storedNewItemRoute)
 
     return (
         <>

@@ -3,6 +3,7 @@ import { Avatar, Badge, List } from 'antd';
 import React, { ReactElement, SyntheticEvent, useEffect, useState } from 'react';
 import { Link, useHistory } from 'react-router-dom';
 import { storageApi } from '../../../../hooks/StorageApi';
+import { storedItemIdRoute, storedItemsIdApi } from '../../../../shared/Constants';
 import { pluralFormFactory } from '../../../../shared/Factories';
 import { Action, useStore } from '../../../../store/Store';
 import { StorageModel } from '../../StorageModel';
@@ -50,7 +51,7 @@ export default function StorageListItem(props: Props): ReactElement {
 
     useEffect(() => {
         const onGoToList = () => history.push(`/storeditems`)
-        storageApi('PUT', `/storedItems/${storageItem.id}`, onGoToList, { ...storageItem, amount: amount })
+        storageApi('PUT', storedItemsIdApi(storageItem.id), onGoToList, { ...storageItem, amount: amount })
     }, [amount, history, storageItem])
 
 
@@ -80,7 +81,7 @@ export default function StorageListItem(props: Props): ReactElement {
 
                         <List.Item.Meta
                             avatar={<Avatar src={storageItem.icon} />}
-                            title={<Link to={`/storedItems/${storageItem.id}`}>{storageItem.name}</Link>}
+                            title={<Link to={() => storedItemIdRoute(storageItem.id)}>{storageItem.name}</Link>}
                             description={getAvailable()}
                             key={`meta${storageItem.id}`}
                         />

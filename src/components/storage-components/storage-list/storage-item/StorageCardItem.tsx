@@ -3,6 +3,7 @@ import { Avatar, Badge, Card, Divider, Image, List } from 'antd';
 import React, { ReactElement, useEffect, useState, SyntheticEvent } from 'react';
 import { Link, useHistory } from 'react-router-dom';
 import { storageApi } from '../../../../hooks/StorageApi';
+import { storedItemIdRoute, storedItemsIdApi } from '../../../../shared/Constants';
 import { pluralFormFactory } from '../../../../shared/Factories';
 import { Action, useStore } from '../../../../store/Store';
 import { StorageModel } from '../../StorageModel';
@@ -51,7 +52,7 @@ export default function StorageCardItem(props: Props): ReactElement {
 
     useEffect(() => {
         const onGoToList = () => history.push(`/storeditems`)
-        storageApi('PUT', `/storedItems/${storageItem.id}`, onGoToList, { ...storageItem, amount: amount })
+        storageApi('PUT', storedItemsIdApi(storageItem.id), onGoToList, { ...storageItem, amount: amount })
     }, [amount, history, storageItem])
 
 
@@ -68,7 +69,7 @@ export default function StorageCardItem(props: Props): ReactElement {
                     <PlusCircleOutlined onClick={onIncrease} key="plus" />
                 ]}
         >
-            <Link to={`/storeditems/${storageItem.id}`}>
+            <Link to={() => storedItemIdRoute(storageItem.id)}>
                 <Meta
                     avatar={<Avatar src={storageItem.icon} />}
                     title={storageItem.name}
