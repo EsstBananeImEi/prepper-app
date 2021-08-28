@@ -1,6 +1,8 @@
 
-import React, { createContext, Dispatch, ReactElement, useContext, useReducer } from "react";
+import React, { createContext, Dispatch, ReactElement, useContext, useEffect, useReducer } from "react";
 import { StorageModel } from "../components/storage-components/StorageModel";
+import { useStorageApi } from "../hooks/StorageApi";
+import { basketItemsApi, sortByName } from "../shared/Constants";
 
 export interface Store {
     shoppingCard: StorageModel[]
@@ -26,7 +28,12 @@ interface ClearItemCard {
     storeageItem: StorageModel
 }
 
-export type Action = AddToShoppingCard | RemoveFromShoppingCard | ClearItemCard | ClearCard
+export interface InitialCards {
+    type: 'INITIAL_CARDS'
+    storeageItem: StorageModel[] | undefined
+}
+
+export type Action = AddToShoppingCard | RemoveFromShoppingCard | ClearItemCard | ClearCard | InitialCards
 export type DispatchAction = React.Dispatch<Action>
 
 export function reducer(store: Store, action: Action): Store {
@@ -40,6 +47,9 @@ export function reducer(store: Store, action: Action): Store {
         }
         case 'CLEAR_CARD': {
             return { ...store, shoppingCard: [] }
+        }
+        case 'INITIAL_CARDS': {
+            return { ...store, shoppingCard: action.storeageItem ? action.storeageItem : [] }
         }
         case 'CLEAR_ITEM_CARD': {
             return {
@@ -60,8 +70,12 @@ const StoreContext = createContext({} as StoreContextModel)
 export const useStore = (): StoreContextModel => useContext(StoreContext)
 
 export function StoreProvider(props: { children: ReactElement, store?: Store }): ReactElement {
+    const [storageItems, setStorageItems, axiosResponse] = useStorageApi<StorageModel[]>('get', `${basketItemsApi + sortByName('name')}`)
     const [store, dispatch] = useReducer(reducer, props.store || initialState)
 
+    useEffect(() => {
+        dispatch({ type: 'INITIAL_CARDS', storeageItem: storageItems })
+    }, [storageItems, dispatch]);
 
     return (
         <StoreContext.Provider value={{ store, dispatch }}>

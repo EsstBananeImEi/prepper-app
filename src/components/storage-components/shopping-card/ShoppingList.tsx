@@ -36,8 +36,8 @@ export default function ShoppingList(props: Props): ReactElement {
         }
     }, [dimensions])
 
-    const countItems = (id: number) => {
-        return store.shoppingCard.filter(storageItem => storageItem.id === id).length
+    const countItems = (name: string) => {
+        return store.shoppingCard.filter(storageItem => storageItem.name === name).length
     }
 
     return (
@@ -69,7 +69,7 @@ export default function ShoppingList(props: Props): ReactElement {
                                 }
                                 description={listItem.categories && trimText(listItem.categories.join(', '))}
                             />
-                            <Badge size='small' count={countItems(listItem.id)} offset={[0, 0]} style={{ backgroundColor: '#52c41a' }}>
+                            <Badge size='small' count={countItems(listItem.name)} offset={[0, 0]} style={{ backgroundColor: '#52c41a' }}>
                                 <ShoppingCartOutlined style={{ fontSize: '20px' }} />
                             </Badge>
                         </List.Item>

@@ -1,18 +1,16 @@
-import { SearchOutlined } from '@ant-design/icons';
-import { Button, Divider, Empty, Input, Pagination, Space } from 'antd';
+import { Button, Divider, Empty, Pagination, Space } from 'antd';
 import React, { ReactElement, useState } from 'react';
 import { useHistory } from 'react-router-dom';
-import { storageApi, useDemensions, useStorageApi } from '../../../hooks/StorageApi';
+import { useDemensions, useStorageApi } from '../../../hooks/StorageApi';
+import { sortByName, storedErrorRoute, storedItemsApi, storedNewItemRoute } from '../../../shared/Constants';
 import LoadingSpinner from '../../loading-spinner/LoadingSpinner';
-import ShoppingList from '../shopping-card/ShoppingList';
-import StorageCardItem from './storage-item/StorageCardItem';
-import StorageListItem from './storage-item/StorageListItem';
 import StorageSearchItem from '../storage-search-item/StorageSearchItem';
 import { StorageModel } from '../StorageModel';
-import { storedErrorRoute, storedItemsSearchApi, storedNewItemRoute } from '../../../shared/Constants';
+import StorageCardItem from './storage-item/StorageCardItem';
+import StorageListItem from './storage-item/StorageListItem';
 
 export default function StorageList(): ReactElement {
-    const [storageItems, setStorageItems, axiosResponse] = useStorageApi<StorageModel[]>('get', '/storeditems?sortBy=name')
+    const [storageItems, setStorageItems, axiosResponse] = useStorageApi<StorageModel[]>('get', `${storedItemsApi + sortByName('name')}`)
     const history = useHistory();
     const handleChange = (page: number) => {
         setCurrentPage(page)

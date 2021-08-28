@@ -1341,5 +1341,512 @@
       "icon": "https://tse1.mm.bing.net/th?id=OIP.5q_FHMcn4WNY4fqSLHn3dAHaEK&pid=Api"
     }
   ],
-  "basket": []
+  "basket": [
+    {
+      "id": 1,
+      "name": "Bananenbrot",
+      "amount": 8,
+      "lowestAmount": 1,
+      "midAmount": 4,
+      "unit": "Stück",
+      "categories": [
+        "Lebensmittel"
+      ],
+      "packageQuantity": "",
+      "packageUnit": "",
+      "nutrients": {
+        "description": "",
+        "unit": "",
+        "amount": 0,
+        "values": [
+          {
+            "id": 1,
+            "name": "Proteine",
+            "color": "#FDB45C",
+            "values": {
+              "typ": "",
+              "value": 0
+            }
+          },
+          {
+            "id": 2,
+            "name": "Kohlenhydrate",
+            "color": "#46BFBD",
+            "values": {
+              "typ": "ml",
+              "value": "2"
+            }
+          },
+          {
+            "id": 3,
+            "name": "Fett",
+            "color": "#F7464A",
+            "values": {
+              "typ": "g",
+              "value": "2"
+            }
+          },
+          {
+            "id": 4,
+            "name": "Zucker",
+            "color": "#E85F5C",
+            "values": {
+              "typ": "",
+              "value": 0
+            }
+          },
+          {
+            "id": 5,
+            "name": "Ballaststoffe",
+            "color": "#4D5360",
+            "values": {
+              "typ": "g",
+              "value": "7"
+            }
+          },
+          {
+            "id": 6,
+            "name": "gesättigte Fettsäuren",
+            "color": "#C1EEFF",
+            "values": {
+              "typ": "",
+              "value": 0
+            }
+          },
+          {
+            "id": 7,
+            "name": "Energie",
+            "color": "",
+            "values": {
+              "typ": "",
+              "value": 0
+            }
+          }
+        ]
+      },
+      "icon": "https://tse2.mm.bing.net/th?id=OIP.o2E6uwZpDdwxnXC9ACK-2QHaEo&pid=Api",
+      "storeditemId": "15"
+    },
+    {
+      "id": 2,
+      "name": "Bananenbrot",
+      "amount": 8,
+      "lowestAmount": 1,
+      "midAmount": 4,
+      "unit": "Stück",
+      "categories": [
+        "Lebensmittel"
+      ],
+      "packageQuantity": "",
+      "packageUnit": "",
+      "nutrients": {
+        "description": "",
+        "unit": "",
+        "amount": 0,
+        "values": [
+          {
+            "id": 1,
+            "name": "Proteine",
+            "color": "#FDB45C",
+            "values": {
+              "typ": "",
+              "value": 0
+            }
+          },
+          {
+            "id": 2,
+            "name": "Kohlenhydrate",
+            "color": "#46BFBD",
+            "values": {
+              "typ": "ml",
+              "value": "2"
+            }
+          },
+          {
+            "id": 3,
+            "name": "Fett",
+            "color": "#F7464A",
+            "values": {
+              "typ": "g",
+              "value": "2"
+            }
+          },
+          {
+            "id": 4,
+            "name": "Zucker",
+            "color": "#E85F5C",
+            "values": {
+              "typ": "",
+              "value": 0
+            }
+          },
+          {
+            "id": 5,
+            "name": "Ballaststoffe",
+            "color": "#4D5360",
+            "values": {
+              "typ": "g",
+              "value": "7"
+            }
+          },
+          {
+            "id": 6,
+            "name": "gesättigte Fettsäuren",
+            "color": "#C1EEFF",
+            "values": {
+              "typ": "",
+              "value": 0
+            }
+          },
+          {
+            "id": 7,
+            "name": "Energie",
+            "color": "",
+            "values": {
+              "typ": "",
+              "value": 0
+            }
+          }
+        ]
+      },
+      "icon": "https://tse2.mm.bing.net/th?id=OIP.o2E6uwZpDdwxnXC9ACK-2QHaEo&pid=Api",
+      "storeditemId": "15"
+    },
+    {
+      "id": 3,
+      "name": "Bananenbrot",
+      "amount": 8,
+      "lowestAmount": 1,
+      "midAmount": 4,
+      "unit": "Stück",
+      "categories": [
+        "Lebensmittel"
+      ],
+      "packageQuantity": "",
+      "packageUnit": "",
+      "nutrients": {
+        "description": "",
+        "unit": "",
+        "amount": 0,
+        "values": [
+          {
+            "id": 1,
+            "name": "Proteine",
+            "color": "#FDB45C",
+            "values": {
+              "typ": "",
+              "value": 0
+            }
+          },
+          {
+            "id": 2,
+            "name": "Kohlenhydrate",
+            "color": "#46BFBD",
+            "values": {
+              "typ": "ml",
+              "value": "2"
+            }
+          },
+          {
+            "id": 3,
+            "name": "Fett",
+            "color": "#F7464A",
+            "values": {
+              "typ": "g",
+              "value": "2"
+            }
+          },
+          {
+            "id": 4,
+            "name": "Zucker",
+            "color": "#E85F5C",
+            "values": {
+              "typ": "",
+              "value": 0
+            }
+          },
+          {
+            "id": 5,
+            "name": "Ballaststoffe",
+            "color": "#4D5360",
+            "values": {
+              "typ": "g",
+              "value": "7"
+            }
+          },
+          {
+            "id": 6,
+            "name": "gesättigte Fettsäuren",
+            "color": "#C1EEFF",
+            "values": {
+              "typ": "",
+              "value": 0
+            }
+          },
+          {
+            "id": 7,
+            "name": "Energie",
+            "color": "",
+            "values": {
+              "typ": "",
+              "value": 0
+            }
+          }
+        ]
+      },
+      "icon": "https://tse2.mm.bing.net/th?id=OIP.o2E6uwZpDdwxnXC9ACK-2QHaEo&pid=Api",
+      "storeditemId": "15"
+    },
+    {
+      "id": 4,
+      "name": "Bananenbrot",
+      "amount": 8,
+      "lowestAmount": 1,
+      "midAmount": 4,
+      "unit": "Stück",
+      "categories": [
+        "Lebensmittel"
+      ],
+      "packageQuantity": "",
+      "packageUnit": "",
+      "nutrients": {
+        "description": "",
+        "unit": "",
+        "amount": 0,
+        "values": [
+          {
+            "id": 1,
+            "name": "Proteine",
+            "color": "#FDB45C",
+            "values": {
+              "typ": "",
+              "value": 0
+            }
+          },
+          {
+            "id": 2,
+            "name": "Kohlenhydrate",
+            "color": "#46BFBD",
+            "values": {
+              "typ": "ml",
+              "value": "2"
+            }
+          },
+          {
+            "id": 3,
+            "name": "Fett",
+            "color": "#F7464A",
+            "values": {
+              "typ": "g",
+              "value": "2"
+            }
+          },
+          {
+            "id": 4,
+            "name": "Zucker",
+            "color": "#E85F5C",
+            "values": {
+              "typ": "",
+              "value": 0
+            }
+          },
+          {
+            "id": 5,
+            "name": "Ballaststoffe",
+            "color": "#4D5360",
+            "values": {
+              "typ": "g",
+              "value": "7"
+            }
+          },
+          {
+            "id": 6,
+            "name": "gesättigte Fettsäuren",
+            "color": "#C1EEFF",
+            "values": {
+              "typ": "",
+              "value": 0
+            }
+          },
+          {
+            "id": 7,
+            "name": "Energie",
+            "color": "",
+            "values": {
+              "typ": "",
+              "value": 0
+            }
+          }
+        ]
+      },
+      "icon": "https://tse2.mm.bing.net/th?id=OIP.o2E6uwZpDdwxnXC9ACK-2QHaEo&pid=Api",
+      "storeditemId": "15"
+    },
+    {
+      "id": 5,
+      "name": "Brot",
+      "amount": 5,
+      "lowestAmount": 2,
+      "midAmount": 4,
+      "unit": "Leib",
+      "categories": [],
+      "packageQuantity": "",
+      "packageUnit": "",
+      "nutrients": {
+        "description": "",
+        "unit": "",
+        "amount": 0,
+        "values": [
+          {
+            "id": 1,
+            "name": "Proteine",
+            "color": "#FDB45C",
+            "values": {
+              "typ": "",
+              "value": 0
+            }
+          },
+          {
+            "id": 2,
+            "name": "Kohlenhydrate",
+            "color": "#46BFBD",
+            "values": {
+              "typ": "",
+              "value": 0
+            }
+          },
+          {
+            "id": 3,
+            "name": "Fett",
+            "color": "#F7464A",
+            "values": {
+              "typ": "",
+              "value": 0
+            }
+          },
+          {
+            "id": 4,
+            "name": "Zucker",
+            "color": "#E85F5C",
+            "values": {
+              "typ": "",
+              "value": 0
+            }
+          },
+          {
+            "id": 5,
+            "name": "Ballaststoffe",
+            "color": "#4D5360",
+            "values": {
+              "typ": "",
+              "value": 0
+            }
+          },
+          {
+            "id": 6,
+            "name": "gesättigte Fettsäuren",
+            "color": "#C1EEFF",
+            "values": {
+              "typ": "",
+              "value": 0
+            }
+          },
+          {
+            "id": 7,
+            "name": "Energie",
+            "color": "",
+            "values": {
+              "typ": "",
+              "value": 0
+            }
+          }
+        ]
+      },
+      "icon": "https://tse1.mm.bing.net/th?id=OIP.5q_FHMcn4WNY4fqSLHn3dAHaEK&pid=Api",
+      "storeditemId": "17"
+    },
+    {
+      "id": 6,
+      "name": "Brot",
+      "amount": 5,
+      "lowestAmount": 2,
+      "midAmount": 4,
+      "unit": "Leib",
+      "categories": [],
+      "packageQuantity": "",
+      "packageUnit": "",
+      "nutrients": {
+        "description": "",
+        "unit": "",
+        "amount": 0,
+        "values": [
+          {
+            "id": 1,
+            "name": "Proteine",
+            "color": "#FDB45C",
+            "values": {
+              "typ": "",
+              "value": 0
+            }
+          },
+          {
+            "id": 2,
+            "name": "Kohlenhydrate",
+            "color": "#46BFBD",
+            "values": {
+              "typ": "",
+              "value": 0
+            }
+          },
+          {
+            "id": 3,
+            "name": "Fett",
+            "color": "#F7464A",
+            "values": {
+              "typ": "",
+              "value": 0
+            }
+          },
+          {
+            "id": 4,
+            "name": "Zucker",
+            "color": "#E85F5C",
+            "values": {
+              "typ": "",
+              "value": 0
+            }
+          },
+          {
+            "id": 5,
+            "name": "Ballaststoffe",
+            "color": "#4D5360",
+            "values": {
+              "typ": "",
+              "value": 0
+            }
+          },
+          {
+            "id": 6,
+            "name": "gesättigte Fettsäuren",
+            "color": "#C1EEFF",
+            "values": {
+              "typ": "",
+              "value": 0
+            }
+          },
+          {
+            "id": 7,
+            "name": "Energie",
+            "color": "",
+            "values": {
+              "typ": "",
+              "value": 0
+            }
+          }
+        ]
+      },
+      "icon": "https://tse1.mm.bing.net/th?id=OIP.5q_FHMcn4WNY4fqSLHn3dAHaEK&pid=Api",
+      "storeditemId": "17"
+    }
+  ]
 }

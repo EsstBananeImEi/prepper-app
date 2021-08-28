@@ -36,8 +36,8 @@ export default function StorageListItem(props: Props): ReactElement {
         return <span style={color}>Inventory: {amount} {pluralFormFactory(storageItem.unit, amount)}</span>
 
     }
-    const countItems = (id: number) => {
-        return store.shoppingCard.filter(item => item.id === id).length
+    const countItems = (name: string) => {
+        return store.shoppingCard.filter(item => item.name === name).length
     }
 
     const onIncrease = (e: React.FormEvent) => {
@@ -72,7 +72,7 @@ export default function StorageListItem(props: Props): ReactElement {
                             [
                                 <MinusCircleOutlined style={{ fontSize: '20px' }} onClick={onDecrease} key={`minus${storageItem.id}`} />,
 
-                                <Badge key={`badge${storageItem.id}`} offset={[0, 0]} size="small" count={countItems(storageItem.id)} >
+                                <Badge key={`badge${storageItem.id}`} offset={[0, 0]} size="small" count={countItems(storageItem.name)} >
                                     <ShoppingCartOutlined style={{ fontSize: '20px' }} key={`shoppimg${storageItem.id}`} onTouchMove={(e) => onChangeCard(e, { type: 'REMOVE_FROM_CARD', storeageItem: storageItem })} onClick={(e) => onChangeCard(e, { type: 'ADD_TO_CARD', storeageItem: storageItem })} />
                                 </Badge>,
                                 <PlusCircleOutlined style={{ fontSize: '20px' }} onClick={onIncrease} key={`plus${storageItem.id}`} />

@@ -22,7 +22,7 @@ export default function Shopping(): ReactElement {
     const pageSize = Math.floor(Math.floor(dimensions.height - 128) / 155) * Math.floor(Math.floor(dimensions.width - 20) / 310)
     const paginationValues = { minValue, maxValue }
     const storedItems = store.shoppingCard.reduce((acc: StorageModel[], storageItem) => {
-        acc.find(storageItem_ => storageItem_.id === storageItem.id) || acc.push(storageItem)
+        acc.find(storageItem_ => storageItem_.name === storageItem.name) || acc.push(storageItem)
         return acc
     }, [])
         .sort((storageItemA, storageItemB) => Number(storageItemA.id) - Number(storageItemB.id))
