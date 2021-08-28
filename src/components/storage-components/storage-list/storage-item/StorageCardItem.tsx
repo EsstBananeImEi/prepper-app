@@ -1,9 +1,9 @@
-import { EditOutlined, DeleteOutlined, ShoppingCartOutlined, InfoCircleOutlined, PlusCircleOutlined, MinusCircleOutlined } from '@ant-design/icons';
-import { Avatar, Badge, Card, Divider, Image, List } from 'antd';
-import React, { ReactElement, useEffect, useState, SyntheticEvent } from 'react';
+import { MinusCircleOutlined, PlusCircleOutlined, ShoppingCartOutlined } from '@ant-design/icons';
+import { Avatar, Badge, Card } from 'antd';
+import React, { ReactElement, SyntheticEvent, useEffect, useState } from 'react';
 import { Link, useHistory } from 'react-router-dom';
 import { storageApi } from '../../../../hooks/StorageApi';
-import { storedItemIdRoute, storedItemsIdApi } from '../../../../shared/Constants';
+import { storedItemIdRoute, storedItemsApi, storedItemsIdApi } from '../../../../shared/Constants';
 import { pluralFormFactory } from '../../../../shared/Factories';
 import { Action, useStore } from '../../../../store/Store';
 import { StorageModel } from '../../StorageModel';
@@ -51,7 +51,7 @@ export default function StorageCardItem(props: Props): ReactElement {
     }
 
     useEffect(() => {
-        const onGoToList = () => history.push(`/storeditems`)
+        const onGoToList = () => history.push(storedItemsApi)
         storageApi('PUT', storedItemsIdApi(storageItem.id), onGoToList, { ...storageItem, amount: amount })
     }, [amount, history, storageItem])
 

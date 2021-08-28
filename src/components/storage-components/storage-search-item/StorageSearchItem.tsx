@@ -1,4 +1,4 @@
-import React, { ReactElement, useCallback } from 'react'
+import React, { ReactElement, useCallback, useState } from 'react'
 import { Input } from 'antd';
 import { SearchOutlined } from '@ant-design/icons';
 
@@ -14,13 +14,14 @@ interface Props {
 }
 
 export default function StorageSearchItem(props: Props): ReactElement {
+    // const [searchString, setSearchString] = useState('')
 
     const debounceHandler = useCallback(
         debounce((searchString: string) => {
             storageApi('get', storedItemsSearchApi(searchString), props.callback)
-        }, 800),
-        []
-    );
+        }, 800)
+        , [props.callback])
+
 
     const onSearch = (searchString: string) => {
         debounceHandler(searchString)
