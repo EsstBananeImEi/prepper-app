@@ -8,7 +8,7 @@ export interface Store {
 
 export const initialState: Store = { shoppingCard: [] }
 
-interface AddToShoppingCard {
+export interface AddToShoppingCard {
     type: 'ADD_TO_CARD'
     storeageItem: StorageModel
 }
@@ -61,6 +61,8 @@ export const useStore = (): StoreContextModel => useContext(StoreContext)
 
 export function StoreProvider(props: { children: ReactElement, store?: Store }): ReactElement {
     const [store, dispatch] = useReducer(reducer, props.store || initialState)
+
+
     return (
         <StoreContext.Provider value={{ store, dispatch }}>
             {props.children}

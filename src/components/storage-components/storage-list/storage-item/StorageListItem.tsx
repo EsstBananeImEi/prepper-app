@@ -5,6 +5,7 @@ import { Link, useHistory } from 'react-router-dom';
 import { storageApi } from '../../../../hooks/StorageApi';
 import { storedItemIdRoute, storedItemsApi, storedItemsIdApi } from '../../../../shared/Constants';
 import { pluralFormFactory } from '../../../../shared/Factories';
+import { actionHandler } from '../../../../store/Actions';
 import { Action, useStore } from '../../../../store/Store';
 import { StorageModel } from '../../StorageModel';
 
@@ -19,7 +20,7 @@ export default function StorageListItem(props: Props): ReactElement {
     const [amount, setAmount] = useState(storageItem.amount)
     const onChangeCard = (event: SyntheticEvent, action: Action): void => {
         event.preventDefault()
-        dispatch(action)
+        actionHandler(action, dispatch)
     }
 
     const getAvailable = () => {

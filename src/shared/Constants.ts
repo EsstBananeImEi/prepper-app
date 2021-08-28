@@ -11,3 +11,6 @@ export const storedItemIdRoute = (id: number | string): string => `${storedItems
 export const storedNewItemRoute = `${storedItemsRoute}/new`
 export const storedEditRoute = (id: number | string): string => `${storedItemIdRoute(id)}/edit`
 export const storedErrorRoute = (message: string): string => `${storedItemsRoute}/error/${message}`
+
+export const baseApiUrl = 'https://6128be4a0e3482001777b105.mockapi.io'
+export const baseLocalApiUrl = 'http://localhost:3004'
