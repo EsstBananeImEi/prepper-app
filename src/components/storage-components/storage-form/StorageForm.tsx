@@ -61,7 +61,7 @@ export default function StorageForm(props: Props): ReactElement {
     const debounceHandler = useCallback(
         debounce((name: string) => {
             bingImageSearchApi(name, setBingObject)
-        }, 500),
+        }, 800),
         []
     );
 

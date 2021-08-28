@@ -9,7 +9,7 @@ export function storageApi<T>(method: Method, path: string, callback: Setter<T>,
     const baseUrl = 'https://6128be4a0e3482001777b105.mockapi.io'
     // const baseUrl = 'http://localhost:3004'
 
-    return axios({ method: method, url: `${baseUrl}${path}`, data, timeout: 2000 })
+    return axios({ method: method, url: `${baseUrl}${path}`, data, timeout: 10000 })
         .then((response: AxiosResponse) => {
             callback(response.data)
         })
