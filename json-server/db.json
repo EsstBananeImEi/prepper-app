@@ -1263,6 +1263,261 @@
   "basket": [
     {
       "id": 1,
+      "name": "Bananenbrot",
+      "amount": 7,
+      "lowestAmount": 0,
+      "midAmount": 1,
+      "unit": "Stück",
+      "categories": [
+        "Lebensmittel"
+      ],
+      "packageQuantity": "",
+      "packageUnit": "",
+      "nutrients": {
+        "description": "",
+        "unit": "",
+        "amount": 0,
+        "values": [
+          {
+            "id": 1,
+            "name": "Proteine",
+            "color": "#FDB45C",
+            "values": {
+              "typ": "",
+              "value": 0
+            }
+          },
+          {
+            "id": 2,
+            "name": "Kohlenhydrate",
+            "color": "#46BFBD",
+            "values": {
+              "typ": "",
+              "value": 0
+            }
+          },
+          {
+            "id": 3,
+            "name": "Fett",
+            "color": "#F7464A",
+            "values": {
+              "typ": "",
+              "value": 0
+            }
+          },
+          {
+            "id": 4,
+            "name": "Zucker",
+            "color": "#E85F5C",
+            "values": {
+              "typ": "",
+              "value": 0
+            }
+          },
+          {
+            "id": 5,
+            "name": "Ballaststoffe",
+            "color": "#4D5360",
+            "values": {
+              "typ": "",
+              "value": 0
+            }
+          },
+          {
+            "id": 6,
+            "name": "gesättigte Fettsäuren",
+            "color": "#C1EEFF",
+            "values": {
+              "typ": "",
+              "value": 0
+            }
+          },
+          {
+            "id": 7,
+            "name": "Energie",
+            "color": "",
+            "values": {
+              "typ": "",
+              "value": 0
+            }
+          }
+        ]
+      },
+      "icon": "https://tse2.mm.bing.net/th?id=OIP.o2E6uwZpDdwxnXC9ACK-2QHaEo&pid=Api",
+      "storedItemId": "15"
+    },
+    {
+      "id": 2,
+      "name": "Bananenbrot",
+      "amount": 7,
+      "lowestAmount": 0,
+      "midAmount": 1,
+      "unit": "Stück",
+      "categories": [
+        "Lebensmittel"
+      ],
+      "packageQuantity": "",
+      "packageUnit": "",
+      "nutrients": {
+        "description": "",
+        "unit": "",
+        "amount": 0,
+        "values": [
+          {
+            "id": 1,
+            "name": "Proteine",
+            "color": "#FDB45C",
+            "values": {
+              "typ": "",
+              "value": 0
+            }
+          },
+          {
+            "id": 2,
+            "name": "Kohlenhydrate",
+            "color": "#46BFBD",
+            "values": {
+              "typ": "",
+              "value": 0
+            }
+          },
+          {
+            "id": 3,
+            "name": "Fett",
+            "color": "#F7464A",
+            "values": {
+              "typ": "",
+              "value": 0
+            }
+          },
+          {
+            "id": 4,
+            "name": "Zucker",
+            "color": "#E85F5C",
+            "values": {
+              "typ": "",
+              "value": 0
+            }
+          },
+          {
+            "id": 5,
+            "name": "Ballaststoffe",
+            "color": "#4D5360",
+            "values": {
+              "typ": "",
+              "value": 0
+            }
+          },
+          {
+            "id": 6,
+            "name": "gesättigte Fettsäuren",
+            "color": "#C1EEFF",
+            "values": {
+              "typ": "",
+              "value": 0
+            }
+          },
+          {
+            "id": 7,
+            "name": "Energie",
+            "color": "",
+            "values": {
+              "typ": "",
+              "value": 0
+            }
+          }
+        ]
+      },
+      "icon": "https://tse2.mm.bing.net/th?id=OIP.o2E6uwZpDdwxnXC9ACK-2QHaEo&pid=Api",
+      "storedItemId": "15"
+    },
+    {
+      "id": 3,
+      "name": "Bananenbrot",
+      "amount": 7,
+      "lowestAmount": 0,
+      "midAmount": 1,
+      "unit": "Stück",
+      "categories": [
+        "Lebensmittel"
+      ],
+      "packageQuantity": "",
+      "packageUnit": "",
+      "nutrients": {
+        "description": "",
+        "unit": "",
+        "amount": 0,
+        "values": [
+          {
+            "id": 1,
+            "name": "Proteine",
+            "color": "#FDB45C",
+            "values": {
+              "typ": "",
+              "value": 0
+            }
+          },
+          {
+            "id": 2,
+            "name": "Kohlenhydrate",
+            "color": "#46BFBD",
+            "values": {
+              "typ": "",
+              "value": 0
+            }
+          },
+          {
+            "id": 3,
+            "name": "Fett",
+            "color": "#F7464A",
+            "values": {
+              "typ": "",
+              "value": 0
+            }
+          },
+          {
+            "id": 4,
+            "name": "Zucker",
+            "color": "#E85F5C",
+            "values": {
+              "typ": "",
+              "value": 0
+            }
+          },
+          {
+            "id": 5,
+            "name": "Ballaststoffe",
+            "color": "#4D5360",
+            "values": {
+              "typ": "",
+              "value": 0
+            }
+          },
+          {
+            "id": 6,
+            "name": "gesättigte Fettsäuren",
+            "color": "#C1EEFF",
+            "values": {
+              "typ": "",
+              "value": 0
+            }
+          },
+          {
+            "id": 7,
+            "name": "Energie",
+            "color": "",
+            "values": {
+              "typ": "",
+              "value": 0
+            }
+          }
+        ]
+      },
+      "icon": "https://tse2.mm.bing.net/th?id=OIP.o2E6uwZpDdwxnXC9ACK-2QHaEo&pid=Api",
+      "storedItemId": "15"
+    },
+    {
+      "id": 4,
       "name": "Cola",
       "amount": 0,
       "lowestAmount": 2,
@@ -1349,23 +1604,23 @@
       "storedItemId": "2"
     },
     {
-      "id": 3,
-      "name": "Orangenmarmelade",
-      "amount": 4,
-      "lowestAmount": 0,
-      "midAmount": 1,
-      "unit": "Glas",
+      "id": 5,
+      "name": "Cola",
+      "amount": 0,
+      "lowestAmount": 2,
+      "midAmount": 4,
+      "unit": "Bottel",
       "categories": [
         "Lebensmittel",
-        "Marmelade",
-        "Brotaufstrich"
+        "Getränke",
+        "Koffeinhaltig"
       ],
-      "packageQuantity": "",
-      "packageUnit": "",
+      "packageQuantity": 750,
+      "packageUnit": "Milliliter",
       "nutrients": {
         "description": "",
-        "unit": "",
-        "amount": 0,
+        "unit": "ml",
+        "amount": 100,
         "values": [
           {
             "id": 1,
@@ -1432,8 +1687,8 @@
           }
         ]
       },
-      "icon": "https://tse2.mm.bing.net/th?id=OIP.4GdkQMINhMnTECNbEkpAlwHaFH&pid=Api",
-      "storedItemId": "14"
+      "icon": "https://tse2.mm.bing.net/th?id=OIP.uEZzGbjCCDhls55pR3Zu_QHaKe&pid=Api",
+      "storedItemId": "2"
     }
   ]
 }

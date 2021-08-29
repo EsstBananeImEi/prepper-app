@@ -2,7 +2,6 @@ import axios, { AxiosResponse, Method } from 'axios'
 import React, { Dispatch } from 'react'
 import { StorageModel } from '../components/storage-components/StorageModel'
 import { storageApi, useStorageApi } from '../hooks/StorageApi'
-import { ADD_TO_CARD } from '../types/Types'
 import { Action, AddToShoppingCard, RemoveFromShoppingCard } from './Store'
 
 export const actionHandler = (action: Action, callback: React.Dispatch<Action>): void => {
