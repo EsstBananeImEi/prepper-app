@@ -1,17 +1,16 @@
-import { SearchOutlined } from '@ant-design/icons';
-import { Button, Divider, Empty, Input, Pagination, Space } from 'antd';
+import { Button, Divider, Empty, Pagination, Space } from 'antd';
 import React, { ReactElement, useState } from 'react';
 import { useHistory } from 'react-router-dom';
-import { storageApi, useDemensions, useStorageApi } from '../../../hooks/StorageApi';
+import { useDemensions, useStorageApi } from '../../../hooks/StorageApi';
+import { sortByName, storedErrorRoute, storedItemsApi, storedNewItemRoute } from '../../../shared/Constants';
 import LoadingSpinner from '../../loading-spinner/LoadingSpinner';
-import ShoppingList from '../shopping-card/ShoppingList';
-import StorageCardItem from '../storage-item/StorageCardItem';
-import StorageListItem from '../storage-item/StorageListItem';
 import StorageSearchItem from '../storage-search-item/StorageSearchItem';
 import { StorageModel } from '../StorageModel';
+import StorageCardItem from './storage-item/StorageCardItem';
+import StorageListItem from './storage-item/StorageListItem';
 
 export default function StorageList(): ReactElement {
-    const [storageItems, setStorageItems, axiosResponse] = useStorageApi<StorageModel[]>('get', '/storedItems?_sort=name')
+    const [storageItems, setStorageItems, axiosResponse] = useStorageApi<StorageModel[]>('get', `${storedItemsApi + sortByName('name')}`)
     const history = useHistory();
     const handleChange = (page: number) => {
         setCurrentPage(page)
@@ -25,16 +24,12 @@ export default function StorageList(): ReactElement {
     const pageSize = Math.floor(Math.floor(dimensions.height - 160) / 155) * Math.floor(Math.floor(dimensions.width - 20) / 310)
 
     axiosResponse && axiosResponse.catch((e) => {
-        history.push(`/storeditems/error/${e.message}`)
+        history.push(storedErrorRoute(e.message))
     })
 
     if (!storageItems) { return <LoadingSpinner message="load storage items ..." /> }
 
-    const onSearch = (searchString: string) => {
-        storageApi('get', `/storedItems?q=${searchString}`, setStorageItems)
-    }
-
-    const onGoToNew = () => history.push(`/storeditems/new`)
+    const onGoToNew = () => history.push(storedNewItemRoute)
 
     return (
         <>

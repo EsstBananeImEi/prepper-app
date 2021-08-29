@@ -4,6 +4,7 @@ import React, { createContext, Dispatch, ReactElement, useContext, useEffect, us
 import LoadingSpinner from "../components/loading-spinner/LoadingSpinner";
 import { BasketModel, StorageModel } from "../components/storage-components/StorageModel";
 import { useInitial, useStorageApi } from "../hooks/StorageApi";
+import { basketItemsApi, sortByName } from "../shared/Constants";
 
 export interface Store {
     shoppingCard: BasketModel[]
@@ -34,6 +35,7 @@ export interface InitialCards {
     type: 'INITIAL_CARDS'
     storeageItem: BasketModel[] | undefined
 }
+
 
 export type Action = AddToShoppingCard | RemoveFromShoppingCard | ClearItemCard | ClearCard | InitialCards
 export type DispatchAction = React.Dispatch<Action>

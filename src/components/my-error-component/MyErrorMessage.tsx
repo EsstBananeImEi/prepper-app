@@ -1,15 +1,13 @@
-import { CloseCircleOutlined } from '@ant-design/icons';
-import { Button, Result, Typography } from 'antd';
+import { Button, Result } from 'antd';
 import React, { ReactElement } from 'react';
-import { useHistory, useParams } from 'react-router-dom';
+import { useHistory } from 'react-router-dom';
+import { homeRoute } from '../../shared/Constants';
 
 export default function MyErrorMessage(): ReactElement {
-    const { Paragraph, Text } = Typography;
-    const { message } = useParams<{ message: string }>()
     const history = useHistory();
 
     const onGoToHome = () => {
-        history.push('/home');
+        history.push(homeRoute);
     }
 
     return (

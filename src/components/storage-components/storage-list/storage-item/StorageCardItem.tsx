@@ -1,5 +1,5 @@
 import { MinusCircleOutlined, PlusCircleOutlined, ShoppingCartOutlined } from '@ant-design/icons';
-import { Avatar, Badge, List } from 'antd';
+import { Avatar, Badge, Card } from 'antd';
 import React, { ReactElement, SyntheticEvent, useEffect, useState } from 'react';
 import { Link, useHistory } from 'react-router-dom';
 import { storageApi } from '../../../hooks/StorageApi';
@@ -7,13 +7,15 @@ import { pluralFormFactory } from '../../../shared/Factories';
 import { actionHandler } from '../../../store/actions';
 import { Action, useStore } from '../../../store/Store';
 import { StorageModel } from '../StorageModel';
+import { storedItemIdRoute, storedItemsApi, storedItemsIdApi } from '../../../../shared/Constants';
 
 interface Props {
     storageItem: StorageModel
 }
 
-export default function StorageListItem(props: Props): ReactElement {
+export default function StorageCardItem(props: Props): ReactElement {
     const storageItem = props.storageItem
+    const { Meta } = Card;
     const history = useHistory()
     const { store, dispatch } = useStore()
     const [amount, setAmount] = useState(storageItem.amount)
@@ -50,46 +52,31 @@ export default function StorageListItem(props: Props): ReactElement {
     }
 
     useEffect(() => {
-        const onGoToList = () => history.push(`/storeditems`)
-        storageApi('PUT', `/storedItems/${storageItem.id}`, onGoToList, { ...storageItem, amount: amount })
+        const onGoToList = () => history.push(storedItemsApi)
+        storageApi('PUT', storedItemsIdApi(storageItem.id), onGoToList, { ...storageItem, amount: amount })
     }, [amount, history, storageItem])
 
 
     return (
 
-        <List
-            size="small"
-            bordered
-            style={{ width: '100%', border: 'none' }}
-            key={`top${storageItem.id}`}
+        <Card
+            style={{ width: 300 }}
+            actions={
+                [
+                    <MinusCircleOutlined onClick={onDecrease} key='minus' />,
+                    <Badge key='shopping' offset={[5, 0]} size="small" count={countItems(storageItem.id)}>
+                        <ShoppingCartOutlined key="shopping" onClick={(e) => onChangeCard(e, { type: 'ADD_TO_CARD', storeageItem: storageItem })} />
+                    </Badge>,
+                    <PlusCircleOutlined onClick={onIncrease} key="plus" />
+                ]}
         >
-            {storageItem &&
-                <>
-
-                    <List.Item
-                        actions={
-                            [
-                                <MinusCircleOutlined style={{ fontSize: '20px' }} onClick={onDecrease} key={`minus${storageItem.id}`} />,
-
-                                <Badge key={`badge${storageItem.id}`} offset={[0, 0]} size="small" count={countItems(storageItem.id)} >
-                                    <ShoppingCartOutlined style={{ fontSize: '20px' }} key={`shoppimg${storageItem.id}`} onTouchMove={(e) => onChangeCard(e, { type: 'REMOVE_FROM_CARD', storeageItem: storageItem })} onClick={(e) => onChangeCard(e, { type: 'ADD_TO_CARD', storeageItem: storageItem })} />
-                                </Badge>,
-                                <PlusCircleOutlined style={{ fontSize: '20px' }} onClick={onIncrease} key={`plus${storageItem.id}`} />
-                            ]
-                        }
-                    >
-
-                        <List.Item.Meta
-                            avatar={<Avatar src={storageItem.icon} />}
-                            title={<Link to={`/storedItems/${storageItem.id}`}>{storageItem.name}</Link>}
-                            description={getAvailable()}
-                            key={`meta${storageItem.id}`}
-                        />
-
-                    </List.Item>
-                </>
-            }
-        </List>
-
+            <Link to={() => storedItemIdRoute(storageItem.id)}>
+                <Meta
+                    avatar={<Avatar src={storageItem.icon} />}
+                    title={storageItem.name}
+                    description={getAvailable()}
+                />
+            </Link>
+        </Card>
     )
 }

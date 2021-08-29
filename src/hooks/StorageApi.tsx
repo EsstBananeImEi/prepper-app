@@ -2,13 +2,12 @@
 import axios, { AxiosResponse, Method } from 'axios';
 import { useEffect, useState } from 'react';
 import '../index.css';
+import { baseApiUrl } from '../shared/Constants';
 import { Dimension, Setter } from '../types/Types';
 
 export function storageApi<T>(method: Method, path: string, callback: Setter<T>, data = {}): Promise<void> {
 
-    const baseUrl = 'http://192.168.2.68:3004'
-
-    return axios({ method: method, url: `${baseUrl}${path}`, data, timeout: 10000 })
+    return axios({ method: method, url: `${baseApiUrl}${path}`, data, timeout: 10000 })
         .then((response: AxiosResponse) => {
             callback(response.data)
         })
