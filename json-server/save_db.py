@@ -38,7 +38,7 @@ class SaveDB:
             current_time = datetime.datetime.now()
             delta = current_time - self.last_date
 
-            if delta.seconds >= 10 and not self.is_running:
+            if delta.seconds >= 60 and not self.is_running:
                 self.is_running = True
                 self.logger.info("### new check ###")
                 self.save_db()
