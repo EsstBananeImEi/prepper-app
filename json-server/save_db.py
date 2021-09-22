@@ -96,11 +96,8 @@ class SaveDB:
                     if out:
                         self.logger.info(out.decode("utf-8"))
                     else: self.logger.error(err)
-                    test3 = subprocess.Popen("git push", shell=True, stdout=subprocess.PIPE)
-                    out, err = test3.communicate()
-                    if out:
-                        self.logger.info(out.decode("utf-8"))
-                    else: self.logger.error(err)
+                    subprocess.check_output("git push")
+
             else:
                 self.logger.info("### no changes found ###")
 
