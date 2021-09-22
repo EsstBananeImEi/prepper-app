@@ -32,12 +32,12 @@ if __name__ == '__main__':
         logger.info("Starting Prepper App")
         thread1 = threading.Thread(target= run_comand, args=(command, logger,))
 
-        logger.info("Starting Backup Service")
-        thread2 = threading.Thread(target= run_comand, args=(command2,logger,))
+        # logger.info("Starting Backup Service")
+        # thread2 = threading.Thread(target= run_comand, args=(command2,logger,))
 
         thread1.start()
         logger.info("Finished Start Prepper App")
-        thread2.start()
-        logger.info("Finished Start Backup Service")
+        # thread2.start()
+        # logger.info("Finished Start Backup Service")
     except Exception as ex:
         logger.error(ex)
