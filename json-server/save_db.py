@@ -22,7 +22,7 @@ class SaveDB:
             current_time = datetime.datetime.now()
             delta = current_time - self.last_date
 
-            if delta.seconds >= 10:
+            if delta.seconds >= 600:
                 self.save_db()
             time.sleep(1)
             print(delta.seconds)
