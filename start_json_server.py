@@ -1,7 +1,19 @@
 import subprocess
 import os
 import threading
-from my_logger import my_logger
+import logging
+from logging.handlers import RotatingFileHandler
+
+
+def my_logger(name):
+    logger = logging.getLogger(name)
+    logger.setLevel(logging.DEBUG)
+
+    formatter = logging.Formatter("%(asctime)s %(levelname)s: %(message)s", "%d.%m.%Y %H:%M:%S")
+    file_handler = RotatingFileHandler("/var/log/start_json_server.log", maxBytes=16777216, backupCount=3)
+    file_handler.setFormatter(formatter)
+    logger.addHandler(file_handler)
+    return logger
 
 def run_comand(cmd: list,logger) -> None:
     try:
