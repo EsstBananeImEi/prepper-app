@@ -3,18 +3,33 @@ import os
 import time
 import shutil
 import subprocess
+import logging
+from logging.handlers import RotatingFileHandler
 
 os.chdir(os.path.dirname(os.path.abspath(__file__)))
+
+def my_logger(name):
+    logger = logging.getLogger(name)
+    logger.setLevel(logging.DEBUG)
+
+    formatter = logging.Formatter("%(asctime)s %(levelname)s: %(message)s", "%d.%m.%Y %H:%M:%S")
+    file_handler = RotatingFileHandler(f"/var/log/{name}.log", maxBytes=16777216, backupCount=3)
+    file_handler.setFormatter(formatter)
+    logger.addHandler(file_handler)
+    return logger
 
 class SaveDB:
 
     def __init__(self):
+        self.logger = my_logger(__class__.__name__)
+
         self.source_path = "db.json"
         self.dest_path = "db_save.json"
         self.last_date = None
         self.next_date = None
 
     def run(self):
+        self.logger.info("Backup Service Started")
         while True:
             if self.last_date is None:
                 self.set_date()
@@ -22,7 +37,8 @@ class SaveDB:
             current_time = datetime.datetime.now()
             delta = current_time - self.last_date
 
-            if delta.seconds >= 600:
+            if delta.seconds >= 10:
+                self.logger.info(f"### new check ###")
                 self.save_db()
             time.sleep(1)
             print(delta.seconds)
@@ -33,39 +49,52 @@ class SaveDB:
     def save_db(self):
         try:
             if os.path.isfile("db_save.json"):
+                self.logger.info("Creating backup from old backup file")
                 os.system("mv db_save.json db_save.json.bak")
+                self.logger.info("backup file created")
+            self.logger.info("copy actual DB file")
             shutil.copyfile(self.source_path, self.dest_path)
-            print("copy file successfully")
+            self.logger.info("copy successfully")
             time.sleep(2)
             self.set_date()
             if os.path.isfile("db_save.json.bak"):
-                print("remove backup file")
+                self.logger.info("remove old backup file")
                 os.system("rm db_save.json.bak")
-            
+                self.logger.info("remove successfully")
+
             
         except shutil.SameFileError:
-            print("Source and destination represents the same file.")
+            self.logger.error("Source and destination represents the same file.")
 
         except IsADirectoryError:
             os.system("mv db_save.json.bak db_save.json")
-            print("Destination is a directory.")
+            self.logger.error("Destination is a directory.")
 
         except PermissionError:
             os.system("mv db_save.json.bak db_save.json")
-            print("Permission denied.")
+            self.logger.error("Permission denied.")
 
         except:
             os.system("mv db_save.json.bak db_save.json")
-            print("Error occurred while copying file.")
+            self.logger.error("Error occurred while copying file.")
         finally:
             time.sleep(3)
             sub = subprocess.Popen("git status", shell=True, stdout=subprocess.PIPE)
             sub_return = sub.stdout.read()
+            self.logger.info("check for changes")
             if "db_save.json" in sub_return.decode("utf-8"):
                 test = subprocess.Popen("git add db_save.json", shell=True, stdout=subprocess.PIPE)
-                test2 = subprocess.Popen("git commit -m 'Save Changes From DB-Json'", shell=True, stdout=subprocess.PIPE)
-                test3 = subprocess.Popen("git push", shell=True, stdout=subprocess.PIPE)
-
+                out, err = test.communicate()
+                self.logger.info(out.decode("utf-8"))
+                if test:
+                    test2 = subprocess.Popen("git commit -m 'Save Changes From DB-Json'", shell=True, stdout=subprocess.PIPE)
+                    out, err = test2.communicate()
+                    self.logger.info(out.decode("utf-8"))
+                    test3 = subprocess.Popen("git push", shell=True, stdout=subprocess.PIPE)
+                    out, err = test3.communicate()
+                    self.logger.info(out.decode("utf-8"))
+            else:
+                self.logger.info("### no changes found ###")
 
 if __name__ == '__main__':
     SaveDB().run()
