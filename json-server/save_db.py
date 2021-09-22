@@ -38,7 +38,7 @@ class SaveDB:
             delta = current_time - self.last_date
 
             if delta.seconds >= 10:
-                self.logger.info(f"### new check ###")
+                self.logger.info("### new check ###")
                 self.save_db()
             time.sleep(1)
             print(delta.seconds)
