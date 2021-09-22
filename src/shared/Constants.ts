@@ -14,5 +14,5 @@ export const storedNewItemRoute = `${storedItemsRoute}/new`
 export const storedEditRoute = (id: number | string): string => `${storedItemIdRoute(id)}/edit`
 export const storedErrorRoute = (message: string): string => `${storedItemsRoute}/error/${message}`
 
-export const baseApiUrl = 'http://192.168.2.68:3004'
+export const baseApiUrl = 'http://192.168.2.108:3004'
 export const baseLocalApiUrl = 'http://localhost:3004'
