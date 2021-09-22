@@ -4,10 +4,7 @@ import threading
 from my_logger import my_logger
 
 def run_comand(logger, cmd: list) -> None:
-    try:
-        out = subprocess.check_output(cmd)
-    except Exception as ex:
-        raise ex
+    out = subprocess.check_output(cmd)
 
 if __name__ == '__main__':
     logger = my_logger(__name__)
