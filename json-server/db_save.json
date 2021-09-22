@@ -1,22 +1,24 @@
 {
   "storeditems": [
     {
+      "id": 1,
       "name": "Dinkel Mehl",
-      "amount": 0,
+      "amount": 2,
       "lowestAmount": 2,
       "midAmount": 4,
       "unit": "Pack",
       "categories": [
         "Nahrungsmittel",
         "Zutaten",
-        "Backen"
+        "Backen",
+        "test"
       ],
       "packageQuantity": "",
       "packageUnit": "",
       "nutrients": {
         "description": "",
         "unit": "",
-        "amount": "",
+        "amount": 0,
         "values": [
           {
             "id": 1,
@@ -83,10 +85,10 @@
           }
         ]
       },
-      "icon": "https://tse3.mm.bing.net/th?id=OIP.xSERtGDQgKLxf1GcP9Ed0gHaMv&pid=Api",
-      "id": 1
+      "icon": "https://tse3.mm.bing.net/th?id=OIP.xSERtGDQgKLxf1GcP9Ed0gHaMv&pid=Api"
     },
     {
+      "id": 2,
       "name": "Weizenmehl",
       "amount": 0,
       "lowestAmount": 2,
@@ -102,7 +104,7 @@
       "nutrients": {
         "description": "",
         "unit": "",
-        "amount": "",
+        "amount": 0,
         "values": [
           {
             "id": 1,
@@ -169,8 +171,7 @@
           }
         ]
       },
-      "icon": "https://tse3.mm.bing.net/th?id=OIP.w1ndBa8qrqraQk_LCoyk8AHaHa&pid=Api",
-      "id": 2
+      "icon": "https://tse3.mm.bing.net/th?id=OIP.w1ndBa8qrqraQk_LCoyk8AHaHa&pid=Api"
     },
     {
       "name": "Zucker",
