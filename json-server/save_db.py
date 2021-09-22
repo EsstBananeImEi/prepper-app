@@ -42,6 +42,8 @@ class SaveDB:
                 self.is_running = True
                 self.logger.info("### new check ###")
                 self.save_db()
+                self.is_running = False
+
             time.sleep(1)
             print(delta.seconds)
 
@@ -97,7 +99,6 @@ class SaveDB:
                     self.logger.info(out.decode("utf-8"))
             else:
                 self.logger.info("### no changes found ###")
-            self.is_running = False
 
 if __name__ == '__main__':
     SaveDB().run()
