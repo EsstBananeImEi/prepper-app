@@ -93,10 +93,14 @@ class SaveDB:
                 if test:
                     test2 = subprocess.Popen("git commit -m 'Save Changes From DB-Json'", shell=True, stdout=subprocess.PIPE)
                     out, err = test2.communicate()
-                    self.logger.info(out.decode("utf-8"))
+                    if out:
+                        self.logger.info(out.decode("utf-8"))
+                    else: self.logger.info(err.decode("utf-8"))
                     test3 = subprocess.Popen("git push", shell=True, stdout=subprocess.PIPE)
                     out, err = test3.communicate()
-                    self.logger.info(out.decode("utf-8"))
+                    if out:
+                        self.logger.info(out.decode("utf-8"))
+                    else: self.logger.info(err.decode("utf-8"))
             else:
                 self.logger.info("### no changes found ###")
 
