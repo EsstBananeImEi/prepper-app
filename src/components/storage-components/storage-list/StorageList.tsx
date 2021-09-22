@@ -33,8 +33,8 @@ export default function StorageList(): ReactElement {
 
     return (
         <>
-            {storageItems.length < 0
-                && <Empty
+            {storageItems.length <= 0
+                ? <Empty
                     image="https://gw.alipayobjects.com/zos/antfincdn/ZHrcdLPrvN/empty.svg"
                     imageStyle={{
                         height: 200,
@@ -47,47 +47,50 @@ export default function StorageList(): ReactElement {
                     key={`empty`}
                 >
                     <Button onClick={onGoToNew} key={`button`} type="primary">Store item</Button>
-                </Empty >}
-            <div className="space-align-container" key={`div`} style={{ justifyContent: 'center', display: 'flex', flexWrap: 'wrap' }}>
-                <StorageSearchItem callback={setStorageItems} key={`topsearch`} />
-                {dimensions.width > 450
-                    ? <>
-                        {storageItems.slice(minValue, maxValue).map((storageItem, index) =>
-                            <div style={{ padding: '5px' }} key={`div${index}`} className="space-align-block">
-                                <Space key={`space${index}`}>
-                                    <StorageCardItem storageItem={storageItem} key={`Item${index}`} />
-                                </Space>
+                </Empty >
+                :
+                <div className="space-align-container" key={`div`} style={{ justifyContent: 'center', display: 'flex', flexWrap: 'wrap' }}>
+                    <StorageSearchItem callback={setStorageItems} key={`topsearch`} />
+                    {dimensions.width > 450
+                        ? <>
+                            {storageItems.slice(minValue, maxValue).map((storageItem, index) =>
+                                <div style={{ padding: '5px' }} key={`div${index}`} className="space-align-block">
+                                    <Space key={`space${index}`}>
+                                        <StorageCardItem storageItem={storageItem} key={`Item${index}`} />
+                                    </Space>
 
-                            </div>
+                                </div>
 
-                        )}
-                        {
-                            storageItems.length !== 0 &&
-                            <Pagination responsive
-                                pageSize={pageSize}
-                                current={currentPage}
-                                total={storageItems.length}
-                                onChange={handleChange}
-                                style={{ width: "100%", display: "flex", justifyContent: "center", paddingTop: '10px' }}
-                                key={`pagi`}
-                            />
-                        }
+                            )}
+                            {
+                                storageItems.length !== 0 &&
+                                <Pagination responsive
+                                    pageSize={pageSize}
+                                    current={currentPage}
+                                    total={storageItems.length}
+                                    onChange={handleChange}
+                                    style={{ width: "100%", display: "flex", justifyContent: "center", paddingTop: '10px' }}
+                                    key={`pagi`}
+                                />
+                            }
 
-                    </>
-                    : <>
-                        {storageItems.map((storageItem, index) =>
-                            <div key={`div${index}`} style={{ width: '100%' }}>
-                                {index >= 0 && <Divider key={`top${index}`} />}
+                        </>
+                        : <>
+                            {storageItems.map((storageItem, index) =>
+                                <div key={`div${index}`} style={{ width: '100%' }}>
+                                    {index >= 0 && <Divider key={`top${index}`} />}
 
-                                <StorageListItem key={index} storageItem={storageItem} />
-                                {index + 1 === storageItems.length && <Divider key={`bottom${index}`} />}
-                            </div>
-                        )
-                        }
-                    </>
+                                    <StorageListItem key={index} storageItem={storageItem} />
+                                    {index + 1 === storageItems.length && <Divider key={`bottom${index}`} />}
+                                </div>
+                            )
+                            }
+                        </>
 
-                }
-            </div >
+                    }
+                </div >
+            }
+
         </>
     )
 }
