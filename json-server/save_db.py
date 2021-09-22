@@ -27,6 +27,7 @@ class SaveDB:
         self.dest_path = "db_save.json"
         self.last_date = None
         self.next_date = None
+        self.is_running = False
 
     def run(self):
         self.logger.info("Backup Service Started")
@@ -37,7 +38,8 @@ class SaveDB:
             current_time = datetime.datetime.now()
             delta = current_time - self.last_date
 
-            if delta.seconds >= 10:
+            if delta.seconds >= 10 and not self.is_running:
+                self.is_running = True
                 self.logger.info("### new check ###")
                 self.save_db()
             time.sleep(1)
@@ -95,6 +97,7 @@ class SaveDB:
                     self.logger.info(out.decode("utf-8"))
             else:
                 self.logger.info("### no changes found ###")
+            self.is_running = False
 
 if __name__ == '__main__':
     SaveDB().run()
