@@ -4,7 +4,7 @@
     },
     "scripts": {
         "start": "json-server --watch db.json --port 3004",
-        "start-ext": "json-server --host 192.168.2.68 --watch db.json --port 3004",
+        "start-ext": "json-server --host 192.168.2.108 --watch db.json --port 3004",
         "start_db_save": "python save_db.py",
         "reset": "cp dbcopy.json db.json"
     }
