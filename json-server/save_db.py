@@ -63,7 +63,7 @@ class SaveDB:
             sub_return = sub.stdout.read()
             if "db_save.json" in sub_return.decode("utf-8"):
                 test = subprocess.Popen("git add db_save.json", shell=True, stdout=subprocess.PIPE)
-                test2 = subprocess.Popen(f'git commit -m "db save {self.last_date}"', shell=True, stdout=subprocess.PIPE)
+                test2 = subprocess.Popen(f"git commit -m 'Save Changes From DB-Json'", shell=True, stdout=subprocess.PIPE)
                 test3 = subprocess.Popen("git push", shell=True, stdout=subprocess.PIPE)
 
 
