@@ -21,7 +21,7 @@ def my_logger(name):
 class SaveDB:
 
     def __init__(self):
-        self.logger = my_logger(__class__.__name__)
+        self.logger = my_logger(__name__)
 
         self.source_path = "db.json"
         self.dest_path = "db_save.json"
