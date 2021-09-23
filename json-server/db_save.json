@@ -7841,6 +7841,28 @@
         "values": []
       },
       "icon": "https://tse2.mm.bing.net/th?id=OIP.hC7Ez49IT7-6KRETWTyEnQHaHa&pid=Api"
+    },
+    {
+      "name": "Gaskatusche",
+      "amount": 1,
+      "lowestAmount": 4,
+      "midAmount": 6,
+      "unit": "Can",
+      "categories": [
+        "Gas",
+        "Kocher",
+        "Feuer"
+      ],
+      "packageQuantity": "",
+      "packageUnit": "",
+      "nutrients": {
+        "description": "",
+        "unit": "",
+        "amount": "",
+        "values": []
+      },
+      "icon": "https://tse2.mm.bing.net/th?id=OIP.SvBzdEjQOamFAoLUcbRsGAHaHa&pid=Api",
+      "id": 104
     }
   ],
   "basket": []
