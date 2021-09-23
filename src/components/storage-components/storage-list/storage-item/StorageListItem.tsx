@@ -73,7 +73,7 @@ export default function StorageListItem(props: Props): ReactElement {
                                 <MinusCircleOutlined style={{ fontSize: '20px' }} onClick={onDecrease} key={`minus${storageItem.id}`} />,
 
                                 <Badge key={`badge${storageItem.id}`} offset={[0, 0]} size="small" count={countItems(storageItem.name)} >
-                                    <ShoppingCartOutlined style={{ fontSize: '20px' }} key={`shoppimg${storageItem.id}`} onTouchMove={(e) => onChangeCard(e, { type: 'REMOVE_FROM_CARD', storeageItem: storageItem })} onClick={(e) => onChangeCard(e, { type: 'ADD_TO_CARD', storeageItem: storageItem })} />
+                                    <ShoppingCartOutlined disabled style={{ fontSize: '20px' }} key={`shoppimg${storageItem.id}`} onTouchMove={(e) => onChangeCard(e, { type: 'REMOVE_FROM_CARD', storeageItem: storageItem })} onClick={(e) => onChangeCard(e, { type: 'ADD_TO_CARD', storeageItem: storageItem })} />
                                 </Badge>,
                                 <PlusCircleOutlined style={{ fontSize: '20px' }} onClick={onIncrease} key={`plus${storageItem.id}`} />
                             ]
