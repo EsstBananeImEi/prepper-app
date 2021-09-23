@@ -518,7 +518,7 @@
     },
     {
       "name": "Pizzatomaten",
-      "amount": 0,
+      "amount": 11,
       "lowestAmount": 4,
       "midAmount": 6,
       "unit": "Can",
@@ -689,7 +689,7 @@
     },
     {
       "name": "Batterien AA",
-      "amount": 1,
+      "amount": 0,
       "lowestAmount": 2,
       "midAmount": 6,
       "unit": "Piece",
@@ -776,7 +776,7 @@
     },
     {
       "name": "Batterien AAA",
-      "amount": 3,
+      "amount": 2,
       "lowestAmount": 2,
       "midAmount": 6,
       "unit": "Piece",
@@ -863,7 +863,7 @@
     },
     {
       "name": "Batterie Akku AA",
-      "amount": 1,
+      "amount": 0,
       "lowestAmount": 2,
       "midAmount": 6,
       "unit": "Piece",
@@ -1040,7 +1040,7 @@
     {
       "id": 13,
       "name": "NRG-5",
-      "amount": 2,
+      "amount": 1,
       "lowestAmount": 1,
       "midAmount": 3,
       "unit": "Pack",
@@ -1211,7 +1211,7 @@
     },
     {
       "name": "Hühnernudeltopf",
-      "amount": 0,
+      "amount": 1,
       "lowestAmount": 2,
       "midAmount": 6,
       "unit": "Can",
@@ -1723,7 +1723,7 @@
     },
     {
       "name": "Erbsen mit Möhrchen",
-      "amount": 1,
+      "amount": 0,
       "lowestAmount": 1,
       "midAmount": 2,
       "unit": "Can",
@@ -1807,7 +1807,7 @@
     },
     {
       "name": "Erbsen Fein mit Pariser Karotten ",
-      "amount": 1,
+      "amount": 0,
       "lowestAmount": 1,
       "midAmount": 2,
       "unit": "Glas",
@@ -1974,7 +1974,7 @@
     {
       "id": 25,
       "name": "Gari Sushi-Ingwer",
-      "amount": 1,
+      "amount": 11,
       "lowestAmount": 0,
       "midAmount": 0,
       "unit": "Glas",
@@ -2059,7 +2059,7 @@
     },
     {
       "name": "Gewürzgurken",
-      "amount": 8,
+      "amount": 1,
       "lowestAmount": 0,
       "midAmount": 1,
       "unit": "Glas",
@@ -2141,7 +2141,7 @@
     },
     {
       "name": "Cornichons ",
-      "amount": 8,
+      "amount": 1,
       "lowestAmount": 0,
       "midAmount": 1,
       "unit": "Glas",
@@ -2307,7 +2307,7 @@
     },
     {
       "name": "Mais-Kölbchen",
-      "amount": 1,
+      "amount": 4,
       "lowestAmount": 0,
       "midAmount": 0,
       "unit": "Glae",
@@ -2389,7 +2389,7 @@
     },
     {
       "name": "Kartoffel Knödel",
-      "amount": 2,
+      "amount": 0,
       "lowestAmount": 0,
       "midAmount": 1,
       "unit": "Pack",
@@ -2553,7 +2553,7 @@
     },
     {
       "name": "Ananas in Stücken",
-      "amount": 8,
+      "amount": 1,
       "lowestAmount": 1,
       "midAmount": 2,
       "unit": "Can",
@@ -2963,7 +2963,7 @@
     },
     {
       "name": "Granatapfelkerne",
-      "amount": 1,
+      "amount": 2,
       "lowestAmount": 0,
       "midAmount": 0,
       "unit": "Glas",
@@ -3045,7 +3045,7 @@
     },
     {
       "name": "Erdbeere Marmelade",
-      "amount": 1,
+      "amount": 2,
       "lowestAmount": 0,
       "midAmount": 1,
       "unit": "Glas",
@@ -3209,7 +3209,7 @@
     },
     {
       "name": "Pasta Sauce Arrabbiata",
-      "amount": 8,
+      "amount": 0,
       "lowestAmount": 0,
       "midAmount": 0,
       "unit": "Glas",
@@ -3291,7 +3291,7 @@
     },
     {
       "name": "Milchreis Bio",
-      "amount": 8,
+      "amount": 1,
       "lowestAmount": 0,
       "midAmount": 0,
       "unit": "Pack",
@@ -3455,7 +3455,7 @@
     },
     {
       "name": "Paradiese Creme Weiße Schokolade",
-      "amount": 1,
+      "amount": 0,
       "lowestAmount": 0,
       "midAmount": 0,
       "unit": "Pack",
@@ -3787,7 +3787,7 @@
     },
     {
       "name": "Jasmine Reis",
-      "amount": 2,
+      "amount": 0,
       "lowestAmount": 0,
       "midAmount": 0,
       "unit": "Pack",
@@ -3955,7 +3955,7 @@
     },
     {
       "name": "Kartoffeleintopf",
-      "amount": 1,
+      "amount": 11,
       "lowestAmount": 0,
       "midAmount": 0,
       "unit": "Can",
@@ -4211,7 +4211,7 @@
     },
     {
       "name": "Buchweizen Suppe ",
-      "amount": 3,
+      "amount": 4,
       "lowestAmount": 0,
       "midAmount": 0,
       "unit": "Pack",
@@ -4295,7 +4295,7 @@
     },
     {
       "name": "Hirsesuppe",
-      "amount": 3,
+      "amount": 1,
       "lowestAmount": 0,
       "midAmount": 0,
       "unit": "Pack",
@@ -4465,7 +4465,7 @@
     },
     {
       "name": "Linseneintopf Pikant",
-      "amount": 1,
+      "amount": 2,
       "lowestAmount": 0,
       "midAmount": 0,
       "unit": "Pack",
@@ -4635,7 +4635,7 @@
     },
     {
       "name": "Jägertopf",
-      "amount": 1,
+      "amount": 2,
       "lowestAmount": 0,
       "midAmount": 0,
       "unit": "Pack",
@@ -5063,7 +5063,7 @@
     },
     {
       "name": "Frühstücksfleisch",
-      "amount": 1,
+      "amount": 0,
       "lowestAmount": 0,
       "midAmount": 0,
       "unit": "Can",
