@@ -3,7 +3,7 @@
     {
       "id": 1,
       "name": "Dinkel Mehl",
-      "amount": 1,
+      "amount": 4,
       "lowestAmount": 2,
       "midAmount": 4,
       "unit": "Pack",
@@ -88,7 +88,7 @@
     },
     {
       "name": "Weizenmehl",
-      "amount": 0,
+      "amount": 1,
       "lowestAmount": 2,
       "midAmount": 4,
       "unit": "Pack",
@@ -5905,6 +5905,264 @@
       },
       "icon": "https://tse3.explicit.bing.net/th?id=OIP.RSspuqcm5dVjJbZRz28-0gHaFj&pid=Api",
       "id": 71
+    },
+    {
+      "name": "Reiseintopf",
+      "amount": 1,
+      "lowestAmount": 0,
+      "midAmount": 0,
+      "unit": "Can",
+      "categories": [
+        "Fertignahrung",
+        "Konserve"
+      ],
+      "packageQuantity": "800",
+      "packageUnit": "Gramm",
+      "nutrients": {
+        "description": "",
+        "unit": "",
+        "amount": "",
+        "values": [
+          {
+            "id": 1,
+            "name": "Proteine",
+            "color": "#FDB45C",
+            "values": {
+              "typ": "",
+              "value": 0
+            }
+          },
+          {
+            "id": 2,
+            "name": "Kohlenhydrate",
+            "color": "#46BFBD",
+            "values": {
+              "typ": "",
+              "value": 0
+            }
+          },
+          {
+            "id": 3,
+            "name": "Fett",
+            "color": "#F7464A",
+            "values": {
+              "typ": "",
+              "value": 0
+            }
+          },
+          {
+            "id": 4,
+            "name": "Zucker",
+            "color": "#E85F5C",
+            "values": {
+              "typ": "",
+              "value": 0
+            }
+          },
+          {
+            "id": 5,
+            "name": "Ballaststoffe",
+            "color": "#4D5360",
+            "values": {
+              "typ": "",
+              "value": 0
+            }
+          },
+          {
+            "id": 6,
+            "name": "gesättigte Fettsäuren",
+            "color": "#C1EEFF",
+            "values": {
+              "typ": "",
+              "value": 0
+            }
+          },
+          {
+            "id": 7,
+            "name": "Energie",
+            "color": "",
+            "values": {
+              "typ": "",
+              "value": 0
+            }
+          }
+        ]
+      },
+      "icon": "https://tse1.mm.bing.net/th?id=OIP.0iQzCkhFZ5piGdwx3k7j2wHaGx&pid=Api",
+      "id": 72
+    },
+    {
+      "name": "Frühlingseintopf",
+      "amount": 3,
+      "lowestAmount": 0,
+      "midAmount": 0,
+      "unit": "Can",
+      "categories": [
+        "Fertignahrung",
+        "Konserve"
+      ],
+      "packageQuantity": "800",
+      "packageUnit": "Gramm",
+      "nutrients": {
+        "description": "",
+        "unit": "",
+        "amount": "",
+        "values": [
+          {
+            "id": 1,
+            "name": "Proteine",
+            "color": "#FDB45C",
+            "values": {
+              "typ": "",
+              "value": 0
+            }
+          },
+          {
+            "id": 2,
+            "name": "Kohlenhydrate",
+            "color": "#46BFBD",
+            "values": {
+              "typ": "",
+              "value": 0
+            }
+          },
+          {
+            "id": 3,
+            "name": "Fett",
+            "color": "#F7464A",
+            "values": {
+              "typ": "",
+              "value": 0
+            }
+          },
+          {
+            "id": 4,
+            "name": "Zucker",
+            "color": "#E85F5C",
+            "values": {
+              "typ": "",
+              "value": 0
+            }
+          },
+          {
+            "id": 5,
+            "name": "Ballaststoffe",
+            "color": "#4D5360",
+            "values": {
+              "typ": "",
+              "value": 0
+            }
+          },
+          {
+            "id": 6,
+            "name": "gesättigte Fettsäuren",
+            "color": "#C1EEFF",
+            "values": {
+              "typ": "",
+              "value": 0
+            }
+          },
+          {
+            "id": 7,
+            "name": "Energie",
+            "color": "",
+            "values": {
+              "typ": "",
+              "value": 0
+            }
+          }
+        ]
+      },
+      "icon": "https://tse2.mm.bing.net/th?id=OIP.OoyoSlzS2U8S7mRq0ZpsjgHaE8&pid=Api",
+      "id": 73
+    },
+    {
+      "id": 74,
+      "name": "Rindergulasch Pikant",
+      "amount": 5,
+      "lowestAmount": 1,
+      "midAmount": 3,
+      "unit": "Can",
+      "categories": [
+        "Zutaten",
+        "Fertignahrung",
+        "Rind",
+        "Fleisch",
+        "Konserve"
+      ],
+      "packageQuantity": 540,
+      "packageUnit": "Gramm",
+      "nutrients": {
+        "description": "",
+        "unit": "",
+        "amount": 0,
+        "values": [
+          {
+            "id": 1,
+            "name": "Proteine",
+            "color": "#FDB45C",
+            "values": {
+              "typ": "",
+              "value": 0
+            }
+          },
+          {
+            "id": 2,
+            "name": "Kohlenhydrate",
+            "color": "#46BFBD",
+            "values": {
+              "typ": "",
+              "value": 0
+            }
+          },
+          {
+            "id": 3,
+            "name": "Fett",
+            "color": "#F7464A",
+            "values": {
+              "typ": "",
+              "value": 0
+            }
+          },
+          {
+            "id": 4,
+            "name": "Zucker",
+            "color": "#E85F5C",
+            "values": {
+              "typ": "",
+              "value": 0
+            }
+          },
+          {
+            "id": 5,
+            "name": "Ballaststoffe",
+            "color": "#4D5360",
+            "values": {
+              "typ": "",
+              "value": 0
+            }
+          },
+          {
+            "id": 6,
+            "name": "gesättigte Fettsäuren",
+            "color": "#C1EEFF",
+            "values": {
+              "typ": "",
+              "value": 0
+            }
+          },
+          {
+            "id": 7,
+            "name": "Energie",
+            "color": "",
+            "values": {
+              "typ": "",
+              "value": 0
+            }
+          }
+        ]
+      },
+      "icon": "https://tse1.mm.bing.net/th?id=OIP.zA3gLBgiuwHtjBtWaxEM-QHaE7&pid=Api"
     }
   ],
   "basket": []
