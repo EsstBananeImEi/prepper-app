@@ -3,7 +3,7 @@
     {
       "id": 1,
       "name": "Dinkel Mehl",
-      "amount": 0,
+      "amount": 1,
       "lowestAmount": 2,
       "midAmount": 4,
       "unit": "Pack",
@@ -88,7 +88,7 @@
     },
     {
       "name": "Weizenmehl",
-      "amount": 1,
+      "amount": 0,
       "lowestAmount": 2,
       "midAmount": 4,
       "unit": "Pack",
@@ -174,7 +174,7 @@
     },
     {
       "name": "Zucker",
-      "amount": 2,
+      "amount": 0,
       "lowestAmount": 1,
       "midAmount": 2,
       "unit": "Pack",
@@ -261,7 +261,7 @@
     },
     {
       "name": "Toilettelpapier",
-      "amount": 1,
+      "amount": 0,
       "lowestAmount": 3,
       "midAmount": 6,
       "unit": "Roll",
@@ -347,7 +347,7 @@
     {
       "id": 5,
       "name": "Rotkohl Glas",
-      "amount": 3,
+      "amount": 2,
       "lowestAmount": 2,
       "midAmount": 4,
       "unit": "Glas",
@@ -432,7 +432,7 @@
     },
     {
       "name": "Pilze",
-      "amount": 1,
+      "amount": 0,
       "lowestAmount": 3,
       "midAmount": 5,
       "unit": "Can",
@@ -518,7 +518,7 @@
     },
     {
       "name": "Pizzatomaten",
-      "amount": 0,
+      "amount": 1,
       "lowestAmount": 4,
       "midAmount": 6,
       "unit": "Can",
@@ -1126,7 +1126,7 @@
     },
     {
       "name": "Teelichter",
-      "amount": 11,
+      "amount": 0,
       "lowestAmount": 10,
       "midAmount": 20,
       "unit": "Piece",
@@ -1298,7 +1298,7 @@
     {
       "id": 16,
       "name": "Spitzen Langkorn-Reis",
-      "amount": 2,
+      "amount": 1,
       "lowestAmount": 2,
       "midAmount": 4,
       "unit": "Pack",
@@ -1385,7 +1385,7 @@
     {
       "id": 17,
       "name": "Taschentücher ",
-      "amount": 0,
+      "amount": 2,
       "lowestAmount": 0,
       "midAmount": 1,
       "unit": "Pack",
@@ -1639,7 +1639,7 @@
     },
     {
       "name": "Erbsen",
-      "amount": 0,
+      "amount": 2,
       "lowestAmount": 1,
       "midAmount": 2,
       "unit": "Can",
@@ -1723,7 +1723,7 @@
     },
     {
       "name": "Erbsen mit Möhrchen",
-      "amount": 1,
+      "amount": 0,
       "lowestAmount": 1,
       "midAmount": 2,
       "unit": "Can",
@@ -1807,7 +1807,7 @@
     },
     {
       "name": "Erbsen Fein mit Pariser Karotten ",
-      "amount": 1,
+      "amount": 0,
       "lowestAmount": 1,
       "midAmount": 2,
       "unit": "Glas",
@@ -2141,7 +2141,7 @@
     },
     {
       "name": "Cornichons ",
-      "amount": 1,
+      "amount": 5,
       "lowestAmount": 0,
       "midAmount": 1,
       "unit": "Glas",
@@ -2226,7 +2226,7 @@
     {
       "id": 28,
       "name": "Spargel",
-      "amount": 0,
+      "amount": 1,
       "lowestAmount": 0,
       "midAmount": 1,
       "unit": "Can",
@@ -2306,18 +2306,19 @@
       "icon": "https://tse3.mm.bing.net/th?id=OIP.hMcsb2Irm0x4EEZweEdjpAHaE7&pid=Api"
     },
     {
+      "id": 29,
       "name": "Mais-Kölbchen",
-      "amount": 4,
+      "amount": 1,
       "lowestAmount": 0,
       "midAmount": 0,
-      "unit": "Glae",
+      "unit": "Glas",
       "categories": [],
-      "packageQuantity": "190",
+      "packageQuantity": 190,
       "packageUnit": "Gramm",
       "nutrients": {
         "description": "",
         "unit": "",
-        "amount": "",
+        "amount": 0,
         "values": [
           {
             "id": 1,
@@ -2384,8 +2385,7 @@
           }
         ]
       },
-      "icon": "https://tse1.mm.bing.net/th?id=OIP.ZOAwDSH3GwjGBkn_HZikpQHaEo&pid=Api",
-      "id": 29
+      "icon": "https://tse1.mm.bing.net/th?id=OIP.ZOAwDSH3GwjGBkn_HZikpQHaEo&pid=Api"
     },
     {
       "name": "Kartoffel Knödel",
@@ -2553,7 +2553,7 @@
     },
     {
       "name": "Ananas in Stücken",
-      "amount": 3,
+      "amount": 5,
       "lowestAmount": 1,
       "midAmount": 2,
       "unit": "Can",
@@ -2635,7 +2635,7 @@
     },
     {
       "name": "Sauerkirschen",
-      "amount": 2,
+      "amount": 1,
       "lowestAmount": 0,
       "midAmount": 0,
       "unit": "Glas",
@@ -2881,7 +2881,7 @@
     },
     {
       "name": "Mandarinen-Orangen",
-      "amount": 1,
+      "amount": 2,
       "lowestAmount": 0,
       "midAmount": 1,
       "unit": "Can",
@@ -3209,7 +3209,7 @@
     },
     {
       "name": "Pasta Sauce Arrabbiata",
-      "amount": 0,
+      "amount": 2,
       "lowestAmount": 0,
       "midAmount": 0,
       "unit": "Glas",
@@ -3291,7 +3291,7 @@
     },
     {
       "name": "Milchreis Bio",
-      "amount": 3,
+      "amount": 1,
       "lowestAmount": 0,
       "midAmount": 0,
       "unit": "Pack",
@@ -3455,7 +3455,7 @@
     },
     {
       "name": "Paradiese Creme Weiße Schokolade",
-      "amount": 0,
+      "amount": 1,
       "lowestAmount": 0,
       "midAmount": 0,
       "unit": "Pack",
@@ -3619,7 +3619,7 @@
     },
     {
       "name": "Pudding Pulver Vanille",
-      "amount": 2,
+      "amount": 1,
       "lowestAmount": 0,
       "midAmount": 0,
       "unit": "Pack",
@@ -3703,7 +3703,7 @@
     },
     {
       "name": "Pudding Pulver Schokolade",
-      "amount": 1,
+      "amount": 3,
       "lowestAmount": 0,
       "midAmount": 0,
       "unit": "Pack",
@@ -3955,7 +3955,7 @@
     },
     {
       "name": "Kartoffeleintopf",
-      "amount": 11,
+      "amount": 1,
       "lowestAmount": 0,
       "midAmount": 0,
       "unit": "Can",
@@ -4126,7 +4126,7 @@
     },
     {
       "name": "Minestrone",
-      "amount": 1,
+      "amount": 3,
       "lowestAmount": 0,
       "midAmount": 0,
       "unit": "Pack",
@@ -4550,7 +4550,7 @@
     },
     {
       "name": "Uncle Ben‘s Express Griechisch-Djuvec Reis",
-      "amount": 3,
+      "amount": 2,
       "lowestAmount": 0,
       "midAmount": 0,
       "unit": "Pack",
@@ -4978,7 +4978,7 @@
     },
     {
       "name": "Schweinzkopf-Sülze",
-      "amount": 0,
+      "amount": 2,
       "lowestAmount": 0,
       "midAmount": 0,
       "unit": "Glas",
@@ -5148,7 +5148,7 @@
     },
     {
       "name": "Corned Beef",
-      "amount": 2,
+      "amount": 1,
       "lowestAmount": 0,
       "midAmount": 0,
       "unit": "Can",
@@ -5234,7 +5234,7 @@
     },
     {
       "name": "Rote Linsen Bio",
-      "amount": 3,
+      "amount": 1,
       "lowestAmount": 0,
       "midAmount": 0,
       "unit": "Pack",
@@ -5318,7 +5318,7 @@
     },
     {
       "name": "Röstzwiebeln",
-      "amount": 1,
+      "amount": 2,
       "lowestAmount": 0,
       "midAmount": 0,
       "unit": "Pack",
