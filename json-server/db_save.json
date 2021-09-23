@@ -1040,7 +1040,7 @@
     {
       "id": 13,
       "name": "NRG-5",
-      "amount": 2,
+      "amount": 5,
       "lowestAmount": 1,
       "midAmount": 3,
       "unit": "Pack",
@@ -1050,8 +1050,8 @@
         "Kekse",
         "Zutaten"
       ],
-      "packageQuantity": "",
-      "packageUnit": "",
+      "packageQuantity": 500,
+      "packageUnit": "Gramm",
       "nutrients": {
         "description": "",
         "unit": "",
@@ -1125,8 +1125,9 @@
       "icon": "https://tse2.mm.bing.net/th?id=OIP.smdo1P0ilqgE6p_l9MeZ-wHaHx&pid=Api"
     },
     {
+      "id": 14,
       "name": "Teelichter",
-      "amount": 0,
+      "amount": 77,
       "lowestAmount": 10,
       "midAmount": 20,
       "unit": "Piece",
@@ -1139,7 +1140,7 @@
       "nutrients": {
         "description": "",
         "unit": "",
-        "amount": "",
+        "amount": 0,
         "values": [
           {
             "id": 1,
@@ -1206,8 +1207,7 @@
           }
         ]
       },
-      "icon": "https://tse3.mm.bing.net/th?id=OIP.myjJXMdO-KTwCJVOmnGF8gHaE8&pid=Api",
-      "id": 14
+      "icon": "https://tse3.mm.bing.net/th?id=OIP.myjJXMdO-KTwCJVOmnGF8gHaE8&pid=Api"
     },
     {
       "name": "Hühnernudeltopf",
@@ -4806,7 +4806,7 @@
     },
     {
       "name": "Zarte Heringsfilets Tomaten-Creme",
-      "amount": 1,
+      "amount": 3,
       "lowestAmount": 0,
       "midAmount": 0,
       "unit": "Can",
@@ -4892,7 +4892,7 @@
     },
     {
       "name": "Zarte Heringsfilets Paprika-Creme",
-      "amount": 3,
+      "amount": 6,
       "lowestAmount": 0,
       "midAmount": 0,
       "unit": "Can",
@@ -5908,7 +5908,7 @@
     },
     {
       "name": "Reiseintopf",
-      "amount": 1,
+      "amount": 3,
       "lowestAmount": 0,
       "midAmount": 0,
       "unit": "Can",
@@ -7107,6 +7107,178 @@
         ]
       },
       "icon": "https://tse1.mm.bing.net/th?id=OIP.pG7pC-t8Jp1gHWfXEaI29AHaHa&pid=Api"
+    },
+    {
+      "name": "Aprikosen ",
+      "amount": 1,
+      "lowestAmount": 0,
+      "midAmount": 0,
+      "unit": "Can",
+      "categories": [
+        "Nahrungsmittel ",
+        "nachtisch",
+        "Süssigkeit"
+      ],
+      "packageQuantity": "480",
+      "packageUnit": "Gramm",
+      "nutrients": {
+        "description": "",
+        "unit": "",
+        "amount": "",
+        "values": [
+          {
+            "id": 1,
+            "name": "Proteine",
+            "color": "#FDB45C",
+            "values": {
+              "typ": "",
+              "value": 0
+            }
+          },
+          {
+            "id": 2,
+            "name": "Kohlenhydrate",
+            "color": "#46BFBD",
+            "values": {
+              "typ": "",
+              "value": 0
+            }
+          },
+          {
+            "id": 3,
+            "name": "Fett",
+            "color": "#F7464A",
+            "values": {
+              "typ": "",
+              "value": 0
+            }
+          },
+          {
+            "id": 4,
+            "name": "Zucker",
+            "color": "#E85F5C",
+            "values": {
+              "typ": "",
+              "value": 0
+            }
+          },
+          {
+            "id": 5,
+            "name": "Ballaststoffe",
+            "color": "#4D5360",
+            "values": {
+              "typ": "",
+              "value": 0
+            }
+          },
+          {
+            "id": 6,
+            "name": "gesättigte Fettsäuren",
+            "color": "#C1EEFF",
+            "values": {
+              "typ": "",
+              "value": 0
+            }
+          },
+          {
+            "id": 7,
+            "name": "Energie",
+            "color": "",
+            "values": {
+              "typ": "",
+              "value": 0
+            }
+          }
+        ]
+      },
+      "icon": "https://tse2.mm.bing.net/th?id=OIP.jggOMg-bMws9BdrQrLKHYQHaFb&pid=Api",
+      "id": 86
+    },
+    {
+      "name": "Knorr Spaghetteria Spinaci",
+      "amount": 1,
+      "lowestAmount": 0,
+      "midAmount": 0,
+      "unit": "Pack",
+      "categories": [
+        "Nudeln",
+        "Fertignahrung",
+        "Kohlehydrate"
+      ],
+      "packageQuantity": "160",
+      "packageUnit": "Gramm",
+      "nutrients": {
+        "description": "",
+        "unit": "",
+        "amount": "",
+        "values": [
+          {
+            "id": 1,
+            "name": "Proteine",
+            "color": "#FDB45C",
+            "values": {
+              "typ": "",
+              "value": 0
+            }
+          },
+          {
+            "id": 2,
+            "name": "Kohlenhydrate",
+            "color": "#46BFBD",
+            "values": {
+              "typ": "",
+              "value": 0
+            }
+          },
+          {
+            "id": 3,
+            "name": "Fett",
+            "color": "#F7464A",
+            "values": {
+              "typ": "",
+              "value": 0
+            }
+          },
+          {
+            "id": 4,
+            "name": "Zucker",
+            "color": "#E85F5C",
+            "values": {
+              "typ": "",
+              "value": 0
+            }
+          },
+          {
+            "id": 5,
+            "name": "Ballaststoffe",
+            "color": "#4D5360",
+            "values": {
+              "typ": "",
+              "value": 0
+            }
+          },
+          {
+            "id": 6,
+            "name": "gesättigte Fettsäuren",
+            "color": "#C1EEFF",
+            "values": {
+              "typ": "",
+              "value": 0
+            }
+          },
+          {
+            "id": 7,
+            "name": "Energie",
+            "color": "",
+            "values": {
+              "typ": "",
+              "value": 0
+            }
+          }
+        ]
+      },
+      "icon": "https://tse2.mm.bing.net/th?id=OIP.Q8ruDbMt3cvt3OnujzLb7wHaIW&pid=Api",
+      "id": 87
     }
   ],
   "basket": []
