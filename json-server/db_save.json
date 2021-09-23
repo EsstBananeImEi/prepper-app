@@ -3,7 +3,7 @@
     {
       "id": 1,
       "name": "Dinkel Mehl",
-      "amount": 1,
+      "amount": 4,
       "lowestAmount": 2,
       "midAmount": 4,
       "unit": "Pack",
@@ -5823,20 +5823,21 @@
       "id": 70
     },
     {
+      "id": 71,
       "name": "Kidney Bohnen",
-      "amount": 2,
+      "amount": 5,
       "lowestAmount": 2,
       "midAmount": 4,
       "unit": "Can",
       "categories": [
         "Bohnen"
       ],
-      "packageQuantity": "240",
+      "packageQuantity": 240,
       "packageUnit": "Gramm",
       "nutrients": {
         "description": "",
         "unit": "",
-        "amount": "",
+        "amount": 0,
         "values": [
           {
             "id": 1,
@@ -5903,8 +5904,7 @@
           }
         ]
       },
-      "icon": "https://tse3.explicit.bing.net/th?id=OIP.RSspuqcm5dVjJbZRz28-0gHaFj&pid=Api",
-      "id": 71
+      "icon": "https://tse3.explicit.bing.net/th?id=OIP.RSspuqcm5dVjJbZRz28-0gHaFj&pid=Api"
     },
     {
       "name": "Reiseintopf",
@@ -6165,8 +6165,9 @@
       "icon": "https://tse1.mm.bing.net/th?id=OIP.zA3gLBgiuwHtjBtWaxEM-QHaE7&pid=Api"
     },
     {
+      "id": 75,
       "name": "Bautzner Senf",
-      "amount": 2,
+      "amount": 1,
       "lowestAmount": 0,
       "midAmount": 0,
       "unit": "Pack",
@@ -6175,12 +6176,12 @@
         "Würze",
         "Zutaten"
       ],
-      "packageQuantity": "300",
+      "packageQuantity": 300,
       "packageUnit": "Milliliter",
       "nutrients": {
         "description": "",
         "unit": "",
-        "amount": "",
+        "amount": 0,
         "values": [
           {
             "id": 1,
@@ -6247,8 +6248,7 @@
           }
         ]
       },
-      "icon": "https://tse2.mm.bing.net/th?id=OIP.Sou7pkANQUh4frAbClZHlgHaId&pid=Api",
-      "id": 75
+      "icon": "https://tse2.mm.bing.net/th?id=OIP.Sou7pkANQUh4frAbClZHlgHaId&pid=Api"
     },
     {
       "name": "Spätzle",
@@ -7748,6 +7748,75 @@
       },
       "icon": "https://tse1.mm.bing.net/th?id=OIP.xBvTygUmqFlJlreeUBmiVAHaHf&pid=Api",
       "id": 99
+    },
+    {
+      "id": 100,
+      "name": "Schlafsack Erwachsene (2 Jz.)",
+      "amount": 2,
+      "lowestAmount": 0,
+      "midAmount": 0,
+      "unit": "Bag",
+      "categories": [
+        "Schlafen",
+        "Campen",
+        "Isolierung",
+        "Sommer",
+        "Frühling"
+      ],
+      "packageQuantity": "",
+      "packageUnit": "",
+      "nutrients": {
+        "description": "",
+        "unit": "",
+        "amount": 0,
+        "values": []
+      },
+      "icon": "https://contents.mediadecathlon.com/p1758180/k$13c31e6d6c5dd62a6343793899d39ff0/sq/250x250/Schlafsack-Camping-Arpenaz-15-%C2%B0C-schwarz.jpg"
+    },
+    {
+      "id": 101,
+      "name": "Schlafsack Kinder (3 Jz.)",
+      "amount": 1,
+      "lowestAmount": 0,
+      "midAmount": 0,
+      "unit": "Bag",
+      "categories": [
+        "Camping",
+        "Schlafen",
+        "Isolierung",
+        "Sommer",
+        "Frühling",
+        "Herbst"
+      ],
+      "packageQuantity": "",
+      "packageUnit": "",
+      "nutrients": {
+        "description": "",
+        "unit": "",
+        "amount": 0,
+        "values": []
+      },
+      "icon": "data:image/jpeg;base64,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"
+    },
+    {
+      "id": 102,
+      "name": "Schlafsack Kinder (2 Jz.) Marienkäfer",
+      "amount": 1,
+      "lowestAmount": 0,
+      "midAmount": 0,
+      "unit": "Bag",
+      "categories": [
+        "Camping"
+      ],
+      "packageQuantity": "",
+      "packageUnit": "",
+      "nutrients": {
+        "description": "",
+        "unit": "",
+        "amount": 0,
+        "values": []
+      },
+      "icon": "https://webimg.secondhandapp.at/w-i-mgl/5aa4ef2e47588e7754b83454"
     }
   ],
   "basket": []
