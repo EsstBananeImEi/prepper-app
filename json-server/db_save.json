@@ -1638,20 +1638,21 @@
       "icon": "https://tse1.mm.bing.net/th?id=OIP.Yr1e1Zvm6rlVmLqsYvn7QwHaHa&pid=Api"
     },
     {
-      "name": "Erbsen",
-      "amount": 2,
+      "id": 21,
+      "name": "Linsen ",
+      "amount": 3,
       "lowestAmount": 1,
       "midAmount": 2,
       "unit": "Can",
       "categories": [
         "Nahrungsmittel "
       ],
-      "packageQuantity": "265",
+      "packageQuantity": "240",
       "packageUnit": "Gramm",
       "nutrients": {
         "description": "",
         "unit": "",
-        "amount": "",
+        "amount": 0,
         "values": [
           {
             "id": 1,
@@ -1718,12 +1719,11 @@
           }
         ]
       },
-      "icon": "https://tse4.mm.bing.net/th?id=OIP.WGPj9AsXTlyff70Tyd63rgHaEk&pid=Api",
-      "id": 21
+      "icon": "https://tse4.mm.bing.net/th?id=OIP.B5IkhXaL4lA3WBXGfGQWEgHaE8&pid=Api"
     },
     {
       "name": "Erbsen mit Möhrchen",
-      "amount": 0,
+      "amount": 5,
       "lowestAmount": 1,
       "midAmount": 2,
       "unit": "Can",
@@ -1807,7 +1807,7 @@
     },
     {
       "name": "Erbsen Fein mit Pariser Karotten ",
-      "amount": 1,
+      "amount": 2,
       "lowestAmount": 1,
       "midAmount": 2,
       "unit": "Glas",
@@ -4465,7 +4465,7 @@
     },
     {
       "name": "Linseneintopf Pikant",
-      "amount": 2,
+      "amount": 1,
       "lowestAmount": 0,
       "midAmount": 0,
       "unit": "Pack",
@@ -5401,6 +5401,90 @@
       },
       "icon": "https://tse1.mm.bing.net/th?id=OIP.gTk0kryw4ay6pLcEcV4kVAHaHa&pid=Api",
       "id": 65
+    },
+    {
+      "name": "Kichererbsen",
+      "amount": 1,
+      "lowestAmount": 0,
+      "midAmount": 0,
+      "unit": "Can",
+      "categories": [
+        "Erbsen"
+      ],
+      "packageQuantity": "265",
+      "packageUnit": "Gramm",
+      "nutrients": {
+        "description": "",
+        "unit": "",
+        "amount": "",
+        "values": [
+          {
+            "id": 1,
+            "name": "Proteine",
+            "color": "#FDB45C",
+            "values": {
+              "typ": "",
+              "value": 0
+            }
+          },
+          {
+            "id": 2,
+            "name": "Kohlenhydrate",
+            "color": "#46BFBD",
+            "values": {
+              "typ": "",
+              "value": 0
+            }
+          },
+          {
+            "id": 3,
+            "name": "Fett",
+            "color": "#F7464A",
+            "values": {
+              "typ": "",
+              "value": 0
+            }
+          },
+          {
+            "id": 4,
+            "name": "Zucker",
+            "color": "#E85F5C",
+            "values": {
+              "typ": "",
+              "value": 0
+            }
+          },
+          {
+            "id": 5,
+            "name": "Ballaststoffe",
+            "color": "#4D5360",
+            "values": {
+              "typ": "",
+              "value": 0
+            }
+          },
+          {
+            "id": 6,
+            "name": "gesättigte Fettsäuren",
+            "color": "#C1EEFF",
+            "values": {
+              "typ": "",
+              "value": 0
+            }
+          },
+          {
+            "id": 7,
+            "name": "Energie",
+            "color": "",
+            "values": {
+              "typ": "",
+              "value": 0
+            }
+          }
+        ]
+      },
+      "icon": "https://tse2.mm.bing.net/th?id=OIP.ZafqEpJ_NXv8l2fuwFRh3QHaLH&pid=Api",
+      "id": 66
     }
   ],
   "basket": []
