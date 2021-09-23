@@ -1,5 +1,5 @@
 const dash = '/'
-const search = (text: string): string => `?search=${text}`
+const search = (text: string): string => `?q=${text}`
 export const sortByName = (sortBy: string): string => `?_sort=${sortBy}`
 export const storedItemsApi = `${dash}storeditems`
 export const basketItemsApi = `${dash}basket`
