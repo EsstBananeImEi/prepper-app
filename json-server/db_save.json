@@ -3,7 +3,7 @@
     {
       "id": 1,
       "name": "Dinkel Mehl",
-      "amount": 4,
+      "amount": 1,
       "lowestAmount": 2,
       "midAmount": 4,
       "unit": "Pack",
@@ -88,7 +88,7 @@
     },
     {
       "name": "Weizenmehl",
-      "amount": 1,
+      "amount": 6,
       "lowestAmount": 2,
       "midAmount": 4,
       "unit": "Pack",
@@ -261,7 +261,7 @@
     },
     {
       "name": "Toilettelpapier",
-      "amount": 2,
+      "amount": 1,
       "lowestAmount": 3,
       "midAmount": 6,
       "unit": "Roll",
@@ -5655,7 +5655,7 @@
     },
     {
       "name": "Roggenmehl",
-      "amount": 1,
+      "amount": 5,
       "lowestAmount": 0,
       "midAmount": 2,
       "unit": "Pack",
@@ -5739,7 +5739,7 @@
     },
     {
       "name": "Soljanka",
-      "amount": 2,
+      "amount": 1,
       "lowestAmount": 0,
       "midAmount": 1,
       "unit": "Glas",
@@ -5824,7 +5824,7 @@
     },
     {
       "name": "Kidney Bohnen",
-      "amount": 5,
+      "amount": 2,
       "lowestAmount": 2,
       "midAmount": 4,
       "unit": "Can",
@@ -5908,7 +5908,7 @@
     },
     {
       "name": "Reiseintopf",
-      "amount": 3,
+      "amount": 1,
       "lowestAmount": 0,
       "midAmount": 0,
       "unit": "Can",
@@ -5993,7 +5993,7 @@
     },
     {
       "name": "Frühlingseintopf",
-      "amount": 3,
+      "amount": 1,
       "lowestAmount": 0,
       "midAmount": 0,
       "unit": "Can",
@@ -6079,7 +6079,7 @@
     {
       "id": 74,
       "name": "Rindergulasch Pikant",
-      "amount": 5,
+      "amount": 2,
       "lowestAmount": 1,
       "midAmount": 3,
       "unit": "Can",
@@ -6166,7 +6166,7 @@
     },
     {
       "name": "Bautzner Senf",
-      "amount": 1,
+      "amount": 2,
       "lowestAmount": 0,
       "midAmount": 0,
       "unit": "Pack",
@@ -6252,7 +6252,7 @@
     },
     {
       "name": "Spätzle",
-      "amount": 1,
+      "amount": 2,
       "lowestAmount": 0,
       "midAmount": 0,
       "unit": "Pack",
@@ -6338,7 +6338,7 @@
     },
     {
       "name": "Sauce Hollandaise",
-      "amount": 2,
+      "amount": 1,
       "lowestAmount": 0,
       "midAmount": 0,
       "unit": "Pack",
@@ -7678,6 +7678,76 @@
       },
       "icon": "https://tse2.mm.bing.net/th?id=OIP.oJL0r6SUsPcvWxu4szGbSwAAAA&pid=Api",
       "id": 96
+    },
+    {
+      "name": "Isomatte Aufblasbar",
+      "amount": 4,
+      "lowestAmount": 3,
+      "midAmount": 3,
+      "unit": "Mat",
+      "categories": [
+        "Isolierung",
+        "Zelten",
+        "Camping",
+        "Zubehör",
+        "Kälte",
+        "Liegen",
+        "Schlafen"
+      ],
+      "packageQuantity": "",
+      "packageUnit": "",
+      "nutrients": {
+        "description": "",
+        "unit": "",
+        "amount": "",
+        "values": []
+      },
+      "icon": "https://tse2.mm.bing.net/th?id=OIP.Eom7S3NkOFR5-XVCA6GSvAHaHa&pid=Api",
+      "id": 97
+    },
+    {
+      "id": 98,
+      "name": "Zelt Groß 4 Personen",
+      "amount": 1,
+      "lowestAmount": 0,
+      "midAmount": 0,
+      "unit": "Tent",
+      "categories": [
+        "Camping",
+        "Schutz",
+        "Schlafen"
+      ],
+      "packageQuantity": "",
+      "packageUnit": "",
+      "nutrients": {
+        "description": "",
+        "unit": "",
+        "amount": 0,
+        "values": []
+      },
+      "icon": "https://tse1.mm.bing.net/th?id=OIP.8AZ0BAiT4WS6tS2aNcOjiAHaFj&pid=Api"
+    },
+    {
+      "name": "Hängematte Light",
+      "amount": 2,
+      "lowestAmount": 0,
+      "midAmount": 0,
+      "unit": "Hammock",
+      "categories": [
+        "Schlafen",
+        "Camping",
+        "Trekking"
+      ],
+      "packageQuantity": "",
+      "packageUnit": "",
+      "nutrients": {
+        "description": "",
+        "unit": "",
+        "amount": "",
+        "values": []
+      },
+      "icon": "https://tse1.mm.bing.net/th?id=OIP.xBvTygUmqFlJlreeUBmiVAHaHf&pid=Api",
+      "id": 99
     }
   ],
   "basket": []
