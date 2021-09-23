@@ -3,7 +3,7 @@
     {
       "id": 1,
       "name": "Dinkel Mehl",
-      "amount": 0,
+      "amount": 1,
       "lowestAmount": 2,
       "midAmount": 4,
       "unit": "Pack",
@@ -174,7 +174,7 @@
     },
     {
       "name": "Zucker",
-      "amount": 1,
+      "amount": 2,
       "lowestAmount": 1,
       "midAmount": 2,
       "unit": "Pack",
@@ -347,7 +347,7 @@
     {
       "id": 5,
       "name": "Rotkohl Glas",
-      "amount": 8,
+      "amount": 3,
       "lowestAmount": 2,
       "midAmount": 4,
       "unit": "Glas",
@@ -1040,7 +1040,7 @@
     {
       "id": 13,
       "name": "NRG-5",
-      "amount": 1,
+      "amount": 2,
       "lowestAmount": 1,
       "midAmount": 3,
       "unit": "Pack",
@@ -1211,7 +1211,7 @@
     },
     {
       "name": "Hühnernudeltopf",
-      "amount": 1,
+      "amount": 2,
       "lowestAmount": 2,
       "midAmount": 6,
       "unit": "Can",
@@ -1298,7 +1298,7 @@
     {
       "id": 16,
       "name": "Spitzen Langkorn-Reis",
-      "amount": 0,
+      "amount": 2,
       "lowestAmount": 2,
       "midAmount": 4,
       "unit": "Pack",
@@ -1639,7 +1639,7 @@
     },
     {
       "name": "Erbsen",
-      "amount": 1,
+      "amount": 2,
       "lowestAmount": 1,
       "midAmount": 2,
       "unit": "Can",
@@ -2141,7 +2141,7 @@
     },
     {
       "name": "Cornichons ",
-      "amount": 0,
+      "amount": 3,
       "lowestAmount": 0,
       "midAmount": 1,
       "unit": "Glas",
@@ -2226,7 +2226,7 @@
     {
       "id": 28,
       "name": "Spargel",
-      "amount": 1,
+      "amount": 0,
       "lowestAmount": 0,
       "midAmount": 1,
       "unit": "Can",
@@ -2389,7 +2389,7 @@
     },
     {
       "name": "Kartoffel Knödel",
-      "amount": 0,
+      "amount": 1,
       "lowestAmount": 0,
       "midAmount": 1,
       "unit": "Pack",
@@ -2635,7 +2635,7 @@
     },
     {
       "name": "Sauerkirschen",
-      "amount": 1,
+      "amount": 2,
       "lowestAmount": 0,
       "midAmount": 0,
       "unit": "Glas",
@@ -2799,7 +2799,7 @@
     },
     {
       "name": "Pfirsiche geschnitten",
-      "amount": 1,
+      "amount": 2,
       "lowestAmount": 0,
       "midAmount": 1,
       "unit": "Can",
@@ -3291,7 +3291,7 @@
     },
     {
       "name": "Milchreis Bio",
-      "amount": 1,
+      "amount": 3,
       "lowestAmount": 0,
       "midAmount": 0,
       "unit": "Pack",
@@ -4720,7 +4720,7 @@
     },
     {
       "name": "Hacksteak",
-      "amount": 1,
+      "amount": 3,
       "lowestAmount": 0,
       "midAmount": 0,
       "unit": "Pack",
@@ -4892,7 +4892,7 @@
     },
     {
       "name": "Zarte Heringsfilets Paprika-Creme",
-      "amount": 8,
+      "amount": 3,
       "lowestAmount": 0,
       "midAmount": 0,
       "unit": "Can",
@@ -5063,7 +5063,7 @@
     },
     {
       "name": "Frühstücksfleisch",
-      "amount": 0,
+      "amount": 1,
       "lowestAmount": 0,
       "midAmount": 0,
       "unit": "Can",
