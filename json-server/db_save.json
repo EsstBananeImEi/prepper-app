@@ -3,7 +3,7 @@
     {
       "id": 1,
       "name": "Dinkel Mehl",
-      "amount": 4,
+      "amount": 1,
       "lowestAmount": 2,
       "midAmount": 4,
       "unit": "Pack",
@@ -6079,7 +6079,7 @@
     {
       "id": 74,
       "name": "Rindergulasch Pikant",
-      "amount": 2,
+      "amount": 1,
       "lowestAmount": 1,
       "midAmount": 3,
       "unit": "Can",
@@ -6253,7 +6253,7 @@
     {
       "id": 76,
       "name": "Spätzle",
-      "amount": 1,
+      "amount": 2,
       "lowestAmount": 0,
       "midAmount": 0,
       "unit": "Pack",
@@ -6338,7 +6338,7 @@
     },
     {
       "name": "Sauce Hollandaise",
-      "amount": 1,
+      "amount": 2,
       "lowestAmount": 0,
       "midAmount": 0,
       "unit": "Pack",
@@ -6423,7 +6423,7 @@
     },
     {
       "name": "Penne Vollkorn",
-      "amount": 2,
+      "amount": 1,
       "lowestAmount": 0,
       "midAmount": 0,
       "unit": "Pack",
@@ -6508,7 +6508,7 @@
     },
     {
       "name": "Penne",
-      "amount": 2,
+      "amount": 1,
       "lowestAmount": 0,
       "midAmount": 0,
       "unit": "Pack",
@@ -7817,6 +7817,30 @@
         "values": []
       },
       "icon": "https://webimg.secondhandapp.at/w-i-mgl/5aa4ef2e47588e7754b83454"
+    },
+    {
+      "id": 103,
+      "name": "Campingkocher",
+      "amount": 1,
+      "lowestAmount": 0,
+      "midAmount": 0,
+      "unit": "Stove",
+      "categories": [
+        "Kochen",
+        "Wärmen",
+        "Braten",
+        "Zubehör",
+        "Feuer"
+      ],
+      "packageQuantity": "",
+      "packageUnit": "",
+      "nutrients": {
+        "description": "",
+        "unit": "",
+        "amount": 0,
+        "values": []
+      },
+      "icon": "https://tse2.mm.bing.net/th?id=OIP.hC7Ez49IT7-6KRETWTyEnQHaHa&pid=Api"
     }
   ],
   "basket": []
