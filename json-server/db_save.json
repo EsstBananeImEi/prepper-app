@@ -518,7 +518,7 @@
     },
     {
       "name": "Pizzatomaten",
-      "amount": 0,
+      "amount": 1,
       "lowestAmount": 4,
       "midAmount": 6,
       "unit": "Can",
@@ -1296,22 +1296,24 @@
       "id": 15
     },
     {
-      "name": "Reis",
-      "amount": 0,
+      "id": 16,
+      "name": "Spitzen Langkorn-Reis",
+      "amount": 1,
       "lowestAmount": 2,
       "midAmount": 4,
       "unit": "Pack",
       "categories": [
         "Grundnahrungsmittel",
         "Getreide",
-        "Kohlenhydrate"
+        "Kohlenhydrate",
+        "Reis"
       ],
-      "packageQuantity": "",
-      "packageUnit": "",
+      "packageQuantity": "1",
+      "packageUnit": "Kilogramm ",
       "nutrients": {
         "description": "",
         "unit": "",
-        "amount": "",
+        "amount": 0,
         "values": [
           {
             "id": 1,
@@ -1378,8 +1380,7 @@
           }
         ]
       },
-      "icon": "https://tse3.mm.bing.net/th?id=OIP.o4mwts1efV1jIUoCKS4XjgHaHa&pid=Api",
-      "id": 16
+      "icon": "https://tse1.mm.bing.net/th?id=OIP.s16jAUdqxeuU5OjP3m8TMQHaKL&pid=Api"
     },
     {
       "id": 17,
@@ -3451,6 +3452,677 @@
       },
       "icon": "https://tse2.mm.bing.net/th?id=OIP.pIKpDNODZ9e9SuPgp-sHvQHaFj&pid=Api",
       "id": 42
+    },
+    {
+      "name": "Paradiese Creme Weiße Schokolade",
+      "amount": 1,
+      "lowestAmount": 0,
+      "midAmount": 0,
+      "unit": "Pack",
+      "categories": [],
+      "packageQuantity": "70",
+      "packageUnit": "Gramm",
+      "nutrients": {
+        "description": "",
+        "unit": "",
+        "amount": "",
+        "values": [
+          {
+            "id": 1,
+            "name": "Proteine",
+            "color": "#FDB45C",
+            "values": {
+              "typ": "",
+              "value": 0
+            }
+          },
+          {
+            "id": 2,
+            "name": "Kohlenhydrate",
+            "color": "#46BFBD",
+            "values": {
+              "typ": "",
+              "value": 0
+            }
+          },
+          {
+            "id": 3,
+            "name": "Fett",
+            "color": "#F7464A",
+            "values": {
+              "typ": "",
+              "value": 0
+            }
+          },
+          {
+            "id": 4,
+            "name": "Zucker",
+            "color": "#E85F5C",
+            "values": {
+              "typ": "",
+              "value": 0
+            }
+          },
+          {
+            "id": 5,
+            "name": "Ballaststoffe",
+            "color": "#4D5360",
+            "values": {
+              "typ": "",
+              "value": 0
+            }
+          },
+          {
+            "id": 6,
+            "name": "gesättigte Fettsäuren",
+            "color": "#C1EEFF",
+            "values": {
+              "typ": "",
+              "value": 0
+            }
+          },
+          {
+            "id": 7,
+            "name": "Energie",
+            "color": "",
+            "values": {
+              "typ": "",
+              "value": 0
+            }
+          }
+        ]
+      },
+      "icon": "https://tse3.mm.bing.net/th?id=OIP.SqiAGcqUgtiTeL_EL1KRKAHaJ4&pid=Api",
+      "id": 43
+    },
+    {
+      "name": "Grießbrei",
+      "amount": 2,
+      "lowestAmount": 0,
+      "midAmount": 0,
+      "unit": "Pack",
+      "categories": [],
+      "packageQuantity": "89",
+      "packageUnit": "Gramm",
+      "nutrients": {
+        "description": "",
+        "unit": "",
+        "amount": "",
+        "values": [
+          {
+            "id": 1,
+            "name": "Proteine",
+            "color": "#FDB45C",
+            "values": {
+              "typ": "",
+              "value": 0
+            }
+          },
+          {
+            "id": 2,
+            "name": "Kohlenhydrate",
+            "color": "#46BFBD",
+            "values": {
+              "typ": "",
+              "value": 0
+            }
+          },
+          {
+            "id": 3,
+            "name": "Fett",
+            "color": "#F7464A",
+            "values": {
+              "typ": "",
+              "value": 0
+            }
+          },
+          {
+            "id": 4,
+            "name": "Zucker",
+            "color": "#E85F5C",
+            "values": {
+              "typ": "",
+              "value": 0
+            }
+          },
+          {
+            "id": 5,
+            "name": "Ballaststoffe",
+            "color": "#4D5360",
+            "values": {
+              "typ": "",
+              "value": 0
+            }
+          },
+          {
+            "id": 6,
+            "name": "gesättigte Fettsäuren",
+            "color": "#C1EEFF",
+            "values": {
+              "typ": "",
+              "value": 0
+            }
+          },
+          {
+            "id": 7,
+            "name": "Energie",
+            "color": "",
+            "values": {
+              "typ": "",
+              "value": 0
+            }
+          }
+        ]
+      },
+      "icon": "https://tse1.mm.bing.net/th?id=OIP._uOxHjqrjnEHV0Z7tcGHYwHaHa&pid=Api",
+      "id": 44
+    },
+    {
+      "name": "Pudding Pulver Vanille",
+      "amount": 1,
+      "lowestAmount": 0,
+      "midAmount": 0,
+      "unit": "Pack",
+      "categories": [
+        "Kaufland"
+      ],
+      "packageQuantity": "37",
+      "packageUnit": "Gramm",
+      "nutrients": {
+        "description": "",
+        "unit": "",
+        "amount": "",
+        "values": [
+          {
+            "id": 1,
+            "name": "Proteine",
+            "color": "#FDB45C",
+            "values": {
+              "typ": "",
+              "value": 0
+            }
+          },
+          {
+            "id": 2,
+            "name": "Kohlenhydrate",
+            "color": "#46BFBD",
+            "values": {
+              "typ": "",
+              "value": 0
+            }
+          },
+          {
+            "id": 3,
+            "name": "Fett",
+            "color": "#F7464A",
+            "values": {
+              "typ": "",
+              "value": 0
+            }
+          },
+          {
+            "id": 4,
+            "name": "Zucker",
+            "color": "#E85F5C",
+            "values": {
+              "typ": "",
+              "value": 0
+            }
+          },
+          {
+            "id": 5,
+            "name": "Ballaststoffe",
+            "color": "#4D5360",
+            "values": {
+              "typ": "",
+              "value": 0
+            }
+          },
+          {
+            "id": 6,
+            "name": "gesättigte Fettsäuren",
+            "color": "#C1EEFF",
+            "values": {
+              "typ": "",
+              "value": 0
+            }
+          },
+          {
+            "id": 7,
+            "name": "Energie",
+            "color": "",
+            "values": {
+              "typ": "",
+              "value": 0
+            }
+          }
+        ]
+      },
+      "icon": "https://tse3.mm.bing.net/th?id=OIP.LXQXeXNeWlALtKqdt5pg3QHaFj&pid=Api",
+      "id": 45
+    },
+    {
+      "name": "Pudding Pulver Schokolade",
+      "amount": 3,
+      "lowestAmount": 0,
+      "midAmount": 0,
+      "unit": "Pack",
+      "categories": [
+        "Kaufland"
+      ],
+      "packageQuantity": "41",
+      "packageUnit": "Gramm",
+      "nutrients": {
+        "description": "",
+        "unit": "",
+        "amount": "",
+        "values": [
+          {
+            "id": 1,
+            "name": "Proteine",
+            "color": "#FDB45C",
+            "values": {
+              "typ": "",
+              "value": 0
+            }
+          },
+          {
+            "id": 2,
+            "name": "Kohlenhydrate",
+            "color": "#46BFBD",
+            "values": {
+              "typ": "",
+              "value": 0
+            }
+          },
+          {
+            "id": 3,
+            "name": "Fett",
+            "color": "#F7464A",
+            "values": {
+              "typ": "",
+              "value": 0
+            }
+          },
+          {
+            "id": 4,
+            "name": "Zucker",
+            "color": "#E85F5C",
+            "values": {
+              "typ": "",
+              "value": 0
+            }
+          },
+          {
+            "id": 5,
+            "name": "Ballaststoffe",
+            "color": "#4D5360",
+            "values": {
+              "typ": "",
+              "value": 0
+            }
+          },
+          {
+            "id": 6,
+            "name": "gesättigte Fettsäuren",
+            "color": "#C1EEFF",
+            "values": {
+              "typ": "",
+              "value": 0
+            }
+          },
+          {
+            "id": 7,
+            "name": "Energie",
+            "color": "",
+            "values": {
+              "typ": "",
+              "value": 0
+            }
+          }
+        ]
+      },
+      "icon": "https://tse4.mm.bing.net/th?id=OIP.GdLXyhFHzFqb0T6vWEevXwHaHa&pid=Api",
+      "id": 46
+    },
+    {
+      "name": "Jasmine Reis",
+      "amount": 2,
+      "lowestAmount": 0,
+      "midAmount": 0,
+      "unit": "Pack",
+      "categories": [
+        "Reis"
+      ],
+      "packageQuantity": "1",
+      "packageUnit": "Kilogramm ",
+      "nutrients": {
+        "description": "",
+        "unit": "",
+        "amount": "",
+        "values": [
+          {
+            "id": 1,
+            "name": "Proteine",
+            "color": "#FDB45C",
+            "values": {
+              "typ": "",
+              "value": 0
+            }
+          },
+          {
+            "id": 2,
+            "name": "Kohlenhydrate",
+            "color": "#46BFBD",
+            "values": {
+              "typ": "",
+              "value": 0
+            }
+          },
+          {
+            "id": 3,
+            "name": "Fett",
+            "color": "#F7464A",
+            "values": {
+              "typ": "",
+              "value": 0
+            }
+          },
+          {
+            "id": 4,
+            "name": "Zucker",
+            "color": "#E85F5C",
+            "values": {
+              "typ": "",
+              "value": 0
+            }
+          },
+          {
+            "id": 5,
+            "name": "Ballaststoffe",
+            "color": "#4D5360",
+            "values": {
+              "typ": "",
+              "value": 0
+            }
+          },
+          {
+            "id": 6,
+            "name": "gesättigte Fettsäuren",
+            "color": "#C1EEFF",
+            "values": {
+              "typ": "",
+              "value": 0
+            }
+          },
+          {
+            "id": 7,
+            "name": "Energie",
+            "color": "",
+            "values": {
+              "typ": "",
+              "value": 0
+            }
+          }
+        ]
+      },
+      "icon": "https://tse2.mm.bing.net/th?id=OIP._AQXSCT2nF_QMRCWZzLZrAAAAA&pid=Api",
+      "id": 47
+    },
+    {
+      "name": "Basmati Reis",
+      "amount": 1,
+      "lowestAmount": 0,
+      "midAmount": 0,
+      "unit": "Pack",
+      "categories": [
+        "Reis"
+      ],
+      "packageQuantity": "1",
+      "packageUnit": "Kilogramm ",
+      "nutrients": {
+        "description": "",
+        "unit": "",
+        "amount": "",
+        "values": [
+          {
+            "id": 1,
+            "name": "Proteine",
+            "color": "#FDB45C",
+            "values": {
+              "typ": "",
+              "value": 0
+            }
+          },
+          {
+            "id": 2,
+            "name": "Kohlenhydrate",
+            "color": "#46BFBD",
+            "values": {
+              "typ": "",
+              "value": 0
+            }
+          },
+          {
+            "id": 3,
+            "name": "Fett",
+            "color": "#F7464A",
+            "values": {
+              "typ": "",
+              "value": 0
+            }
+          },
+          {
+            "id": 4,
+            "name": "Zucker",
+            "color": "#E85F5C",
+            "values": {
+              "typ": "",
+              "value": 0
+            }
+          },
+          {
+            "id": 5,
+            "name": "Ballaststoffe",
+            "color": "#4D5360",
+            "values": {
+              "typ": "",
+              "value": 0
+            }
+          },
+          {
+            "id": 6,
+            "name": "gesättigte Fettsäuren",
+            "color": "#C1EEFF",
+            "values": {
+              "typ": "",
+              "value": 0
+            }
+          },
+          {
+            "id": 7,
+            "name": "Energie",
+            "color": "",
+            "values": {
+              "typ": "",
+              "value": 0
+            }
+          }
+        ]
+      },
+      "icon": "https://tse4.mm.bing.net/th?id=OIP.4BqlSNF70mP1s_RpY5Wh6gHaLE&pid=Api",
+      "id": 48
+    },
+    {
+      "name": "Kartoffeleintopf",
+      "amount": 1,
+      "lowestAmount": 0,
+      "midAmount": 0,
+      "unit": "Can",
+      "categories": [
+        "Fertignahrung",
+        "konserve",
+        "Eintopf"
+      ],
+      "packageQuantity": "800",
+      "packageUnit": "Gramm",
+      "nutrients": {
+        "description": "",
+        "unit": "",
+        "amount": "",
+        "values": [
+          {
+            "id": 1,
+            "name": "Proteine",
+            "color": "#FDB45C",
+            "values": {
+              "typ": "",
+              "value": 0
+            }
+          },
+          {
+            "id": 2,
+            "name": "Kohlenhydrate",
+            "color": "#46BFBD",
+            "values": {
+              "typ": "",
+              "value": 0
+            }
+          },
+          {
+            "id": 3,
+            "name": "Fett",
+            "color": "#F7464A",
+            "values": {
+              "typ": "",
+              "value": 0
+            }
+          },
+          {
+            "id": 4,
+            "name": "Zucker",
+            "color": "#E85F5C",
+            "values": {
+              "typ": "",
+              "value": 0
+            }
+          },
+          {
+            "id": 5,
+            "name": "Ballaststoffe",
+            "color": "#4D5360",
+            "values": {
+              "typ": "",
+              "value": 0
+            }
+          },
+          {
+            "id": 6,
+            "name": "gesättigte Fettsäuren",
+            "color": "#C1EEFF",
+            "values": {
+              "typ": "",
+              "value": 0
+            }
+          },
+          {
+            "id": 7,
+            "name": "Energie",
+            "color": "",
+            "values": {
+              "typ": "",
+              "value": 0
+            }
+          }
+        ]
+      },
+      "icon": "https://tse3.mm.bing.net/th?id=OIP.Pguoj_2FnlPyovBc6m7F8AHaHa&pid=Api",
+      "id": 49
+    },
+    {
+      "name": "Hühnersuppe",
+      "amount": 1,
+      "lowestAmount": 0,
+      "midAmount": 0,
+      "unit": "Pack",
+      "categories": [
+        "Suppen",
+        "Corat"
+      ],
+      "packageQuantity": "540",
+      "packageUnit": "Milliliter ",
+      "nutrients": {
+        "description": "",
+        "unit": "",
+        "amount": "",
+        "values": [
+          {
+            "id": 1,
+            "name": "Proteine",
+            "color": "#FDB45C",
+            "values": {
+              "typ": "",
+              "value": 0
+            }
+          },
+          {
+            "id": 2,
+            "name": "Kohlenhydrate",
+            "color": "#46BFBD",
+            "values": {
+              "typ": "",
+              "value": 0
+            }
+          },
+          {
+            "id": 3,
+            "name": "Fett",
+            "color": "#F7464A",
+            "values": {
+              "typ": "",
+              "value": 0
+            }
+          },
+          {
+            "id": 4,
+            "name": "Zucker",
+            "color": "#E85F5C",
+            "values": {
+              "typ": "",
+              "value": 0
+            }
+          },
+          {
+            "id": 5,
+            "name": "Ballaststoffe",
+            "color": "#4D5360",
+            "values": {
+              "typ": "",
+              "value": 0
+            }
+          },
+          {
+            "id": 6,
+            "name": "gesättigte Fettsäuren",
+            "color": "#C1EEFF",
+            "values": {
+              "typ": "",
+              "value": 0
+            }
+          },
+          {
+            "id": 7,
+            "name": "Energie",
+            "color": "",
+            "values": {
+              "typ": "",
+              "value": 0
+            }
+          }
+        ]
+      },
+      "icon": "https://tse4.mm.bing.net/th?id=OIP.isOf8xWA7ZhLi_4MWTxOOAHaE8&pid=Api",
+      "id": 50
     }
   ],
   "basket": []
