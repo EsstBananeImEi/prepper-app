@@ -1466,8 +1466,9 @@
       "icon": "https://tse3.mm.bing.net/th?id=OIP.aaP8W16WaFkXRdgqqbCKKAHaHa&pid=Api"
     },
     {
+      "id": 18,
       "name": "Brechbohnen",
-      "amount": 10,
+      "amount": 11,
       "lowestAmount": 2,
       "midAmount": 4,
       "unit": "Can",
@@ -1481,7 +1482,7 @@
       "nutrients": {
         "description": "",
         "unit": "",
-        "amount": "",
+        "amount": 0,
         "values": [
           {
             "id": 1,
@@ -1548,11 +1549,11 @@
           }
         ]
       },
-      "icon": "",
-      "id": 18
+      "icon": ""
     },
     {
-      "name": "Junge Bohnen",
+      "id": 19,
+      "name": "Brechbohnen",
       "amount": 1,
       "lowestAmount": 1,
       "midAmount": 2,
@@ -1561,96 +1562,12 @@
         "Bohnen",
         "Nahrungsmittel"
       ],
-      "packageQuantity": "",
-      "packageUnit": "",
-      "nutrients": {
-        "description": "",
-        "unit": "",
-        "amount": "",
-        "values": [
-          {
-            "id": 1,
-            "name": "Proteine",
-            "color": "#FDB45C",
-            "values": {
-              "typ": "",
-              "value": 0
-            }
-          },
-          {
-            "id": 2,
-            "name": "Kohlenhydrate",
-            "color": "#46BFBD",
-            "values": {
-              "typ": "",
-              "value": 0
-            }
-          },
-          {
-            "id": 3,
-            "name": "Fett",
-            "color": "#F7464A",
-            "values": {
-              "typ": "",
-              "value": 0
-            }
-          },
-          {
-            "id": 4,
-            "name": "Zucker",
-            "color": "#E85F5C",
-            "values": {
-              "typ": "",
-              "value": 0
-            }
-          },
-          {
-            "id": 5,
-            "name": "Ballaststoffe",
-            "color": "#4D5360",
-            "values": {
-              "typ": "",
-              "value": 0
-            }
-          },
-          {
-            "id": 6,
-            "name": "gesättigte Fettsäuren",
-            "color": "#C1EEFF",
-            "values": {
-              "typ": "",
-              "value": 0
-            }
-          },
-          {
-            "id": 7,
-            "name": "Energie",
-            "color": "",
-            "values": {
-              "typ": "",
-              "value": 0
-            }
-          }
-        ]
-      },
-      "icon": "https://tse4.mm.bing.net/th?id=OIP.0ASasyXz8zPhXp8k7kkzwQHaHa&pid=Api",
-      "id": 19
-    },
-    {
-      "name": "Erbsen",
-      "amount": 5,
-      "lowestAmount": 1,
-      "midAmount": 2,
-      "unit": "Can",
-      "categories": [
-        "Nahrungsmittel "
-      ],
-      "packageQuantity": "530",
+      "packageQuantity": "360",
       "packageUnit": "Gramm",
       "nutrients": {
         "description": "",
         "unit": "",
-        "amount": "",
+        "amount": 0,
         "values": [
           {
             "id": 1,
@@ -1717,12 +1634,11 @@
           }
         ]
       },
-      "icon": "https://tse4.mm.bing.net/th?id=OIP.WGPj9AsXTlyff70Tyd63rgHaEk&pid=Api",
-      "id": 20
+      "icon": "https://tse4.mm.bing.net/th?id=OIP.0ASasyXz8zPhXp8k7kkzwQHaHa&pid=Api"
     },
     {
       "name": "Erbsen",
-      "amount": 4,
+      "amount": 0,
       "lowestAmount": 1,
       "midAmount": 2,
       "unit": "Can",
@@ -1803,6 +1719,342 @@
       },
       "icon": "https://tse4.mm.bing.net/th?id=OIP.WGPj9AsXTlyff70Tyd63rgHaEk&pid=Api",
       "id": 21
+    },
+    {
+      "name": "Erbsen mit Möhrchen",
+      "amount": 4,
+      "lowestAmount": 1,
+      "midAmount": 2,
+      "unit": "Can",
+      "categories": [
+        "Nahrungsmittel "
+      ],
+      "packageQuantity": "530",
+      "packageUnit": "Gramm",
+      "nutrients": {
+        "description": "",
+        "unit": "",
+        "amount": "",
+        "values": [
+          {
+            "id": 1,
+            "name": "Proteine",
+            "color": "#FDB45C",
+            "values": {
+              "typ": "",
+              "value": 0
+            }
+          },
+          {
+            "id": 2,
+            "name": "Kohlenhydrate",
+            "color": "#46BFBD",
+            "values": {
+              "typ": "",
+              "value": 0
+            }
+          },
+          {
+            "id": 3,
+            "name": "Fett",
+            "color": "#F7464A",
+            "values": {
+              "typ": "",
+              "value": 0
+            }
+          },
+          {
+            "id": 4,
+            "name": "Zucker",
+            "color": "#E85F5C",
+            "values": {
+              "typ": "",
+              "value": 0
+            }
+          },
+          {
+            "id": 5,
+            "name": "Ballaststoffe",
+            "color": "#4D5360",
+            "values": {
+              "typ": "",
+              "value": 0
+            }
+          },
+          {
+            "id": 6,
+            "name": "gesättigte Fettsäuren",
+            "color": "#C1EEFF",
+            "values": {
+              "typ": "",
+              "value": 0
+            }
+          },
+          {
+            "id": 7,
+            "name": "Energie",
+            "color": "",
+            "values": {
+              "typ": "",
+              "value": 0
+            }
+          }
+        ]
+      },
+      "icon": "https://tse2.mm.bing.net/th?id=OIP.G8gzESoti2jyZzkn4ZWw1QHaJr&pid=Api",
+      "id": 22
+    },
+    {
+      "name": "Erbsen Fein mit Pariser Karotten ",
+      "amount": 2,
+      "lowestAmount": 1,
+      "midAmount": 2,
+      "unit": "Glas",
+      "categories": [
+        "Nahrungsmittel "
+      ],
+      "packageQuantity": "420",
+      "packageUnit": "Gramm",
+      "nutrients": {
+        "description": "",
+        "unit": "",
+        "amount": "",
+        "values": [
+          {
+            "id": 1,
+            "name": "Proteine",
+            "color": "#FDB45C",
+            "values": {
+              "typ": "",
+              "value": 0
+            }
+          },
+          {
+            "id": 2,
+            "name": "Kohlenhydrate",
+            "color": "#46BFBD",
+            "values": {
+              "typ": "",
+              "value": 0
+            }
+          },
+          {
+            "id": 3,
+            "name": "Fett",
+            "color": "#F7464A",
+            "values": {
+              "typ": "",
+              "value": 0
+            }
+          },
+          {
+            "id": 4,
+            "name": "Zucker",
+            "color": "#E85F5C",
+            "values": {
+              "typ": "",
+              "value": 0
+            }
+          },
+          {
+            "id": 5,
+            "name": "Ballaststoffe",
+            "color": "#4D5360",
+            "values": {
+              "typ": "",
+              "value": 0
+            }
+          },
+          {
+            "id": 6,
+            "name": "gesättigte Fettsäuren",
+            "color": "#C1EEFF",
+            "values": {
+              "typ": "",
+              "value": 0
+            }
+          },
+          {
+            "id": 7,
+            "name": "Energie",
+            "color": "",
+            "values": {
+              "typ": "",
+              "value": 0
+            }
+          }
+        ]
+      },
+      "icon": "https://tse2.mm.bing.net/th?id=OIP.VE1bH_rPyUTnovG3ya8akgHaHa&pid=Api",
+      "id": 23
+    },
+    {
+      "name": "Rotkohl",
+      "amount": 1,
+      "lowestAmount": 1,
+      "midAmount": 2,
+      "unit": "Pack",
+      "categories": [],
+      "packageQuantity": "400",
+      "packageUnit": "Gramm",
+      "nutrients": {
+        "description": "",
+        "unit": "",
+        "amount": "",
+        "values": [
+          {
+            "id": 1,
+            "name": "Proteine",
+            "color": "#FDB45C",
+            "values": {
+              "typ": "",
+              "value": 0
+            }
+          },
+          {
+            "id": 2,
+            "name": "Kohlenhydrate",
+            "color": "#46BFBD",
+            "values": {
+              "typ": "",
+              "value": 0
+            }
+          },
+          {
+            "id": 3,
+            "name": "Fett",
+            "color": "#F7464A",
+            "values": {
+              "typ": "",
+              "value": 0
+            }
+          },
+          {
+            "id": 4,
+            "name": "Zucker",
+            "color": "#E85F5C",
+            "values": {
+              "typ": "",
+              "value": 0
+            }
+          },
+          {
+            "id": 5,
+            "name": "Ballaststoffe",
+            "color": "#4D5360",
+            "values": {
+              "typ": "",
+              "value": 0
+            }
+          },
+          {
+            "id": 6,
+            "name": "gesättigte Fettsäuren",
+            "color": "#C1EEFF",
+            "values": {
+              "typ": "",
+              "value": 0
+            }
+          },
+          {
+            "id": 7,
+            "name": "Energie",
+            "color": "",
+            "values": {
+              "typ": "",
+              "value": 0
+            }
+          }
+        ]
+      },
+      "icon": "",
+      "id": 24
+    },
+    {
+      "id": 25,
+      "name": "Gari Sushi-Ingwer",
+      "amount": 1,
+      "lowestAmount": 0,
+      "midAmount": 0,
+      "unit": "Glas",
+      "categories": [
+        "Gari",
+        "Sushi",
+        "Zutaten"
+      ],
+      "packageQuantity": 110,
+      "packageUnit": "Gramm",
+      "nutrients": {
+        "description": "",
+        "unit": "",
+        "amount": 0,
+        "values": [
+          {
+            "id": 1,
+            "name": "Proteine",
+            "color": "#FDB45C",
+            "values": {
+              "typ": "",
+              "value": 0
+            }
+          },
+          {
+            "id": 2,
+            "name": "Kohlenhydrate",
+            "color": "#46BFBD",
+            "values": {
+              "typ": "",
+              "value": 0
+            }
+          },
+          {
+            "id": 3,
+            "name": "Fett",
+            "color": "#F7464A",
+            "values": {
+              "typ": "",
+              "value": 0
+            }
+          },
+          {
+            "id": 4,
+            "name": "Zucker",
+            "color": "#E85F5C",
+            "values": {
+              "typ": "",
+              "value": 0
+            }
+          },
+          {
+            "id": 5,
+            "name": "Ballaststoffe",
+            "color": "#4D5360",
+            "values": {
+              "typ": "",
+              "value": 0
+            }
+          },
+          {
+            "id": 6,
+            "name": "gesättigte Fettsäuren",
+            "color": "#C1EEFF",
+            "values": {
+              "typ": "",
+              "value": 0
+            }
+          },
+          {
+            "id": 7,
+            "name": "Energie",
+            "color": "",
+            "values": {
+              "typ": "",
+              "value": 0
+            }
+          }
+        ]
+      },
+      "icon": "https://tse4.mm.bing.net/th?id=OIP.aaoCfZifVQF0jsvcg_YxgQHaHa&pid=Api"
     }
   ],
   "basket": []
