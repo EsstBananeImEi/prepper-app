@@ -88,7 +88,7 @@
     },
     {
       "name": "Weizenmehl",
-      "amount": 6,
+      "amount": 0,
       "lowestAmount": 2,
       "midAmount": 4,
       "unit": "Pack",
@@ -431,8 +431,9 @@
       "icon": "https://tse1.mm.bing.net/th?id=OIP.8V82UNVvD0OzZLiZm65DQAHaFj&pid=Api"
     },
     {
+      "id": 6,
       "name": "Pilze",
-      "amount": 0,
+      "amount": 13,
       "lowestAmount": 3,
       "midAmount": 5,
       "unit": "Can",
@@ -441,12 +442,12 @@
         "Konserve",
         "Zutaten"
       ],
-      "packageQuantity": "",
-      "packageUnit": "",
+      "packageQuantity": 200,
+      "packageUnit": "Gramm",
       "nutrients": {
         "description": "",
         "unit": "",
-        "amount": "",
+        "amount": 0,
         "values": [
           {
             "id": 1,
@@ -513,8 +514,7 @@
           }
         ]
       },
-      "icon": "https://tse4.mm.bing.net/th?id=OIP.Bg5FPGbIsNpIPrneBE0-tQHaEK&pid=Api",
-      "id": 6
+      "icon": "https://tse4.mm.bing.net/th?id=OIP.Bg5FPGbIsNpIPrneBE0-tQHaEK&pid=Api"
     },
     {
       "name": "Pizzatomaten",
@@ -5821,6 +5821,90 @@
       },
       "icon": "https://tse2.mm.bing.net/th?id=OIP.w00KX_TuBGZ_gTGRWCe8VwHaEs&pid=Api",
       "id": 70
+    },
+    {
+      "name": "Kidney Bohnen",
+      "amount": 5,
+      "lowestAmount": 2,
+      "midAmount": 4,
+      "unit": "Can",
+      "categories": [
+        "Bohnen"
+      ],
+      "packageQuantity": "240",
+      "packageUnit": "Gramm",
+      "nutrients": {
+        "description": "",
+        "unit": "",
+        "amount": "",
+        "values": [
+          {
+            "id": 1,
+            "name": "Proteine",
+            "color": "#FDB45C",
+            "values": {
+              "typ": "",
+              "value": 0
+            }
+          },
+          {
+            "id": 2,
+            "name": "Kohlenhydrate",
+            "color": "#46BFBD",
+            "values": {
+              "typ": "",
+              "value": 0
+            }
+          },
+          {
+            "id": 3,
+            "name": "Fett",
+            "color": "#F7464A",
+            "values": {
+              "typ": "",
+              "value": 0
+            }
+          },
+          {
+            "id": 4,
+            "name": "Zucker",
+            "color": "#E85F5C",
+            "values": {
+              "typ": "",
+              "value": 0
+            }
+          },
+          {
+            "id": 5,
+            "name": "Ballaststoffe",
+            "color": "#4D5360",
+            "values": {
+              "typ": "",
+              "value": 0
+            }
+          },
+          {
+            "id": 6,
+            "name": "gesättigte Fettsäuren",
+            "color": "#C1EEFF",
+            "values": {
+              "typ": "",
+              "value": 0
+            }
+          },
+          {
+            "id": 7,
+            "name": "Energie",
+            "color": "",
+            "values": {
+              "typ": "",
+              "value": 0
+            }
+          }
+        ]
+      },
+      "icon": "https://tse3.explicit.bing.net/th?id=OIP.RSspuqcm5dVjJbZRz28-0gHaFj&pid=Api",
+      "id": 71
     }
   ],
   "basket": []
