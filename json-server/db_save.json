@@ -3,7 +3,7 @@
     {
       "id": 1,
       "name": "Dinkel Mehl",
-      "amount": 1,
+      "amount": 0,
       "lowestAmount": 2,
       "midAmount": 4,
       "unit": "Pack",
@@ -1211,7 +1211,7 @@
     },
     {
       "name": "Hühnernudeltopf",
-      "amount": 2,
+      "amount": 0,
       "lowestAmount": 2,
       "midAmount": 6,
       "unit": "Can",
@@ -1639,7 +1639,7 @@
     },
     {
       "name": "Erbsen",
-      "amount": 2,
+      "amount": 0,
       "lowestAmount": 1,
       "midAmount": 2,
       "unit": "Can",
@@ -1723,7 +1723,7 @@
     },
     {
       "name": "Erbsen mit Möhrchen",
-      "amount": 0,
+      "amount": 1,
       "lowestAmount": 1,
       "midAmount": 2,
       "unit": "Can",
@@ -1807,7 +1807,7 @@
     },
     {
       "name": "Erbsen Fein mit Pariser Karotten ",
-      "amount": 0,
+      "amount": 1,
       "lowestAmount": 1,
       "midAmount": 2,
       "unit": "Glas",
@@ -1974,7 +1974,7 @@
     {
       "id": 25,
       "name": "Gari Sushi-Ingwer",
-      "amount": 11,
+      "amount": 1,
       "lowestAmount": 0,
       "midAmount": 0,
       "unit": "Glas",
@@ -2141,7 +2141,7 @@
     },
     {
       "name": "Cornichons ",
-      "amount": 3,
+      "amount": 1,
       "lowestAmount": 0,
       "midAmount": 1,
       "unit": "Glas",
@@ -2389,7 +2389,7 @@
     },
     {
       "name": "Kartoffel Knödel",
-      "amount": 1,
+      "amount": 2,
       "lowestAmount": 0,
       "midAmount": 1,
       "unit": "Pack",
@@ -2963,7 +2963,7 @@
     },
     {
       "name": "Granatapfelkerne",
-      "amount": 2,
+      "amount": 1,
       "lowestAmount": 0,
       "midAmount": 0,
       "unit": "Glas",
@@ -3537,7 +3537,7 @@
     },
     {
       "name": "Grießbrei",
-      "amount": 4,
+      "amount": 2,
       "lowestAmount": 0,
       "midAmount": 0,
       "unit": "Pack",
@@ -3787,7 +3787,7 @@
     },
     {
       "name": "Jasmine Reis",
-      "amount": 0,
+      "amount": 1,
       "lowestAmount": 0,
       "midAmount": 0,
       "unit": "Pack",
@@ -4041,7 +4041,7 @@
     },
     {
       "name": "Hühnersuppe",
-      "amount": 0,
+      "amount": 1,
       "lowestAmount": 0,
       "midAmount": 0,
       "unit": "Pack",
@@ -4211,7 +4211,7 @@
     },
     {
       "name": "Buchweizen Suppe ",
-      "amount": 4,
+      "amount": 3,
       "lowestAmount": 0,
       "midAmount": 0,
       "unit": "Pack",
@@ -4295,7 +4295,7 @@
     },
     {
       "name": "Hirsesuppe",
-      "amount": 1,
+      "amount": 3,
       "lowestAmount": 0,
       "midAmount": 0,
       "unit": "Pack",
@@ -4635,7 +4635,7 @@
     },
     {
       "name": "Jägertopf",
-      "amount": 2,
+      "amount": 1,
       "lowestAmount": 0,
       "midAmount": 0,
       "unit": "Pack",
@@ -4720,7 +4720,7 @@
     },
     {
       "name": "Hacksteak",
-      "amount": 3,
+      "amount": 1,
       "lowestAmount": 0,
       "midAmount": 0,
       "unit": "Pack",
@@ -5063,7 +5063,7 @@
     },
     {
       "name": "Frühstücksfleisch",
-      "amount": 1,
+      "amount": 5,
       "lowestAmount": 0,
       "midAmount": 0,
       "unit": "Can",
@@ -5148,7 +5148,7 @@
     },
     {
       "name": "Corned Beef",
-      "amount": 1,
+      "amount": 2,
       "lowestAmount": 0,
       "midAmount": 0,
       "unit": "Can",
