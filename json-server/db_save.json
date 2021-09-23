@@ -688,8 +688,9 @@
       "id": 8
     },
     {
+      "id": 9,
       "name": "Batterien AA",
-      "amount": 0,
+      "amount": 22,
       "lowestAmount": 2,
       "midAmount": 6,
       "unit": "Piece",
@@ -704,7 +705,7 @@
       "nutrients": {
         "description": "",
         "unit": "",
-        "amount": "",
+        "amount": 0,
         "values": [
           {
             "id": 1,
@@ -771,8 +772,7 @@
           }
         ]
       },
-      "icon": "https://tse3.mm.bing.net/th?id=OIP.6fetyDxEf_T1MAuG6g74nwHaHU&pid=Api",
-      "id": 9
+      "icon": "https://tse3.mm.bing.net/th?id=OIP.6fetyDxEf_T1MAuG6g74nwHaHU&pid=Api"
     },
     {
       "name": "Batterien AAA",
@@ -6847,6 +6847,266 @@
       },
       "icon": "https://tse2.mm.bing.net/th?id=OIP.ef88Fri3ocKPmzzVyZ9WWgHaNt&pid=Api",
       "id": 82
+    },
+    {
+      "name": "Spaghetti",
+      "amount": 5,
+      "lowestAmount": 2,
+      "midAmount": 4,
+      "unit": "Pack",
+      "categories": [
+        "Nudeln",
+        "Getreide",
+        "Kohlehydrate",
+        "Zutaten"
+      ],
+      "packageQuantity": "500",
+      "packageUnit": "Gramm",
+      "nutrients": {
+        "description": "",
+        "unit": "",
+        "amount": "",
+        "values": [
+          {
+            "id": 1,
+            "name": "Proteine",
+            "color": "#FDB45C",
+            "values": {
+              "typ": "",
+              "value": 0
+            }
+          },
+          {
+            "id": 2,
+            "name": "Kohlenhydrate",
+            "color": "#46BFBD",
+            "values": {
+              "typ": "",
+              "value": 0
+            }
+          },
+          {
+            "id": 3,
+            "name": "Fett",
+            "color": "#F7464A",
+            "values": {
+              "typ": "",
+              "value": 0
+            }
+          },
+          {
+            "id": 4,
+            "name": "Zucker",
+            "color": "#E85F5C",
+            "values": {
+              "typ": "",
+              "value": 0
+            }
+          },
+          {
+            "id": 5,
+            "name": "Ballaststoffe",
+            "color": "#4D5360",
+            "values": {
+              "typ": "",
+              "value": 0
+            }
+          },
+          {
+            "id": 6,
+            "name": "gesättigte Fettsäuren",
+            "color": "#C1EEFF",
+            "values": {
+              "typ": "",
+              "value": 0
+            }
+          },
+          {
+            "id": 7,
+            "name": "Energie",
+            "color": "",
+            "values": {
+              "typ": "",
+              "value": 0
+            }
+          }
+        ]
+      },
+      "icon": "https://tse2.mm.bing.net/th?id=OIP.TDiFRmRybP7d4avsSzOqWwHaE4&pid=Api",
+      "id": 83
+    },
+    {
+      "name": "Wok Nudeln",
+      "amount": 1,
+      "lowestAmount": 0,
+      "midAmount": 0,
+      "unit": "Pack",
+      "categories": [
+        "Nudeln",
+        "Getreide",
+        "Asiatisch"
+      ],
+      "packageQuantity": "250",
+      "packageUnit": "Gramm",
+      "nutrients": {
+        "description": "",
+        "unit": "",
+        "amount": "",
+        "values": [
+          {
+            "id": 1,
+            "name": "Proteine",
+            "color": "#FDB45C",
+            "values": {
+              "typ": "",
+              "value": 0
+            }
+          },
+          {
+            "id": 2,
+            "name": "Kohlenhydrate",
+            "color": "#46BFBD",
+            "values": {
+              "typ": "",
+              "value": 0
+            }
+          },
+          {
+            "id": 3,
+            "name": "Fett",
+            "color": "#F7464A",
+            "values": {
+              "typ": "",
+              "value": 0
+            }
+          },
+          {
+            "id": 4,
+            "name": "Zucker",
+            "color": "#E85F5C",
+            "values": {
+              "typ": "",
+              "value": 0
+            }
+          },
+          {
+            "id": 5,
+            "name": "Ballaststoffe",
+            "color": "#4D5360",
+            "values": {
+              "typ": "",
+              "value": 0
+            }
+          },
+          {
+            "id": 6,
+            "name": "gesättigte Fettsäuren",
+            "color": "#C1EEFF",
+            "values": {
+              "typ": "",
+              "value": 0
+            }
+          },
+          {
+            "id": 7,
+            "name": "Energie",
+            "color": "",
+            "values": {
+              "typ": "",
+              "value": 0
+            }
+          }
+        ]
+      },
+      "icon": "https://tse2.mm.bing.net/th?id=OIP.urigFoFBrl8wllkF1Cjg5gHaHa&pid=Api",
+      "id": 84
+    },
+    {
+      "id": 85,
+      "name": "Batterien Akku D-Cell",
+      "amount": 4,
+      "lowestAmount": 1,
+      "midAmount": 2,
+      "unit": "Piece",
+      "categories": [
+        "Batterien",
+        "Strom",
+        "Licht",
+        "Bonai"
+      ],
+      "packageQuantity": "",
+      "packageUnit": "",
+      "nutrients": {
+        "description": "",
+        "unit": "",
+        "amount": 0,
+        "values": [
+          {
+            "id": 1,
+            "name": "Proteine",
+            "color": "#FDB45C",
+            "values": {
+              "typ": "",
+              "value": 0
+            }
+          },
+          {
+            "id": 2,
+            "name": "Kohlenhydrate",
+            "color": "#46BFBD",
+            "values": {
+              "typ": "",
+              "value": 0
+            }
+          },
+          {
+            "id": 3,
+            "name": "Fett",
+            "color": "#F7464A",
+            "values": {
+              "typ": "",
+              "value": 0
+            }
+          },
+          {
+            "id": 4,
+            "name": "Zucker",
+            "color": "#E85F5C",
+            "values": {
+              "typ": "",
+              "value": 0
+            }
+          },
+          {
+            "id": 5,
+            "name": "Ballaststoffe",
+            "color": "#4D5360",
+            "values": {
+              "typ": "",
+              "value": 0
+            }
+          },
+          {
+            "id": 6,
+            "name": "gesättigte Fettsäuren",
+            "color": "#C1EEFF",
+            "values": {
+              "typ": "",
+              "value": 0
+            }
+          },
+          {
+            "id": 7,
+            "name": "Energie",
+            "color": "",
+            "values": {
+              "typ": "",
+              "value": 0
+            }
+          }
+        ]
+      },
+      "icon": "https://tse1.mm.bing.net/th?id=OIP.pG7pC-t8Jp1gHWfXEaI29AHaHa&pid=Api"
     }
   ],
   "basket": []
