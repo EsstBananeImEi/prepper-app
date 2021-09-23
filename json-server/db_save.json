@@ -3,7 +3,7 @@
     {
       "id": 1,
       "name": "Dinkel Mehl",
-      "amount": 1,
+      "amount": 0,
       "lowestAmount": 2,
       "midAmount": 4,
       "unit": "Pack",
@@ -1807,7 +1807,7 @@
     },
     {
       "name": "Erbsen Fein mit Pariser Karotten ",
-      "amount": 0,
+      "amount": 1,
       "lowestAmount": 1,
       "midAmount": 2,
       "unit": "Glas",
@@ -2141,7 +2141,7 @@
     },
     {
       "name": "Cornichons ",
-      "amount": 5,
+      "amount": 1,
       "lowestAmount": 0,
       "midAmount": 1,
       "unit": "Glas",
@@ -5148,7 +5148,7 @@
     },
     {
       "name": "Corned Beef",
-      "amount": 1,
+      "amount": 2,
       "lowestAmount": 0,
       "midAmount": 0,
       "unit": "Can",
