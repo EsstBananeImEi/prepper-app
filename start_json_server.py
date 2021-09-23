@@ -27,17 +27,17 @@ if __name__ == '__main__':
     os.chdir(os.path.abspath(os.path.join(os.path.dirname( __file__ ),"json-server" )))
 
     command = ["yarn", "start-ext"]
-    # command2 = ["python", "save_db.py"]
+    command2 = ["python", "save_db.py"]
     try:
         logger.info("Starting Prepper App")
         thread1 = threading.Thread(target= run_comand, args=(command, logger,))
 
-        # logger.info("Starting Backup Service")
-        # thread2 = threading.Thread(target= run_comand, args=(command2,logger,))
+        logger.info("Starting Backup Service")
+        thread2 = threading.Thread(target= run_comand, args=(command2,logger,))
 
         thread1.start()
         logger.info("Finished Start Prepper App")
-        # thread2.start()
-        # logger.info("Finished Start Backup Service")
+        thread2.start()
+        logger.info("Finished Start Backup Service")
     except Exception as ex:
         logger.error(ex)
