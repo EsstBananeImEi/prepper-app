@@ -3,7 +3,7 @@
     {
       "id": 1,
       "name": "Dinkel Mehl",
-      "amount": 1,
+      "amount": 0,
       "lowestAmount": 2,
       "midAmount": 4,
       "unit": "Pack",
@@ -518,7 +518,7 @@
     },
     {
       "name": "Pizzatomaten",
-      "amount": 11,
+      "amount": 0,
       "lowestAmount": 4,
       "midAmount": 6,
       "unit": "Can",
@@ -2141,7 +2141,7 @@
     },
     {
       "name": "Cornichons ",
-      "amount": 1,
+      "amount": 0,
       "lowestAmount": 0,
       "midAmount": 1,
       "unit": "Glas",
@@ -2553,7 +2553,7 @@
     },
     {
       "name": "Ananas in Stücken",
-      "amount": 1,
+      "amount": 3,
       "lowestAmount": 1,
       "midAmount": 2,
       "unit": "Can",
@@ -3871,7 +3871,7 @@
     },
     {
       "name": "Basmati Reis",
-      "amount": 1,
+      "amount": 2,
       "lowestAmount": 0,
       "midAmount": 0,
       "unit": "Pack",
