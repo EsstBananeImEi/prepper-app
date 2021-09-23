@@ -28,6 +28,7 @@ class SaveDB:
         self.last_date = None
         self.next_date = None
         self.is_running = False
+        self.init = True
 
     def run(self):
         self.logger.info("Backup Service Started")
@@ -38,7 +39,8 @@ class SaveDB:
             current_time = datetime.datetime.now()
             delta = current_time - self.last_date
 
-            if delta.seconds >= 60 and not self.is_running:
+            if self.init or delta.seconds >= 600 and not self.is_running:
+                self.init = False
                 self.is_running = True
                 self.logger.info("### new check ###")
                 self.save_db()
@@ -94,9 +96,9 @@ class SaveDB:
                     test2 = subprocess.Popen("git commit -m 'Save Changes From DB-Json'", shell=True, stdout=subprocess.PIPE)
                     out, err = test2.communicate()
                     self.logger.info(out.decode("utf-8"))
-                    test3 = subprocess.Popen("git push", shell=True, stdout=subprocess.PIPE)
-                    out, err = test3.communicate()
-                    self.logger.info(out.decode("utf-8"))
+                    process = subprocess.Popen("git push", shell=True, stdout=subprocess.PIPE) 
+                    out, err = process.communicate()
+                    self.logger.info(out)
             else:
                 self.logger.info("### no changes found ###")
 
