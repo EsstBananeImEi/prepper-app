@@ -3,7 +3,7 @@
     {
       "id": 1,
       "name": "Dinkel Mehl",
-      "amount": 13,
+      "amount": 16,
       "lowestAmount": 2,
       "midAmount": 4,
       "unit": "Pack",
