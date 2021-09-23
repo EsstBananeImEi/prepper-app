@@ -2552,7 +2552,7 @@
     },
     {
       "name": "Ananas in Stücken",
-      "amount": 6,
+      "amount": 8,
       "lowestAmount": 1,
       "midAmount": 2,
       "unit": "Can",
@@ -2713,6 +2713,744 @@
       },
       "icon": "https://tse4.mm.bing.net/th?id=OIP.kgcya2NTi74fqZ07f7AGJQHaEh&pid=Api",
       "id": 33
+    },
+    {
+      "name": "Apfelmus Bio Glas 360g",
+      "amount": 1,
+      "lowestAmount": 0,
+      "midAmount": 1,
+      "unit": "Glas",
+      "categories": [],
+      "packageQuantity": "360",
+      "packageUnit": "Gramm",
+      "nutrients": {
+        "description": "",
+        "unit": "",
+        "amount": "",
+        "values": [
+          {
+            "id": 1,
+            "name": "Proteine",
+            "color": "#FDB45C",
+            "values": {
+              "typ": "",
+              "value": 0
+            }
+          },
+          {
+            "id": 2,
+            "name": "Kohlenhydrate",
+            "color": "#46BFBD",
+            "values": {
+              "typ": "",
+              "value": 0
+            }
+          },
+          {
+            "id": 3,
+            "name": "Fett",
+            "color": "#F7464A",
+            "values": {
+              "typ": "",
+              "value": 0
+            }
+          },
+          {
+            "id": 4,
+            "name": "Zucker",
+            "color": "#E85F5C",
+            "values": {
+              "typ": "",
+              "value": 0
+            }
+          },
+          {
+            "id": 5,
+            "name": "Ballaststoffe",
+            "color": "#4D5360",
+            "values": {
+              "typ": "",
+              "value": 0
+            }
+          },
+          {
+            "id": 6,
+            "name": "gesättigte Fettsäuren",
+            "color": "#C1EEFF",
+            "values": {
+              "typ": "",
+              "value": 0
+            }
+          },
+          {
+            "id": 7,
+            "name": "Energie",
+            "color": "",
+            "values": {
+              "typ": "",
+              "value": 0
+            }
+          }
+        ]
+      },
+      "icon": "https://tse3.mm.bing.net/th?id=OIP.eCCfNAa5e3XA3-9GGoSMYAHaHL&pid=Api",
+      "id": 34
+    },
+    {
+      "name": "Pfirsiche geschnitten",
+      "amount": 2,
+      "lowestAmount": 0,
+      "midAmount": 1,
+      "unit": "Can",
+      "categories": [],
+      "packageQuantity": "390",
+      "packageUnit": "Gramm",
+      "nutrients": {
+        "description": "",
+        "unit": "",
+        "amount": "",
+        "values": [
+          {
+            "id": 1,
+            "name": "Proteine",
+            "color": "#FDB45C",
+            "values": {
+              "typ": "",
+              "value": 0
+            }
+          },
+          {
+            "id": 2,
+            "name": "Kohlenhydrate",
+            "color": "#46BFBD",
+            "values": {
+              "typ": "",
+              "value": 0
+            }
+          },
+          {
+            "id": 3,
+            "name": "Fett",
+            "color": "#F7464A",
+            "values": {
+              "typ": "",
+              "value": 0
+            }
+          },
+          {
+            "id": 4,
+            "name": "Zucker",
+            "color": "#E85F5C",
+            "values": {
+              "typ": "",
+              "value": 0
+            }
+          },
+          {
+            "id": 5,
+            "name": "Ballaststoffe",
+            "color": "#4D5360",
+            "values": {
+              "typ": "",
+              "value": 0
+            }
+          },
+          {
+            "id": 6,
+            "name": "gesättigte Fettsäuren",
+            "color": "#C1EEFF",
+            "values": {
+              "typ": "",
+              "value": 0
+            }
+          },
+          {
+            "id": 7,
+            "name": "Energie",
+            "color": "",
+            "values": {
+              "typ": "",
+              "value": 0
+            }
+          }
+        ]
+      },
+      "icon": "https://tse2.mm.bing.net/th?id=OIP.G3BAFpFgTjhn0sB1R3RxrgHaFj&pid=Api",
+      "id": 35
+    },
+    {
+      "name": "Mandarinen-Orangen",
+      "amount": 2,
+      "lowestAmount": 0,
+      "midAmount": 1,
+      "unit": "Can",
+      "categories": [],
+      "packageQuantity": "175",
+      "packageUnit": "Gramm",
+      "nutrients": {
+        "description": "",
+        "unit": "",
+        "amount": "",
+        "values": [
+          {
+            "id": 1,
+            "name": "Proteine",
+            "color": "#FDB45C",
+            "values": {
+              "typ": "",
+              "value": 0
+            }
+          },
+          {
+            "id": 2,
+            "name": "Kohlenhydrate",
+            "color": "#46BFBD",
+            "values": {
+              "typ": "",
+              "value": 0
+            }
+          },
+          {
+            "id": 3,
+            "name": "Fett",
+            "color": "#F7464A",
+            "values": {
+              "typ": "",
+              "value": 0
+            }
+          },
+          {
+            "id": 4,
+            "name": "Zucker",
+            "color": "#E85F5C",
+            "values": {
+              "typ": "",
+              "value": 0
+            }
+          },
+          {
+            "id": 5,
+            "name": "Ballaststoffe",
+            "color": "#4D5360",
+            "values": {
+              "typ": "",
+              "value": 0
+            }
+          },
+          {
+            "id": 6,
+            "name": "gesättigte Fettsäuren",
+            "color": "#C1EEFF",
+            "values": {
+              "typ": "",
+              "value": 0
+            }
+          },
+          {
+            "id": 7,
+            "name": "Energie",
+            "color": "",
+            "values": {
+              "typ": "",
+              "value": 0
+            }
+          }
+        ]
+      },
+      "icon": "https://tse3.mm.bing.net/th?id=OIP.RkCndta_Rb9EYxcJk3f2ZQHaFp&pid=Api",
+      "id": 36
+    },
+    {
+      "name": "Granatapfelkerne",
+      "amount": 1,
+      "lowestAmount": 0,
+      "midAmount": 0,
+      "unit": "Glas",
+      "categories": [],
+      "packageQuantity": "185",
+      "packageUnit": "Gramm",
+      "nutrients": {
+        "description": "",
+        "unit": "",
+        "amount": "",
+        "values": [
+          {
+            "id": 1,
+            "name": "Proteine",
+            "color": "#FDB45C",
+            "values": {
+              "typ": "",
+              "value": 0
+            }
+          },
+          {
+            "id": 2,
+            "name": "Kohlenhydrate",
+            "color": "#46BFBD",
+            "values": {
+              "typ": "",
+              "value": 0
+            }
+          },
+          {
+            "id": 3,
+            "name": "Fett",
+            "color": "#F7464A",
+            "values": {
+              "typ": "",
+              "value": 0
+            }
+          },
+          {
+            "id": 4,
+            "name": "Zucker",
+            "color": "#E85F5C",
+            "values": {
+              "typ": "",
+              "value": 0
+            }
+          },
+          {
+            "id": 5,
+            "name": "Ballaststoffe",
+            "color": "#4D5360",
+            "values": {
+              "typ": "",
+              "value": 0
+            }
+          },
+          {
+            "id": 6,
+            "name": "gesättigte Fettsäuren",
+            "color": "#C1EEFF",
+            "values": {
+              "typ": "",
+              "value": 0
+            }
+          },
+          {
+            "id": 7,
+            "name": "Energie",
+            "color": "",
+            "values": {
+              "typ": "",
+              "value": 0
+            }
+          }
+        ]
+      },
+      "icon": "https://tse3.mm.bing.net/th?id=OIP.YbPmxuKjJ4UexV3ZQCSXrwHaGu&pid=Api",
+      "id": 37
+    },
+    {
+      "name": "Erdbeere Marmelade",
+      "amount": 2,
+      "lowestAmount": 0,
+      "midAmount": 1,
+      "unit": "Glas",
+      "categories": [],
+      "packageQuantity": "300",
+      "packageUnit": "Gramm",
+      "nutrients": {
+        "description": "",
+        "unit": "",
+        "amount": "",
+        "values": [
+          {
+            "id": 1,
+            "name": "Proteine",
+            "color": "#FDB45C",
+            "values": {
+              "typ": "",
+              "value": 0
+            }
+          },
+          {
+            "id": 2,
+            "name": "Kohlenhydrate",
+            "color": "#46BFBD",
+            "values": {
+              "typ": "",
+              "value": 0
+            }
+          },
+          {
+            "id": 3,
+            "name": "Fett",
+            "color": "#F7464A",
+            "values": {
+              "typ": "",
+              "value": 0
+            }
+          },
+          {
+            "id": 4,
+            "name": "Zucker",
+            "color": "#E85F5C",
+            "values": {
+              "typ": "",
+              "value": 0
+            }
+          },
+          {
+            "id": 5,
+            "name": "Ballaststoffe",
+            "color": "#4D5360",
+            "values": {
+              "typ": "",
+              "value": 0
+            }
+          },
+          {
+            "id": 6,
+            "name": "gesättigte Fettsäuren",
+            "color": "#C1EEFF",
+            "values": {
+              "typ": "",
+              "value": 0
+            }
+          },
+          {
+            "id": 7,
+            "name": "Energie",
+            "color": "",
+            "values": {
+              "typ": "",
+              "value": 0
+            }
+          }
+        ]
+      },
+      "icon": "https://tse3.mm.bing.net/th?id=OIP.i2xgualCSHjhzn29y-AtjgHaLH&pid=Api",
+      "id": 38
+    },
+    {
+      "name": "Kokosmilch Bio",
+      "amount": 1,
+      "lowestAmount": 0,
+      "midAmount": 0,
+      "unit": "Can",
+      "categories": [],
+      "packageQuantity": "400",
+      "packageUnit": "Milliliter ",
+      "nutrients": {
+        "description": "",
+        "unit": "",
+        "amount": "",
+        "values": [
+          {
+            "id": 1,
+            "name": "Proteine",
+            "color": "#FDB45C",
+            "values": {
+              "typ": "",
+              "value": 0
+            }
+          },
+          {
+            "id": 2,
+            "name": "Kohlenhydrate",
+            "color": "#46BFBD",
+            "values": {
+              "typ": "",
+              "value": 0
+            }
+          },
+          {
+            "id": 3,
+            "name": "Fett",
+            "color": "#F7464A",
+            "values": {
+              "typ": "",
+              "value": 0
+            }
+          },
+          {
+            "id": 4,
+            "name": "Zucker",
+            "color": "#E85F5C",
+            "values": {
+              "typ": "",
+              "value": 0
+            }
+          },
+          {
+            "id": 5,
+            "name": "Ballaststoffe",
+            "color": "#4D5360",
+            "values": {
+              "typ": "",
+              "value": 0
+            }
+          },
+          {
+            "id": 6,
+            "name": "gesättigte Fettsäuren",
+            "color": "#C1EEFF",
+            "values": {
+              "typ": "",
+              "value": 0
+            }
+          },
+          {
+            "id": 7,
+            "name": "Energie",
+            "color": "",
+            "values": {
+              "typ": "",
+              "value": 0
+            }
+          }
+        ]
+      },
+      "icon": "https://tse3.mm.bing.net/th?id=OIP.KJHSOiudgVtj1821UoklrwHaHa&pid=Api",
+      "id": 39
+    },
+    {
+      "name": "Pasta Sauce Arrabbiata",
+      "amount": 2,
+      "lowestAmount": 0,
+      "midAmount": 0,
+      "unit": "Glas",
+      "categories": [],
+      "packageQuantity": "400",
+      "packageUnit": "Milliliter ",
+      "nutrients": {
+        "description": "",
+        "unit": "",
+        "amount": "",
+        "values": [
+          {
+            "id": 1,
+            "name": "Proteine",
+            "color": "#FDB45C",
+            "values": {
+              "typ": "",
+              "value": 0
+            }
+          },
+          {
+            "id": 2,
+            "name": "Kohlenhydrate",
+            "color": "#46BFBD",
+            "values": {
+              "typ": "",
+              "value": 0
+            }
+          },
+          {
+            "id": 3,
+            "name": "Fett",
+            "color": "#F7464A",
+            "values": {
+              "typ": "",
+              "value": 0
+            }
+          },
+          {
+            "id": 4,
+            "name": "Zucker",
+            "color": "#E85F5C",
+            "values": {
+              "typ": "",
+              "value": 0
+            }
+          },
+          {
+            "id": 5,
+            "name": "Ballaststoffe",
+            "color": "#4D5360",
+            "values": {
+              "typ": "",
+              "value": 0
+            }
+          },
+          {
+            "id": 6,
+            "name": "gesättigte Fettsäuren",
+            "color": "#C1EEFF",
+            "values": {
+              "typ": "",
+              "value": 0
+            }
+          },
+          {
+            "id": 7,
+            "name": "Energie",
+            "color": "",
+            "values": {
+              "typ": "",
+              "value": 0
+            }
+          }
+        ]
+      },
+      "icon": "https://tse2.mm.bing.net/th?id=OIP.TE5nuDBkgwPzNJEdYWfdxwHaLH&pid=Api",
+      "id": 40
+    },
+    {
+      "name": "Milchreis Bio",
+      "amount": 1,
+      "lowestAmount": 0,
+      "midAmount": 0,
+      "unit": "Pack",
+      "categories": [],
+      "packageQuantity": "500",
+      "packageUnit": "Gramm",
+      "nutrients": {
+        "description": "",
+        "unit": "",
+        "amount": "",
+        "values": [
+          {
+            "id": 1,
+            "name": "Proteine",
+            "color": "#FDB45C",
+            "values": {
+              "typ": "",
+              "value": 0
+            }
+          },
+          {
+            "id": 2,
+            "name": "Kohlenhydrate",
+            "color": "#46BFBD",
+            "values": {
+              "typ": "",
+              "value": 0
+            }
+          },
+          {
+            "id": 3,
+            "name": "Fett",
+            "color": "#F7464A",
+            "values": {
+              "typ": "",
+              "value": 0
+            }
+          },
+          {
+            "id": 4,
+            "name": "Zucker",
+            "color": "#E85F5C",
+            "values": {
+              "typ": "",
+              "value": 0
+            }
+          },
+          {
+            "id": 5,
+            "name": "Ballaststoffe",
+            "color": "#4D5360",
+            "values": {
+              "typ": "",
+              "value": 0
+            }
+          },
+          {
+            "id": 6,
+            "name": "gesättigte Fettsäuren",
+            "color": "#C1EEFF",
+            "values": {
+              "typ": "",
+              "value": 0
+            }
+          },
+          {
+            "id": 7,
+            "name": "Energie",
+            "color": "",
+            "values": {
+              "typ": "",
+              "value": 0
+            }
+          }
+        ]
+      },
+      "icon": "https://tse3.mm.bing.net/th?id=OIP.aB4lbR2qqdFpCoScegvucwHaHa&pid=Api",
+      "id": 41
+    },
+    {
+      "name": "Götterspeise",
+      "amount": 1,
+      "lowestAmount": 0,
+      "midAmount": 0,
+      "unit": "Pack",
+      "categories": [],
+      "packageQuantity": "24",
+      "packageUnit": "Gramm",
+      "nutrients": {
+        "description": "",
+        "unit": "",
+        "amount": "",
+        "values": [
+          {
+            "id": 1,
+            "name": "Proteine",
+            "color": "#FDB45C",
+            "values": {
+              "typ": "",
+              "value": 0
+            }
+          },
+          {
+            "id": 2,
+            "name": "Kohlenhydrate",
+            "color": "#46BFBD",
+            "values": {
+              "typ": "",
+              "value": 0
+            }
+          },
+          {
+            "id": 3,
+            "name": "Fett",
+            "color": "#F7464A",
+            "values": {
+              "typ": "",
+              "value": 0
+            }
+          },
+          {
+            "id": 4,
+            "name": "Zucker",
+            "color": "#E85F5C",
+            "values": {
+              "typ": "",
+              "value": 0
+            }
+          },
+          {
+            "id": 5,
+            "name": "Ballaststoffe",
+            "color": "#4D5360",
+            "values": {
+              "typ": "",
+              "value": 0
+            }
+          },
+          {
+            "id": 6,
+            "name": "gesättigte Fettsäuren",
+            "color": "#C1EEFF",
+            "values": {
+              "typ": "",
+              "value": 0
+            }
+          },
+          {
+            "id": 7,
+            "name": "Energie",
+            "color": "",
+            "values": {
+              "typ": "",
+              "value": 0
+            }
+          }
+        ]
+      },
+      "icon": "https://tse2.mm.bing.net/th?id=OIP.pIKpDNODZ9e9SuPgp-sHvQHaFj&pid=Api",
+      "id": 42
     }
   ],
   "basket": []
