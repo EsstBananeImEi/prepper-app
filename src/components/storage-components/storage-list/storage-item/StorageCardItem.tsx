@@ -63,9 +63,9 @@ export default function StorageCardItem(props: Props): ReactElement {
             actions={
                 [
                     <MinusCircleOutlined onClick={onDecrease} key='minus' />,
-                    <Badge key='shopping' offset={[5, 0]} size="small" count={countItems(storageItem.id)}>
-                        <ShoppingCartOutlined key="shopping" onClick={(e) => onChangeCard(e, { type: 'ADD_TO_CARD', storeageItem: storageItem })} />
-                    </Badge>,
+                    // <Badge key='shopping' offset={[5, 0]} size="small" count={countItems(storageItem.id)}>
+                    //     <ShoppingCartOutlined disabled key="shopping" onClick={(e) => onChangeCard(e, { type: 'ADD_TO_CARD', storeageItem: storageItem })} />
+                    // </Badge>,
                     <PlusCircleOutlined onClick={onIncrease} key="plus" />
                 ]}
         >
