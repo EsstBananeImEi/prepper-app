@@ -5738,8 +5738,9 @@
       "id": 69
     },
     {
+      "id": 70,
       "name": "Soljanka",
-      "amount": 1,
+      "amount": 2,
       "lowestAmount": 0,
       "midAmount": 1,
       "unit": "Glas",
@@ -5747,12 +5748,12 @@
         "Weck",
         "Fertignahrung"
       ],
-      "packageQuantity": "250",
+      "packageQuantity": 250,
       "packageUnit": "Milliliter ",
       "nutrients": {
         "description": "",
         "unit": "",
-        "amount": "",
+        "amount": 0,
         "values": [
           {
             "id": 1,
@@ -5819,8 +5820,7 @@
           }
         ]
       },
-      "icon": "https://tse2.mm.bing.net/th?id=OIP.w00KX_TuBGZ_gTGRWCe8VwHaEs&pid=Api",
-      "id": 70
+      "icon": "https://tse2.mm.bing.net/th?id=OIP.w00KX_TuBGZ_gTGRWCe8VwHaEs&pid=Api"
     },
     {
       "id": 71,
@@ -6251,8 +6251,9 @@
       "icon": "https://tse2.mm.bing.net/th?id=OIP.Sou7pkANQUh4frAbClZHlgHaId&pid=Api"
     },
     {
+      "id": 76,
       "name": "Spätzle",
-      "amount": 2,
+      "amount": 1,
       "lowestAmount": 0,
       "midAmount": 0,
       "unit": "Pack",
@@ -6261,12 +6262,12 @@
         "Getreite",
         "Kohlenhydrate"
       ],
-      "packageQuantity": "500",
+      "packageQuantity": 500,
       "packageUnit": "Gramm",
       "nutrients": {
         "description": "",
         "unit": "",
-        "amount": "",
+        "amount": 0,
         "values": [
           {
             "id": 1,
@@ -6333,8 +6334,7 @@
           }
         ]
       },
-      "icon": "https://tse1.mm.bing.net/th?id=OIP.8kNiT5BiAg5Ii4awWZ1lDgHaHa&pid=Api",
-      "id": 76
+      "icon": "https://tse1.mm.bing.net/th?id=OIP.8kNiT5BiAg5Ii4awWZ1lDgHaHa&pid=Api"
     },
     {
       "name": "Sauce Hollandaise",
