@@ -7560,6 +7560,124 @@
         "values": []
       },
       "icon": "https://tse1.mm.bing.net/th?id=OIP.UGWfiiX1ywVIa6RExKvRZwHaEK&pid=Api"
+    },
+    {
+      "name": "Funkgerät ",
+      "amount": 2,
+      "lowestAmount": 0,
+      "midAmount": 1,
+      "unit": "Device",
+      "categories": [
+        "Funk",
+        "Kommunikation",
+        "Sprechen",
+        "CB"
+      ],
+      "packageQuantity": "",
+      "packageUnit": "",
+      "nutrients": {
+        "description": "",
+        "unit": "",
+        "amount": "",
+        "values": []
+      },
+      "icon": "https://tse1.mm.bing.net/th?id=OIP.AALfcQrbCpMZBasXKHdDFQHaGT&pid=Api",
+      "id": 92
+    },
+    {
+      "name": "Machete",
+      "amount": 1,
+      "lowestAmount": 0,
+      "midAmount": 0,
+      "unit": "Machete",
+      "categories": [
+        "Messer",
+        "Zubehör",
+        "Tool",
+        "Zerkleinern",
+        "Hacken",
+        "Waffe"
+      ],
+      "packageQuantity": "",
+      "packageUnit": "",
+      "nutrients": {
+        "description": "",
+        "unit": "",
+        "amount": "",
+        "values": []
+      },
+      "icon": "https://tse1.mm.bing.net/th?id=OIP.nkpT5MZTy9X-F3O9ofglMwHaEc&pid=Api",
+      "id": 93
+    },
+    {
+      "id": 94,
+      "name": "Messer Klappmesser",
+      "amount": 2,
+      "lowestAmount": 0,
+      "midAmount": 1,
+      "unit": "Knive",
+      "categories": [
+        "Messer",
+        "Waffe",
+        "Schnitzen",
+        "Zerkleinern",
+        "Verteidigung",
+        "zubehör",
+        "Kochutensile"
+      ],
+      "packageQuantity": "",
+      "packageUnit": "",
+      "nutrients": {
+        "description": "",
+        "unit": "",
+        "amount": 0,
+        "values": []
+      },
+      "icon": "https://tse1.mm.bing.net/th?id=OIP.jdvj_tmaFwYp68wK69oYewHaHa&pid=Api"
+    },
+    {
+      "name": "Taschenlampe Klein",
+      "amount": 2,
+      "lowestAmount": 0,
+      "midAmount": 1,
+      "unit": "Flashlight",
+      "categories": [
+        "Taschenlampe",
+        "Licht"
+      ],
+      "packageQuantity": "",
+      "packageUnit": "",
+      "nutrients": {
+        "description": "",
+        "unit": "",
+        "amount": "",
+        "values": []
+      },
+      "icon": "https://tse2.mm.bing.net/th?id=OIP.n7MFvjxND-EMMQzhOY18ZAHaFa&pid=Api",
+      "id": 95
+    },
+    {
+      "name": "Taschenlampe Groß",
+      "amount": 1,
+      "lowestAmount": 0,
+      "midAmount": 0,
+      "unit": "Flashlight",
+      "categories": [
+        "Maglite",
+        "Licht",
+        "Verteidigung",
+        "Waffe"
+      ],
+      "packageQuantity": "",
+      "packageUnit": "",
+      "nutrients": {
+        "description": "",
+        "unit": "",
+        "amount": "",
+        "values": []
+      },
+      "icon": "https://tse2.mm.bing.net/th?id=OIP.oJL0r6SUsPcvWxu4szGbSwAAAA&pid=Api",
+      "id": 96
     }
   ],
   "basket": []
