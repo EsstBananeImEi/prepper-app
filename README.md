@@ -6,6 +6,14 @@ This project was bootstrapped with [Create React App](https://github.com/faceboo
 
 In the project directory, you can run:
 
+### JsonServer `yarn start`
+
+use it in json-server folder to start the json-server for Localhost settings in the App
+
+### JsonServer `yarn start-ext`
+
+use it in json-server folder to start the json-server for external settings in the App
+
 ### `yarn start`
 
 Runs the app in the development mode.\
