@@ -1,54 +1,75 @@
-# Getting Started with Create React App
+<div style="text-align: center;">
+    <img src="src/static/images/prepper-app.svg" width="256"/>
+</div>
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+#  PrepperApp - Deine Survival-Checkliste
 
-## Available Scripts
+🚧 **Dieses Projekt befindet sich noch im WIP (Work in Progress) Status.** 🚧
 
-In the project directory, you can run:
+Die **PrepperApp** ist eine umfassende Anwendung zur Vorbereitung auf Notfälle und Krisensituationen. Sie ermöglicht es, individuelle Checklisten für verschiedene Szenarien zu erstellen, Vorräte zu verwalten und wichtige Informationen jederzeit griffbereit zu haben. Die App richtet sich an Outdoor-Enthusiasten, Prepper, Survival-Experten und alle, die auf unvorhersehbare Ereignisse vorbereitet sein möchten.
 
-### JsonServer `yarn start`
+## 🚀 Features
+- **Dynamische Checklisten**: Erstelle individuelle Listen für verschiedene Notfallszenarien
+- **Vorratsverwaltung**: Behalte den Überblick über Lebensmittel, Medikamente und Ausrüstung
+- **Benachrichtigungen & Erinnerungen**: Erhalte rechtzeitig Hinweise zu ablaufenden Vorräten
+- **Offline-Modus**: Nutzung der App ohne Internetverbindung
+- **Datenexport & -import**: Sichere und teile deine Checklisten problemlos
 
-use it in json-server folder to start the json-server for Localhost settings in the App
+## 📱 Technologien
+- **React** (Frontend, ursprünglich als Prüfungsarbeit einer React-Schulung entwickelt)
+- **Python** (Backend mit Flask/FastAPI, später integriert)
+- **SQLite / PostgreSQL** (Datenbank)
+- **Docker** (Containerisierte Bereitstellung)
+- **REST API** für externe Integrationen
 
-### JsonServer `yarn start-ext`
+## 🛠️ Installation & Nutzung
+### 1️⃣ Voraussetzungen
+- Python 3.10+
+- Node.js (falls ein Web-Frontend vorhanden ist)
+- Docker (optional für einfache Bereitstellung)
 
-use it in json-server folder to start the json-server for external settings in the App
+### 2️⃣ Installation
+```sh
+git clone <repository-url>
+cd prepper-app
+python -m venv venv
+source venv/bin/activate  # Windows: venv\Scripts\activate
+pip install -r requirements.txt
+```
 
-### `yarn start`
+### 3️⃣ Start der Anwendung
+```sh
+python run.py
+```
+Die Anwendung läuft unter `http://127.0.0.1:5000/`
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+## 🌍 Deployment
+- **Docker**: Erstelle ein Container-Image und deploye es einfach auf einem Server
+- **Render / Heroku**: Unterstützt einfaches Hosting und automatische Skalierung
+- **AWS / DigitalOcean**: Bereitstellung in der Cloud mit hoher Verfügbarkeit
 
-The page will reload if you make edits.\
-You will also see any lint errors in the console.
+## ⚠️ Sicherheitshinweise
+- Speichere sensible Daten wie API-Keys als Umgebungsvariablen
+- Halte deine Abhängigkeiten aktuell (`pip list --outdated`)
+- Nutze HTTPS für eine sichere Verbindung
 
-### `yarn test`
+## 🛠️ Fehlerbehebung
+| Problem | Lösung |
+|---------|---------|
+| **ModuleNotFoundError** | Stelle sicher, dass alle Abhängigkeiten installiert sind: `pip install -r requirements.txt` |
+| **Port bereits belegt** | Starte die Anwendung auf einem anderen Port: `flask run --port=5001` |
+| **Fehlende Datenbank** | Stelle sicher, dass die SQLite/PostgreSQL-Datenbank korrekt initialisiert wurde |
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+## 🤝 Mitwirken
+Du möchtest zur Weiterentwicklung der PrepperApp beitragen? 
+1. Forke das Repository
+2. Erstelle einen Branch für deine Änderungen
+3. Sende einen Pull-Request
 
-### `yarn build`
+## 📄 Lizenz
+Dieses Projekt steht unter der **MIT-Lizenz** und kann frei genutzt, verändert und verbreitet werden.
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+---
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+🔦 **Sei vorbereitet – mit der PrepperApp!**
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
-
-### `yarn eject`
-
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
-
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
-
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
-
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).

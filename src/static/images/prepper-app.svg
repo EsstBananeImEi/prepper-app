@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200">
+  <title>Prepper App Logo</title>
+  <defs>
+    <!-- Linearer Farbverlauf für das Schild -->
+    <linearGradient id="shieldGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#2C6E49;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#4CAF50;stop-opacity:1" />
+    </linearGradient>
+    <!-- Gittermuster als Overlay, um Planung zu symbolisieren -->
+    <pattern id="gridPattern" width="10" height="10" patternUnits="userSpaceOnUse">
+      <path d="M10 0 L0 0 0 10" fill="none" stroke="rgba(255,255,255,0.3)" stroke-width="0.5"/>
+    </pattern>
+  </defs>
+
+  <!-- Schildform -->
+  <path d="M100,10 L170,50 L170,110 C170,150 140,180 100,180 C60,180 30,150 30,110 L30,50 Z" fill="url(#shieldGradient)" />
+
+  <!-- Overlay: Gittermuster (leicht transparent) -->
+  <rect x="30" y="10" width="140" height="170" fill="url(#gridPattern)" opacity="0.5" />
+
+  <!-- Checkmark -->
+  <path d="M60,110 L90,140 L140,70" stroke="#ffffff" stroke-width="10" fill="none" stroke-linecap="round" stroke-linejoin="round" />
+
+  <!-- Kleines Zahnrad in der unteren rechten Ecke (vereinfacht) -->
+  <g transform="translate(120,130) scale(0.4)">
+    <!-- Zahnrad-Kreis -->
+    <circle cx="50" cy="50" r="40" fill="none" stroke="#ffffff" stroke-width="8" />
+    <!-- Zahnrad-Zähne (vereinfacht als Linien) -->
+    <path d="M50,10 L50,0 M50,100 L50,90 M10,50 L0,50 M100,50 L90,50 
+             M20,20 L10,10 M80,80 L90,90 M20,80 L10,90 M80,20 L90,10" 
+          stroke="#ffffff" stroke-width="8" stroke-linecap="round" />
+  </g>
+</svg>
