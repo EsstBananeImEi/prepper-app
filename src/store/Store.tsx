@@ -70,7 +70,7 @@ const StoreContext = createContext({} as StoreContextModel)
 export const useStore = (): StoreContextModel => useContext(StoreContext)
 
 export function StoreProvider(props: { children: ReactElement, store?: Store }): ReactElement {
-    const [storageItems, setStorageItems, axiosResponse] = useStorageApi<StorageModel[]>('get', `${basketItemsApi + sortByName('name')}`)
+    const [storageItems, setStorageItems, axiosResponse] = useStorageApi<StorageModel[]>('get', `${basketItemsApi}`)
     const [store, dispatch] = useReducer(reducer, props.store || initialState)
 
     useEffect(() => {

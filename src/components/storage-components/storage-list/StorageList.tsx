@@ -2,7 +2,7 @@ import { Button, Divider, Empty, Pagination, Space } from 'antd';
 import React, { ReactElement, useState } from 'react';
 import { useHistory } from 'react-router-dom';
 import { useDemensions, useStorageApi } from '../../../hooks/StorageApi';
-import { sortByName, storedErrorRoute, storedItemsApi, storedNewItemRoute } from '../../../shared/Constants';
+import { sortByName, storedErrorRoute, storedItemsApi, storedItemsRoute, storedNewItemRoute } from '../../../shared/Constants';
 import LoadingSpinner from '../../loading-spinner/LoadingSpinner';
 import StorageSearchItem from '../storage-search-item/StorageSearchItem';
 import { StorageModel } from '../StorageModel';
@@ -10,7 +10,7 @@ import StorageCardItem from './storage-item/StorageCardItem';
 import StorageListItem from './storage-item/StorageListItem';
 
 export default function StorageList(): ReactElement {
-    const [storageItems, setStorageItems, axiosResponse] = useStorageApi<StorageModel[]>('get', `${storedItemsApi + sortByName('name')}`)
+    const [storageItems, setStorageItems, axiosResponse] = useStorageApi<StorageModel[]>('get', `${storedItemsApi}`)
     const history = useHistory();
     const handleChange = (page: number) => {
         setCurrentPage(page)
@@ -28,7 +28,7 @@ export default function StorageList(): ReactElement {
     })
 
     if (!storageItems) { return <LoadingSpinner message="load storage items ..." /> }
-
+    console.log(storageItems)
     const onGoToNew = () => history.push(storedNewItemRoute)
 
     return (
