@@ -1,6 +1,7 @@
-<div style="text-align: center;">
+<p align="center">
     <img src="src/static/images/prepper-app.svg" width="256"/>
-</div>
+</p>
+
 
 #  PrepperApp - Deine Survival-Checkliste
 
