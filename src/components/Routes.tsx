@@ -7,6 +7,7 @@ import StorageCreateItem from './storage-components/storage-create-item/StorageC
 import StorageDetail from './storage-components/storage-detail/StorageDetail'
 import StorageEditItem from './storage-components/storage-edit-item/StorageEditItem'
 import StorageList from './storage-components/storage-list/StorageList'
+import StorageDetailForm from './storage-components/storage-form/StorageDetailForm'
 
 export default function Routes(): ReactElement {
     return (
@@ -14,10 +15,10 @@ export default function Routes(): ReactElement {
             <Route path='/storedItems/error/:message'>
                 <MyErrorMessage />
             </Route>
-            <Route path='/storedItems/:id/edit'>
-                <StorageEditItem />
+            <Route path='/items/:id/edit'>
+                <StorageDetailForm />
             </Route>
-            <Route path='/storedItems/new'>
+            <Route path='/items/new'>
                 <StorageCreateItem />
             </Route>
             <Route path='/items/:id'>

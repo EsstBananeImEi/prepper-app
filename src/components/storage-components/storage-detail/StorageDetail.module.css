@@ -1,50 +1,57 @@
 .container {
-    display: flex;
-    flex-direction:column;
-    padding: 10px;
-    justify-content: center;
-    width: 100%;
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 16px;
 }
 
 .buttonContainer {
     display: flex;
-    flex-direction:row;
+    flex-wrap: wrap;
     justify-content: center;
+    gap: 8px;
 }
 
 .formButton {
     margin-left: 5px
 }
 
-.naehrwert_table .bg_orange{
+.naehrwert_table .bg_orange {
     padding: 5px;
 }
+
 .naehrwert_table table {
     width: 100%;
 }
+
 .naehrwert_table tr:hover {
     background: #f5f5f5;
 }
-.naehrwert_table th, .naehrwert_table td{
+
+.naehrwert_table th,
+.naehrwert_table td {
     border-top: 1px solid #999 !important;
 }
-.naehrwert_table th{
+
+.naehrwert_table th {
     text-align: left;
     min-width: 85%;
     width: auto;
 }
-.naehrwert_table .legend{
+
+.naehrwert_table .legend {
     width: 20px;
 }
-.naehrwert_table .legend span{
+
+.naehrwert_table .legend span {
     display: inline-block;
     height: 20px;
     width: 20px;
     border-radius: 4px;
 }
+
 .text_right {
     text-align: right;
-    width:50px;
+    width: 50px;
 }
 
 td {
@@ -57,7 +64,7 @@ table {
     border-collapse: separate;
     text-indent: initial;
     border-spacing: 2px;
-    box-sizing:border-box;
+    box-sizing: border-box;
 }
 
 tbody {
@@ -66,7 +73,7 @@ tbody {
     border-color: inherit;
 }
 
-.bg_color{
+.bg_color {
     background: #001529;
     color: #FFF;
     text-align: center;
@@ -78,10 +85,10 @@ tr {
     border-color: inherit;
 }
 
-.legend {
+.legend {
     width: 20%;
 }
 
 .unit {
-    width:30px;
+    width: 30px;
 }

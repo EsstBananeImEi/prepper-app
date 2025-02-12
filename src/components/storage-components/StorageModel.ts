@@ -24,10 +24,15 @@ export interface NutrientValueModel {
     id: number,
     name: string,
     color: string,
-    values: NutrientTypModel
+    values: NutrientTypModel[]
 }
 
 export interface NutrientTypModel {
     typ: string,
     value: number,
+}
+
+export interface OptionModel {
+    id: number,
+    name: string
 }

@@ -1,20 +1,74 @@
+/* Bestehende Styles */
 .bookForm input:invalid {
     background-color: #ffdddd !important;
-  }
-  
-  .bookForm input:valid {
-    background-color: #ddffdd !important;
-  }
+}
 
-  .bookForm input:required {
+.bookForm input:valid {
+    background-color: #ddffdd !important;
+}
+
+.bookForm input:required {
     border-color: #800000;
     border-width: 3px;
-  }
-  
-  .bookForm input:required:invalid {
-    border-color: #c00000;
-  }
+}
 
-  .ingredientInput {
-      max-width: 200px;
-  }
+.bookForm input:required:invalid {
+    border-color: #c00000;
+}
+
+.ingredientInput {
+    max-width: 200px;
+}
+
+/* Neue und erweiterte Styles für ein responsives Formular */
+
+/* Container: maximale Breite und zentrierte Darstellung */
+.container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 16px;
+}
+
+/* Flexibler Formular-Wrapper für das gesamte Formular */
+.bookForm {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+/* Zeilen (Rows) innerhalb des Formulars */
+.formRow {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px;
+}
+
+/* Spalten (Cols) innerhalb der Zeilen – mindestens 200px breit, füllen den verfügbaren Platz */
+.formCol {
+    flex: 1;
+    min-width: 200px;
+}
+
+/* Button-Container: Zentriert und mit ausreichendem Abstand */
+.buttonContainer {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 8px;
+    margin-top: 16px;
+}
+
+/* Responsive Anpassungen für kleine Bildschirme */
+@media (max-width: 480px) {
+    .container {
+        padding: 8px;
+    }
+
+    .formRow {
+        flex-direction: column;
+    }
+
+    .ingredientInput {
+        max-width: 100%;
+    }
+}

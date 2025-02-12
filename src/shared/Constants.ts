@@ -8,6 +8,11 @@ export const basketItemsApi = `/basket-items`; // Oder den richtigen API-Pfad
 export const nutrientsApi = (itemId: number | string): string => `${itemsApi}/${itemId}/nutrients`;
 export const itemIdApi = (id: number | string): string => `${itemsApi}${dash}${String(id)}`;
 export const itemSearchApi = (text: string): string => `${itemsApi}${search(text)}`;
+export const optionsCategoriesApi = `/categories`;
+export const optionsStorageLocationsApi = `/storage-locations`;
+export const optionsItemUnitsApi = `/item-units`;
+export const optionsNutrientUnitsApi = `/nutrient-units`;
+export const optionsPackageUnitsApi = `/package-units`;
 
 // ✅ Anpassung der Frontend-Routen
 export const iconRoute = (icon: string): string => `/static/StorageItemsIcons/${icon}`;
