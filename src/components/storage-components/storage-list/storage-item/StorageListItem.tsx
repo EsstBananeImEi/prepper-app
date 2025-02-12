@@ -1,96 +1,147 @@
-import { MinusCircleOutlined, PlusCircleOutlined, ShoppingCartOutlined } from '@ant-design/icons';
-import { Avatar, Badge, List } from 'antd';
-import React, { ReactElement, SyntheticEvent, useEffect, useState } from 'react';
-import { Link, useHistory } from 'react-router-dom';
+import React, { ReactElement, SyntheticEvent, useEffect, useRef, useState } from 'react';
+import { MinusCircleOutlined, PlusCircleOutlined } from '@ant-design/icons';
+import { Avatar, List, Spin } from 'antd';
+import { useHistory } from 'react-router-dom';
 import { storageApi } from '../../../../hooks/StorageApi';
-import { storedItemIdRoute, storedItemsApi, storedItemsIdApi } from '../../../../shared/Constants';
+import { itemIdRoute, itemsApi, itemIdApi } from '../../../../shared/Constants';
 import { pluralFormFactory } from '../../../../shared/Factories';
 import { actionHandler } from '../../../../store/Actions';
 import { Action, useStore } from '../../../../store/Store';
 import { StorageModel } from '../../StorageModel';
+// Icons aus react-icons importieren
+import { BiSolidFridge } from 'react-icons/bi';
+import { BsBookshelf } from 'react-icons/bs';
 
 interface Props {
-    storageItem: StorageModel
+    storageItem: StorageModel;
 }
 
 export default function StorageListItem(props: Props): ReactElement {
-    const storageItem = props.storageItem
-    const history = useHistory()
-    const { store, dispatch } = useStore()
-    const [amount, setAmount] = useState(storageItem.amount)
+    const storageItem = props.storageItem;
+    const history = useHistory();
+    const { store, dispatch } = useStore();
+    const [amount, setAmount] = useState(storageItem.amount);
+
+    // Ref für initialen Render, um PUT-Request zu vermeiden
+    const isInitialRender = useRef(true);
+
     const onChangeCard = (event: SyntheticEvent, action: Action): void => {
-        event.preventDefault()
-        actionHandler(action, dispatch)
-    }
+        event.preventDefault();
+        // Aktionen (z. B. Hinzufügen/Entfernen) behandeln
+        actionHandler(action, dispatch);
+    };
 
     const getAvailable = () => {
         const color = { color: 'red' };
-
         if (amount > storageItem.midAmount) {
-            color['color'] = 'green'
+            color['color'] = 'green';
+        } else if (amount <= storageItem.midAmount && amount > storageItem.lowestAmount) {
+            color['color'] = 'orange';
         }
-        else if (amount <= storageItem.midAmount && amount > storageItem.lowestAmount) {
-            color['color'] = 'orange'
+        return (
+            <span style={color}>
+                Inventory: {amount} {pluralFormFactory(storageItem.unit, amount)}
+            </span>
+        );
+    };
+
+    // Mapping-Funktion für die Storage-Location
+    const getLocationIcon = (location: string) => {
+        const loc = location.toLowerCase();
+        if (loc.includes('kühler')) {
+            // Beispiel: Wenn "kühler" enthalten ist, zeige ein Schneeflocken-Emoji
+            return (
+                <span
+                    title="Tiefkühler"
+                    style={{ marginLeft: '8px', fontSize: '20px' }}
+                >
+                    ❄️
+                </span>
+            );
+        } else if (loc.includes('kühlschrank') || loc.includes('fach')) {
+            return (
+                <span
+                    title="Kühlschrank"
+                    style={{ marginLeft: '8px', fontSize: '20px' }}
+                >
+                    <BiSolidFridge style={{ fontSize: '20px', color: '#1890ff' }} title="Kühlschrank" />
+                </span>
+            );
+        } else if (loc.includes('lager') || loc.includes('keller') || loc.includes('speisekammer')) {
+            return (
+                <span
+                    title="Lager"
+                    style={{ marginLeft: '8px', fontSize: '20px' }}
+                >
+                    <BsBookshelf style={{ fontSize: '20px', color: '#1890ff' }} title="Lager" />
+                </span>
+            );
         }
-
-        return <span style={color}>Inventory: {amount} {pluralFormFactory(storageItem.unit, amount)}</span>
-
-    }
-    const countItems = (name: string) => {
-        return store.shoppingCard.filter(item => item.name === name).length
-    }
+        return null;
+    };
 
     const onIncrease = (e: React.FormEvent) => {
-        e.preventDefault()
-        setAmount(currentAmount => currentAmount + 1)
-    }
+        e.preventDefault();
+        setAmount(currentAmount => currentAmount + 1);
+    };
+
     const onDecrease = (e: React.FormEvent) => {
-        e.preventDefault()
-        setAmount(currentAmount => currentAmount > 0 ? currentAmount - 1 : currentAmount)
+        e.preventDefault();
+        setAmount(currentAmount => (currentAmount > 0 ? currentAmount - 1 : currentAmount));
+    };
 
-    }
-
+    // PUT-Aufruf: Wird nur ausgeführt, wenn es nicht der initiale Render ist
     useEffect(() => {
-        const onGoToList = () => history.push(storedItemsApi)
-        storageApi('PUT', storedItemsIdApi(storageItem.id), onGoToList, { ...storageItem, amount: amount })
-    }, [amount, history, storageItem])
+        if (isInitialRender.current) {
+            isInitialRender.current = false;
+            return;
+        }
+        const onGoToList = () => history.push(itemsApi);
+        storageApi('PUT', itemIdApi(storageItem.id), onGoToList, { ...storageItem, amount: amount });
+    }, [amount, history, storageItem]);
 
+    // Wenn das Item noch nicht verfügbar ist, zeige einen Spinner
+    if (!storageItem) {
+        return <Spin />;
+    }
 
     return (
-
-        <List
-            size="small"
-            bordered
-            style={{ width: '100%', border: 'none' }}
-            key={`top${storageItem.id}`}
+        // Das gesamte List.Item reagiert auf den Klick, um zur Detailseite zu navigieren
+        <List.Item
+            onClick={() => history.push(itemIdRoute(storageItem.id))}
+            style={{ cursor: 'pointer' }}
+            actions={[
+                // Bei den Aktions-Buttons wird event.stopPropagation() aufgerufen,
+                // damit der Klick nicht an den übergeordneten List.Item weitergegeben wird.
+                <MinusCircleOutlined
+                    style={{ fontSize: '30px' }}
+                    onClick={(e) => {
+                        e.stopPropagation();
+                        onDecrease(e);
+                    }}
+                    key={`minus${storageItem.id}`}
+                />,
+                <PlusCircleOutlined
+                    style={{ fontSize: '30px' }}
+                    onClick={(e) => {
+                        e.stopPropagation();
+                        onIncrease(e);
+                    }}
+                    key={`plus${storageItem.id}`}
+                />
+            ]}
         >
-            {storageItem &&
-                <>
-
-                    <List.Item
-                        actions={
-                            [
-                                <MinusCircleOutlined style={{ fontSize: '20px' }} onClick={onDecrease} key={`minus${storageItem.id}`} />,
-
-                                // <Badge key={`badge${storageItem.id}`} offset={[0, 0]} size="small" count={countItems(storageItem.name)} >
-                                //     <ShoppingCartOutlined disabled style={{ fontSize: '20px' }} key={`shoppimg${storageItem.id}`} onTouchMove={(e) => onChangeCard(e, { type: 'REMOVE_FROM_CARD', storeageItem: storageItem })} onClick={(e) => onChangeCard(e, { type: 'ADD_TO_CARD', storeageItem: storageItem })} />
-                                // </Badge>,
-                                <PlusCircleOutlined style={{ fontSize: '20px' }} onClick={onIncrease} key={`plus${storageItem.id}`} />
-                            ]
-                        }
-                    >
-
-                        <List.Item.Meta
-                            avatar={<Avatar src={storageItem.icon} />}
-                            title={<Link to={() => storedItemIdRoute(storageItem.id)}>{storageItem.name}</Link>}
-                            description={getAvailable()}
-                            key={`meta${storageItem.id}`}
-                        />
-
-                    </List.Item>
-                </>
-            }
-        </List>
-
-    )
+            <List.Item.Meta
+                avatar={<Avatar src={storageItem.icon} />}
+                title={
+                    <div style={{ display: 'flex', alignItems: 'center' }}>
+                        <span>{storageItem.name}</span>
+                        {getLocationIcon(storageItem.storageLocation) || ""}
+                    </div>
+                }
+                description={getAvailable()}
+                key={`meta${storageItem.id}`}
+            />
+        </List.Item>
+    );
 }

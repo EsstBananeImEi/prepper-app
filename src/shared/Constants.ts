@@ -1,18 +1,24 @@
-const dash = '/'
-const search = (text: string): string => `?q=${text}`
-export const sortByName = (sortBy: string): string => `?_sort=${sortBy}`
-export const storedItemsApi = `/storeditems`
-export const basketItemsApi = '/basket'
-export const storedItemsIdApi = (id: number | string): string => `${storedItemsApi}${dash}${String(id)}`
-export const storedItemsSearchApi = (text: string): string => `${storedItemsApi}${search(text)}`
+const dash = '/';
+const search = (text: string): string => `?q=${text}`;
+export const sortByName = (sortBy: string): string => `?_sort=${sortBy}`;
 
-export const homeRoute = '/home'
-export const storedItemsRoute = ''
-export const storedBasketRoute = '/basket'
-export const storedItemIdRoute = (id: number | string): string => `${storedItemsRoute}/${String(id)}`
-export const storedNewItemRoute = `${storedItemsRoute}/new`
-export const storedEditRoute = (id: number | string): string => `${storedItemIdRoute(id)}/edit`
-export const storedErrorRoute = (message: string): string => `${storedItemsRoute}/error/${message}`
+// ✅ Neue API-Endpunkte für die Datenbank
+export const itemsApi = `/items`;
+export const basketItemsApi = `/basket-items`; // Oder den richtigen API-Pfad
+export const nutrientsApi = (itemId: number | string): string => `${itemsApi}/${itemId}/nutrients`;
+export const itemIdApi = (id: number | string): string => `${itemsApi}${dash}${String(id)}`;
+export const itemSearchApi = (text: string): string => `${itemsApi}${search(text)}`;
 
-export const baseApiUrl = 'http://localhost:3004'
-export const baseLocalApiUrl = 'http://localhost:3004'
+// ✅ Anpassung der Frontend-Routen
+export const iconRoute = (icon: string): string => `/static/StorageItemsIcons/${icon}`;
+export const homeRoute = '/home';
+export const itemsRoute = '/items';
+export const basketRoute = '/basket';
+export const itemIdRoute = (id: number | string): string => `${itemsRoute}/${String(id)}`;
+export const newItemRoute = `${itemsRoute}/new`;
+export const editItemRoute = (id: number | string): string => `${itemIdRoute(id)}/edit`;
+export const errorRoute = (message: string): string => `${itemsRoute}/error/${message}`;
+
+// ✅ Falls Backend auf anderem Port läuft, hier anpassen
+export const baseApiUrl = 'http://localhost:5000';  // Falls dein Backend jetzt auf 5000 läuft
+export const baseLocalApiUrl = baseApiUrl;

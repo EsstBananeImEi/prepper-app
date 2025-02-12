@@ -20,15 +20,15 @@ export default function Routes(): ReactElement {
             <Route path='/storedItems/new'>
                 <StorageCreateItem />
             </Route>
-            <Route path='/storedItems/:id'>
+            <Route path='/items/:id'>
                 <StorageDetail />
             </Route>
-            <Route path='/storedItems'>
+            <Route path='/items'>
                 <StorageList />
             </Route>
-            <Route path='/basket'>
+            {/* <Route path='/basket'>
                 <Shopping />
-            </Route>
+            </Route> */}
             <Route path='/home'>
                 <Home />
             </Route>

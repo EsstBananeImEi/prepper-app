@@ -1,4 +1,3 @@
-
 import axios, { AxiosResponse, Method } from 'axios';
 import { useEffect, useState } from 'react';
 import '../index.css';
@@ -6,12 +5,10 @@ import { baseApiUrl } from '../shared/Constants';
 import { Dimension, Setter } from '../types/Types';
 
 export function storageApi<T>(method: Method, path: string, callback: Setter<T>, data = {}): Promise<void> {
-
     return axios({ method: method, url: `${baseApiUrl}${path}`, data, timeout: 10000 })
         .then((response: AxiosResponse) => {
             callback(response.data)
         })
-
 }
 
 export function bingImageSearchApi<T>(searchString: string, callback: Setter<T>): Promise<void> {
@@ -41,7 +38,6 @@ export function useBingImageSearchApi<T>(searchString: string): [T | undefined, 
 
     return [state, setState, axiosPromise]
 }
-
 
 export function useStorageApi<T>(method: Method, path: string): [T | undefined, Setter<T>, Promise<void> | undefined] {
     const [state, setState] = useState<T>()
@@ -73,21 +69,16 @@ export function useDemensions(func: (page: number) => void, currentPage: number)
 
         return () => {
             window.removeEventListener('resize', handleResize)
-
         }
     })
     return [state, setState]
 }
 
-// axios.interceptors.response.use(function (response) {
-//     if (response.data) {
-//         if (!Array.isArray(response.data)) {
-//             response.data = factoryRawToBook(response.data)
-//         } else if (response.data.every(isBook)) {
-//             response.data = response.data.map((book) => factoryRawToBook(book))
-//         }
-//     }
-//     return response;
-// }, function (error) {
-//     return Promise.reject(error);
-// });
+// Fehlerbehandlung in `StorageDetail.tsx` anpassen
+export function handleAxiosError(axiosPromise: Promise<void> | undefined, history: any, errorRoute: (message: string) => string) {
+    if (axiosPromise instanceof Promise) {
+        axiosPromise.catch((e) => {
+            history.push(errorRoute(e.message))
+        });
+    }
+}

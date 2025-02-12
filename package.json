@@ -17,10 +17,12 @@
         "antd-button-color": "^1.0.4",
         "axios": "^0.21.1",
         "copyfiles": "^2.4.1",
+        "cors": "^2.8.5",
         "lodash": "^4.17.21",
         "pluralize": "^8.0.0",
         "react": "^17.0.2",
         "react-dom": "^17.0.2",
+        "react-icons": "^5.4.0",
         "react-router-dom": "^5.2.0",
         "react-scripts": "4.0.3",
         "react-sortable-hoc": "^2.0.0",
@@ -32,9 +34,9 @@
         "web-vitals": "^1.0.1"
     },
     "scripts": {
-        "start": "react-scripts start",
-        "build": "react-scripts build",
-        "test": "react-scripts test",
+        "start": "set NODE_OPTIONS=--openssl-legacy-provider && react-scripts start",
+        "build": "set NODE_OPTIONS=--openssl-legacy-provider && react-scripts build",
+        "test": "set NODE_OPTIONS=--openssl-legacy-provider && react-scripts test",
         "eject": "react-scripts eject"
     },
     "eslintConfig": {
@@ -57,7 +59,7 @@
     },
     "devDependencies": {
         "@types/pluralize": "0.0.29",
-        "@types/react": "^17.0.18",
+        "@types/react": "^17.0.83",
         "@typescript-eslint/eslint-plugin": "^4.29.1",
         "@typescript-eslint/parser": "^4.29.1",
         "eslint-config-react": "^1.1.7",

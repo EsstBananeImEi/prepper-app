@@ -1,14 +1,14 @@
 import React, { ReactElement } from 'react'
 import { useParams } from 'react-router-dom'
 import { useStorageApi } from '../../../hooks/StorageApi'
-import { storedItemsIdApi } from '../../../shared/Constants'
+import { itemIdApi } from '../../../shared/Constants'
 import LoadingSpinner from '../../loading-spinner/LoadingSpinner'
 import StorageForm from '../storage-form/StorageForm'
 import { StorageModel } from '../StorageModel'
 
 export default function StorageEditItem(): ReactElement {
     const { id } = useParams<{ id: string }>()
-    const [storageItem, , axiosResponse] = useStorageApi<StorageModel>('GET', storedItemsIdApi(id))
+    const [storageItem, , axiosResponse] = useStorageApi<StorageModel>('GET', itemIdApi(id))
 
     if (!storageItem) { return <LoadingSpinner message={`load storage item ${id}`} /> }
 

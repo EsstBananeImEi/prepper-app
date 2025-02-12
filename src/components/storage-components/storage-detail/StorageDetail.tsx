@@ -3,7 +3,7 @@ import Button from 'antd-button-color';
 import React, { ReactElement, SyntheticEvent } from 'react';
 import { useHistory, useParams } from 'react-router-dom';
 import { storageApi, useDemensions, useStorageApi } from '../../../hooks/StorageApi';
-import { storedEditRoute, storedErrorRoute, storedItemsIdApi, storedItemsRoute } from '../../../shared/Constants';
+import { editItemRoute, errorRoute, itemIdApi, itemsRoute } from '../../../shared/Constants';
 import { Action, useStore } from '../../../store/Store';
 import LoadingSpinner from '../../loading-spinner/LoadingSpinner';
 import { NutrientValueModel, StorageModel } from '../StorageModel';
@@ -15,11 +15,11 @@ export default function StorageDetail(): ReactElement {
     const history = useHistory()
     const { store, dispatch } = useStore()
     const [dimensions] = useDemensions(() => 1, 0)
-    const [storageItem, , axiosResponse] = useStorageApi<StorageModel>('GET', storedItemsIdApi(id))
+    const [storageItem, , axiosResponse] = useStorageApi<StorageModel>('GET', itemIdApi(id))
 
     const showLegend = dimensions.width > 450 ? true : false
     axiosResponse && axiosResponse.catch((e) => {
-        history.push(storedErrorRoute(e.message))
+        history.push(errorRoute(e.message))
     })
 
     if (!storageItem) { return <LoadingSpinner message="load storage items ..." /> }
@@ -34,12 +34,12 @@ export default function StorageDetail(): ReactElement {
         dispatch(action)
     }
 
-    const onGoToList = () => history.push(storedItemsRoute)
+    const onGoToList = () => history.push(itemsRoute)
     const onGoBack = () => history.goBack()
-    const onGoToEdit = () => history.push(storedEditRoute(id))
+    const onGoToEdit = () => history.push(editItemRoute(id))
     const onDelete = (event: SyntheticEvent) => {
         onChangeCard(event, { type: 'CLEAR_ITEM_CARD', storeageItem: storageItem })
-        storageApi('DELETE', storedItemsIdApi(id), onGoToList)
+        storageApi('DELETE', itemIdApi(id), onGoToList)
     }
 
     return (
