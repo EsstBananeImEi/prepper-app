@@ -1,3 +1,4 @@
+/* ----------------- Allgemeine Styles ----------------- */
 .container {
     max-width: 800px;
     margin: 0 auto;
@@ -12,7 +13,7 @@
 }
 
 .formButton {
-    margin-left: 5px
+    margin-left: 5px;
 }
 
 .naehrwert_table .bg_orange {
@@ -92,3 +93,159 @@ tr {
 .unit {
     width: 50px;
 }
+
+/* Desktop-Optimierungen (allgemein) */
+@media (min-width: 1024px) {
+    .container {
+        max-width: 1200px;
+        padding: 24px;
+    }
+
+    .buttonContainer {
+        justify-content: flex-end;
+        gap: 12px;
+    }
+
+    .formButton {
+        padding: 8px 16px;
+        font-size: 16px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .naehrwert_table th,
+    .naehrwert_table td {
+        padding: 8px;
+    }
+}
+
+/* ----------------- Nutrient Card Layout ----------------- */
+/* Dieser Bereich regelt, wie die Nutrients gruppiert und angezeigt werden – sowohl auf Mobile als auch Desktop. */
+
+/* Container für alle Nutrient-Cards */
+.nutrientCardsContainer {
+    /* Im Desktop als Grid, in Mobile als vertikale Liste */
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 16px;
+}
+
+/* Jede einzelne Nutrient-Karte */
+.nutrientCard {
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 12px;
+    background-color: #fff;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+/* Header der Nutrient-Karte – oberste Zeile: Farbe, Nährstoffname und optional Farbcode */
+.nutrientHeader {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-bottom: 1px solid #ddd;
+    padding-bottom: 8px;
+    margin-bottom: 8px;
+}
+
+.nutrientHeaderLeft {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.nutrientColor {
+    width: 24px;
+    height: 24px;
+    border-radius: 4px;
+    flex-shrink: 0;
+}
+
+.nutrientName {
+    font-weight: bold;
+    font-size: 16px;
+}
+
+.nutrientColorCode {
+    font-size: 14px;
+    color: #666;
+}
+
+/* Bereich für die einzelnen Nutrient-Werte */
+.nutrientValues {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+/* Jede Zeile für einen Nutrient-Wert */
+.nutrientValueRow {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.nutrientValueInput {
+    flex: 1;
+}
+
+.nutrientTypeSelect {
+    flex: 1;
+}
+
+/* In Zeilen, in denen beide Aktionen (Minus und Plus) erscheinen sollen */
+.nutrientValueActions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    justify-content: flex-end;
+}
+
+/* Footer der Nutrient-Karte – z. B. ein Minus-Button zum Entfernen der gesamten Karte */
+.nutrientCardFooter {
+    text-align: right;
+    margin-top: 8px;
+}
+
+/* ----------------- Mobile-spezifische Anpassungen ----------------- */
+@media (max-width: 768px) {
+    .nutrientCardsContainer {
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+    }
+
+    .nutrientCard {
+        padding: 8px;
+    }
+
+    .nutrientHeader {
+        flex-direction: row !important;
+        align-items: center;
+        justify-content: space-between;
+    }
+
+    /* Hier wurde zuvor flex-direction: column gesetzt – jetzt wieder auf row setzen: */
+    .nutrientValueRow {
+        flex-direction: row !important;
+        align-items: center;
+        justify-content: space-between;
+    }
+
+    .nutrientValueActions {
+        /* Falls hier nur ein Icon enthalten ist, soll es rechts stehen */
+        margin-left: auto;
+    }
+
+    .nutrientNameInput,
+    .nutrientValueInput,
+    .nutrientTypeSelect {
+        width: auto;
+        /* Damit Inputs nicht 100% einnehmen, sondern Platz für das Icon bleibt */
+        flex: 1;
+    }
+}
+
+/* ----------------- Ende Nutrient Card Layout ----------------- */

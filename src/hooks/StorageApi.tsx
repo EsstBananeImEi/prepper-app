@@ -44,6 +44,8 @@ export function useStorageApi<T>(method: Method, path: string): [T | undefined, 
     const [axiosPromise, setAxiosPromise] = useState<Promise<void>>()
 
     useEffect(() => {
+        if (!path.trim()) return;
+
         setAxiosPromise(storageApi(method, path, setState));
     }, [method, path]);
 

@@ -35,4 +35,4 @@ export interface NutrientTypModel {
 export interface OptionModel {
     id: number,
     name: string
-}
+} 

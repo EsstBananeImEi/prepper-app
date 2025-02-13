@@ -1,10 +1,17 @@
 import { Button, Result } from 'antd';
-import React, { ReactElement } from 'react';
-import { useHistory } from 'react-router-dom';
+import React, { ReactElement, useEffect } from 'react';
+import { useHistory, useParams } from 'react-router-dom';
 import { homeRoute } from '../../shared/Constants';
 
 export default function MyErrorMessage(): ReactElement {
+    const { message } = useParams<{ message: string }>();
     const history = useHistory();
+
+    useEffect(() => {
+        // Protokolliere die Fehlermeldung in der Konsole
+        console.error("Error message:", message);
+    }, [message]);
+
 
     const onGoToHome = () => {
         history.push(homeRoute);
@@ -14,7 +21,7 @@ export default function MyErrorMessage(): ReactElement {
         <Result
             status="error"
             title='An error occurred, please try again later'
-            subTitle="if the problem persists, please contact your administrator!"
+            subTitle={`${message}`}
             extra={[
                 <Button onClick={onGoToHome} type="ghost" key="home">
                     Home
