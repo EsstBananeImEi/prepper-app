@@ -84,7 +84,7 @@ export default function StorageDetail(): ReactElement {
                         <Descriptions.Item label="Nutrients" style={{ padding: '16px 20px' }}>
                             <div className={css.naehrwert_table}>
                                 <div className={css.bg_color}>
-                                    {`Angaben für ${storageItem.nutrients.amount} ${storageItem.nutrients.unit}`}
+                                    {`Nährstoffangaben pro ${storageItem.nutrients.amount} ${storageItem.nutrients.unit}`}
                                 </div>
                                 <table cellSpacing={0}>
                                     <tbody>
