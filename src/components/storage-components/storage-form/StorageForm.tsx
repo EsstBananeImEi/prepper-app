@@ -194,6 +194,15 @@ export default function StorageDetailForm(): ReactElement {
         });
     };
 
+    const onChangeNutrientColorCode = (nutrientIndex: number, color: string) => {
+        setNutrients((curr) => {
+            const updated = [...curr];
+            updated[nutrientIndex] = { ...updated[nutrientIndex], color };
+            return updated;
+        }
+        );
+    }
+
     const onChangeNutrientType = (
         nutrientIndex: number,
         typeIndex: number,
@@ -221,7 +230,12 @@ export default function StorageDetailForm(): ReactElement {
                 id: Date.now(),
                 name: '',
                 color: '#000000',
-                values: [],
+                values: [
+                    {
+                        typ: '',
+                        value: 0,
+                    },
+                ],
             },
         ]);
     };
@@ -346,131 +360,113 @@ export default function StorageDetailForm(): ReactElement {
                     <Image width={150} alt={name} src={icon || 'https://via.placeholder.com/150'} />
                 </Image.PreviewGroup>
             </div>
-            <Descriptions
-                title={
-                    <span>
+
+            <div className={css.itemFormCard}>
+                <div className={css.itemHeader}>
+                    <Input
+                        value={name}
+                        onChange={(e) => setName(e.target.value)}
+                        placeholder="Name des Items"
+                    />
+                    <span style={{ color: 'red' }}> *</span>
+                </div>
+                <div className={css.itemFields}>
+                    <div className={css.itemFieldRow}>
+                        <label>Amount<span style={{ color: 'red' }}> *</span></label>
                         <Input
-                            value={name}
-                            onChange={(e) => setName(e.target.value)}
-                            placeholder="Name des Items"
+                            type="number"
+                            value={amount}
+                            onChange={(e) => setAmount(e.target.value)}
+                            placeholder="Pflichtfeld"
                         />
-                        <span style={{ color: 'red' }}> *</span>
-                    </span>
-                }
-                bordered
-                size="small"
-                style={{ backgroundColor: '#f5f5f5' }}
-                column={{ xxl: 4, xl: 3, lg: 3, md: 2, sm: 1, xs: 1 }}
-            >
-                <Descriptions.Item label="ID">{storageItem?.id ?? '-'}</Descriptions.Item>
-                <Descriptions.Item
-                    label={
-                        <span>
-                            Amount <span style={{ color: 'red' }}> *</span>
-                        </span>
-                    }
-                >
-                    <Input
-                        type="number"
-                        value={amount}
-                        onChange={(e) => setAmount(e.target.value)}
-                        placeholder="Pflichtfeld"
-                    />
-                </Descriptions.Item>
-                <Descriptions.Item label="Categories">
-                    <Select
-                        mode="tags"
-                        style={{ width: '100%' }}
-                        value={categories}
-                        placeholder="Kategorie(n)"
-                        onChange={setCategories}
-                    >
-                        {dbCategories.map((category) => (
-                            <Select.Option key={category.id} value={category.name}>
-                                {category.name}
-                            </Select.Option>
-                        ))}
-                    </Select>
-                </Descriptions.Item>
-                <Descriptions.Item label="Minimal Warn">
-                    <Input
-                        type="number"
-                        value={lowestAmount}
-                        onChange={(e) => setLowestAmount(e.target.value)}
-                    />
-                </Descriptions.Item>
-                <Descriptions.Item label="Middel Warn">
-                    <Input
-                        type="number"
-                        value={midAmount}
-                        onChange={(e) => setMidAmount(e.target.value)}
-                    />
-                </Descriptions.Item>
-                <Descriptions.Item
-                    label={
-                        <span>
-                            Unit <span style={{ color: 'red' }}> *</span>
-                        </span>
-                    }
-                >
-                    <Select
-                        mode="tags"
-                        style={{ width: '100%' }}
-                        value={unit ? [unit] : []}
-                        placeholder="Pflichtfeld"
-                        onChange={(val: string[]) => setUnit(val[0] || '')}
-                    >
-                        {dbItemUnits.map((itemUnit) => (
-                            <Select.Option key={itemUnit.id} value={itemUnit.name}>
-                                {itemUnit.name}
-                            </Select.Option>
-                        ))}
-                    </Select>
-                </Descriptions.Item>
-                <Descriptions.Item label="Package Quantity">
-                    <Input
-                        type="number"
-                        value={packageQuantity}
-                        onChange={(e) => setPackageQuantity(e.target.value)}
-                    />
-                </Descriptions.Item>
-                <Descriptions.Item label="Package Unit">
-                    <Select
-                        mode="tags"
-                        style={{ width: '100%' }}
-                        value={packageUnit ? [packageUnit] : []}
-                        placeholder="Package Unit"
-                        onChange={(val: string[]) => setPackageUnit(val[0] || '')}
-                    >
-                        {dbPackageUnits.map((pkgUnit) => (
-                            <Select.Option key={pkgUnit.id} value={pkgUnit.name}>
-                                {pkgUnit.name}
-                            </Select.Option>
-                        ))}
-                    </Select>
-                </Descriptions.Item>
-                <Descriptions.Item
-                    label={
-                        <span>
-                            Storage Location <span style={{ color: 'red' }}> *</span>
-                        </span>
-                    }
-                >
-                    <Select
-                        mode="tags"
-                        style={{ width: '100%' }}
-                        value={storageLocation ? [storageLocation] : []}
-                        placeholder="Pflichtfeld"
-                        onChange={(val: string[]) => setStorageLocation(val[0] || '')}
-                    >
-                        {dbStorageLocations.map((location) => (
-                            <Select.Option key={location.id} value={location.name}>
-                                {location.name}
-                            </Select.Option>
-                        ))}
-                    </Select>
-                </Descriptions.Item>
-            </Descriptions>
+                    </div>
+                    <div className={css.itemFieldRow}>
+                        <label>Categories</label>
+                        <Select
+                            mode="tags"
+                            style={{ width: '100%' }}
+                            value={categories}
+                            placeholder="Kategorie(n)"
+                            onChange={setCategories}
+                        >
+                            {dbCategories.map((category) => (
+                                <Select.Option key={category.id} value={category.name}>
+                                    {category.name}
+                                </Select.Option>
+                            ))}
+                        </Select>
+                    </div>
+                    <div className={css.itemFieldRow}>
+                        <label>Minimal Warn</label>
+                        <Input
+                            type="number"
+                            value={lowestAmount}
+                            onChange={(e) => setLowestAmount(e.target.value)}
+                        />
+                    </div>
+                    <div className={css.itemFieldRow}>
+                        <label>Middel Warn</label>
+                        <Input
+                            type="number"
+                            value={midAmount}
+                            onChange={(e) => setMidAmount(e.target.value)}
+                        />
+                    </div>
+                    <div className={css.itemFieldRow}>
+                        <label>Unit<span style={{ color: 'red' }}> *</span></label>
+                        <Select
+                            style={{ width: '100%' }}
+                            value={unit ? unit : ''}
+                            placeholder="Pflichtfeld"
+                            onChange={(val: string) => setUnit(val || '')}
+                        >
+                            {dbItemUnits.map((itemUnit) => (
+                                <Select.Option key={itemUnit.id} value={itemUnit.name}>
+                                    {itemUnit.name}
+                                </Select.Option>
+                            ))}
+                        </Select>
+                    </div>
+                    <div className={css.itemFieldRow}>
+                        <label>Package Quantity</label>
+                        <Input
+                            type="number"
+                            value={packageQuantity}
+                            onChange={(e) => setPackageQuantity(e.target.value)}
+                        />
+                    </div>
+                    <div className={css.itemFieldRow}>
+                        <label>Package Unit</label>
+                        <Select
+                            style={{ width: '100%' }}
+                            value={packageUnit ? packageUnit : ''}
+                            placeholder="Package Unit"
+                            onChange={(val: string) => setPackageUnit(val || '')}
+                        >
+                            {dbPackageUnits.map((pkgUnit) => (
+                                <Select.Option key={pkgUnit.id} value={pkgUnit.name}>
+                                    {pkgUnit.name}
+                                </Select.Option>
+                            ))}
+                        </Select>
+                    </div>
+                    <div className={css.itemFieldRow}>
+                        <label>Storage Location<span style={{ color: 'red' }}> *</span></label>
+                        <Select
+                            style={{ width: '100%' }}
+                            value={storageLocation ? storageLocation : ''}
+                            placeholder="Pflichtfeld"
+                            onChange={(val: string) => setStorageLocation(val || '')}
+                        >
+                            {dbStorageLocations.map((location) => (
+                                <Select.Option key={location.id} value={location.name}>
+                                    {location.name}
+                                </Select.Option>
+                            ))}
+                        </Select>
+                    </div>
+                </div>
+            </div>
             <Descriptions
                 bordered
                 style={{
@@ -481,26 +477,63 @@ export default function StorageDetailForm(): ReactElement {
                     flexDirection: 'column', // Vertikale Ausrichtung für kleine Bildschirme
                 }}
             >
-                <Descriptions.Item label="Nutrients" style={{ padding: '10px 10px', display: 'block' }}>
+                <Descriptions.Item label={"Nährstoffangaben pro " + nutrientAmount + " " + nutrientUnit} style={{ padding: '10px 10px', display: 'block' }}>
+                    {/* input felder für nutrientAmount und nutrientUnit */}
+                    <div className={css.nutrientAmount}>
+                        <label>Amount</label>
+                        <Input
+                            type="number"
+                            value={nutrientAmount}
+                            onChange={(e) => setNutrientAmount(e.target.value)}
+                        />
+                    </div>
+                    <div className={css.nutrientUnit}>
+                        <label>Unit</label>
+                        <Select
+                            style={{ width: '100%' }}
+                            value={nutrientUnit ? nutrientUnit : ''}
+                            placeholder="Unit"
+                            onChange={(val: string) => setNutrientUnit(val || '')}
+                        >
+                            {dbItemUnits.map((itemUnit) => (
+                                <Select.Option key={itemUnit.id} value={itemUnit.name}>
+                                    {itemUnit.name}
+                                </Select.Option>
+                            ))}
+                        </Select>
+                    </div>
                     <div className={css.nutrientCardsContainer}>
                         {nutrients
                             .sort((a, b) => a.id - b.id)
                             .map((nutrient, nutrientIndex) => (
                                 <div key={nutrient.id} className={css.nutrientCard}>
                                     <div className={css.nutrientHeader}>
+                                        <Input
+                                            value={nutrient.name}
+                                            placeholder="Nährstoff"
+                                            onChange={(e) =>
+                                                onChangeNutrient(nutrientIndex, 'name', e.target.value)
+                                            }
+                                            className={css.nutrientNameInput}
+                                        />
+                                    </div>
+                                    <div className={css.nutrientHeader}>
                                         <div className={css.nutrientHeaderLeft}>
                                             <div
                                                 className={css.nutrientColor}
                                                 style={{ backgroundColor: nutrient.color }}
                                             ></div>
-                                            <div className={css.nutrientName}>{nutrient.name}</div>
                                             {/* Optional: Farbcode anzeigen */}
-                                            <div className={css.nutrientColorCode}>{nutrient.color}</div>
+                                            <Input
+                                                value={nutrient.color}
+                                                placeholder="Farbcode"
+                                                onChange={(e) =>
+                                                    onChangeNutrientColorCode(nutrientIndex, e.target.value)
+                                                }
+                                                className={css.nutrientColorInput}
+                                            />
+
                                         </div>
-                                        <MinusOutlined
-                                            onClick={() => removeNutrient(nutrientIndex)}
-                                            className={css.removeNutrientIcon}
-                                        />
                                     </div>
                                     <div className={css.nutrientValues}>
                                         {nutrient.values.map((nutrientType, typeIndex) => (
@@ -515,11 +548,10 @@ export default function StorageDetailForm(): ReactElement {
                                                     className={css.nutrientValueInput}
                                                 />
                                                 <Select
-                                                    mode="tags"
-                                                    value={nutrientType.typ ? [nutrientType.typ] : []}
+                                                    value={nutrientType.typ ? nutrientType.typ : ''}
                                                     placeholder="Einheit"
-                                                    onChange={(val: string[]) =>
-                                                        onChangeNutrientType(nutrientIndex, typeIndex, 'typ', val[0] || '')
+                                                    onChange={(val: string) =>
+                                                        onChangeNutrientType(nutrientIndex, typeIndex, 'typ', val || '')
                                                     }
                                                     className={css.nutrientTypeSelect}
                                                 >

@@ -120,6 +120,56 @@ tr {
     }
 }
 
+/* ----------------- Item Form Card Layout ----------------- */
+.itemFormCard {
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 16px;
+    background-color: #fff;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    margin-bottom: 16px;
+}
+
+.itemHeader {
+    font-size: 18px;
+    font-weight: bold;
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.itemFields {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.itemFieldRow {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 8px;
+}
+
+.itemFieldRow label {
+    width: 150px;
+    font-weight: bold;
+}
+
+
+/* Mobile-Optimierung für den Item Form Card */
+@media (max-width: 768px) {
+    .itemFieldRow {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .itemFieldRow label {
+        width: 100%;
+    }
+}
+
 /* ----------------- Nutrient Card Layout ----------------- */
 /* Dieser Bereich regelt, wie die Nutrients gruppiert und angezeigt werden – sowohl auf Mobile als auch Desktop. */
 
@@ -133,11 +183,19 @@ tr {
 
 /* Jede einzelne Nutrient-Karte */
 .nutrientCard {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    /* Stellt sicher, dass der Footer unten bleibt */
+    min-height: 180px;
+    /* Mindesgröße der Karte, damit der Button nicht verschoben wird */
+    padding: 16px;
     border: 1px solid #ddd;
     border-radius: 8px;
-    padding: 12px;
     background-color: #fff;
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    position: relative;
+    /* Falls nötig für absolute Positionierung */
 }
 
 /* Header der Nutrient-Karte – oberste Zeile: Farbe, Nährstoffname und optional Farbcode */
@@ -169,6 +227,8 @@ tr {
 }
 
 .nutrientColorCode {
+    text-align: left;
+    max-width: 100px;
     font-size: 14px;
     color: #666;
 }
@@ -205,8 +265,15 @@ tr {
 
 /* Footer der Nutrient-Karte – z. B. ein Minus-Button zum Entfernen der gesamten Karte */
 .nutrientCardFooter {
-    text-align: right;
-    margin-top: 8px;
+    display: flex;
+    justify-content: flex-end;
+    /* Button nach rechts */
+    margin-top: auto;
+    /* Drückt den Footer nach unten */
+}
+
+.nutrientCardFooter button {
+    margin-top: 10px;
 }
 
 /* ----------------- Mobile-spezifische Anpassungen ----------------- */
