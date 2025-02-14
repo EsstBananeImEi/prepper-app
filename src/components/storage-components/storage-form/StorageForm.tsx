@@ -183,9 +183,6 @@ export default function StorageDetailForm(): ReactElement {
         return <LoadingSpinner message="Loading storage item..." />;
     }
 
-    const showLegend = dimensions.width > 450;
-    const isMobile = dimensions.width < 600;
-
     const onChangeNutrient = (nutrientIndex: number, key: string, value: string | number) => {
         setNutrients((curr) => {
             const updated = [...curr];
@@ -477,46 +474,39 @@ export default function StorageDetailForm(): ReactElement {
                     flexDirection: 'column', // Vertikale Ausrichtung für kleine Bildschirme
                 }}
             >
-                <Descriptions.Item label={"Nährstoffangaben pro " + nutrientAmount + " " + nutrientUnit} style={{ padding: '10px 10px', display: 'block' }}>
+                <Descriptions.Item label={"Nährstoffangaben pro " + nutrientAmount + " " + nutrientUnit} style={{ fontWeight: 'bold', padding: '10px 10px', display: 'block', textAlign: 'center' }}>
                     {/* input felder für nutrientAmount und nutrientUnit */}
-                    <div className={css.nutrientAmount}>
-                        <label>Amount</label>
-                        <Input
-                            type="number"
-                            value={nutrientAmount}
-                            onChange={(e) => setNutrientAmount(e.target.value)}
-                        />
-                    </div>
-                    <div className={css.nutrientUnit}>
-                        <label>Unit</label>
-                        <Select
-                            style={{ width: '100%' }}
-                            value={nutrientUnit ? nutrientUnit : ''}
-                            placeholder="Unit"
-                            onChange={(val: string) => setNutrientUnit(val || '')}
-                        >
-                            {dbItemUnits.map((itemUnit) => (
-                                <Select.Option key={itemUnit.id} value={itemUnit.name}>
-                                    {itemUnit.name}
-                                </Select.Option>
-                            ))}
-                        </Select>
+                    <div className={css.nutrientAmountUnit}>
+                        <div className={css.nutrientField}>
+                            <label>Amount</label>
+                            <Input
+                                type="number"
+                                value={nutrientAmount}
+                                onChange={(e) => setNutrientAmount(e.target.value)}
+                                placeholder="Amount"
+                            />
+                        </div>
+                        <div className={css.nutrientField}>
+                            <label>Unit</label>
+                            <Select
+                                style={{ width: '100%' }}
+                                value={nutrientUnit || ''}
+                                placeholder="Unit"
+                                onChange={(val: string) => setNutrientUnit(val || '')}
+                            >
+                                {dbItemUnits.map((itemUnit) => (
+                                    <Select.Option key={itemUnit.id} value={itemUnit.name}>
+                                        {itemUnit.name}
+                                    </Select.Option>
+                                ))}
+                            </Select>
+                        </div>
                     </div>
                     <div className={css.nutrientCardsContainer}>
                         {nutrients
                             .sort((a, b) => a.id - b.id)
                             .map((nutrient, nutrientIndex) => (
                                 <div key={nutrient.id} className={css.nutrientCard}>
-                                    <div className={css.nutrientHeader}>
-                                        <Input
-                                            value={nutrient.name}
-                                            placeholder="Nährstoff"
-                                            onChange={(e) =>
-                                                onChangeNutrient(nutrientIndex, 'name', e.target.value)
-                                            }
-                                            className={css.nutrientNameInput}
-                                        />
-                                    </div>
                                     <div className={css.nutrientHeader}>
                                         <div className={css.nutrientHeaderLeft}>
                                             <div
@@ -534,6 +524,16 @@ export default function StorageDetailForm(): ReactElement {
                                             />
 
                                         </div>
+                                    </div>
+                                    <div className={css.nutrientHeader}>
+                                        <Input
+                                            value={nutrient.name}
+                                            placeholder="Nährstoff"
+                                            onChange={(e) =>
+                                                onChangeNutrient(nutrientIndex, 'name', e.target.value)
+                                            }
+                                            className={css.nutrientNameInput}
+                                        />
                                     </div>
                                     <div className={css.nutrientValues}>
                                         {nutrient.values.map((nutrientType, typeIndex) => (
@@ -554,6 +554,7 @@ export default function StorageDetailForm(): ReactElement {
                                                         onChangeNutrientType(nutrientIndex, typeIndex, 'typ', val || '')
                                                     }
                                                     className={css.nutrientTypeSelect}
+                                                    style={{ fontWeight: 'normal' }}
                                                 >
                                                     {dbNutrientUnits.map((option) => (
                                                         <Select.Option key={option.id} value={option.name}>

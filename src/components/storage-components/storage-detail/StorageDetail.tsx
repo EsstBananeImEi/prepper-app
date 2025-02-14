@@ -1,10 +1,9 @@
-import { Descriptions, Image } from 'antd';
-import Button from 'antd-button-color';
+import { Descriptions, Image, Button, Alert } from 'antd';
 import React, { ReactElement, SyntheticEvent } from 'react';
 import { useHistory, useParams } from 'react-router-dom';
 import { storageApi, useDemensions, useStorageApi } from '../../../hooks/StorageApi';
 import { editItemRoute, errorRoute, itemIdApi, itemsRoute } from '../../../shared/Constants';
-import { Action, useStore } from '../../../store/Store';
+import { useStore } from '../../../store/Store';
 import LoadingSpinner from '../../loading-spinner/LoadingSpinner';
 import { NutrientValueModel, StorageModel } from '../StorageModel';
 import css from './StorageDetail.module.css';
@@ -15,124 +14,135 @@ export default function StorageDetail(): ReactElement {
     const { store, dispatch } = useStore();
     const [dimensions] = useDemensions(() => 1, 0);
     const [storageItem, , axiosResponse] = useStorageApi<StorageModel>('GET', itemIdApi(id));
-
     const showLegend = dimensions.width > 450;
+
     axiosResponse && axiosResponse.catch((e) => {
         history.push(errorRoute(e.message));
     });
 
     if (!storageItem) {
-        return <LoadingSpinner message="load storage items ..." />;
+        return <LoadingSpinner message="Loading storage items ..." />;
     }
 
-    // Sortiert die NutrientValueModel-Objekte nach ihrer ID
+    // Sortiere die Nutrient-Werte nach ID
     const orderNutrientValues = (array: NutrientValueModel[]) => {
         return array.sort((a, b) => a.id - b.id);
     };
 
-    const onChangeCard = (event: SyntheticEvent, action: Action): void => {
-        event.preventDefault();
-        dispatch(action);
-    };
-
-    const onGoToList = () => history.push(itemsRoute);
     const onGoBack = () => history.goBack();
     const onGoToEdit = () => history.push(editItemRoute(id));
     const onDelete = (event: SyntheticEvent) => {
-        onChangeCard(event, { type: 'CLEAR_ITEM_CARD', storeageItem: storageItem });
-        storageApi('DELETE', itemIdApi(id), onGoToList);
+        event.preventDefault();
+        // Optional: Bestätigung einbauen
+        storageApi('DELETE', itemIdApi(id), () => history.push(itemsRoute));
     };
 
     return (
         <div className={css.container}>
-            <div style={{ justifyContent: 'center', display: 'flex' }}>
+            {/* Bildanzeige */}
+            <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 16 }}>
                 <Image.PreviewGroup>
-                    <Image width={150} alt={storageItem.name} src={storageItem.icon} />
+                    <Image width={150} alt={storageItem.name} src={storageItem.icon || 'https://via.placeholder.com/150'} />
                 </Image.PreviewGroup>
             </div>
-            <div>
-                <Descriptions
-                    title={storageItem.name}
-                    bordered
-                    size="small"
-                    style={{ backgroundColor: "#f5f5f5" }}
-                    column={{ xxl: 4, xl: 3, lg: 3, md: 3, sm: 2, xs: 1 }}
-                >
-                    <Descriptions.Item label="ID">{storageItem.id}</Descriptions.Item>
-                    <Descriptions.Item label="Amount">{storageItem.amount}</Descriptions.Item>
-                    <Descriptions.Item label="Categories">
-                        {storageItem.categories ? storageItem.categories.join(', ') : ''}
-                    </Descriptions.Item>
-                    <Descriptions.Item label="Minimal Warn">{storageItem.lowestAmount}</Descriptions.Item>
-                    <Descriptions.Item label="Middel Warn">{storageItem.midAmount}</Descriptions.Item>
-                    <Descriptions.Item label="Unit">{storageItem.unit}</Descriptions.Item>
-                    <Descriptions.Item label="Package Quantity">
-                        {storageItem.packageQuantity ? storageItem.packageQuantity : ''}
-                    </Descriptions.Item>
-                    <Descriptions.Item label="Package Unit">
-                        {storageItem.packageUnit ? storageItem.packageUnit : ''}
-                    </Descriptions.Item>
-                    <Descriptions.Item label="Storage Location">
-                        {storageItem.storageLocation ? storageItem.storageLocation : ''}
-                    </Descriptions.Item>
-                </Descriptions>
-                {storageItem.nutrients && storageItem.nutrients.values.length > 0 && (
-                    <Descriptions
-                        bordered
-                        style={{ backgroundColor: "#f5f5f5", display: 'flex', justifyContent: 'center' }}
-                    >
-                        <Descriptions.Item label="Nutrients" style={{ padding: '16px 20px' }}>
-                            <div className={css.naehrwert_table}>
-                                <div className={css.bg_color}>
-                                    {`Nährstoffangaben pro ${storageItem.nutrients.amount} ${storageItem.nutrients.unit}`}
-                                </div>
-                                <table cellSpacing={0}>
-                                    <tbody>
-                                        {orderNutrientValues(storageItem.nutrients.values).map((nutrientValue, index) => (
-                                            <tr key={index}>
-                                                {showLegend && (
-                                                    <td className={css.legend}>
-                                                        <span style={{ backgroundColor: nutrientValue.color }}></span>
-                                                    </td>
-                                                )}
-                                                <th>{nutrientValue.name}</th>
-                                                <td className={css.text_right}>
-                                                    {nutrientValue.values && nutrientValue.values.length > 0 ? (
-                                                        nutrientValue.name === "Kalorien" ? (
-                                                            // Für "Kalorien" werden die Werte in separaten <div>-Elementen angezeigt:
-                                                            nutrientValue.values.map((v, i) => <div key={i}>{v.value}</div>)
-                                                        ) : (
-                                                            // Für alle anderen Nutrient-Werte werden die Werte wie bisher als kommagetrennte Liste dargestellt:
-                                                            nutrientValue.values.map(v => v.value).join(", ")
-                                                        )
-                                                    ) : (
-                                                        ""
-                                                    )}
-                                                </td>
-                                                <td className={css.unit}>
-                                                    {nutrientValue.values && nutrientValue.values.length > 0 ? (
-                                                        nutrientValue.name === "Kalorien" ? (
-                                                            nutrientValue.values.map((v, i) => <div key={i}>{v.typ}</div>)
-                                                        ) : (
-                                                            nutrientValue.values.map(v => v.typ).join(", ")
-                                                        )
-                                                    ) : (
-                                                        ""
-                                                    )}
-                                                </td>
-                                            </tr>
-                                        ))}
-                                    </tbody>
-                                </table>
-                            </div>
-                        </Descriptions.Item>
-                    </Descriptions>
-                )}
-                <div className={css.buttonContainer}>
-                    <Button className={css.formButton} onClick={onGoBack} type="success">Go Back</Button>
-                    <Button className={css.formButton} onClick={onGoToEdit} type="warning">Edit</Button>
-                    <Button className={css.formButton} onClick={(e) => onDelete(e)} danger>Delete</Button>
+
+            {/* Allgemeine Felder als Card (read‑only) */}
+            <div className={css.itemFormCard}>
+                <div className={css.itemHeader}>{storageItem.name}</div>
+                <div className={css.itemFields}>
+                    <div className={css.itemFieldRow}>
+                        <label>ID</label>
+                        <div>{storageItem.id}</div>
+                    </div>
+                    <div className={css.itemFieldRow}>
+                        <label>Amount</label>
+                        <div>{storageItem.amount}</div>
+                    </div>
+                    <div className={css.itemFieldRow}>
+                        <label>Categories</label>
+                        <div>{storageItem.categories ? storageItem.categories.join(', ') : '-'}</div>
+                    </div>
+                    <div className={css.itemFieldRow}>
+                        <label>Minimal Warn</label>
+                        <div>{storageItem.lowestAmount}</div>
+                    </div>
+                    <div className={css.itemFieldRow}>
+                        <label>Middel Warn</label>
+                        <div>{storageItem.midAmount}</div>
+                    </div>
+                    <div className={css.itemFieldRow}>
+                        <label>Unit</label>
+                        <div>{storageItem.unit}</div>
+                    </div>
+                    <div className={css.itemFieldRow}>
+                        <label>Package Quantity</label>
+                        <div>{storageItem.packageQuantity ? storageItem.packageQuantity : '-'}</div>
+                    </div>
+                    <div className={css.itemFieldRow}>
+                        <label>Package Unit</label>
+                        <div>{storageItem.packageUnit ? storageItem.packageUnit : '-'}</div>
+                    </div>
+                    <div className={css.itemFieldRow}>
+                        <label>Storage Location</label>
+                        <div>{storageItem.storageLocation ? storageItem.storageLocation : '-'}</div>
+                    </div>
                 </div>
+            </div>
+
+            {/* Nutrients-Bereich als Card Layout */}
+            {storageItem.nutrients && storageItem.nutrients.values.length > 0 && (
+                <div className={css.nutrientSection}>
+                    <div className={css.nutrientSectionHeader}>
+                        {`Nährstoffangaben pro ${storageItem.nutrients.amount} ${storageItem.nutrients.unit}`}
+                    </div>
+                    <div className={css.nutrientCardsContainer}>
+                        {orderNutrientValues(storageItem.nutrients.values).map((nutrientValue, index) => (
+                            <div key={index} className={css.nutrientCard}>
+                                <div className={css.nutrientHeader}>
+
+                                    <div
+                                        className={css.nutrientColor}
+                                        style={{ backgroundColor: nutrientValue.color }}
+                                    ></div>
+                                    <div className={css.nutrientName}>{nutrientValue.name}</div>
+                                    <div className={css.nutrientColorCode}>{nutrientValue.color}</div>
+                                </div>
+                                <div className={css.nutrientValues}>
+                                    <table>
+                                        <thead>
+                                            <tr>
+                                                <th style={{ textAlign: 'right' }}>Value</th>
+                                                <th style={{ textAlign: 'right' }}>Unit</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {nutrientValue.values.map((val, i) => (
+                                                <tr key={i}>
+                                                    <td className={css.text_right}>{val.value}</td>
+                                                    <td className={css.unit}>{val.typ}</td>
+                                                </tr>
+                                            ))}
+                                        </tbody>
+                                    </table>
+                                </div>
+                                {/* Entferne den Footer-Button, da in der Read-Only Ansicht kein "Entfernen" vorgesehen ist */}
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            )}
+
+            {/* Aktions-Buttons */}
+            <div className={css.buttonContainer}>
+                <Button onClick={onGoBack} type="default">
+                    Zurück
+                </Button>
+                <Button onClick={onGoToEdit} type="primary">
+                    Bearbeiten
+                </Button>
+                <Button onClick={onDelete} danger>
+                    Löschen
+                </Button>
             </div>
         </div>
     );

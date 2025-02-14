@@ -1,3 +1,4 @@
+/* ----------------- Allgemeine Styles ----------------- */
 .container {
     max-width: 800px;
     margin: 0 auto;
@@ -12,83 +13,162 @@
 }
 
 .formButton {
-    margin-left: 5px
+    margin-left: 5px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
-.naehrwert_table .bg_orange {
-    padding: 5px;
+/* ----------------- Item Form Card Layout ----------------- */
+.itemFormCard {
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 16px;
+    background-color: #fff;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    margin-bottom: 16px;
 }
 
-.naehrwert_table table {
-    width: 100%;
+.itemHeader {
+    font-size: 18px;
+    font-weight: bold;
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    gap: 4px;
 }
 
-.naehrwert_table tr:hover {
-    background: #f5f5f5;
+.itemFields {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
 }
 
-.naehrwert_table th,
-.naehrwert_table td {
-    border-top: 1px solid #999 !important;
+.itemFieldRow {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 8px;
 }
 
-.naehrwert_table th {
-    text-align: left;
-    min-width: 85%;
-    width: auto;
+
+.itemFieldRow label {
+    width: 150px;
+    font-weight: bold;
 }
 
-.naehrwert_table .legend {
-    width: 20px;
+@media (max-width: 768px) {
+    .itemFieldRow {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .itemFieldRow label {
+        width: 100%;
+    }
 }
 
-.naehrwert_table .legend span {
-    display: inline-block;
-    height: 20px;
-    width: 20px;
-    border-radius: 4px;
+
+/* ----------------- Nutrient Section & Card Layout ----------------- */
+.nutrientSection {
+    background-color: #f5f5f5;
+    padding: 16px;
+    margin-top: 16px;
+    border-radius: 8px;
 }
 
-.text_right {
-    text-align: right;
-    width: 50px;
-}
-
-td {
-    display: table-cell;
-    vertical-align: inherit;
-}
-
-table {
-    display: table;
-    border-collapse: separate;
-    text-indent: initial;
-    border-spacing: 2px;
-    box-sizing: border-box;
-}
-
-tbody {
-    display: table-row-group;
-    vertical-align: middle;
-    border-color: inherit;
-}
-
-.bg_color {
-    background: #001529;
+.nutrientSectionHeader {
+    background-color: #001529;
     color: #FFF;
     text-align: center;
+    padding: 8px;
+    border-radius: 4px;
+    margin-bottom: 16px;
 }
 
-tr {
-    display: table-row;
-    vertical-align: inherit;
-    border-color: inherit;
+/* Container für alle Nutrient-Cards */
+.nutrientCardsContainer {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 16px;
 }
 
-.legend {
-    width: 20%;
+/* Jede einzelne Nutrient-Karte */
+.nutrientCard {
+    display: flex;
+    flex-direction: column;
+    /* justify-content: space-between; */
+    min-height: 180px;
+    padding: 16px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    background-color: #fff;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 }
 
-.unit {
-    width: 30px;
+/* Header der Nutrient-Karte */
+.nutrientHeader {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    border-bottom: 1px solid #ddd;
+    padding-bottom: 8px;
+    margin-bottom: 8px;
+    gap: 10px;
+}
+
+.nutrientHeaderLeft {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.nutrientColor {
+    width: 24px;
+    height: 24px;
+    border-radius: 4px;
+    flex-shrink: 0;
+}
+
+.nutrientName {
+    font-weight: bold;
+    font-size: 16px;
+}
+
+.nutrientColorCode {
+    font-size: 14px;
+    color: #666;
+    margin-left: 8px;
+}
+
+/* Bereich für die Anzeige der Nutrient-Werte */
+.nutrientValues {
+    margin-top: 8px;
+}
+
+.nutrientValues table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.nutrientValues th,
+.nutrientValues td {
+    border: 1px solid #ddd;
+    padding: 4px;
+    text-align: right;
+}
+
+.nutrientValues th {
+    background-color: #eee;
+}
+
+
+
+/* ----------------- Mobile-spezifische Anpassungen ----------------- */
+@media (max-width: 768px) {
+    .nutrientCardsContainer {
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+    }
 }

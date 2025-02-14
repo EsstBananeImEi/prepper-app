@@ -157,7 +157,6 @@ tr {
     font-weight: bold;
 }
 
-
 /* Mobile-Optimierung für den Item Form Card */
 @media (max-width: 768px) {
     .itemFieldRow {
@@ -276,6 +275,30 @@ tr {
     margin-top: 10px;
 }
 
+.nutrientAmountUnit {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-bottom: 16px;
+    text-align: left;
+    background-color: #fff;
+    padding: 16px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+/* Einzelnes Feld (Amount oder Unit) */
+.nutrientField {
+    display: flex;
+    flex-direction: column;
+}
+
+.nutrientField label {
+    font-weight: bold;
+    margin-bottom: 4px;
+}
+
 /* ----------------- Mobile-spezifische Anpassungen ----------------- */
 @media (max-width: 768px) {
     .nutrientCardsContainer {
@@ -304,6 +327,10 @@ tr {
     .nutrientValueActions {
         /* Falls hier nur ein Icon enthalten ist, soll es rechts stehen */
         margin-left: auto;
+    }
+
+    .nutrientAmountUnit {
+        grid-template-columns: 1fr;
     }
 
     .nutrientNameInput,
