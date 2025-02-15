@@ -7,10 +7,11 @@ import { useDemensions } from '../../../hooks/StorageApi'
 import { itemIdRoute } from '../../../shared/Constants'
 import { Action, useStore } from '../../../store/Store'
 import { Dimension } from '../../../types/Types'
-import { StorageModel } from '../StorageModel'
+import { BasketModel, StorageModel } from '../StorageModel'
+import { actionHandler } from '../../../store/Actions'
 
 interface Props {
-    storedItems: StorageModel[]
+    storedItems: BasketModel[]
     dimensions: Dimension
     pagination: { minValue: number, maxValue: number }
 }
@@ -19,7 +20,7 @@ export default function ShoppingCard(props: Props): ReactElement {
     const { store, dispatch } = useStore()
     const onChangeCard = (event: SyntheticEvent, action: Action): void => {
         event.preventDefault()
-        dispatch(action)
+        actionHandler(action, dispatch)
     }
 
     const dimensions = props.dimensions
@@ -41,9 +42,29 @@ export default function ShoppingCard(props: Props): ReactElement {
     }, [dimensions])
 
     const countItems = (id: number) => {
-        return store.shoppingCard.filter(storageItem => storageItem.id === id).length
+        return store.shoppingCard.filter(storageItem => storageItem.id === id).reduce((acc, item) => acc + parseInt(item.amount), 0)
+    }
+    const onDecreaseAmount = (event: SyntheticEvent, storeageItem: BasketModel) => {
+        const action: Action = {
+            type: 'DECREASE_AMOUNT', storeageItem:
+            {
+                ...storeageItem,
+                amount: String(Number(storeageItem.amount) - 1)
+            }
+        }
+        actionHandler(action, dispatch)
     }
 
+    const onIncreaseAmount = (event: SyntheticEvent, storeageItem: BasketModel) => {
+        const action: Action = {
+            type: 'INCREASE_AMOUNT', storeageItem:
+            {
+                ...storeageItem,
+                amount: String(Number(storeageItem.amount) + 1)
+            }
+        }
+        actionHandler(action, dispatch)
+    }
     return (<>
 
         {props.storedItems.slice(minValue, maxValue).map(storeageItem =>
@@ -55,9 +76,9 @@ export default function ShoppingCard(props: Props): ReactElement {
                             style={{ width: 300 }}
                             actions={
                                 [
-                                    <MinusCircleOutlined onClick={(e) => onChangeCard(e, { type: 'REMOVE_FROM_CARD', storeageItem: storeageItem })} key='minus' />,
+                                    <MinusCircleOutlined onClick={(e) => onDecreaseAmount(e, storeageItem)} key='minus' />,
                                     <DeleteOutlined onClick={(e) => onChangeCard(e, { type: 'CLEAR_ITEM_CARD', storeageItem: storeageItem })} disabled key="shopping" />,
-                                    <PlusCircleOutlined onClick={(e) => onChangeCard(e, { type: 'ADD_TO_CARD', storeageItem: storeageItem })} key="plus" />
+                                    <PlusCircleOutlined onClick={(e) => onIncreaseAmount(e, storeageItem)} key="plus" />
                                 ]}
                         >
                             <Link to={() => itemIdRoute(storeageItem.id)}>

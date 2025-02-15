@@ -3,7 +3,7 @@ import React, { ReactElement, useState } from 'react'
 import { Message } from 'semantic-ui-react'
 import { useDemensions } from '../../../hooks/StorageApi'
 import { useStore } from '../../../store/Store'
-import { StorageModel } from '../StorageModel'
+import { BasketModel, StorageModel } from '../StorageModel'
 import ShoppingCard from './ShoppingCard'
 import ShoppingList from './ShoppingList'
 
@@ -21,7 +21,7 @@ export default function Shopping(): ReactElement {
     const [maxValue, setMaxValue] = useState(Math.floor(Math.floor(dimensions.height - 128) / 155) * Math.floor(Math.floor(dimensions.width - 20) / 310))
     const pageSize = Math.floor(Math.floor(dimensions.height - 128) / 155) * Math.floor(Math.floor(dimensions.width - 20) / 310)
     const paginationValues = { minValue, maxValue }
-    const storedItems = store.shoppingCard.reduce((acc: StorageModel[], storageItem) => {
+    const storedItems = store.shoppingCard.reduce((acc: BasketModel[], storageItem) => {
         acc.find(storageItem_ => storageItem_.name === storageItem.name) || acc.push(storageItem)
         return acc
     }, [])

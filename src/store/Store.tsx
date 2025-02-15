@@ -1,49 +1,69 @@
 
 import React, { createContext, Dispatch, ReactElement, useContext, useEffect, useReducer } from "react";
-import { StorageModel } from "../components/storage-components/StorageModel";
+import { BasketModel, StorageModel } from "../components/storage-components/StorageModel";
 import { useStorageApi } from "../hooks/StorageApi";
 import { basketItemsApi, sortByName } from "../shared/Constants";
 
 export interface Store {
-    shoppingCard: StorageModel[]
+    shoppingCard: BasketModel[]
 }
 
 export const initialState: Store = { shoppingCard: [] }
 
 export interface AddToShoppingCard {
     type: 'ADD_TO_CARD'
-    storeageItem: StorageModel
+    storeageItem: BasketModel
 }
 
-interface RemoveFromShoppingCard {
-    type: 'REMOVE_FROM_CARD'
-    storeageItem: StorageModel
+export interface DeacreaseAmount {
+    type: 'DECREASE_AMOUNT'
+    storeageItem: BasketModel
 }
 
 interface ClearCard {
     type: 'CLEAR_CARD'
 }
-interface ClearItemCard {
+export interface ClearItemCard {
     type: 'CLEAR_ITEM_CARD'
-    storeageItem: StorageModel
+    storeageItem: BasketModel
 }
 
 export interface InitialCards {
     type: 'INITIAL_CARDS'
-    storeageItem: StorageModel[] | undefined
+    storeageItem: BasketModel[] | undefined
 }
 
-export type Action = AddToShoppingCard | RemoveFromShoppingCard | ClearItemCard | ClearCard | InitialCards
+export interface IncreaseAmount {
+    type: 'INCREASE_AMOUNT'
+    storeageItem: BasketModel
+}
+
+export type Action = AddToShoppingCard | DeacreaseAmount | ClearItemCard | ClearCard | InitialCards | IncreaseAmount
 export type DispatchAction = React.Dispatch<Action>
 
 export function reducer(store: Store, action: Action): Store {
+    console.log("Reducer triggered:", action);
     switch (action.type) {
         case 'ADD_TO_CARD':
             return { ...store, shoppingCard: [...store.shoppingCard, action.storeageItem] }
 
-        case 'REMOVE_FROM_CARD': {
-            const index = store.shoppingCard.map(storedItem => storedItem.id).indexOf(action.storeageItem.id)
-            return { ...store, shoppingCard: store.shoppingCard.filter((storeageItem_, index_) => index !== index_) }
+        case 'DECREASE_AMOUNT': {
+            return {
+                ...store,
+                shoppingCard: store.shoppingCard
+                    .map(item => {
+                        if (item.id === action.storeageItem.id) {
+                            const currentAmount = parseInt(item.amount, 10);
+                            if (currentAmount > 1) {
+                                return { ...item, amount: (currentAmount - 1).toString() };
+                            } else {
+                                return null;
+                            }
+                        }
+                        return item;
+                    })
+                    .filter(item => item !== null) as BasketModel[],
+            };
         }
         case 'CLEAR_CARD': {
             return { ...store, shoppingCard: [] }
@@ -53,7 +73,20 @@ export function reducer(store: Store, action: Action): Store {
         }
         case 'CLEAR_ITEM_CARD': {
             return {
-                ...store, shoppingCard: store.shoppingCard.filter(storedItem => storedItem.id !== action.storeageItem.id)
+                ...store, shoppingCard: store.shoppingCard.filter(item => item.id !== action.storeageItem.id) as BasketModel[]
+            }
+        }
+        case 'INCREASE_AMOUNT': {
+            return {
+                ...store,
+                shoppingCard: store.shoppingCard
+                    .map(item => {
+                        if (item.id === action.storeageItem.id) {
+                            const currentAmount = parseInt(item.amount, 10);
+                            return { ...item, amount: (currentAmount + 1).toString() };
+                        }
+                        return item;
+                    })
             }
         }
         default:
@@ -70,7 +103,7 @@ const StoreContext = createContext({} as StoreContextModel)
 export const useStore = (): StoreContextModel => useContext(StoreContext)
 
 export function StoreProvider(props: { children: ReactElement, store?: Store }): ReactElement {
-    const [storageItems, setStorageItems, axiosResponse] = useStorageApi<StorageModel[]>('get', `${basketItemsApi}`)
+    const [storageItems, setStorageItems, axiosResponse] = useStorageApi<BasketModel[]>('get', `${basketItemsApi}`)
     const [store, dispatch] = useReducer(reducer, props.store || initialState)
 
     useEffect(() => {

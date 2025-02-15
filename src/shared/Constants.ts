@@ -4,7 +4,9 @@ export const sortByName = (sortBy: string): string => `?_sort=${sortBy}`;
 
 // ✅ Neue API-Endpunkte für die Datenbank
 export const itemsApi = `/items`;
-export const basketItemsApi = `/basket-items`; // Oder den richtigen API-Pfad
+export const basketItemsApi = `/basket`; // Oder den richtigen API-Pfad
+export const updateBasketItemApi = (itemId: number | string): string => `${basketItemsApi}/${itemId}`;
+export const deleteBasketItemApi = (itemId: number | string): string => `${basketItemsApi}/${itemId}`;
 export const nutrientsApi = (itemId: number | string): string => `${itemsApi}/${itemId}/nutrients`;
 export const itemIdApi = (id: number | string): string => `${itemsApi}${dash}${String(id)}`;
 export const itemSearchApi = (text: string): string => `${itemsApi}${search(text)}`;

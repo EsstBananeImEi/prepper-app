@@ -18,6 +18,7 @@ import { useStore } from '../../../store/Store';
 import LoadingSpinner from '../../loading-spinner/LoadingSpinner';
 import { NutrientValueModel, StorageModel } from '../StorageModel';
 import css from './StorageForm.module.css';
+import { NutrientFactory } from '../../../shared/Factories';
 
 // No‑Op Callback (anstatt leerer Funktionen)
 const noop = () => {
@@ -121,47 +122,7 @@ export default function StorageDetailForm(): ReactElement {
             );
             if (!storageItem.nutrients || storageItem.nutrients.values.length === 0) {
                 // Vordefinierte Nährstoffdaten
-                setNutrients([
-                    {
-                        id: 1,
-                        name: 'Kalorien',
-                        color: '#FFA500',
-                        values: [
-                            { typ: 'kcal', value: 0 },
-                            { typ: 'kJ', value: 0 },
-                        ],
-                    },
-                    {
-                        id: 2,
-                        name: 'Fett',
-                        color: '#FF4500',
-                        values: [{ typ: 'g', value: 0 }],
-                    },
-                    {
-                        id: 3,
-                        name: 'Kohlenhydrate',
-                        color: '#FFD700',
-                        values: [{ typ: 'g', value: 0 }],
-                    },
-                    {
-                        id: 4,
-                        name: 'davon Zucker',
-                        color: '#DC143C',
-                        values: [{ typ: 'g', value: 0 }],
-                    },
-                    {
-                        id: 5,
-                        name: 'Ballaststoffe',
-                        color: '#32CD32',
-                        values: [{ typ: 'g', value: 0 }],
-                    },
-                    {
-                        id: 6,
-                        name: 'Eiweiß',
-                        color: '#1E90FF',
-                        values: [{ typ: 'g', value: 0 }],
-                    },
-                ]);
+                setNutrients(NutrientFactory());
             } else {
                 setNutrients(storageItem.nutrients.values);
             }
@@ -336,12 +297,22 @@ export default function StorageDetailForm(): ReactElement {
         }
     };
 
+    const getBasketModel = (storeageItem: StorageModel) => {
+        return {
+            id: storeageItem.id,
+            name: storeageItem.name,
+            amount: "0",
+            categories: storeageItem.categories || [],
+            icon: storeageItem.icon || ""
+        };
+    }
+
     const onCancel = () => history.goBack();
 
     const onDelete = (event: SyntheticEvent) => {
         event.preventDefault();
         if (id && storageItem) {
-            dispatch({ type: 'CLEAR_ITEM_CARD', storeageItem: storageItem });
+            dispatch({ type: 'CLEAR_ITEM_CARD', storeageItem: getBasketModel(storageItem) });
             storageApi('DELETE', itemIdApi(id), noop, {}).then(() => history.push(itemsRoute));
         }
     };

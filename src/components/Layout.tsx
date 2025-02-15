@@ -17,7 +17,7 @@ export default function Layout(props: Props): ReactElement {
                 </Breadcrumb>
                 {props.children}
             </Content>
-            <Footer style={{ textAlign: 'center', padding: '0' }}>Prepper App ©2021 Created by Sebastian Meine</Footer>
+            <Footer style={{ textAlign: 'center', padding: '0' }}>Prepper App ©{new Date().getFullYear()} Created by Sebastian Meine</Footer>
         </AntdLayout>
     )
 }

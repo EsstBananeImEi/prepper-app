@@ -1,6 +1,6 @@
 import React, { ReactElement, SyntheticEvent, useEffect, useRef, useState } from 'react';
-import { MinusCircleOutlined, PlusCircleOutlined } from '@ant-design/icons';
-import { Avatar, List, Spin } from 'antd';
+import { MinusCircleOutlined, PlusCircleOutlined, ShoppingCartOutlined } from '@ant-design/icons';
+import { Avatar, Badge, List, Spin } from 'antd';
 import { useHistory } from 'react-router-dom';
 import { storageApi } from '../../../../hooks/StorageApi';
 import { itemIdRoute, itemsApi, itemIdApi } from '../../../../shared/Constants';
@@ -90,6 +90,17 @@ export default function StorageListItem(props: Props): ReactElement {
         setAmount(currentAmount => (currentAmount > 0 ? currentAmount - 1 : currentAmount));
     };
 
+    const getBasketModel = (storeageItem: StorageModel) => {
+        return {
+            id: storeageItem.id,
+            name: storeageItem.name,
+            amount: "0",
+            categories: storeageItem.categories || [],
+            icon: storeageItem.icon || ""
+        };
+    }
+
+
     // PUT-Aufruf: Wird nur ausgeführt, wenn es nicht der initiale Render ist
     useEffect(() => {
         if (isInitialRender.current) {
@@ -103,6 +114,10 @@ export default function StorageListItem(props: Props): ReactElement {
     // Wenn das Item noch nicht verfügbar ist, zeige einen Spinner
     if (!storageItem) {
         return <Spin />;
+    }
+
+    const countItems = (name: string) => {
+        return store.shoppingCard.filter(item => item.name === name).length
     }
 
     return (
@@ -120,6 +135,14 @@ export default function StorageListItem(props: Props): ReactElement {
                         onDecrease(e);
                     }}
                     key={`minus${storageItem.id}`}
+                />,
+                <ShoppingCartOutlined
+                    style={{ fontSize: '30px', cursor: 'pointer' }}
+                    key={`shopping${storageItem.id}`}
+                    onClick={(e) => {
+                        e.stopPropagation();
+                        onChangeCard(e, { type: 'ADD_TO_CARD', storeageItem: getBasketModel(storageItem) });
+                    }}
                 />,
                 <PlusCircleOutlined
                     style={{ fontSize: '30px' }}

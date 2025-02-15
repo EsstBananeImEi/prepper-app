@@ -1,4 +1,4 @@
-import { MinusCircleOutlined, PlusCircleOutlined } from '@ant-design/icons';
+import { MinusCircleOutlined, PlusCircleOutlined, ShoppingCartOutlined } from '@ant-design/icons';
 import { Avatar, Card } from 'antd';
 import { BiSolidFridge } from 'react-icons/bi';
 import { BsBookshelf } from 'react-icons/bs';
@@ -9,6 +9,7 @@ import { itemIdRoute, itemsApi, itemIdApi } from '../../../../shared/Constants';
 import { pluralFormFactory } from '../../../../shared/Factories';
 import { Action, useStore } from '../../../../store/Store';
 import { StorageModel } from '../../StorageModel';
+import { actionHandler } from '../../../../store/Actions';
 
 interface Props {
     storageItem: StorageModel;
@@ -26,7 +27,7 @@ export default function StorageCardItem(props: Props): ReactElement {
 
     const onChangeCard = (event: SyntheticEvent, action: Action): void => {
         event.preventDefault();
-        // actionHandler(action, dispatch); // Deine Aktion, falls benötigt
+        actionHandler(action, dispatch); // Deine Aktion, falls benötigt
     };
 
     const getAvailable = () => {
@@ -69,6 +70,16 @@ export default function StorageCardItem(props: Props): ReactElement {
         setAmount(currentAmount => (currentAmount > 0 ? currentAmount - 1 : currentAmount));
     };
 
+    const getBasketModel = (storeageItem: StorageModel) => {
+        return {
+            id: storeageItem.id,
+            name: storeageItem.name,
+            amount: "0",
+            categories: storeageItem.categories || [],
+            icon: storeageItem.icon || ""
+        };
+    }
+
     useEffect(() => {
         if (isInitialRender.current) {
             // Beim allerersten Render überspringen und den Ref aktualisieren
@@ -85,6 +96,15 @@ export default function StorageCardItem(props: Props): ReactElement {
             style={{ width: 300 }}
             actions={[
                 <MinusCircleOutlined onClick={onDecrease} key="minus" />,
+                <ShoppingCartOutlined
+                    style={{ fontSize: '30px', cursor: 'pointer' }}
+                    key={`shopping${storageItem.id}`}
+                    onClick={(e) => {
+                        e.stopPropagation();
+                        onChangeCard(e, { type: 'ADD_TO_CARD', storeageItem: getBasketModel(storageItem) });
+                    }}
+                />,
+
                 <PlusCircleOutlined onClick={onIncrease} key="plus" />
             ]}
         >

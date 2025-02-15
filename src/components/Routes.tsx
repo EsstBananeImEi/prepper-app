@@ -35,12 +35,12 @@ export default function Routes(): ReactElement {
                 path='/items'
                 render={() => <StorageList />}
             />
-            {/*
+
             <Route
                 path='/basket'
                 render={() => <Shopping />}
             />
-            */}
+
             <Route
                 exact
                 path='/home'

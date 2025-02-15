@@ -35,4 +35,13 @@ export interface NutrientTypModel {
 export interface OptionModel {
     id: number,
     name: string
-} 
+}
+
+
+export interface BasketModel {
+    id: number
+    name: string
+    amount: string
+    categories: string[]
+    icon: string
+}

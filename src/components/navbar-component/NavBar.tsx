@@ -4,17 +4,19 @@ import {
     UnorderedListOutlined,
     ShoppingCartOutlined
 } from '@ant-design/icons';
-import { Layout, Menu } from 'antd';
+import { Badge, Layout, Menu } from 'antd';
 import React, { ReactElement } from 'react';
 import { NavLink, useLocation } from "react-router-dom";
 import { useDemensions } from '../../hooks/StorageApi';
 import { homeRoute, basketRoute, itemsRoute, newItemRoute } from '../../shared/Constants';
 import logo from '../../static/images/prepper-app.svg';
+import { useStore } from '../../store/Store';
 
 export default function NavBar(): ReactElement {
     const { Header } = Layout;
     const [dimensions] = useDemensions(() => 1, 0);
     const location = useLocation();
+    const { store, dispatch } = useStore();
 
     // Exakte Menü-Keys für Mobile setzen
     const getSelectedKeysMobile = (): string[] => {
@@ -40,7 +42,11 @@ export default function NavBar(): ReactElement {
         if (location.pathname === basketRoute) return ['shopping'];
         return [];
     };
-
+    const countItems = () => {
+        const count = store.shoppingCard.length;
+        console.log("countItems", count);
+        return count
+    }
     return (
         <Header style={{ display: 'flex', alignItems: 'center' }}>
             {dimensions.width > 600 ? (
@@ -62,7 +68,9 @@ export default function NavBar(): ReactElement {
                         </Menu.Item>
                         <Menu.Item key="shopping">
                             <NavLink to={basketRoute}>
-                                <span className="nav-text">Basket</span>
+                                <Badge key={`badge222`} offset={[5, -5]} size="small" count={countItems()} >
+                                    <span className="nav-text" style={{ color: 'lightgray' }}>Basket</span>
+                                </Badge>
                             </NavLink>
                         </Menu.Item>
                     </Menu>
@@ -87,11 +95,15 @@ export default function NavBar(): ReactElement {
                     </Menu.Item>
                     <Menu.Item key="/basket" style={{ width: '65px' }}>
                         <NavLink to={basketRoute}>
-                            <ShoppingCartOutlined style={{ fontSize: '25px', position: 'relative', top: '5px' }} />
+                            <Badge key={`badge222`} offset={[0, 0]} size="small" count={countItems()} >
+
+                                <ShoppingCartOutlined style={{ fontSize: '25px', position: 'relative', top: '5px', color: 'lightgray' }} />
+                            </Badge>
                         </NavLink>
                     </Menu.Item>
                 </Menu>
-            )}
-        </Header>
+            )
+            }
+        </Header >
     );
 }
