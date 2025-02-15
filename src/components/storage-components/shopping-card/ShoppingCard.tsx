@@ -2,7 +2,7 @@ import { DeleteOutlined, MinusCircleOutlined, PlusCircleOutlined } from '@ant-de
 import { Avatar, Badge, Card, Space } from 'antd'
 import Meta from 'antd/lib/card/Meta'
 import React, { ReactElement, SyntheticEvent, useEffect, useState } from 'react'
-import { Link, useHistory } from 'react-router-dom'
+import { Link } from 'react-router-dom'
 import { useDemensions } from '../../../hooks/StorageApi'
 import { itemIdRoute } from '../../../shared/Constants'
 import { Action, useStore } from '../../../store/Store'
@@ -81,7 +81,7 @@ export default function ShoppingCard(props: Props): ReactElement {
                                     <PlusCircleOutlined onClick={(e) => onIncreaseAmount(e, storeageItem)} key="plus" />
                                 ]}
                         >
-                            <Link to={() => itemIdRoute(storeageItem.id)}>
+                            <Link to={itemIdRoute(storeageItem.id)}>
                                 <Meta
                                     avatar={<Avatar src={storeageItem.icon} />}
                                     title={storeageItem.name}

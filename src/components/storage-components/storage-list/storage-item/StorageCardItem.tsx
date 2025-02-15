@@ -3,7 +3,7 @@ import { Avatar, Card } from 'antd';
 import { BiSolidFridge } from 'react-icons/bi';
 import { BsBookshelf } from 'react-icons/bs';
 import React, { ReactElement, SyntheticEvent, useEffect, useRef, useState } from 'react';
-import { Link, useHistory } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { storageApi } from '../../../../hooks/StorageApi';
 import { itemIdRoute, itemsApi, itemIdApi } from '../../../../shared/Constants';
 import { pluralFormFactory } from '../../../../shared/Factories';
@@ -18,7 +18,7 @@ interface Props {
 export default function StorageCardItem(props: Props): ReactElement {
     const storageItem = props.storageItem;
     const { Meta } = Card;
-    const history = useHistory();
+    const history = useNavigate();
     const { store, dispatch } = useStore();
     const [amount, setAmount] = useState(storageItem.amount);
 
@@ -87,7 +87,7 @@ export default function StorageCardItem(props: Props): ReactElement {
             return;
         }
         // Dieser PUT-Request wird nur ausgeführt, wenn sich der Wert von 'amount' ändert, NICHT beim initialen Rendern.
-        const onGoToList = () => history.push(itemsApi);
+        const onGoToList = () => history(itemsApi);
         storageApi('PUT', itemIdApi(storageItem.id), onGoToList, { ...storageItem, amount: amount });
     }, [amount, history, storageItem]);
 
@@ -108,7 +108,7 @@ export default function StorageCardItem(props: Props): ReactElement {
                 <PlusCircleOutlined onClick={onIncrease} key="plus" />
             ]}
         >
-            <Link to={() => itemIdRoute(storageItem.id)}>
+            <Link to={itemIdRoute(storageItem.id)}>
                 <Meta
                     avatar={<Avatar src={storageItem.icon} />}
                     title={

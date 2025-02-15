@@ -1,6 +1,6 @@
 import { Descriptions, Image, Button, Alert } from 'antd';
 import React, { ReactElement, SyntheticEvent } from 'react';
-import { useHistory, useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { storageApi, useDemensions, useStorageApi } from '../../../hooks/StorageApi';
 import { editItemRoute, errorRoute, itemIdApi, itemsRoute } from '../../../shared/Constants';
 import { useStore } from '../../../store/Store';
@@ -10,15 +10,26 @@ import css from './StorageDetail.module.css';
 
 export default function StorageDetail(): ReactElement {
     const { id } = useParams<{ id: string }>();
-    const history = useHistory();
+    const navigate = useNavigate();
     const { store, dispatch } = useStore();
     const [dimensions] = useDemensions(() => 1, 0);
-    const [storageItem, , axiosResponse] = useStorageApi<StorageModel>('GET', itemIdApi(id));
+
+
+    const endpoint = id ? itemIdApi(id) : '';
+    const [storageItem, , axiosResponse] = useStorageApi<StorageModel>('GET', endpoint);
+    // Falls id nicht vorhanden ist, sofort einen Fehler anzeigen oder eine alternative UI rendern
+    if (!id) {
+        return <div>Error: Keine ID angegeben</div>;
+    }
+
+    // Jetzt ist id garantiert ein string
     const showLegend = dimensions.width > 450;
 
-    axiosResponse && axiosResponse.catch((e) => {
-        history.push(errorRoute(e.message));
-    });
+    if (axiosResponse) {
+        axiosResponse.catch((e) => {
+            navigate(errorRoute(e.message));
+        });
+    }
 
     if (!storageItem) {
         return <LoadingSpinner message="Loading storage items ..." />;
@@ -29,12 +40,13 @@ export default function StorageDetail(): ReactElement {
         return array.sort((a, b) => a.id - b.id);
     };
 
-    const onGoBack = () => history.goBack();
-    const onGoToEdit = () => history.push(editItemRoute(id));
+    // In React Router v6: navigate(-1) geht einen Schritt zurück
+    const onGoBack = () => navigate(-1);
+    const onGoToEdit = () => navigate(editItemRoute(id));
     const onDelete = (event: SyntheticEvent) => {
         event.preventDefault();
         // Optional: Bestätigung einbauen
-        storageApi('DELETE', itemIdApi(id), () => history.push(itemsRoute));
+        storageApi('DELETE', itemIdApi(id), () => navigate(itemsRoute));
     };
 
     return (
@@ -99,7 +111,6 @@ export default function StorageDetail(): ReactElement {
                         {orderNutrientValues(storageItem.nutrients.values).map((nutrientValue, index) => (
                             <div key={index} className={css.nutrientCard}>
                                 <div className={css.nutrientHeader}>
-
                                     <div
                                         className={css.nutrientColor}
                                         style={{ backgroundColor: nutrientValue.color }}
@@ -125,7 +136,6 @@ export default function StorageDetail(): ReactElement {
                                         </tbody>
                                     </table>
                                 </div>
-                                {/* Entferne den Footer-Button, da in der Read-Only Ansicht kein "Entfernen" vorgesehen ist */}
                             </div>
                         ))}
                     </div>

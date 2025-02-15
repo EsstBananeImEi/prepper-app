@@ -1,7 +1,7 @@
 import React, { ReactElement, SyntheticEvent, useEffect, useRef, useState } from 'react';
 import { MinusCircleOutlined, PlusCircleOutlined, ShoppingCartOutlined } from '@ant-design/icons';
 import { Avatar, Badge, List, Spin } from 'antd';
-import { useHistory } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { storageApi } from '../../../../hooks/StorageApi';
 import { itemIdRoute, itemsApi, itemIdApi } from '../../../../shared/Constants';
 import { pluralFormFactory } from '../../../../shared/Factories';
@@ -18,7 +18,7 @@ interface Props {
 
 export default function StorageListItem(props: Props): ReactElement {
     const storageItem = props.storageItem;
-    const history = useHistory();
+    const history = useNavigate();
     const { store, dispatch } = useStore();
     const [amount, setAmount] = useState(storageItem.amount);
 
@@ -107,7 +107,7 @@ export default function StorageListItem(props: Props): ReactElement {
             isInitialRender.current = false;
             return;
         }
-        const onGoToList = () => history.push(itemsApi);
+        const onGoToList = () => history(itemsApi);
         storageApi('PUT', itemIdApi(storageItem.id), onGoToList, { ...storageItem, amount: amount });
     }, [amount, history, storageItem]);
 
@@ -123,7 +123,7 @@ export default function StorageListItem(props: Props): ReactElement {
     return (
         // Das gesamte List.Item reagiert auf den Klick, um zur Detailseite zu navigieren
         <List.Item
-            onClick={() => history.push(itemIdRoute(storageItem.id))}
+            onClick={() => history(itemIdRoute(storageItem.id))}
             style={{ cursor: 'pointer' }}
             actions={[
                 // Bei den Aktions-Buttons wird event.stopPropagation() aufgerufen,

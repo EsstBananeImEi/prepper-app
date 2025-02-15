@@ -1,55 +1,23 @@
-import React, { ReactElement } from 'react'
-import { Redirect, Route, Switch } from 'react-router-dom'
-import Home from './home-component/Home'
-import MyErrorMessage from './my-error-component/MyErrorMessage'
-import Shopping from './storage-components/shopping-card/Shopping'
-import StorageList from './storage-components/storage-list/StorageList'
-import StorageForm from './storage-components/storage-form/StorageForm'
-import StorageDetail from './storage-components/storage-detail/StorageDetail'
+import React, { ReactElement } from 'react';
+import { Route, Routes, Navigate } from 'react-router-dom';
+import Home from './home-component/Home';
+import MyErrorMessage from './my-error-component/MyErrorMessage';
+import Shopping from './storage-components/shopping-card/Shopping';
+import StorageList from './storage-components/storage-list/StorageList';
+import StorageForm from './storage-components/storage-form/StorageForm';
+import StorageDetail from './storage-components/storage-detail/StorageDetail';
 
-export default function Routes(): ReactElement {
+export default function AppRoutes(): ReactElement {
     return (
-        <Switch>
-            <Route
-                exact
-                path='/items/error/:message'
-                render={() => <MyErrorMessage />}
-            />
-            <Route
-                exact
-                path='/items/:id/edit'
-                render={() => <StorageForm key="edit" />}
-            />
-            <Route
-                exact
-                path='/items/new'
-                render={() => <StorageForm key="new" />}
-            />
-            <Route
-                exact
-                path='/items/:id'
-                render={() => <StorageDetail />}
-            />
-            <Route
-                exact
-                path='/items'
-                render={() => <StorageList />}
-            />
-
-            <Route
-                path='/basket'
-                render={() => <Shopping />}
-            />
-
-            <Route
-                exact
-                path='/home'
-                render={() => <Home />}
-            />
-            <Route
-                path='/'
-                render={() => <Redirect to="/home" />}
-            />
-        </Switch>
-    )
+        <Routes>
+            <Route path="/items/error/:message" element={<MyErrorMessage />} />
+            <Route path="/items/:id/edit" element={<StorageForm key="edit" />} />
+            <Route path="/items/new" element={<StorageForm key="new" />} />
+            <Route path="/items/:id" element={<StorageDetail />} />
+            <Route path="/items" element={<StorageList />} />
+            <Route path="/basket" element={<Shopping />} />
+            <Route path="/home" element={<Home />} />
+            <Route path="/" element={<Navigate to="/home" replace />} />
+        </Routes>
+    );
 }

@@ -1,6 +1,6 @@
 import { Button, Divider, Empty, Pagination, Select, Space } from 'antd';
 import React, { ReactElement, useState, useEffect } from 'react';
-import { useHistory } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { useDemensions, useStorageApi } from '../../../hooks/StorageApi';
 import { sortByName, itemsApi, errorRoute, newItemRoute } from '../../../shared/Constants';
 import LoadingSpinner from '../../loading-spinner/LoadingSpinner';
@@ -12,7 +12,7 @@ import StorageListItem from './storage-item/StorageListItem';
 export default function StorageList(): ReactElement {
     // Hole die Items via Custom Hook (hier: GET-Anfrage an itemsApi)
     const [storageItems, setStorageItems, axiosResponse] = useStorageApi<StorageModel[]>('get', itemsApi);
-    const history = useHistory();
+    const history = useNavigate();
 
     // State für Pagination
     const [currentPage, setCurrentPage] = useState(1);
@@ -49,15 +49,18 @@ export default function StorageList(): ReactElement {
         setMinValue((currentPage - 1) * pageSize);
     }, [currentPage, pageSize]);
 
-    axiosResponse && axiosResponse.catch((e) => {
-        history.push(errorRoute(e.message));
-    });
+    if (axiosResponse) {
+        axiosResponse.catch((e) => {
+            history(errorRoute(e.message));
+        });
+    }
+
 
     if (!storageItems) {
         return <LoadingSpinner message="Loading items..." />;
     }
 
-    const onGoToNew = () => history.push(newItemRoute);
+    const onGoToNew = () => history(newItemRoute);
 
     // Berechne die möglichen Filteroptionen:
     // Für Kategorien: alle Kategorien aus allen Items (flatMap, da categories ein Array ist)

@@ -86,7 +86,7 @@ export default function ShoppingList(props: Props): ReactElement {
                             <List.Item.Meta
                                 avatar={<Avatar src={listItem.icon} />}
                                 title={
-                                    <Link to={() => itemIdRoute(listItem.id)}>
+                                    <Link to={itemIdRoute(listItem.id)}>
                                         <p>{listItem.name}</p>
                                     </Link>
                                 }

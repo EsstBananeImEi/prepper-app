@@ -1,11 +1,11 @@
 import { Button, Result } from 'antd';
 import React, { ReactElement, useEffect } from 'react';
-import { useHistory, useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { homeRoute } from '../../shared/Constants';
 
 export default function MyErrorMessage(): ReactElement {
     const { message } = useParams<{ message: string }>();
-    const history = useHistory();
+    const history = useNavigate();
 
     useEffect(() => {
         // Protokolliere die Fehlermeldung in der Konsole
@@ -14,7 +14,7 @@ export default function MyErrorMessage(): ReactElement {
 
 
     const onGoToHome = () => {
-        history.push(homeRoute);
+        history(homeRoute);
     }
 
     return (

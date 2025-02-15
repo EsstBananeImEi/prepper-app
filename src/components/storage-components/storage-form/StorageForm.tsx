@@ -1,7 +1,7 @@
 import React, { ReactElement, SyntheticEvent, useState, useEffect } from 'react';
 import { Descriptions, Image, Input, Select, Button, Alert } from 'antd';
 import { PlusOutlined, MinusOutlined } from '@ant-design/icons';
-import { useHistory, useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import axios from 'axios';
 import { storageApi, useDemensions, useStorageApi } from '../../../hooks/StorageApi';
 import {
@@ -28,7 +28,7 @@ const noop = () => {
 export default function StorageDetailForm(): ReactElement {
     const { id } = useParams<{ id?: string }>();
     const isNew = !id;
-    const history = useHistory();
+    const history = useNavigate();
     const { store, dispatch } = useStore();
     const [dimensions] = useDemensions(() => 1, 0);
 
@@ -136,7 +136,7 @@ export default function StorageDetailForm(): ReactElement {
 
     if (axiosResponse) {
         axiosResponse.catch((e) => {
-            history.push(e.message);
+            history(e.message);
         });
     }
 
@@ -281,7 +281,7 @@ export default function StorageDetailForm(): ReactElement {
                     storageApi('PUT', nutrientsApi(id), noop, updatedItem.nutrients),
                 ]);
             }
-            history.push(itemsRoute);
+            history(itemsRoute);
         } catch (error: unknown) {
             let errorMessage = 'Fehler beim Speichern des Items';
             if (axios.isAxiosError(error)) {
@@ -307,13 +307,13 @@ export default function StorageDetailForm(): ReactElement {
         };
     }
 
-    const onCancel = () => history.goBack();
+    const onCancel = () => history(-1);
 
     const onDelete = (event: SyntheticEvent) => {
         event.preventDefault();
         if (id && storageItem) {
             dispatch({ type: 'CLEAR_ITEM_CARD', storeageItem: getBasketModel(storageItem) });
-            storageApi('DELETE', itemIdApi(id), noop, {}).then(() => history.push(itemsRoute));
+            storageApi('DELETE', itemIdApi(id), noop, {}).then(() => history(itemsRoute));
         }
     };
 
