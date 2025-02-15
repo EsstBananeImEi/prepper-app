@@ -76,11 +76,3 @@ export function useDemensions(func: (page: number) => void, currentPage: number)
     return [state, setState]
 }
 
-// Fehlerbehandlung in `StorageDetail.tsx` anpassen
-export function handleAxiosError(axiosPromise: Promise<void> | undefined, history: any, errorRoute: (message: string) => string) {
-    if (axiosPromise instanceof Promise) {
-        axiosPromise.catch((e) => {
-            history.push(errorRoute(e.message))
-        });
-    }
-}
