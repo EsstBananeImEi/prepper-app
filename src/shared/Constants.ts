@@ -27,5 +27,5 @@ export const editItemRoute = (id: number | string): string => `${itemIdRoute(id)
 export const errorRoute = (message: string): string => `${itemsRoute}/error/${message}`;
 
 // ✅ Falls Backend auf anderem Port läuft, hier anpassen
-export const baseApiUrl = 'http://localhost:5000';  // Falls dein Backend jetzt auf 5000 läuft
+export const baseApiUrl = process.env.REACT_APP_API_URL || 'http://localhost:5000';  // Falls dein Backend jetzt auf 5000 läuft
 export const baseLocalApiUrl = baseApiUrl;
