@@ -1,6 +1,12 @@
 {
     "compilerOptions": {
-        "target": "es5",
+        "target": "esnext",
+        "baseUrl": "./",
+        "paths": {
+            "~/*": [
+                "src/*"
+            ]
+        },
         "lib": [
             "dom",
             "dom.iterable",
@@ -17,12 +23,14 @@
         "moduleResolution": "node",
         "resolveJsonModule": true,
         "isolatedModules": true,
-        "noEmit": true,
+        "noEmit": false,
         "jsx": "react-jsx"
     },
     "include": [
-        "src",
-        "src/components/App.test.tsx",
-        "src/setupTests.ts"
+        "src/",
+        "src/**/*.ts",
+        "src/**/*.tsx",
+        "src/**/*.js",
+        "src/**/*.jsx"
     ]
 }
