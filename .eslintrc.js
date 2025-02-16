@@ -4,7 +4,7 @@ module.exports = {
         "eslint:recommended",
         "plugin:react/recommended",
         "plugin:react-hooks/recommended",
-        "plugin:@typescript-eslint/recommended",
+        "plugin:@typescript-eslint/recommended"
     ],
     "parserOptions": {
         "ecmaVersion": 2018,
@@ -15,7 +15,7 @@ module.exports = {
     },
     "env": {
         "browser": true,
-        "node": true,
+        "node": true
     },
     "settings": {
         "react": {
@@ -30,6 +30,16 @@ module.exports = {
         // https://github.com/typescript-eslint/typescript-eslint/issues/363
         "@typescript-eslint/no-unused-vars": "off",
         "no-unused-vars": "off",
-        'no-debugger': 'warn', // instead of default error
+        "no-debugger": "warn", // statt default error
+        // Regel explizit konfigurieren, um den Fehler zu beheben:
+        "@typescript-eslint/no-unused-expressions": [
+            "error",
+            {
+                "allowShortCircuit": true,
+                "allowTernary": true,
+                "allowTaggedTemplates": true
+            }
+        ],
+        "react/react-in-jsx-scope": "off",
     }
 };

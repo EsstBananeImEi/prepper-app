@@ -1,5 +1,5 @@
 import React from 'react';
-import { render, screen } from '@testing-library/react';
+import { render } from '@testing-library/react';
 import LoadingSpinner from './LoadingSpinner';
 
 describe('Loading Spinner test', () => {
@@ -10,8 +10,8 @@ describe('Loading Spinner test', () => {
     });
 
     it('message is correct', () => {
-        render(<LoadingSpinner message={'Lade BookShelf ...'} />);
-        const spinnerElement = screen.getByText(/Lade BookShelf .../i);
+        const { getByText } = render(<LoadingSpinner message={'Lade BookShelf ...'} />);
+        const spinnerElement = getByText(/Lade BookShelf .../i);
         expect(spinnerElement).toBeInTheDocument();
     });
 

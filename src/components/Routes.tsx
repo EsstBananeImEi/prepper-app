@@ -1,4 +1,4 @@
-import React, { ReactElement } from 'react';
+import { ReactElement } from 'react';
 import { Route, Routes, Navigate } from 'react-router-dom';
 import Home from './home-component/Home';
 import MyErrorMessage from './my-error-component/MyErrorMessage';

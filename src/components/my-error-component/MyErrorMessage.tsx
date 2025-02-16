@@ -23,7 +23,7 @@ export default function MyErrorMessage(): ReactElement {
             title='An error occurred, please try again later'
             subTitle={`${message}`}
             extra={[
-                <Button onClick={onGoToHome} type="ghost" key="home">
+                <Button onClick={onGoToHome} ghost key="home">
                     Home
                 </Button>,
 

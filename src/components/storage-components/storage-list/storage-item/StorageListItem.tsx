@@ -116,10 +116,6 @@ export default function StorageListItem(props: Props): ReactElement {
         return <Spin />;
     }
 
-    const countItems = (name: string) => {
-        return store.shoppingCard.filter(item => item.name === name).length
-    }
-
     return (
         // Das gesamte List.Item reagiert auf den Klick, um zur Detailseite zu navigieren
         <List.Item
