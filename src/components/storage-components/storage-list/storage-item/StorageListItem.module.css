@@ -1,10 +1,50 @@
+/* StorageListItem.module.css */
 @media (max-width: 450px) {
+
     .storageListIitem {
+        cursor: pointer;
+    }
+
+    .title {
+        font-size: 15px;
         padding: 2px 6px;
-        font-size: 10px;
         min-height: 10px;
         max-height: 20px;
         margin: -20px 0 10px 0;
+    }
 
+    .icon {
+        font-size: 15px;
+        color: #1890ff;
+    }
+
+    .iconFrozen {
+        font-size: 15px;
+    }
+
+    .iconAction {
+        font-size: 25px;
+        transform: translateY(2px);
+        cursor: pointer;
+    }
+
+    .highAmount {
+        color: green;
+    }
+
+    .midAmount {
+        color: orange;
+    }
+
+    .lowAmount {
+        color: red;
+    }
+
+    .metaTitleContainer {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        width: 100%;
+        margin-bottom: -2px;
     }
 }

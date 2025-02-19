@@ -1,105 +1,197 @@
-import { DeleteOutlined, MinusCircleOutlined, PlusCircleOutlined, ShoppingCartOutlined } from '@ant-design/icons'
-import { Avatar, Badge, Divider, List } from 'antd'
-import React, { ReactElement, SyntheticEvent, useEffect, useState } from 'react'
-import { Link } from 'react-router-dom'
-import { itemIdRoute } from '../../../shared/Constants'
-import { Action, useStore } from '../../../store/Store'
-import { Dimension } from '../../../types/Types'
-import { BasketModel, StorageModel } from '../StorageModel'
-import { actionHandler } from '../../../store/Actions'
+import { DeleteOutlined, MinusCircleOutlined, PlusCircleOutlined, ShoppingCartOutlined } from '@ant-design/icons';
+import { Avatar, Badge, Divider, List } from 'antd';
+import React, { ReactElement, SyntheticEvent, useEffect, useState, useMemo } from 'react';
+import { Link } from 'react-router-dom';
+import { itemIdRoute } from '../../../shared/Constants';
+import { Action, useStore } from '../../../store/Store';
+import { Dimension } from '../../../types/Types';
+import { BasketModel } from '../StorageModel';
+import { actionHandler } from '../../../store/Actions';
+import styles from '../storage-list/storage-item/StorageListItem.module.css';
+import listStyles from './ShoppingList.module.css';
 
 interface Props {
-    storedItems: BasketModel[]
-    dimensions: Dimension
+    storedItems: BasketModel[];
+    dimensions: Dimension;
+    groupByCategory?: boolean;
 }
 
 export default function ShoppingList(props: Props): ReactElement {
-    const { store, dispatch } = useStore()
+    const { store, dispatch } = useStore();
     const onChangeCard = (event: SyntheticEvent, action: Action): void => {
-        event.preventDefault()
-        actionHandler(action, dispatch)
-    }
-    const dimensions = props.dimensions
-    const [descWidth, setDescWidth] = useState(900)
+        event.preventDefault();
+        actionHandler(action, dispatch);
+    };
+    const dimensions = props.dimensions;
+    const [descWidth, setDescWidth] = useState(900);
 
     const trimText = (text: string) => {
-        const maxTextChars = (descWidth / 7) - 3
-        const cuttedText = text.length > maxTextChars ? text.substring(0, (maxTextChars)) + '...' : text
-        return cuttedText
-    }
+        const maxTextChars = descWidth / 7 - 3;
+        return text.length > maxTextChars ? text.substring(0, maxTextChars) + '...' : text;
+    };
 
     useEffect(() => {
         if (document.getElementsByClassName('ant-list-item-meta-description').length > 0) {
-            setDescWidth(((document.querySelector(".ant-list-item-meta-description") as HTMLElement).offsetWidth))
+            setDescWidth(
+                (document.querySelector('.ant-list-item-meta-description') as HTMLElement).offsetWidth
+            );
         } else if (document.getElementsByClassName('ant-card-meta-description').length > 0) {
-            setDescWidth(((document.querySelector(".ant-card-meta-description") as HTMLElement).offsetWidth))
-
+            setDescWidth(
+                (document.querySelector('.ant-card-meta-description') as HTMLElement).offsetWidth
+            );
         }
-    }, [dimensions])
+    }, [dimensions]);
 
     const countItems = (name: string) => {
-        return store.shoppingCard.filter(storageItem => storageItem.name === name).reduce((acc, item) => acc + parseInt(item.amount), 0)
-    }
+        return store.shoppingCard
+            .filter(item => item.name === name)
+            .reduce((acc, item) => parseInt(item.amount), 0);
+    };
 
-    const onDecreaseAmount = (event: SyntheticEvent, storeageItem: BasketModel) => {
+    const onDecreaseAmount = (event: SyntheticEvent, basketItem: BasketModel) => {
         const action: Action = {
-            type: 'DECREASE_AMOUNT', storeageItem:
-            {
-                ...storeageItem,
-                amount: String(Number(storeageItem.amount) - 1)
-            }
-        }
-        actionHandler(action, dispatch)
-    }
+            type: 'DECREASE_AMOUNT',
+            storeageItem: { ...basketItem, amount: String(Number(basketItem.amount) - 1) }
+        };
+        actionHandler(action, dispatch);
+    };
 
-    const onIncreaseAmount = (event: SyntheticEvent, storeageItem: BasketModel) => {
+    const onIncreaseAmount = (event: SyntheticEvent, basketItem: BasketModel) => {
         const action: Action = {
-            type: 'INCREASE_AMOUNT', storeageItem:
-            {
-                ...storeageItem,
-                amount: String(Number(storeageItem.amount) + 1)
-            }
+            type: 'INCREASE_AMOUNT',
+            storeageItem: { ...basketItem, amount: String(Number(basketItem.amount) + 1) }
+        };
+        actionHandler(action, dispatch);
+    };
+
+    // useMemo immer unconditionally aufrufen
+    const groupedItems = useMemo(() => {
+        if (props.groupByCategory) {
+            const groups = new Map<string, BasketModel[]>();
+            props.storedItems.forEach(item => {
+                const category =
+                    item.categories && item.categories.length > 0 ? item.categories[0] : 'Ohne Kategorie';
+                if (!groups.has(category)) {
+                    groups.set(category, []);
+                }
+                groups.get(category)!.push(item);
+            });
+            return Array.from(groups.entries());
         }
-        actionHandler(action, dispatch)
+        return null;
+    }, [props.storedItems, props.groupByCategory]);
+
+    if (props.groupByCategory && groupedItems) {
+        return (
+            <>
+                {groupedItems.map(([category, items]) => (
+                    <React.Fragment key={category}>
+                        <Divider orientation="left">{category}</Divider>
+                        {items.map((listItem, index) => (
+                            <div key={`div-${listItem.id}`} style={{ width: '100%' }}>
+                                <List.Item
+                                    key={listItem.id}
+                                    className={listStyles.devider}
+                                    actions={[
+                                        <MinusCircleOutlined
+                                            className={styles.iconAction}
+                                            onClick={e => onDecreaseAmount(e, listItem)}
+                                            key="minus"
+                                        />,
+                                        <DeleteOutlined
+                                            className={styles.iconAction}
+                                            onClick={e =>
+                                                onChangeCard(e, { type: 'CLEAR_ITEM_CARD', storeageItem: listItem })
+                                            }
+                                            key="delete"
+                                        />,
+                                        <PlusCircleOutlined
+                                            className={styles.iconAction}
+                                            onClick={e => onIncreaseAmount(e, listItem)}
+                                            key="plus"
+                                        />
+                                    ]}
+                                >
+                                    <List.Item.Meta
+                                        avatar={<Avatar src={listItem.icon} />}
+                                        title={
+                                            <div className={styles.metaTitleContainer}>
+                                                <Link to={itemIdRoute(listItem.id)}>
+                                                    <span>{listItem.name}</span>
+                                                </Link>
+                                            </div>
+                                        }
+
+                                        key={`meta${listItem.id}`}
+                                    />
+                                    <Badge
+                                        size="default"
+                                        count={countItems(listItem.name)}
+                                        offset={[0, 0]}
+                                        style={{ backgroundColor: '#52c41a' }}
+                                    />
+                                </List.Item>
+                            </div>
+                        ))}
+                    </React.Fragment>
+                ))}
+            </>
+        );
     }
 
+    // Standardanzeige ohne Gruppierung
     return (
         <>
-            {<List
-                size="small"
-                bordered
-                style={{ width: '100%', border: 'none' }}
-            >
-                {props.storedItems && props.storedItems.map((listItem, listIndex) =>
-                    <div key={listIndex}>
-
-                        {listIndex > 0 && <Divider />}
-                        <List.Item key={listIndex}
-                            actions={
-                                [
-                                    <MinusCircleOutlined style={{ fontSize: '20px' }} onClick={(e) => onDecreaseAmount(e, listItem)} key='minus' />,
-                                    <DeleteOutlined style={{ fontSize: '20px' }} onClick={(e) => onChangeCard(e, { type: 'CLEAR_ITEM_CARD', storeageItem: listItem })} disabled key="shopping" />,
-                                    <PlusCircleOutlined style={{ fontSize: '20px' }} onClick={(e) => onIncreaseAmount(e, listItem)} key="plus" />
-                                ]
-                            }>
-
-                            <List.Item.Meta
-                                avatar={<Avatar src={listItem.icon} />}
-                                title={
-                                    <Link to={itemIdRoute(listItem.id)}>
-                                        <p>{listItem.name}</p>
-                                    </Link>
+            {props.storedItems.map((listItem, index) => (
+                <div key={`div-${listItem.id}`} style={{ width: '100%' }}>
+                    <Divider />
+                    <List.Item
+                        key={index}
+                        className={styles.title}
+                        actions={[
+                            <MinusCircleOutlined
+                                className={styles.iconAction}
+                                onClick={e => onDecreaseAmount(e, listItem)}
+                                key="minus"
+                            />,
+                            <DeleteOutlined
+                                className={styles.iconAction}
+                                onClick={e =>
+                                    onChangeCard(e, { type: 'CLEAR_ITEM_CARD', storeageItem: listItem })
                                 }
-                                description={listItem.categories && trimText(listItem.categories.join(', '))}
+                                key="delete"
+                            />,
+                            <PlusCircleOutlined
+                                className={styles.iconAction}
+                                onClick={e => onIncreaseAmount(e, listItem)}
+                                key="plus"
                             />
-                            <Badge size='default' count={countItems(listItem.name)} offset={[0, 0]} style={{ backgroundColor: '#52c41a' }}>
-                                <ShoppingCartOutlined style={{ fontSize: '20px' }} />
-                            </Badge>
-                        </List.Item>
-                        {listIndex + 1 === props.storedItems.length && <Divider />}
-                    </div>
-                )}
-            </List>}
+                        ]}
+                    >
+                        <List.Item.Meta
+                            avatar={<Avatar src={listItem.icon} />}
+                            title={
+                                <div className={styles.metaTitleContainer}>
+                                    <Link to={itemIdRoute(listItem.id)}>
+                                        <span>{listItem.name}</span>
+                                    </Link>
+                                </div>
+                            }
+                            description={
+                                listItem.categories && trimText(listItem.categories.join(', '))
+                            }
+                            key={`meta${listItem.id}`}
+                        />
+                        <Badge
+                            size="default"
+                            count={countItems(listItem.name)}
+                            offset={[0, 0]}
+                            style={{ backgroundColor: '#52c41a' }}
+                        />
+                    </List.Item>
+                    {index + 1 === props.storedItems.length && <Divider />}
+                </div>
+            ))}
         </>
-    )
+    );
 }

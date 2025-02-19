@@ -19,30 +19,35 @@ interface Props {
 
 export default function StorageListItem(props: Props): ReactElement {
     const storageItem = props.storageItem;
+
     const history = useNavigate();
     const { store, dispatch } = useStore();
     const [amount, setAmount] = useState(storageItem.amount);
 
     // Ref für initialen Render, um PUT-Request zu vermeiden
     const isInitialRender = useRef(true);
+    // Speichere den ursprünglichen Wert von amount
+    const initialAmountRef = useRef(storageItem.amount);
 
     const onChangeCard = (event: SyntheticEvent, action: Action): void => {
         event.preventDefault();
-        // Aktionen (z. B. Hinzufügen/Entfernen) behandeln
         actionHandler(action, dispatch);
     };
 
     const getAvailable = () => {
-        const color = { color: 'red' };
+        let colorClass = styles.lowAmount;
         if (amount > storageItem.midAmount) {
-            color['color'] = 'green';
+            colorClass = styles.highAmount;
         } else if (amount <= storageItem.midAmount && amount > storageItem.lowestAmount) {
-            color['color'] = 'orange';
+            colorClass = styles.midAmount;
         }
         return (
-            <span style={color}>
-                Inventory: {amount} {pluralFormFactory(storageItem.unit, amount)}
-            </span>
+            <>
+                <span>Bestand: </span>
+                <span className={colorClass}>
+                    {amount} {pluralFormFactory(storageItem.unit, amount)}
+                </span>
+            </>
         );
     };
 
@@ -50,31 +55,21 @@ export default function StorageListItem(props: Props): ReactElement {
     const getLocationIcon = (location: string) => {
         const loc = location.toLowerCase();
         if (loc.includes('kühlregal')) {
-            // Beispiel: Wenn "kühler" enthalten ist, zeige ein Schneeflocken-Emoji
             return (
-                <span
-                    title="Tiefkühler"
-                    style={{ marginLeft: '8px', fontSize: '15px' }}
-                >
+                <span title="Tiefkühler" className={styles.icon}>
                     ❄️
                 </span>
             );
         } else if (loc.includes('kühlschrank') || loc.includes('fach')) {
             return (
-                <span
-                    title="Kühlschrank"
-                    style={{ marginLeft: '8px', fontSize: '15px' }}
-                >
-                    <BiSolidFridge style={{ fontSize: '15px', color: '#1890ff' }} title="Kühlschrank" />
+                <span title="Kühlschrank" className={styles.icon}>
+                    <BiSolidFridge className={styles.iconFridge} title="Kühlschrank" />
                 </span>
             );
         } else if (loc.includes('lager') || loc.includes('keller') || loc.includes('speisekammer')) {
             return (
-                <span
-                    title="Lager"
-                    style={{ marginLeft: '8px', fontSize: '15px' }}
-                >
-                    <BsBookshelf style={{ fontSize: '15px', color: '#1890ff' }} title="Lager" />
+                <span title="Lager" className={styles.icon}>
+                    <BsBookshelf className={styles.iconShelf} title="Lager" />
                 </span>
             );
         }
@@ -83,67 +78,72 @@ export default function StorageListItem(props: Props): ReactElement {
 
     const onIncrease = (e: React.FormEvent) => {
         e.preventDefault();
-        setAmount(currentAmount => currentAmount + 1);
+        setAmount((currentAmount) => currentAmount + 1);
     };
 
     const onDecrease = (e: React.FormEvent) => {
         e.preventDefault();
-        setAmount(currentAmount => (currentAmount > 0 ? currentAmount - 1 : currentAmount));
+        setAmount((currentAmount) => (currentAmount > 0 ? currentAmount - 1 : currentAmount));
     };
 
-    const getBasketModel = (storeageItem: StorageModel) => {
+    const getBasketModel = (item: StorageModel) => {
         return {
-            id: storeageItem.id,
-            name: storeageItem.name,
+            id: item.id,
+            name: item.name,
             amount: "0",
-            categories: storeageItem.categories || [],
-            icon: storeageItem.icon || ""
+            categories: item.categories || [],
+            icon: item.icon || ""
         };
-    }
+    };
 
-
-    // PUT-Aufruf: Wird nur ausgeführt, wenn es nicht der initiale Render ist
+    // useEffect für PUT-Request: Wird nur ausgeführt, wenn sich der amount-Wert ändert
     useEffect(() => {
+        // Beim initialen Render nicht ausführen
         if (isInitialRender.current) {
             isInitialRender.current = false;
             return;
         }
-        const onGoToList = () => history(itemsApi);
-        storageApi('PUT', itemIdApi(storageItem.id), onGoToList, { ...storageItem, amount: amount });
-    }, [amount, history, storageItem]);
+        // PUT-Request nur ausführen, wenn amount vom ursprünglichen Wert abweicht
+        if (amount === initialAmountRef.current) return;
 
-    // Wenn das Item noch nicht verfügbar ist, zeige einen Spinner
+        const onGoToList = () => history(itemsApi);
+        storageApi('PUT', itemIdApi(storageItem.id), onGoToList, { ...storageItem, amount });
+    }, [amount, history, storageItem.id]);
+
     if (!storageItem) {
         return <Spin />;
     }
 
+    const countItems = (name: string) => {
+        return store.shoppingCard.filter(storageItem => storageItem.name === name).reduce((acc, item) => parseInt(item.amount), 0)
+    }
+
+
     return (
-        // Das gesamte List.Item reagiert auf den Klick, um zur Detailseite zu navigieren
         <List.Item
             onClick={() => history(itemIdRoute(storageItem.id))}
-            style={{ cursor: 'pointer' }}
-            className={styles.storageListIitem}
+            className={`${styles.title}`}
             actions={[
-                // Bei den Aktions-Buttons wird event.stopPropagation() aufgerufen,
-                // damit der Klick nicht an den übergeordneten List.Item weitergegeben wird.
                 <MinusCircleOutlined
-                    style={{ fontSize: '30px', transform: 'translateY(2px)' }}
+                    className={styles.iconAction}
                     onClick={(e) => {
                         e.stopPropagation();
                         onDecrease(e);
                     }}
                     key={`minus${storageItem.id}`}
                 />,
-                <ShoppingCartOutlined
-                    style={{ fontSize: '30px', cursor: 'pointer', transform: 'translateY(2px)' }}
-                    key={`shopping${storageItem.id}`}
-                    onClick={(e) => {
-                        e.stopPropagation();
-                        onChangeCard(e, { type: 'ADD_TO_CARD', storeageItem: getBasketModel(storageItem) });
-                    }}
-                />,
+                <Badge key={`shopping${storageItem.id}`} size="default" count={countItems(storageItem.name)} offset={[0, 0]} style={{ backgroundColor: '#52c41a' }}>
+                    <ShoppingCartOutlined
+                        className={styles.iconAction}
+                        onClick={(e) => {
+                            e.stopPropagation();
+
+                            onChangeCard(e, { type: 'ADD_TO_CARD', storeageItem: getBasketModel(storageItem) });
+                        }}
+                    />
+                </Badge>,
                 <PlusCircleOutlined
-                    style={{ fontSize: '30px', transform: 'translateY(2px)' }}
+                    className={styles.iconAction}
                     onClick={(e) => {
                         e.stopPropagation();
                         onIncrease(e);
@@ -155,9 +155,11 @@ export default function StorageListItem(props: Props): ReactElement {
             <List.Item.Meta
                 avatar={<Avatar src={storageItem.icon} />}
                 title={
-                    <div style={{ display: 'flex', alignItems: 'center', marginBottom: '-2px' }}>
+                    <div
+                        className={styles.metaTitleContainer}
+                    >
                         <span>{storageItem.name}</span>
-                        {getLocationIcon(storageItem.storageLocation) || ""}
+                        <span>{getLocationIcon(storageItem.storageLocation)}</span>
                     </div>
                 }
                 description={getAvailable()}
