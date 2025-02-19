@@ -110,7 +110,7 @@ export default function StorageCardItem(props: Props): ReactElement {
         >
             <Link to={itemIdRoute(storageItem.id)}>
                 <Meta
-                    avatar={<Avatar src={storageItem.icon} />}
+                    avatar={<Avatar src={storageItem.icon || '/default.png'} />}
                     title={
                         <div style={{ display: 'flex', alignItems: 'center' }}>
                             <span>{storageItem.name}</span>

@@ -3,7 +3,6 @@ import React, { ReactElement, SyntheticEvent } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { storageApi, useDemensions, useStorageApi } from '../../../hooks/StorageApi';
 import { editItemRoute, errorRoute, itemIdApi, itemsRoute } from '../../../shared/Constants';
-import { useStore } from '../../../store/Store';
 import LoadingSpinner from '../../loading-spinner/LoadingSpinner';
 import { NutrientValueModel, StorageModel } from '../StorageModel';
 import css from './StorageDetail.module.css';
@@ -11,7 +10,6 @@ import css from './StorageDetail.module.css';
 export default function StorageDetail(): ReactElement {
     const { id } = useParams<{ id: string }>();
     const navigate = useNavigate();
-    const { store, dispatch } = useStore();
     const [dimensions] = useDemensions(() => 1, 0);
 
 
@@ -54,7 +52,7 @@ export default function StorageDetail(): ReactElement {
             {/* Bildanzeige */}
             <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 16 }}>
                 <Image.PreviewGroup>
-                    <Image width={150} alt={storageItem.name} src={storageItem.icon || 'https://via.placeholder.com/150'} />
+                    <Image width={150} alt={storageItem.name} src={storageItem.icon || '/default.png'} />
                 </Image.PreviewGroup>
             </div>
 

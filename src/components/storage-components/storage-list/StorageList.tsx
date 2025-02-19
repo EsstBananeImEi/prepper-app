@@ -247,7 +247,7 @@ export default function StorageList(): ReactElement {
                                     {index + 1 === filteredItems.length && <Divider />}
                                 </div>
                             ))}
-                            {filteredItems.length !== 0 && (
+                            {filteredItems.length > pageSize && (
                                 <Pagination
                                     responsive
                                     pageSize={pageSize}

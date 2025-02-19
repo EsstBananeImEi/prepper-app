@@ -137,7 +137,6 @@ export default function StorageListItem(props: Props): ReactElement {
                         className={styles.iconAction}
                         onClick={(e) => {
                             e.stopPropagation();
-
                             onChangeCard(e, { type: 'ADD_TO_CARD', storeageItem: getBasketModel(storageItem) });
                         }}
                     />
@@ -153,7 +152,7 @@ export default function StorageListItem(props: Props): ReactElement {
             ]}
         >
             <List.Item.Meta
-                avatar={<Avatar src={storageItem.icon} />}
+                avatar={<Avatar src={storageItem.icon || '/default.png'} />}
                 title={
                     <div
                         className={styles.metaTitleContainer}

@@ -83,7 +83,7 @@ export default function ShoppingCard(props: Props): ReactElement {
                         >
                             <Link to={itemIdRoute(storeageItem.id)}>
                                 <Meta
-                                    avatar={<Avatar src={storeageItem.icon} />}
+                                    avatar={<Avatar src={storeageItem.icon || '/default.png'} />}
                                     title={storeageItem.name}
                                     description={storeageItem.categories && trimText(storeageItem.categories.join(', '))}
 

@@ -26,6 +26,7 @@
         font-size: 25px;
         transform: translateY(2px);
         cursor: pointer;
+        color: rgb(147, 146, 146);
     }
 
     .highAmount {

@@ -325,7 +325,7 @@ export default function StorageDetailForm(): ReactElement {
             )}
             <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 16 }}>
                 <Image.PreviewGroup>
-                    <Image width={150} alt={name} src={icon || 'https://via.placeholder.com/150'} />
+                    <Image width={150} alt={name} src={icon || '/default.png'} />
                 </Image.PreviewGroup>
             </div>
 

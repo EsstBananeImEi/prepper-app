@@ -113,7 +113,7 @@ export default function ShoppingList(props: Props): ReactElement {
                                     ]}
                                 >
                                     <List.Item.Meta
-                                        avatar={<Avatar src={listItem.icon} />}
+                                        avatar={<Avatar src={listItem.icon || '/default.png'} />}
                                         title={
                                             <div className={styles.metaTitleContainer}>
                                                 <Link to={itemIdRoute(listItem.id)}>
@@ -169,7 +169,7 @@ export default function ShoppingList(props: Props): ReactElement {
                         ]}
                     >
                         <List.Item.Meta
-                            avatar={<Avatar src={listItem.icon} />}
+                            avatar={<Avatar src={listItem.icon || '/default.png'} />}
                             title={
                                 <div className={styles.metaTitleContainer}>
                                     <Link to={itemIdRoute(listItem.id)}>
