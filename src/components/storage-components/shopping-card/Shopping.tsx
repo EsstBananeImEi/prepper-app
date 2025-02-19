@@ -82,7 +82,7 @@ export default function Shopping(): ReactElement {
                 <div className={styles.filterSortContainer}>
                     <div className={styles.filterColumn}>
                         <Select
-                            className={styles.dropdown}
+                            className={`${styles.dropdown} ${styles.mySelect}`}
                             placeholder="Filter by Category"
                             value={selectedCategory || undefined}
                             onChange={(value: string) => {

@@ -132,7 +132,7 @@ export default function StorageList(): ReactElement {
                 <div className={styles.filterSortContainer}>
                     <div className={styles.filterColumn}>
                         <Select
-                            className={styles.dropdown}
+                            className={`${styles.dropdown} ${styles.mySelect}`}
                             placeholder="Filter by Category"
                             value={selectedCategory || null}
                             onChange={(value: string) => {
@@ -151,7 +151,7 @@ export default function StorageList(): ReactElement {
                         </Select>
 
                         <Select
-                            className={styles.dropdown}
+                            className={`${styles.dropdown} ${styles.mySelect}`}
                             placeholder="Filter by Storage Location"
                             value={selectedLocation || null}
                             onChange={(value: string) => {
