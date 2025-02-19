@@ -1,0 +1,10 @@
+@media (max-width: 450px) {
+    .storageListIitem {
+        padding: 2px 6px;
+        font-size: 10px;
+        min-height: 10px;
+        max-height: 20px;
+        margin: -20px 0 10px 0;
+
+    }
+}

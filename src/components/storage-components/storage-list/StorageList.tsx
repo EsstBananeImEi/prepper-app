@@ -1,5 +1,6 @@
 import { Button, Divider, Empty, Pagination, Select, Space } from 'antd';
 import React, { ReactElement, useState, useEffect } from 'react';
+import { DownOutlined, UpOutlined } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
 import { useDemensions, useStorageApi } from '../../../hooks/StorageApi';
 import { sortByName, itemsApi, errorRoute, newItemRoute } from '../../../shared/Constants';
@@ -8,11 +9,14 @@ import StorageSearchItem from '../storage-search-item/StorageSearchItem';
 import { StorageModel } from '../StorageModel';
 import StorageCardItem from './storage-item/StorageCardItem';
 import StorageListItem from './storage-item/StorageListItem';
+import styles from './StorageList.module.css';
 
 export default function StorageList(): ReactElement {
     // Hole die Items via Custom Hook (hier: GET-Anfrage an itemsApi)
     const [storageItems, setStorageItems, axiosResponse] = useStorageApi<StorageModel[]>('get', itemsApi);
     const history = useNavigate();
+    const [sortField, setSortField] = useState<string>('name');
+
 
     // State für Pagination
     const [currentPage, setCurrentPage] = useState(1);
@@ -23,6 +27,9 @@ export default function StorageList(): ReactElement {
     // State für die Dropdown-Filter
     const [selectedCategory, setSelectedCategory] = useState<string>('');
     const [selectedLocation, setSelectedLocation] = useState<string>('');
+
+    // Neu: Toggle-State für Filtercontainer
+    const [showFilters, setShowFilters] = useState<boolean>(false);
 
     const handleChange = (page: number) => {
         setCurrentPage(page);
@@ -37,7 +44,7 @@ export default function StorageList(): ReactElement {
         } else if (dimensions.width > 800) {
             setPageSize(15);  // Mittelgroße Bildschirme
         } else {
-            setPageSize(10);  // Kleine Bildschirme
+            setPageSize(20);  // Kleine Bildschirme
         }
         // Bei Änderung der pageSize auch wieder auf Seite 1 springen
         setCurrentPage(1);
@@ -54,7 +61,6 @@ export default function StorageList(): ReactElement {
             history(errorRoute(e.message));
         });
     }
-
 
     if (!storageItems) {
         return <LoadingSpinner message="Loading items..." />;
@@ -85,50 +91,89 @@ export default function StorageList(): ReactElement {
         return match;
     });
 
+    const sortedItems = [...filteredItems].sort((a, b) => {
+        switch (sortField) {
+            case 'name':
+                return a.name.localeCompare(b.name);
+            case 'storageLocation':
+                return a.storageLocation.localeCompare(b.storageLocation);
+            case 'amount':
+                return a.amount - b.amount;
+            default:
+                return 0;
+        }
+    });
+
     // Paginierung der gefilterten Items
-    const paginatedItems = filteredItems.slice(minValue, maxValue);
+    const paginatedItems = sortedItems.slice(minValue, maxValue);
 
     return (
         <>
             {/* Suchfeld */}
             <StorageSearchItem callback={setStorageItems} />
 
-            {/* Dropdowns für die Filter */}
-            <div style={{ marginBottom: '1rem', display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
-                <Select
-                    style={{ width: 200 }}
-                    placeholder="Filter by Category"
-                    value={selectedCategory || undefined}
-                    onChange={(value: string) => {
-                        setSelectedCategory(value);
-                        setCurrentPage(1);
-                    }}
-                    allowClear
-                >
-                    {categoryOptions.map(category => (
-                        <Select.Option key={category} value={category}>
-                            {category}
-                        </Select.Option>
-                    ))}
-                </Select>
-
-                <Select
-                    style={{ width: 200 }}
-                    placeholder="Filter by Storage Location"
-                    value={selectedLocation || undefined}
-                    onChange={(value: string) => {
-                        setSelectedLocation(value);
-                        setCurrentPage(1);
-                    }}
-                    allowClear
-                >
-                    {locationOptions.map(location => (
-                        <Select.Option key={location} value={location}>
-                            {location}
-                        </Select.Option>
-                    ))}
-                </Select>
+            {/* Balken für Filter öffnen/schließen */}
+            <div className={styles.filterToggle} onClick={() => setShowFilters(!showFilters)}>
+                <span>Filter & Sortierung</span>
+                {showFilters ? <UpOutlined /> : <DownOutlined />}
             </div>
+
+            {showFilters && (
+                <div className={styles.filterSortContainer}>
+                    <div className={styles.filterColumn}>
+                        <Select
+                            className={styles.dropdown}
+                            placeholder="Filter by Category"
+                            value={selectedCategory || undefined}
+                            onChange={(value: string) => {
+                                setSelectedCategory(value);
+                                setCurrentPage(1);
+                            }}
+                            allowClear
+                        >
+                            {categoryOptions.map(category => (
+                                <Select.Option key={category} value={category}>
+                                    {category}
+                                </Select.Option>
+                            ))}
+                        </Select>
+
+                        <Select
+                            className={styles.dropdown}
+                            placeholder="Filter by Storage Location"
+                            value={selectedLocation || undefined}
+                            onChange={(value: string) => {
+                                setSelectedLocation(value);
+                                setCurrentPage(1);
+                            }}
+                            allowClear
+                        >
+                            {locationOptions.map(location => (
+                                <Select.Option key={location} value={location}>
+                                    {location}
+                                </Select.Option>
+                            ))}
+                        </Select>
+                    </div>
+
+                    {/* Sort-Dropdown */}
+                    <div className={styles.sortColumn}>
+                        <Select
+                            className={styles.dropdown}
+                            placeholder="Sort by"
+                            value={sortField}
+                            onChange={(value: string) => {
+                                setSortField(value);
+                                setCurrentPage(1);
+                            }}
+                        >
+                            <Select.Option key="name" value="name">Name</Select.Option>
+                            <Select.Option key="storageLocation" value="storageLocation">Storage Location</Select.Option>
+                            <Select.Option key="amount" value="amount">Amount</Select.Option>
+                        </Select>
+                    </div>
+                </div>
+            )}
 
             {filteredItems.length <= 0 ? (
                 <Empty
@@ -142,7 +187,7 @@ export default function StorageList(): ReactElement {
                 </Empty>
             ) : (
                 <div
-                    className="space-align-container"
+                    className={`space-align-container`}
                     style={{
                         justifyContent: 'center',
                         display: 'flex',
@@ -200,7 +245,8 @@ export default function StorageList(): ReactElement {
                                         display: "flex",
                                         justifyContent: "center",
                                         paddingTop: '10px',
-                                        marginTop: '10px'
+                                        marginTop: '30px',
+                                        fontSize: '1.5rem'
                                     }}
                                 />
                             )}

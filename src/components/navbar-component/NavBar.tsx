@@ -78,9 +78,9 @@ export default function NavBar(): ReactElement {
             ) : (
                 // Mobile-Modus: Logo nicht sichtbar, stattdessen Home-Icon
                 <Menu theme="dark" mode="horizontal" selectedKeys={getSelectedKeysMobile()} style={{ flex: 1 }}>
-                    <Menu.Item key="/home" style={{ width: '65px' }}>
+                    <Menu.Item key="/home" style={{ width: '75px' }}>
                         <NavLink to={homeRoute}>
-                            <HomeOutlined style={{ fontSize: '25px', position: 'relative', top: '5px' }} />
+                            <img src={logo} alt="Logo" style={{ fontSize: '25px', position: 'relative' }} />
                         </NavLink>
                     </Menu.Item>
                     <Menu.Item key="/items" style={{ width: '65px' }}>

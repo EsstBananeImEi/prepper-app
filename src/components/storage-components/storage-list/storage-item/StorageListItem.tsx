@@ -11,6 +11,7 @@ import { StorageModel } from '../../StorageModel';
 // Icons aus react-icons importieren
 import { BiSolidFridge } from 'react-icons/bi';
 import { BsBookshelf } from 'react-icons/bs';
+import styles from './StorageListItem.module.css';
 
 interface Props {
     storageItem: StorageModel;
@@ -48,12 +49,12 @@ export default function StorageListItem(props: Props): ReactElement {
     // Mapping-Funktion für die Storage-Location
     const getLocationIcon = (location: string) => {
         const loc = location.toLowerCase();
-        if (loc.includes('kühler')) {
+        if (loc.includes('kühlregal')) {
             // Beispiel: Wenn "kühler" enthalten ist, zeige ein Schneeflocken-Emoji
             return (
                 <span
                     title="Tiefkühler"
-                    style={{ marginLeft: '8px', fontSize: '20px' }}
+                    style={{ marginLeft: '8px', fontSize: '15px' }}
                 >
                     ❄️
                 </span>
@@ -62,18 +63,18 @@ export default function StorageListItem(props: Props): ReactElement {
             return (
                 <span
                     title="Kühlschrank"
-                    style={{ marginLeft: '8px', fontSize: '20px' }}
+                    style={{ marginLeft: '8px', fontSize: '15px' }}
                 >
-                    <BiSolidFridge style={{ fontSize: '20px', color: '#1890ff' }} title="Kühlschrank" />
+                    <BiSolidFridge style={{ fontSize: '15px', color: '#1890ff' }} title="Kühlschrank" />
                 </span>
             );
         } else if (loc.includes('lager') || loc.includes('keller') || loc.includes('speisekammer')) {
             return (
                 <span
                     title="Lager"
-                    style={{ marginLeft: '8px', fontSize: '20px' }}
+                    style={{ marginLeft: '8px', fontSize: '15px' }}
                 >
-                    <BsBookshelf style={{ fontSize: '20px', color: '#1890ff' }} title="Lager" />
+                    <BsBookshelf style={{ fontSize: '15px', color: '#1890ff' }} title="Lager" />
                 </span>
             );
         }
@@ -121,11 +122,12 @@ export default function StorageListItem(props: Props): ReactElement {
         <List.Item
             onClick={() => history(itemIdRoute(storageItem.id))}
             style={{ cursor: 'pointer' }}
+            className={styles.storageListIitem}
             actions={[
                 // Bei den Aktions-Buttons wird event.stopPropagation() aufgerufen,
                 // damit der Klick nicht an den übergeordneten List.Item weitergegeben wird.
                 <MinusCircleOutlined
-                    style={{ fontSize: '30px' }}
+                    style={{ fontSize: '30px', transform: 'translateY(2px)' }}
                     onClick={(e) => {
                         e.stopPropagation();
                         onDecrease(e);
@@ -133,7 +135,7 @@ export default function StorageListItem(props: Props): ReactElement {
                     key={`minus${storageItem.id}`}
                 />,
                 <ShoppingCartOutlined
-                    style={{ fontSize: '30px', cursor: 'pointer' }}
+                    style={{ fontSize: '30px', cursor: 'pointer', transform: 'translateY(2px)' }}
                     key={`shopping${storageItem.id}`}
                     onClick={(e) => {
                         e.stopPropagation();
@@ -141,7 +143,7 @@ export default function StorageListItem(props: Props): ReactElement {
                     }}
                 />,
                 <PlusCircleOutlined
-                    style={{ fontSize: '30px' }}
+                    style={{ fontSize: '30px', transform: 'translateY(2px)' }}
                     onClick={(e) => {
                         e.stopPropagation();
                         onIncrease(e);
@@ -153,7 +155,7 @@ export default function StorageListItem(props: Props): ReactElement {
             <List.Item.Meta
                 avatar={<Avatar src={storageItem.icon} />}
                 title={
-                    <div style={{ display: 'flex', alignItems: 'center' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', marginBottom: '-2px' }}>
                         <span>{storageItem.name}</span>
                         {getLocationIcon(storageItem.storageLocation) || ""}
                     </div>
