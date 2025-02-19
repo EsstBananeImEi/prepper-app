@@ -1,9 +1,9 @@
 import { Button, Divider, Empty, Pagination, Select, Space } from 'antd';
-import React, { ReactElement, useState, useEffect } from 'react';
+import React, { ReactElement, useState, useEffect, useMemo } from 'react';
 import { DownOutlined, UpOutlined } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
 import { useDemensions, useStorageApi } from '../../../hooks/StorageApi';
-import { sortByName, itemsApi, errorRoute, newItemRoute } from '../../../shared/Constants';
+import { itemsApi, errorRoute, newItemRoute } from '../../../shared/Constants';
 import LoadingSpinner from '../../loading-spinner/LoadingSpinner';
 import StorageSearchItem from '../storage-search-item/StorageSearchItem';
 import { StorageModel } from '../StorageModel';
@@ -12,15 +12,14 @@ import StorageListItem from './storage-item/StorageListItem';
 import styles from './StorageList.module.css';
 
 export default function StorageList(): ReactElement {
-    // Hole die Items via Custom Hook (hier: GET-Anfrage an itemsApi)
+    // Hole Items via Custom Hook (führt GET-Request an itemsApi aus)
     const [storageItems, setStorageItems, axiosResponse] = useStorageApi<StorageModel[]>('get', itemsApi);
     const history = useNavigate();
     const [sortField, setSortField] = useState<string>('name');
 
-
     // State für Pagination
     const [currentPage, setCurrentPage] = useState(1);
-    const [pageSize, setPageSize] = useState(10);  // Standard Page size
+    const [pageSize, setPageSize] = useState(10); // Standard Page Size
     const [minValue, setMinValue] = useState(0);
     const [maxValue, setMaxValue] = useState(pageSize);
 
@@ -28,7 +27,7 @@ export default function StorageList(): ReactElement {
     const [selectedCategory, setSelectedCategory] = useState<string>('');
     const [selectedLocation, setSelectedLocation] = useState<string>('');
 
-    // Neu: Toggle-State für Filtercontainer
+    // Toggle-Status für den Filtercontainer
     const [showFilters, setShowFilters] = useState<boolean>(false);
 
     const handleChange = (page: number) => {
@@ -37,82 +36,92 @@ export default function StorageList(): ReactElement {
 
     const [dimensions] = useDemensions(handleChange, currentPage);
 
-    // Effekt 1: Aktualisiere die pageSize basierend auf der Bildschirmbreite
+    // Aktualisiere pageSize basierend auf der Bildschirmbreite
     useEffect(() => {
         if (dimensions.width > 1200) {
-            setPageSize(30);  // Mehr Artikel pro Seite auf großen Bildschirmen
+            setPageSize(30);
         } else if (dimensions.width > 800) {
-            setPageSize(15);  // Mittelgroße Bildschirme
+            setPageSize(15);
         } else {
-            setPageSize(20);  // Kleine Bildschirme
+            setPageSize(20);
         }
-        // Bei Änderung der pageSize auch wieder auf Seite 1 springen
+        // Bei Änderung der Bildschirmbreite wieder auf Seite 1 springen
         setCurrentPage(1);
     }, [dimensions.width]);
 
-    // Effekt 2: Aktualisiere minValue und maxValue, wenn currentPage oder pageSize sich ändern
+    // Aktualisiere minValue und maxValue, wenn currentPage oder pageSize sich ändern
     useEffect(() => {
         setMaxValue(currentPage * pageSize);
         setMinValue((currentPage - 1) * pageSize);
     }, [currentPage, pageSize]);
 
-    if (axiosResponse) {
-        axiosResponse.catch((e) => {
-            history(errorRoute(e.message));
-        });
-    }
+    // Error-Handling in einem useEffect verlagert
+    useEffect(() => {
+        if (axiosResponse) {
+            axiosResponse.catch((e) => {
+                history(errorRoute(e.message));
+            });
+        }
+    }, [axiosResponse, history]);
 
+    // Erstelle einen sicheren Standardwert (leeres Array), falls storageItems noch nicht geladen ist.
+    const safeStorageItems = storageItems ?? [];
+
+    // Hooks (useMemo) immer unconditionally aufrufen
+    const categoryOptions = useMemo(
+        () => Array.from(new Set(safeStorageItems.flatMap((item) => item.categories || []))),
+        [safeStorageItems]
+    );
+    const locationOptions = useMemo(
+        () => Array.from(new Set(safeStorageItems.map((item) => item.storageLocation))),
+        [safeStorageItems]
+    );
+
+    const filteredItems = useMemo(() => {
+        return safeStorageItems.filter((item) => {
+            let match = true;
+            if (selectedCategory) {
+                match = match && (item.categories ? item.categories.includes(selectedCategory) : false);
+            }
+            if (selectedLocation) {
+                match = match && item.storageLocation === selectedLocation;
+            }
+            return match;
+        });
+    }, [safeStorageItems, selectedCategory, selectedLocation]);
+
+    const sortedItems = useMemo(() => {
+        return [...filteredItems].sort((a, b) => {
+            switch (sortField) {
+                case 'name':
+                    return a.name.localeCompare(b.name);
+                case 'storageLocation':
+                    return a.storageLocation.localeCompare(b.storageLocation);
+                case 'amount':
+                    return a.amount - b.amount;
+                default:
+                    return 0;
+            }
+        });
+    }, [filteredItems, sortField]);
+
+    const paginatedItems = useMemo(() => {
+        return sortedItems.slice(minValue, maxValue);
+    }, [sortedItems, minValue, maxValue]);
+
+    // Wenn noch keine Items geladen wurden, zeige den Loading Spinner
     if (!storageItems) {
         return <LoadingSpinner message="Loading items..." />;
     }
 
     const onGoToNew = () => history(newItemRoute);
 
-    // Berechne die möglichen Filteroptionen:
-    // Für Kategorien: alle Kategorien aus allen Items (flatMap, da categories ein Array ist)
-    const categoryOptions = Array.from(
-        new Set(storageItems.flatMap(item => item.categories || []))
-    );
-    // Für StorageLocation: alle unterschiedlichen Storage-Locations
-    const locationOptions = Array.from(
-        new Set(storageItems.map(item => item.storageLocation))
-    );
-
-    // Filtere die Items anhand der ausgewählten Filter
-    const filteredItems = storageItems.filter(item => {
-        let match = true;
-        if (selectedCategory) {
-            // Prüfe, ob die ausgewählte Kategorie in den Kategorien des Items enthalten ist
-            match = match && (item.categories ? item.categories.includes(selectedCategory) : false);
-        }
-        if (selectedLocation) {
-            match = match && (item.storageLocation === selectedLocation);
-        }
-        return match;
-    });
-
-    const sortedItems = [...filteredItems].sort((a, b) => {
-        switch (sortField) {
-            case 'name':
-                return a.name.localeCompare(b.name);
-            case 'storageLocation':
-                return a.storageLocation.localeCompare(b.storageLocation);
-            case 'amount':
-                return a.amount - b.amount;
-            default:
-                return 0;
-        }
-    });
-
-    // Paginierung der gefilterten Items
-    const paginatedItems = sortedItems.slice(minValue, maxValue);
-
     return (
         <>
             {/* Suchfeld */}
             <StorageSearchItem callback={setStorageItems} />
 
-            {/* Balken für Filter öffnen/schließen */}
+            {/* Balken zum Öffnen/Schließen der Filter */}
             <div className={styles.filterToggle} onClick={() => setShowFilters(!showFilters)}>
                 <span>Filter & Sortierung</span>
                 {showFilters ? <UpOutlined /> : <DownOutlined />}
@@ -131,7 +140,7 @@ export default function StorageList(): ReactElement {
                             }}
                             allowClear
                         >
-                            {categoryOptions.map(category => (
+                            {categoryOptions.map((category) => (
                                 <Select.Option key={category} value={category}>
                                     {category}
                                 </Select.Option>
@@ -148,7 +157,7 @@ export default function StorageList(): ReactElement {
                             }}
                             allowClear
                         >
-                            {locationOptions.map(location => (
+                            {locationOptions.map((location) => (
                                 <Select.Option key={location} value={location}>
                                     {location}
                                 </Select.Option>
@@ -167,9 +176,15 @@ export default function StorageList(): ReactElement {
                                 setCurrentPage(1);
                             }}
                         >
-                            <Select.Option key="name" value="name">Name</Select.Option>
-                            <Select.Option key="storageLocation" value="storageLocation">Storage Location</Select.Option>
-                            <Select.Option key="amount" value="amount">Amount</Select.Option>
+                            <Select.Option key="name" value="name">
+                                Name
+                            </Select.Option>
+                            <Select.Option key="storageLocation" value="storageLocation">
+                                Storage Location
+                            </Select.Option>
+                            <Select.Option key="amount" value="amount">
+                                Amount
+                            </Select.Option>
                         </Select>
                     </div>
                 </div>
@@ -215,9 +230,9 @@ export default function StorageList(): ReactElement {
                                     total={filteredItems.length}
                                     onChange={handleChange}
                                     style={{
-                                        width: "100%",
-                                        display: "flex",
-                                        justifyContent: "center",
+                                        width: '100%',
+                                        display: 'flex',
+                                        justifyContent: 'center',
                                         paddingTop: '10px'
                                     }}
                                 />
@@ -232,7 +247,6 @@ export default function StorageList(): ReactElement {
                                     {index + 1 === filteredItems.length && <Divider />}
                                 </div>
                             ))}
-                            {/* Pagination auch für die mobile Ansicht anzeigen */}
                             {filteredItems.length !== 0 && (
                                 <Pagination
                                     responsive
@@ -241,9 +255,9 @@ export default function StorageList(): ReactElement {
                                     total={filteredItems.length}
                                     onChange={handleChange}
                                     style={{
-                                        width: "100%",
-                                        display: "flex",
-                                        justifyContent: "center",
+                                        width: '100%',
+                                        display: 'flex',
+                                        justifyContent: 'center',
                                         paddingTop: '10px',
                                         marginTop: '30px',
                                         fontSize: '1.5rem'
