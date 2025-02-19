@@ -135,7 +135,7 @@ export default function StorageList(): ReactElement {
                             placeholder="Filter by Category"
                             value={selectedCategory || undefined}
                             onChange={(value: string) => {
-                                setSelectedCategory(value || '');
+                                setSelectedCategory(value);
                                 setCurrentPage(1);
                             }}
                             allowClear
@@ -154,7 +154,7 @@ export default function StorageList(): ReactElement {
                             placeholder="Filter by Storage Location"
                             value={selectedLocation || undefined}
                             onChange={(value: string) => {
-                                setSelectedLocation(value || '');
+                                setSelectedLocation(value);
                                 setCurrentPage(1);
                             }}
                             allowClear

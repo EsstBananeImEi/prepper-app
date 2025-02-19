@@ -85,7 +85,7 @@ export default function Shopping(): ReactElement {
                             placeholder="Filter by Category"
                             value={selectedCategory || undefined}
                             onChange={(value: string) => {
-                                setSelectedCategory(value || '')
+                                setSelectedCategory(value)
                                 setCurrentPage(1)
                             }}
                             allowClear
@@ -107,7 +107,7 @@ export default function Shopping(): ReactElement {
                             placeholder="Sort by"
                             value={sortField}
                             onChange={(value: string) => {
-                                setSortField(value || 'name')
+                                setSortField(value)
                                 setCurrentPage(1)
                             }}
                             suffixIcon={<DownOutlined style={{ fontSize: 18, color: "#666" }} />} // Größerer Pfeil
