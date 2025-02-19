@@ -31,8 +31,7 @@ export default function Shopping(): ReactElement {
     }, [])
         .sort((a, b) => Number(a.id) - Number(b.id))
 
-    const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
-
+    const [selectedCategory, setSelectedCategory] = useState<string>('')
     const [sortField, setSortField] = useState<string>('name')
 
     // Toggle-Status für den Filtercontainer
@@ -84,9 +83,9 @@ export default function Shopping(): ReactElement {
                         <Select
                             className={styles.dropdown}
                             placeholder="Filter by Category"
-                            value={selectedCategory || null}
+                            value={selectedCategory || undefined}
                             onChange={(value: string) => {
-                                setSelectedCategory(value || null)
+                                setSelectedCategory(value || '')
                                 setCurrentPage(1)
                             }}
                             allowClear

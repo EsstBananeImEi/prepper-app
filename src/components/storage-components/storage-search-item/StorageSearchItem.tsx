@@ -29,6 +29,6 @@ export default function StorageSearchItem(props: Props): ReactElement {
     }
 
     return (
-        <Input className={style.customInputField} onChange={(e) => onSearch(e.target.value)} placeholder="Lebensmittel / Gegenstand Suchen" addonAfter={<SearchOutlined />} />
+        <Input className={style.inputField} onChange={(e) => onSearch(e.target.value)} placeholder="Lebensmittel / Gegenstand Suchen" addonAfter={<SearchOutlined />} />
     )
 }
