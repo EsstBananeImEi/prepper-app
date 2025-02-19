@@ -2,7 +2,7 @@ import { Alert, Avatar, Collapse, Typography } from 'antd';
 import React, { ReactElement } from 'react';
 import style from './Home.module.css';
 import LazyAvatar from './LazyAvatar';
-import { Placeholder } from 'semantic-ui-react';
+import { Link } from 'react-router-dom';
 
 const { Title, Paragraph } = Typography;
 const { Panel } = Collapse;
@@ -13,63 +13,72 @@ const recommendations = [
         description:
             "Die Bundesregierung empfiehlt, einen Vorrat an lang haltbaren Lebensmitteln für mindestens 10 Tage anzulegen. Dies umfasst Konserven, Trockenprodukte, Reis, Nudeln sowie zusätzliche Artikel für spezielle Ernährungsbedürfnisse. Achten Sie darauf, dass der Vorrat abwechslungsreich und ausgewogen ist.",
         avatar: "/lebensmittel.png",
-        placeholder: "/lebensmittel-small.png"
+        placeholder: "/lebensmittel-small.png",
+        link: "/details/lebensmittel"
     },
     {
         title: "Trinkwasser",
         description:
             "Pro Person sollten mindestens 2 Liter Trinkwasser pro Tag für 10 Tage bereitgestellt werden. Dabei ist es wichtig, das Wasser in geeigneten Behältnissen hygienisch zu lagern. Überprüfen Sie regelmäßig das Haltbarkeitsdatum und den Zustand der Lagerbehälter.",
         avatar: "/wasser.png",
-        placeholder: "/wasser-small.png"
+        placeholder: "/wasser-small.png",
+        link: "/details/wasser"
     },
     {
         title: "Medikamente & Erste-Hilfe-Material",
         description:
             "Ein gut ausgestatteter Erste-Hilfe-Kasten sowie ein Vorrat an wichtigen Medikamenten sind unverzichtbar. Neben Standardmaterialien sollten Sie auch persönliche Medikamente (z. B. für chronische Erkrankungen) und eventuell spezielle Hilfsmittel bereithalten.",
         avatar: "/medikamente.png",
-        placeholder: "/medikamente-small.png"
+        placeholder: "/medikamente-small.png",
+        link: "/details/medikamente"
     },
     {
         title: "Hygieneartikel & Desinfektionsmittel",
         description:
             "Um Infektionen vorzubeugen, sollten Sie einen Vorrat an Seife, Desinfektionsmitteln, Hygienetüchern und weiteren Pflegeartikeln anlegen. Diese Artikel sind nicht nur im medizinischen Notfall wichtig, sondern auch für den alltäglichen Schutz in Krisenzeiten.",
         avatar: "/hygiene.png",
-        placeholder: "/hygiene-small.png"
+        placeholder: "/hygiene-small.png",
+        link: "/details/hygiene"
     },
     {
         title: "Notfallausrüstung & Kommunikation",
         description:
-            "Neben den Grundbedarfen sollten auch Geräte wie ein batteriebetriebener Radio, Taschenlampen, Ersatzbatterien und ein Notfallkit für wichtige Dokumente und Bargeld vorhanden sein. Diese Ausrüstung unterstützt Sie dabei, auch im Krisenfall informiert und handlungsfähig zu bleiben.",
+            "Neben dem Grundbedarf sollten auch Geräte wie ein Kurbel oder Batteriebetriebenes Radio, Taschenlampen, Ersatzbatterien, Powerbanks und ein Notfallkit für wichtige Dokumente und Bargeld vorhanden sein. Diese Ausrüstung unterstützt Sie dabei, auch im Krisenfall informiert und handlungsfähig zu bleiben.",
         avatar: "/informieren.png",
-        placeholder: "/informieren-small.png"
+        placeholder: "/informieren-small.png",
+        link: "/details/informieren"
     },
     {
         title: "Spezielle Bedürfnisse",
         description:
             "Planen Sie zusätzlich für Kinder, ältere Menschen oder Haustiere. Dies umfasst beispielsweise Babynahrung, altersgerechte Medikamente oder Tierfutter. Berücksichtigen Sie dabei auch eventuelle besondere Ernährungsbedürfnisse.",
         avatar: "/beduerfnisse.png",
-        placeholder: "/beduerfnisse-small.png"
+        placeholder: "/beduerfnisse-small.png",
+        link: "/details/beduerfnisse"
     },
     {
         title: "Wichtige Dokumente sichern",
         description:
             "Sorgen Sie dafür, dass alle wichtigen Dokumente wie Personalausweis, Reisepass, Versicherungsunterlagen und Bankinformationen an einem sicheren Ort aufbewahrt werden – idealerweise in einem feuerfesten Safe oder digital gesichert.",
         avatar: "/dokumente.png",
-        placeholder: "/dokumente-small.png"
+        placeholder: "/dokumente-small.png",
+        link: "/details/dokumente"
     },
     {
         title: "Notgepäck",
         description:
             "Ein Notgepäck sollte schnell griffbereit sein und alle essentiellen Dinge enthalten, wie Bargeld, wichtige Dokumente, ein Mobiltelefon samt Ladegerät, ein Erste-Hilfe-Set, Wasser, Snacks und Wechselkleidung. Packen Sie es so, dass Sie im Notfall zügig das Haus verlassen können.",
         avatar: "/gepaeck.png",
-        placeholder: "/gepaeck-small.png"
+        placeholder: "/gepaeck-small.png",
+        link: "/details/gepaeck"
     },
     {
         title: "Sicherheit im Haus",
         description:
             "Überprüfen Sie, ob Ihr Zuhause im Krisenfall sicher ist. Dazu gehören funktionierende Alarmanlagen, stabile Sicherheitsschlösser, frei zugängliche Notausgänge und ein klar definierter Evakuierungsplan. Achten Sie auch darauf, dass potenzielle Gefahrenquellen minimiert werden.",
         avatar: "/sicherheit.png",
-        placeholder: "/sicherheit-small"
+        placeholder: "/sicherheit-small",
+        link: "/details/sicherheit"
     }
 ];
 
@@ -92,6 +101,7 @@ export default function Home(): ReactElement {
                         key={index}
                     >
                         <Paragraph>{item.description}</Paragraph>
+                        <Link to={item.link} className={style.moreInfoLink}>Mehr erfahren</Link>
                     </Panel>
                 ))}
             </Collapse>

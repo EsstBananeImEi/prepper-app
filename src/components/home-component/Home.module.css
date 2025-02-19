@@ -24,3 +24,25 @@
 .alert {
     margin-top: 24px;
 }
+
+.moreInfoLink {
+    display: inline-block;
+    margin-top: 12px;
+    font-size: 16px;
+    font-weight: bold;
+    color: #1890ff;
+    text-decoration: none;
+    transition: color 0.3s ease-in-out;
+}
+
+.moreInfoLink:hover {
+    color: #40a9ff;
+    text-decoration: underline;
+}
+
+/* Für bessere Darstellung auf mobilen Geräten */
+@media (max-width: 600px) {
+    .moreInfoLink {
+        font-size: 14px;
+    }
+}
