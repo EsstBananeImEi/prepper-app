@@ -50,4 +50,5 @@
 .dropdown {
     width: 100%;
     font-size: 16px !important;
+    touch-action: manipulation;
 }

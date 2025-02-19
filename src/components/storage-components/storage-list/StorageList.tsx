@@ -24,8 +24,9 @@ export default function StorageList(): ReactElement {
     const [maxValue, setMaxValue] = useState(pageSize);
 
     // State für die Dropdown-Filter
-    const [selectedCategory, setSelectedCategory] = useState<string>('');
-    const [selectedLocation, setSelectedLocation] = useState<string>('');
+    const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
+    const [selectedLocation, setSelectedLocation] = useState<string | null>(null);
+
 
     // Toggle-Status für den Filtercontainer
     const [showFilters, setShowFilters] = useState<boolean>(false);
@@ -133,9 +134,9 @@ export default function StorageList(): ReactElement {
                         <Select
                             className={styles.dropdown}
                             placeholder="Filter by Category"
-                            value={selectedCategory || undefined}
+                            value={selectedCategory || null}
                             onChange={(value: string) => {
-                                setSelectedCategory(value || '');
+                                setSelectedCategory(value || null);
                                 setCurrentPage(1);
                             }}
                             allowClear
@@ -150,9 +151,9 @@ export default function StorageList(): ReactElement {
                         <Select
                             className={styles.dropdown}
                             placeholder="Filter by Storage Location"
-                            value={selectedLocation || undefined}
+                            value={selectedLocation || null}
                             onChange={(value: string) => {
-                                setSelectedLocation(value || '');
+                                setSelectedLocation(value || null);
                                 setCurrentPage(1);
                             }}
                             allowClear
