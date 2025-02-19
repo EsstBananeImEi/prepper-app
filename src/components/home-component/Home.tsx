@@ -1,6 +1,7 @@
 import { Alert, Avatar, Collapse, Typography } from 'antd';
 import React, { ReactElement } from 'react';
 import style from './Home.module.css';
+import LazyAvatar from './LazyAvatar';
 
 const { Title, Paragraph } = Typography;
 const { Panel } = Collapse;
@@ -74,7 +75,7 @@ export default function Home(): ReactElement {
                     <Panel
                         header={
                             <div className={style.panelHeader}>
-                                <Avatar src={item.avatar} size={64} className={style.avatar} />
+                                <LazyAvatar src={item.avatar} size={64} className={style.avatar} />
                                 <span className={style.paneltitle}>{item.title}</span>
                             </div>
                         }
