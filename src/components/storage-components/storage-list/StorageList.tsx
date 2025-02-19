@@ -175,6 +175,8 @@ export default function StorageList(): ReactElement {
                                 setSortField(value);
                                 setCurrentPage(1);
                             }}
+                            allowClear
+
                         >
                             <Select.Option key="name" value="name">
                                 Name

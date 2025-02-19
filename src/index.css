@@ -2,6 +2,10 @@
 @import '~antd/dist/antd.css';
 @import '~antd-button-color/dist/css/style.css';
 
+html {
+    -webkit-text-size-adjust: 100%;
+}
+
 #root {
     height: 100%;
 }
