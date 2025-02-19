@@ -116,9 +116,7 @@ export default function ShoppingList(props: Props): ReactElement {
                                         avatar={<Avatar src={listItem.icon || '/default.png'} />}
                                         title={
                                             <div className={styles.metaTitleContainer}>
-                                                <Link to={itemIdRoute(listItem.id)}>
-                                                    <span>{listItem.name}</span>
-                                                </Link>
+                                                <span>{listItem.name}</span>
                                             </div>
                                         }
 
@@ -172,9 +170,7 @@ export default function ShoppingList(props: Props): ReactElement {
                             avatar={<Avatar src={listItem.icon || '/default.png'} />}
                             title={
                                 <div className={styles.metaTitleContainer}>
-                                    <Link to={itemIdRoute(listItem.id)}>
-                                        <span>{listItem.name}</span>
-                                    </Link>
+                                    <span>{listItem.name}</span>
                                 </div>
                             }
                             description={

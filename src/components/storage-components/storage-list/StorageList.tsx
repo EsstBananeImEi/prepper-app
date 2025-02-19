@@ -140,7 +140,8 @@ export default function StorageList(): ReactElement {
                                 setCurrentPage(1);
                             }}
                             allowClear
-                            suffixIcon={<DownOutlined style={{ fontSize: 18, color: "#666" }} />} // Größerer Pfeil
+                            suffixIcon={<DownOutlined />}
+                            clearIcon={<CloseCircleOutlined />}
                         >
                             {categoryOptions.map((category) => (
                                 <Select.Option key={category} value={category}>
@@ -158,7 +159,8 @@ export default function StorageList(): ReactElement {
                                 setCurrentPage(1);
                             }}
                             allowClear
-                            suffixIcon={<DownOutlined style={{ fontSize: 18, color: "#666" }} />} // Größerer Pfeil
+                            suffixIcon={<DownOutlined />}
+                            clearIcon={<CloseCircleOutlined />}
                         >
                             {locationOptions.map((location) => (
                                 <Select.Option key={location} value={location}>

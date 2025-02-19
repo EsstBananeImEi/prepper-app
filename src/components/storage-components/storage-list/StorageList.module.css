@@ -51,3 +51,14 @@
     width: 100%;
     font-size: 16px !important;
 }
+
+.mySelect .ant-select-clear,
+.mySelect .ant-select-suffix {
+    position: absolute;
+    right: 8px;
+    /* Passe diesen Wert nach Bedarf an */
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 18px !important;
+    color: #666 !important;
+}

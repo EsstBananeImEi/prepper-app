@@ -37,10 +37,6 @@ export default function Shopping(): ReactElement {
 
     // Toggle-Status für den Filtercontainer
     const [showFilters, setShowFilters] = useState<boolean>(false)
-    const categoryOptions = useMemo(
-        () => Array.from(new Set(storedItems.flatMap(item => item.categories || []))),
-        [storedItems]
-    )
 
     const filteredItems = useMemo(() => {
         return storedItems.filter(item => {
@@ -69,6 +65,10 @@ export default function Shopping(): ReactElement {
             }
         });
     }, [filteredItems, sortField]);
+    const categoryOptions = useMemo(
+        () => Array.from(new Set(storedItems.flatMap(item => item.categories || []))),
+        [sortedItems]
+    )
 
 
     return (
@@ -141,7 +141,7 @@ export default function Shopping(): ReactElement {
             >
                 {dimensions.width > 450 ? (
                     <>
-                        <ShoppingCard storedItems={storedItems} dimensions={dimensions} pagination={paginationValues} />
+                        <ShoppingCard storedItems={sortedItems} dimensions={dimensions} pagination={paginationValues} />
                         {storedItems.length !== 0 && (
                             <Pagination responsive
                                 pageSize={pageSize}
