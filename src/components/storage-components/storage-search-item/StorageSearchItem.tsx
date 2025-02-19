@@ -7,7 +7,7 @@ import { Setter } from '../../../types/Types';
 import { StorageModel } from '../StorageModel';
 import { debounce } from 'lodash';
 import { itemSearchApi } from '../../../shared/Constants';
-
+import style from './StorageSearchItem.module.css'
 interface Props {
     callback: Setter<StorageModel[]>
 
@@ -28,6 +28,6 @@ export default function StorageSearchItem(props: Props): ReactElement {
     }
 
     return (
-        <Input onChange={(e) => onSearch(e.target.value)} placeholder="input search" addonAfter={<SearchOutlined />} />
+        <Input className={style.customInputField} onChange={(e) => onSearch(e.target.value)} placeholder="Lebensmittel / Gegenstand Suchen" addonAfter={<SearchOutlined />} />
     )
 }
