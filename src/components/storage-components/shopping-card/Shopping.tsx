@@ -85,7 +85,7 @@ export default function Shopping(): ReactElement {
                             placeholder="Filter by Category"
                             value={selectedCategory || undefined}
                             onChange={(value: string) => {
-                                setSelectedCategory(value)
+                                setSelectedCategory(value || '')
                                 setCurrentPage(1)
                             }}
                             allowClear
@@ -105,7 +105,7 @@ export default function Shopping(): ReactElement {
                             placeholder="Sort by"
                             value={sortField}
                             onChange={(value: string) => {
-                                setSortField(value)
+                                setSortField(value || 'name')
                                 setCurrentPage(1)
                             }}
                         >
