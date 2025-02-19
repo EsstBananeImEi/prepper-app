@@ -9,6 +9,7 @@ interface LazyAvatarProps {
 
 export default function LazyAvatar({ src, size, className, alt = 'avatar' }: LazyAvatarProps) {
     const [isVisible, setIsVisible] = useState(false);
+    const [isLoaded, setIsLoaded] = useState(false);
     const containerRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
@@ -30,14 +31,19 @@ export default function LazyAvatar({ src, size, className, alt = 'avatar' }: Laz
     }, []);
 
     return (
-        <div ref={containerRef} className={className}>
+        <div ref={containerRef} className={className} style={{ width: size, height: size }}>
             {isVisible ? (
                 <img
                     src={src}
                     width={size}
                     height={size}
                     alt={alt}
-                    style={{ borderRadius: '50%' }}
+                    style={{
+                        borderRadius: '50%',
+                        filter: isLoaded ? 'none' : 'blur(8px)',
+                        transition: 'filter 0.3s ease-out'
+                    }}
+                    onLoad={() => setIsLoaded(true)}
                     loading="lazy"
                 />
             ) : (
