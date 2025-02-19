@@ -141,7 +141,6 @@ export default function StorageList(): ReactElement {
                             }}
                             allowClear
                             suffixIcon={<DownOutlined style={{ fontSize: 18, color: "#666" }} />} // Größerer Pfeil
-                            clearIcon={<CloseCircleOutlined style={{ fontSize: 20, color: "red" }} />} // Größeres X
                         >
                             {categoryOptions.map((category) => (
                                 <Select.Option key={category} value={category}>
@@ -160,7 +159,6 @@ export default function StorageList(): ReactElement {
                             }}
                             allowClear
                             suffixIcon={<DownOutlined style={{ fontSize: 18, color: "#666" }} />} // Größerer Pfeil
-                            clearIcon={<CloseCircleOutlined style={{ fontSize: 20, color: "red" }} />} // Größeres X
                         >
                             {locationOptions.map((location) => (
                                 <Select.Option key={location} value={location}>
@@ -182,7 +180,6 @@ export default function StorageList(): ReactElement {
                             }}
                             allowClear
                             suffixIcon={<DownOutlined style={{ fontSize: 18, color: "#666" }} />} // Größerer Pfeil
-                            clearIcon={<CloseCircleOutlined style={{ fontSize: 20, color: "red" }} />} // Größeres X
                         >
                             <Select.Option key="name" value="name">
                                 Name
