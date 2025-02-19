@@ -1,0 +1,26 @@
+.mycontainer {
+    padding: 24px;
+}
+
+.panelHeader {
+    display: flex;
+    align-items: center;
+}
+
+.avatar {
+    margin-right: 16px;
+    flex-shrink: 0;
+}
+
+.paneltitle {
+    font-weight: bold;
+    font-size: 16px;
+}
+
+.infosection {
+    margin-top: 24px;
+}
+
+.alert {
+    margin-top: 24px;
+}
