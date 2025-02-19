@@ -1,6 +1,6 @@
 import { Button, Divider, Empty, Pagination, Select, Space } from 'antd';
 import React, { ReactElement, useState, useEffect, useMemo } from 'react';
-import { DownOutlined, UpOutlined } from '@ant-design/icons';
+import { CloseCircleOutlined, DownOutlined, UpOutlined } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
 import { useDemensions, useStorageApi } from '../../../hooks/StorageApi';
 import { itemsApi, errorRoute, newItemRoute } from '../../../shared/Constants';
@@ -125,7 +125,7 @@ export default function StorageList(): ReactElement {
             {/* Balken zum Öffnen/Schließen der Filter */}
             <div className={styles.filterToggle} onClick={() => setShowFilters(!showFilters)}>
                 <span>Filter & Sortierung</span>
-                {showFilters ? <UpOutlined /> : <DownOutlined />}
+                {showFilters ? <UpOutlined style={{ fontSize: 18, color: "#666" }} /> : <DownOutlined style={{ fontSize: 18, color: "#666" }} />}
             </div>
 
             {showFilters && (
@@ -140,6 +140,8 @@ export default function StorageList(): ReactElement {
                                 setCurrentPage(1);
                             }}
                             allowClear
+                            suffixIcon={<DownOutlined style={{ fontSize: 18, color: "#666" }} />} // Größerer Pfeil
+                            clearIcon={<CloseCircleOutlined style={{ fontSize: 20, color: "red" }} />} // Größeres X
                         >
                             {categoryOptions.map((category) => (
                                 <Select.Option key={category} value={category}>
@@ -157,6 +159,8 @@ export default function StorageList(): ReactElement {
                                 setCurrentPage(1);
                             }}
                             allowClear
+                            suffixIcon={<DownOutlined style={{ fontSize: 18, color: "#666" }} />} // Größerer Pfeil
+                            clearIcon={<CloseCircleOutlined style={{ fontSize: 20, color: "red" }} />} // Größeres X
                         >
                             {locationOptions.map((location) => (
                                 <Select.Option key={location} value={location}>
@@ -177,7 +181,8 @@ export default function StorageList(): ReactElement {
                                 setCurrentPage(1);
                             }}
                             allowClear
-
+                            suffixIcon={<DownOutlined style={{ fontSize: 18, color: "#666" }} />} // Größerer Pfeil
+                            clearIcon={<CloseCircleOutlined style={{ fontSize: 20, color: "red" }} />} // Größeres X
                         >
                             <Select.Option key="name" value="name">
                                 Name

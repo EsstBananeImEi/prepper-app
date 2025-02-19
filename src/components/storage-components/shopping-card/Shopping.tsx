@@ -7,7 +7,7 @@ import { BasketModel, StorageModel } from '../StorageModel'
 import ShoppingCard from './ShoppingCard'
 import ShoppingList from './ShoppingList'
 import styles from '../storage-list/StorageList.module.css'
-import { DownOutlined, UpOutlined } from '@ant-design/icons';
+import { CloseCircleOutlined, DownOutlined, UpOutlined } from '@ant-design/icons';
 
 export default function Shopping(): ReactElement {
     const { store, dispatch } = useStore()
@@ -75,7 +75,7 @@ export default function Shopping(): ReactElement {
         <>
             <div className={styles.filterToggle} onClick={() => setShowFilters(!showFilters)}>
                 <span>Filter & Sortierung</span>
-                {showFilters ? <UpOutlined /> : <DownOutlined />}
+                {showFilters ? <UpOutlined style={{ fontSize: 18, color: "#666" }} /> : <DownOutlined style={{ fontSize: 18, color: "#666" }} />}
             </div>
 
             {showFilters && (
@@ -90,6 +90,8 @@ export default function Shopping(): ReactElement {
                                 setCurrentPage(1)
                             }}
                             allowClear
+                            suffixIcon={<DownOutlined style={{ fontSize: 18, color: "#666" }} />} // Größerer Pfeil
+                            clearIcon={<CloseCircleOutlined style={{ fontSize: 20, color: "red" }} />} // Größeres X
                         >
                             {categoryOptions.map(category => (
                                 <Select.Option key={category} value={category}>
@@ -109,6 +111,8 @@ export default function Shopping(): ReactElement {
                                 setSortField(value || 'name')
                                 setCurrentPage(1)
                             }}
+                            suffixIcon={<DownOutlined style={{ fontSize: 18, color: "#666" }} />} // Größerer Pfeil
+                            clearIcon={<CloseCircleOutlined style={{ fontSize: 20, color: "red" }} />} // Größeres X
                         >
                             <Select.Option key="name" value="name">
                                 Name
