@@ -34,3 +34,30 @@ p {
         font-size: 14px;
     }
 }
+
+.fullWidthTable {
+    width: 100%;
+    border-collapse: collapse;
+    font-family: Arial, sans-serif;
+    margin: 20px 0;
+}
+
+.fullWidthTable th,
+.fullWidthTable td {
+    padding: 12px;
+    border: 1px solid #ddd;
+    text-align: center;
+}
+
+.fullWidthTable thead {
+    background-color: #f2f2f2;
+}
+
+.fullWidthTable tbody tr:nth-child(even) {
+    background-color: #f9f9f9;
+}
+
+.alert {
+    margin-top: 24px;
+    margin-bottom: 24px;
+}
