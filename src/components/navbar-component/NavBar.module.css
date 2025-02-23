@@ -1,46 +1,105 @@
-/* Header-Container */
+/* Header */
 .header {
     background-color: #001529;
     display: flex;
     align-items: center;
     justify-content: space-between;
-    /* Verhindert das Verschieben der Elemente */
     padding: 0 20px;
 }
 
-/* Menü-Container */
-.navContainer {
+/* Logo */
+.logo {
+    height: 40px;
+    margin-right: 20px;
+}
+
+/* Menü-Styling */
+.menu {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+}
+
+.menu .ant-menu-item {
+    transition: all 0.3s ease-in-out;
+}
+
+.menu .ant-menu-item:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+.menu .ant-menu-item .anticon {
+    color: #ffffff !important;
+}
+
+/* Hover-Animation für Icons */
+.menu .ant-menu-item:hover .anticon {
+    color: #1890ff !important;
+    /* Blau für Hover */
+    transition: color 0.2s ease-in-out;
+}
+
+/* Mobile Navigation */
+.mobileNav {
     display: flex;
     align-items: center;
-    flex-grow: 1;
-    /* Stellt sicher, dass das Menü den Platz nutzt */
+    width: 100%;
 }
 
-/* Menü links */
-.navMenu {
-    display: flex;
-    gap: 20px;
-    flex-grow: 1;
-    /* Erlaubt, dass sich das Menü ausdehnt */
+.icon {
+    font-size: 28px !important;
+    color: #ffffff !important;
+    /* Weiß für alle Icons */
 }
 
-/* User-Icon rechts fixieren */
-.userMenu {
+/* User-Dropdown */
+.userDropdown {
+    width: 300px;
+    padding: 15px;
+    background: #fff;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+}
+
+/* User Info */
+.userInfo {
     display: flex;
     align-items: center;
-    margin-left: auto;
-    /* Schiebt es nach rechts */
-    cursor: pointer;
+    gap: 10px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #eee;
 }
 
-/* Avatar-Styling */
+/* Menü in Dropdown */
+.menuList {
+    border: none;
+    padding-top: 10px;
+}
+
+.menuList .ant-menu-item {
+    padding: 10px 15px;
+    transition: all 0.2s;
+}
+
+.menuList .ant-menu-item:hover {
+    background: #f0f0f0;
+}
+
+/* User Avatar */
 .userAvatar {
     width: 40px !important;
     height: 40px !important;
     border-radius: 50%;
+    margin-top: -5px;
     transition: transform 0.2s ease-in-out;
 }
 
 .userAvatar:hover {
     transform: scale(1.1);
+}
+
+/* Badge soll nicht überlappen */
+.badge-icon {
+    position: relative;
+    top: -2px;
 }

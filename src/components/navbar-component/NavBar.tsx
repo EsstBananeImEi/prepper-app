@@ -3,9 +3,11 @@ import {
     PlusOutlined,
     UnorderedListOutlined,
     ShoppingCartOutlined,
-    UserOutlined
+    UserOutlined,
+    LogoutOutlined,
+    ProfileOutlined
 } from '@ant-design/icons';
-import { Badge, Layout, Menu, Avatar, Dropdown } from 'antd';
+import { Badge, Layout, Menu, Avatar, Dropdown, Card, Typography } from 'antd';
 import React, { ReactElement } from 'react';
 import { NavLink, useLocation, useNavigate } from "react-router-dom";
 import { useDemensions } from '../../hooks/StorageApi';
@@ -13,6 +15,8 @@ import { homeRoute, basketRoute, itemsRoute, newItemRoute, userApi, loginApi } f
 import logo from '../../static/images/prepper-app.svg';
 import { useStore } from '../../store/Store';
 import style from './NavBar.module.css';
+
+const { Text } = Typography;
 
 export default function NavBar(): ReactElement {
     const { Header } = Layout;
@@ -31,35 +35,47 @@ export default function NavBar(): ReactElement {
         return [];
     };
 
-    const countItems = () => {
-        return store.shoppingCard.length;
-    };
+    const countItems = () => store.shoppingCard.length;
 
-    // Logout-Handler (füge hier die tatsächliche Logout-Logik hinzu)
     const handleLogout = () => {
-        localStorage.removeItem("user");  // Token aus dem LocalStorage entfernen
+        localStorage.removeItem("user");
         dispatch({ type: "LOGOUT_USER" });
-        navigate(homeRoute) // State aktualisieren
+        navigate(homeRoute);
     };
 
-    // Dropdown-Menü für User
     const userMenu = (
-        <Menu>
+        <Card className={style.userDropdown}>
             {isLoggedIn ? (
                 <>
-                    <Menu.Item key="profile">
-                        <NavLink to={userApi}>Profil</NavLink>
-                    </Menu.Item>
-                    <Menu.Item key="logout" onClick={handleLogout}>
-                        Logout
-                    </Menu.Item>
+                    <div className={style.userInfo}>
+                        <Avatar
+                            src={store.user?.image || undefined}
+                            icon={!store.user?.image ? <UserOutlined /> : undefined}
+                            className={style.userAvatar}
+                        />
+                        <div>
+                            <Text strong>{store.user?.username || "Benutzer"}</Text>
+                            <br />
+                            <Text type="secondary" style={{ fontSize: 12 }}>{store.user?.email}</Text>
+                        </div>
+                    </div>
+                    <Menu className={style.menuList}>
+                        <Menu.Item key="profile" icon={<ProfileOutlined />}>
+                            <NavLink to={userApi}>Profil</NavLink>
+                        </Menu.Item>
+                        <Menu.Item key="logout" icon={<LogoutOutlined />} onClick={handleLogout}>
+                            Logout
+                        </Menu.Item>
+                    </Menu>
                 </>
             ) : (
-                <Menu.Item key="login">
-                    <NavLink to={loginApi}>Login</NavLink>
-                </Menu.Item>
+                <Menu className={style.menuList}>
+                    <Menu.Item key="login">
+                        <NavLink to={loginApi}>Login</NavLink>
+                    </Menu.Item>
+                </Menu>
             )}
-        </Menu>
+        </Card>
     );
 
     return (
@@ -67,10 +83,10 @@ export default function NavBar(): ReactElement {
             {dimensions.width > 600 ? (
                 <>
                     <NavLink to={homeRoute}>
-                        <img src={logo} alt="Logo" style={{ height: '40px', marginRight: '20px' }} />
+                        <img src={logo} alt="Logo" className={style.logo} />
                     </NavLink>
                     {isLoggedIn && (
-                        <Menu theme="dark" mode="horizontal" selectedKeys={getSelectedKeysDesktop()} style={{ flex: 1 }}>
+                        <Menu theme="dark" mode="horizontal" selectedKeys={getSelectedKeysDesktop()} className={style.menu}>
                             <Menu.Item key="storage">
                                 <NavLink to={itemsRoute}>Storage</NavLink>
                             </Menu.Item>
@@ -80,14 +96,13 @@ export default function NavBar(): ReactElement {
                             <Menu.Item key="shopping">
                                 <NavLink to={basketRoute}>
                                     <Badge offset={[5, -5]} size="small" count={countItems()}>
-                                        <span className="nav-text" style={{ color: 'lightgray' }}>Basket</span>
+                                        <span className="nav-text">Basket</span>
                                     </Badge>
                                 </NavLink>
                             </Menu.Item>
                         </Menu>
                     )}
-                    {/* User-Dropdown-Menü */}
-                    <Dropdown overlay={userMenu} trigger={['click']}>
+                    <Dropdown overlay={userMenu} trigger={['click']} placement="bottomRight">
                         <div className={style.userMenu}>
                             <Avatar
                                 src={store.user?.image || undefined}
@@ -98,36 +113,37 @@ export default function NavBar(): ReactElement {
                     </Dropdown>
                 </>
             ) : (
-                // Mobile Navigation mit Dropdown für User
-                <Menu theme="dark" mode="horizontal" selectedKeys={getSelectedKeysDesktop()} style={{ flex: 1 }}>
-                    <Menu.Item key="home">
-                        <NavLink to={homeRoute}>
-                            <HomeOutlined style={{ fontSize: '25px' }} />
-                        </NavLink>
-                    </Menu.Item>
-                    {isLoggedIn && (
-                        <>
-                            <Menu.Item key="items">
-                                <NavLink to={itemsRoute}>
-                                    <UnorderedListOutlined style={{ fontSize: '25px' }} />
-                                </NavLink>
-                            </Menu.Item>
-                            <Menu.Item key="newItem">
-                                <NavLink to={newItemRoute}>
-                                    <PlusOutlined style={{ fontSize: '25px' }} />
-                                </NavLink>
-                            </Menu.Item>
-                            <Menu.Item key="shopping">
-                                <NavLink to={basketRoute}>
-                                    <Badge offset={[0, 0]} size="small" count={countItems()}>
-                                        <ShoppingCartOutlined style={{ fontSize: '25px', color: 'lightgray' }} />
-                                    </Badge>
-                                </NavLink>
-                            </Menu.Item>
-                        </>
-                    )}
-                    <Dropdown overlay={userMenu} trigger={['click']}>
-                        <div className={style.userMenu}>
+                <div className={style.mobileNav}>
+                    <Menu theme="dark" mode="horizontal" selectedKeys={getSelectedKeysDesktop()} className={style.menu}>
+                        <Menu.Item key="home">
+                            <NavLink to={homeRoute}>
+                                <HomeOutlined className={style.icon} />
+                            </NavLink>
+                        </Menu.Item>
+                        {isLoggedIn && (
+                            <>
+                                <Menu.Item key="items">
+                                    <NavLink to={itemsRoute}>
+                                        <UnorderedListOutlined className={style.icon} />
+                                    </NavLink>
+                                </Menu.Item>
+                                <Menu.Item key="newItem">
+                                    <NavLink to={newItemRoute}>
+                                        <PlusOutlined className={style.icon} />
+                                    </NavLink>
+                                </Menu.Item>
+                                <Menu.Item key="shopping">
+                                    <NavLink to={basketRoute}>
+                                        <Badge offset={[0, 0]} size="small" count={countItems()}>
+                                            <ShoppingCartOutlined className={style.icon} />
+                                        </Badge>
+                                    </NavLink>
+                                </Menu.Item>
+                            </>
+                        )}
+                    </Menu>
+                    <Dropdown overlay={userMenu} trigger={['click']} placement="bottomRight">
+                        <div className={style.userMenuMobile}>
                             <Avatar
                                 src={store.user?.image || undefined}
                                 icon={!store.user?.image ? <UserOutlined /> : undefined}
@@ -135,7 +151,7 @@ export default function NavBar(): ReactElement {
                             />
                         </div>
                     </Dropdown>
-                </Menu>
+                </div>
             )}
         </Header>
     );

@@ -4,10 +4,16 @@ import { useStore } from "../../../store/Store";
 import { actionHandler } from "../../../store/Actions";
 import { Button, Card, Form, Input, Typography, Alert } from "antd";
 import { LoadingOutlined } from "@ant-design/icons";
-import { UserModel } from "../../../shared/Models"; // ✅ Importiere das UserModel aus der richtigen Datei
+import { UserModel } from "../../../shared/Models";
 import { homeRoute } from "../../../shared/Constants";
+import axios, { AxiosError } from "axios";
 
 const { Title, Text } = Typography;
+
+// Interface für Backend-Fehlerantworten
+interface BackendError {
+    error: string;
+}
 
 export default function AuthForm() {
     const [isRegister, setIsRegister] = useState(false);
@@ -16,13 +22,9 @@ export default function AuthForm() {
     const navigate = useNavigate();
     const { dispatch } = useStore();
 
-    // ✅ Login oder Registrierung durchführen
-    const handleAuth = async (values: { email: string; password: string; username?: string }) => {
+    const handleAuth = async (values: { email: string; password: string; username?: string }): Promise<void> => {
         setLoading(true);
         setError("");
-
-        // Simulierte API-Validierung (Backend-Anbindung hier ergänzen)
-        await new Promise((resolve) => setTimeout(resolve, 1000));
 
         if (values.password.length < 6) {
             setError("Das Passwort muss mindestens 6 Zeichen lang sein.");
@@ -30,21 +32,31 @@ export default function AuthForm() {
             return;
         }
 
-        // ✅ User-Objekt mit passendem Typ
         const user: UserModel = {
             email: values.email,
             password: values.password,
             username: values.username || "",
-            id: null,               // Jetzt `number | null` statt `string | null`
+            id: null,
             access_token: null,
-            refresh_token: null,    // Wird nach erfolgreichem Login gesetzt
-            image: null             // Optionales Profilbild
+            refresh_token: null,
+            image: null,
         };
 
         const actionType = isRegister ? "REGISTER_USER" : "LOGIN_USER";
-        actionHandler({ type: actionType, user }, dispatch);
-        navigate(homeRoute);
-        setLoading(false);
+
+        try {
+            await actionHandler({ type: actionType, user }, dispatch);
+            navigate(homeRoute);
+        } catch (err: unknown) {
+            if (axios.isAxiosError(err) && err.response && err.response.data) {
+                const backendError = err.response.data as BackendError;
+                setError(backendError.error || "Ein unerwarteter Fehler ist aufgetreten.");
+            } else {
+                setError("Ein unerwarteter Fehler ist aufgetreten.");
+            }
+        } finally {
+            setLoading(false);
+        }
     };
 
     return (
@@ -54,10 +66,7 @@ export default function AuthForm() {
                     {isRegister ? "Registrieren" : "Login"}
                 </Title>
                 {error && <Alert message={error} type="error" showIcon className="mb-4" />}
-
                 <Form onFinish={handleAuth} layout="vertical">
-
-                    {/* Username-Feld wird nur bei Registrierung angezeigt */}
                     {isRegister && (
                         <Form.Item
                             label="Benutzername"
@@ -70,7 +79,6 @@ export default function AuthForm() {
                             <Input placeholder="Benutzername" />
                         </Form.Item>
                     )}
-
                     <Form.Item
                         label="E-Mail-Adresse"
                         name="email"
@@ -81,7 +89,6 @@ export default function AuthForm() {
                     >
                         <Input placeholder="E-Mail" />
                     </Form.Item>
-
                     <Form.Item
                         label="Passwort"
                         name="password"
@@ -92,12 +99,10 @@ export default function AuthForm() {
                     >
                         <Input.Password placeholder="Passwort" />
                     </Form.Item>
-
                     <Button type="primary" htmlType="submit" block disabled={loading}>
                         {loading ? <LoadingOutlined /> : isRegister ? "Registrieren" : "Login"}
                     </Button>
                 </Form>
-
                 <div className="text-center mt-4">
                     <Text>
                         {isRegister ? "Schon ein Konto?" : "Noch kein Konto?"}{" "}

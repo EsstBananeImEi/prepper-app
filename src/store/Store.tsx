@@ -61,7 +61,12 @@ export interface RegisterUser {
     user: UserModel;
 }
 
-export type Action = AddToShoppingCard | DecreaseAmount | ClearItemCard | ClearCard | InitialCards | IncreaseAmount | LoginUser | LogoutUser | RegisterUser;
+export interface EditUser {
+    type: 'EDIT_USER';
+    user: UserModel;
+}
+
+export type Action = AddToShoppingCard | DecreaseAmount | ClearItemCard | ClearCard | InitialCards | IncreaseAmount | LoginUser | LogoutUser | RegisterUser | EditUser;
 
 export function reducer(store: Store, action: Action): Store {
     switch (action.type) {
@@ -124,6 +129,10 @@ export function reducer(store: Store, action: Action): Store {
         case 'REGISTER_USER':
             localStorage.setItem("user", JSON.stringify(action.user));
             return { ...store, user: action.user };
+        case 'EDIT_USER':
+            console.log("Set Store User:", action.user);
+            localStorage.setItem("user", JSON.stringify(action.user));
+            return { ...store, user: action.user };
         default:
             return store;
     }
@@ -139,7 +148,6 @@ const StoreContext = createContext({} as StoreContextModel);
 export const useStore = (): StoreContextModel => useContext(StoreContext);
 
 export function StoreProvider(props: { children: ReactElement, store?: Store }): ReactElement {
-    console.log("Localstorage:", localStorage.getItem("user"));
     const [store, dispatch] = useReducer(reducer, props.store || initialState);
     const [storageItems, setStorageItems] = useStorageApi<BasketModel[]>('get', localStorage.getItem("user") ? `${basketItemsApi}` : "");
 
