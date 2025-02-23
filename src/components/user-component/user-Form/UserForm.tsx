@@ -5,6 +5,7 @@ import type { UploadRequestOption } from "rc-upload/lib/interface";
 import { useStore } from "../../../store/Store";
 import { actionHandler } from "../../../store/Actions";
 import { UserModel } from "../../../shared/Models";
+import styles from "./UserForm.module.css";
 
 interface FormValues {
     username: string;
@@ -19,9 +20,6 @@ export default function UserProfileForm(): JSX.Element {
     const [error, setError] = useState<string>("");
     const [image, setImage] = useState<string | null>(store.user?.image || null);
 
-    /**
-     * Custom Upload-Handler: Konvertiert die Datei in einen Base64‑String.
-     */
     const customUpload = async ({ file, onSuccess, onError }: UploadRequestOption): Promise<void> => {
         if (!(file as File).type.startsWith("image/")) {
             message.error("Nur Bilddateien erlaubt.");
@@ -41,9 +39,6 @@ export default function UserProfileForm(): JSX.Element {
         };
     };
 
-    /**
-     * Formulardaten ans Backend senden.
-     */
     const handleSubmit = async (values: FormValues): Promise<void> => {
         setLoading(true);
         setError("");
@@ -80,49 +75,51 @@ export default function UserProfileForm(): JSX.Element {
     }, [store.user, form]);
 
     return (
-        <Card title="Benutzerprofil" style={{ maxWidth: 600, margin: "auto" }}>
-            {error && <Alert message={error} type="error" style={{ marginBottom: 16 }} />}
-            <Form<FormValues> form={form} layout="vertical" onFinish={handleSubmit}>
-                <Form.Item
-                    label="Benutzername"
-                    name="username"
-                    rules={[
-                        { required: true, message: "Bitte Benutzername eingeben" },
-                        { min: 3, message: "Der Benutzername muss mindestens 3 Zeichen lang sein." },
-                        { pattern: /^\S.*\S$/, message: "Benutzername darf keine Leerzeichen am Anfang/Ende haben." }
-                    ]}
-                >
-                    <Input />
-                </Form.Item>
-                <Form.Item
-                    label="E-Mail-Adresse"
-                    name="email"
-                    rules={[
-                        { required: true, message: "Bitte E-Mail eingeben" },
-                        { type: "email", message: "Ungültige E-Mail" },
-                    ]}
-                >
-                    <Input />
-                </Form.Item>
-                <Form.Item
-                    label="Neues Passwort (optional)"
-                    name="password"
-                    rules={[{ min: 6, message: "Das Passwort muss mindestens 6 Zeichen lang sein." }]}
-                >
-                    <Input.Password placeholder="Neues Passwort (falls ändern)" />
-                </Form.Item>
-                <Form.Item label="Profilbild">
-                    <Upload customRequest={customUpload} showUploadList={false} accept="image/*">
-                        <Button icon={<UploadOutlined />}>Bild hochladen</Button>
-                    </Upload>
-                    {image && <Avatar src={image} size={80} style={{ marginTop: 16, display: "block" }} />}
-                </Form.Item>
-                <Form.Item>
-                    <Button type="primary" htmlType="submit" loading={loading} block>
-                        Profil aktualisieren
-                    </Button>
-                </Form.Item>
-            </Form>
-        </Card>
+        <div className={styles.container}>
+            <Card title="Benutzerprofil" className={styles.card}>
+                {error && <Alert message={error} type="error" className={styles.alert} />}
+                <Form<FormValues> form={form} layout="vertical" onFinish={handleSubmit}>
+                    <Form.Item
+                        label="Benutzername"
+                        name="username"
+                        rules={[
+                            { required: true, message: "Bitte Benutzername eingeben" },
+                            { min: 3, message: "Der Benutzername muss mindestens 3 Zeichen lang sein." },
+                            { pattern: /^\S.*\S$/, message: "Benutzername darf keine Leerzeichen am Anfang/Ende haben." }
+                        ]}
+                    >
+                        <Input />
+                    </Form.Item>
+                    <Form.Item
+                        label="E-Mail-Adresse"
+                        name="email"
+                        rules={[
+                            { required: true, message: "Bitte E-Mail eingeben" },
+                            { type: "email", message: "Ungültige E-Mail" },
+                        ]}
+                    >
+                        <Input />
+                    </Form.Item>
+                    <Form.Item
+                        label="Neues Passwort (optional)"
+                        name="password"
+                        rules={[{ min: 6, message: "Das Passwort muss mindestens 6 Zeichen lang sein." }]}
+                    >
+                        <Input.Password placeholder="Neues Passwort (falls ändern)" />
+                    </Form.Item>
+                    <Form.Item label="Profilbild">
+                        <Upload customRequest={customUpload} showUploadList={false} accept="image/*">
+                            <Button icon={<UploadOutlined />}>Bild hochladen</Button>
+                        </Upload>
+                        {image && <Avatar src={image} size={80} className={styles.avatar} />}
+                    </Form.Item>
+                    <Form.Item>
+                        <Button type="primary" htmlType="submit" loading={loading} block>
+                            Profil aktualisieren
+                        </Button>
+                    </Form.Item>
+                </Form>
+            </Card>
+        </div>
     );
 }

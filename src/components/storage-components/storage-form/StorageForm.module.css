@@ -228,7 +228,7 @@ tr {
 .nutrientColorCode {
     text-align: left;
     max-width: 100px;
-    font-size: 14px;
+    font-size: 16px;
     color: #666;
 }
 
@@ -341,5 +341,14 @@ tr {
         flex: 1;
     }
 }
+
+
+/* Globale Styles für Input, Select und Textarea innerhalb des Containers */
+.container input,
+.container select,
+.container textarea {
+    font-size: 16px !important;
+}
+
 
 /* ----------------- Ende Nutrient Card Layout ----------------- */

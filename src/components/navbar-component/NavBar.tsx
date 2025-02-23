@@ -102,15 +102,29 @@ export default function NavBar(): ReactElement {
                             </Menu.Item>
                         </Menu>
                     )}
-                    <Dropdown overlay={userMenu} trigger={['click']} placement="bottomRight">
-                        <div className={style.userMenu}>
-                            <Avatar
-                                src={store.user?.image || undefined}
-                                icon={!store.user?.image ? <UserOutlined /> : undefined}
-                                className={style.userAvatar}
-                            />
+                    {isLoggedIn ? (
+                        <>
+                            <Dropdown overlay={userMenu} trigger={['click']} placement="bottomRight">
+                                <div className={style.userMenuMobile}>
+                                    <Avatar
+                                        src={store.user?.image || undefined}
+                                        icon={!store.user?.image ? <UserOutlined /> : undefined}
+                                        className={style.userAvatar}
+                                    />
+                                </div>
+                            </Dropdown>
+                        </>
+                    ) :
+                        <div className={style.userMenuMobile}>
+                            <NavLink to={loginApi}>
+                                <Avatar
+                                    src={store.user?.image || undefined}
+                                    icon={!store.user?.image ? <UserOutlined /> : undefined}
+                                    className={style.userAvatar}
+                                />
+                            </NavLink>
                         </div>
-                    </Dropdown>
+                    }
                 </>
             ) : (
                 <div className={style.mobileNav}>
@@ -142,15 +156,30 @@ export default function NavBar(): ReactElement {
                             </>
                         )}
                     </Menu>
-                    <Dropdown overlay={userMenu} trigger={['click']} placement="bottomRight">
+                    {isLoggedIn ? (
+                        <>
+                            <Dropdown overlay={userMenu} trigger={['click']} placement="bottomRight">
+                                <div className={style.userMenuMobile}>
+                                    <Avatar
+                                        src={store.user?.image || undefined}
+                                        icon={!store.user?.image ? <UserOutlined /> : undefined}
+                                        className={style.userAvatar}
+                                    />
+                                </div>
+                            </Dropdown>
+                        </>
+                    ) :
                         <div className={style.userMenuMobile}>
-                            <Avatar
-                                src={store.user?.image || undefined}
-                                icon={!store.user?.image ? <UserOutlined /> : undefined}
-                                className={style.userAvatar}
-                            />
+                            <NavLink to={loginApi}>
+                                <Avatar
+                                    src={store.user?.image || undefined}
+                                    icon={!store.user?.image ? <UserOutlined /> : undefined}
+                                    className={style.userAvatar}
+                                />
+                            </NavLink>
                         </div>
-                    </Dropdown>
+                    }
+
                 </div>
             )}
         </Header>

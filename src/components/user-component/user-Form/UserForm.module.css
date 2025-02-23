@@ -1,0 +1,39 @@
+/* Container zentriert das Formular */
+.container {
+    display: flex;
+    align-items: start;
+    justify-content: center;
+    min-height: 100vh;
+    background-color: #f7fafc;
+    /* Etwas Innenabstand, um auf kleinen Bildschirmen den Rand zu berücksichtigen */
+}
+
+/* Stil für das Card-Element */
+.card {
+    width: 100%;
+    max-width: 448px;
+    /* entspricht in etwa dem Tailwind "max-w-md" */
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    background-color: #ffffff;
+    border-radius: 8px;
+    margin: 0;
+    /* Falls vorherige Margin automatisch gesetzt war, hier auf 0 setzen */
+}
+
+/* Abstand für die Alert-Komponente */
+.alert {
+    margin-bottom: 16px;
+}
+
+/* Stil für das Avatar-Element */
+.avatar {
+    margin-top: 16px;
+    display: block;
+}
+
+/* Globale Styles für Input, Select und Textarea innerhalb des Containers */
+.container input,
+.container select,
+.container textarea {
+    font-size: 16px !important;
+}

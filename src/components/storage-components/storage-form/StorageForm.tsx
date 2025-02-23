@@ -35,8 +35,6 @@ export default function StorageDetailForm(): ReactElement {
     const apiUrl: string = id ? itemIdApi(id) : '';
     const [storageItem, , axiosResponse] = useStorageApi<StorageModel>('GET', apiUrl);
 
-    // Wird aus storageItem übernommen – bei neuen Items stehen Default-Werte (0) in der DB,
-    // wir wollen aber leere Felder (als String) anzeigen.
     const initialItem: StorageModel = storageItem || {
         id: 0,
         name: '',
@@ -57,8 +55,6 @@ export default function StorageDetailForm(): ReactElement {
         },
     };
 
-    // Für numerische Felder speichern wir den Wert als string,
-    // sodass bei neuen Items kein "0" voreingestellt ist.
     const [amount, setAmount] = useState<string>(isNew ? '' : initialItem.amount.toString());
     const [lowestAmount, setLowestAmount] = useState<string>(
         isNew ? '' : initialItem.lowestAmount.toString()
@@ -355,7 +351,7 @@ export default function StorageDetailForm(): ReactElement {
                             style={{ width: '100%' }}
                             value={categories}
                             placeholder="Kategorie(n)"
-                            onChange={setCategories}
+                            onChange={(value) => setCategories(value.slice(-1))}
                         >
                             {dbCategories.map((category) => (
                                 <Select.Option key={category.id} value={category.name}>
