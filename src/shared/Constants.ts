@@ -3,6 +3,9 @@ const search = (text: string): string => `?q=${text}`;
 export const sortByName = (sortBy: string): string => `?_sort=${sortBy}`;
 
 // ✅ Neue API-Endpunkte für die Datenbank
+export const loginApi = `/login`;
+export const registerApi = `/register`;
+export const userApi = `/user`;
 export const itemsApi = `/items`;
 export const basketItemsApi = `/basket`; // Oder den richtigen API-Pfad
 export const updateBasketItemApi = (itemId: number | string): string => `${basketItemsApi}/${itemId}`;

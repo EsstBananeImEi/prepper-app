@@ -1,0 +1,46 @@
+/* Header-Container */
+.header {
+    background-color: #001529;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    /* Verhindert das Verschieben der Elemente */
+    padding: 0 20px;
+}
+
+/* Menü-Container */
+.navContainer {
+    display: flex;
+    align-items: center;
+    flex-grow: 1;
+    /* Stellt sicher, dass das Menü den Platz nutzt */
+}
+
+/* Menü links */
+.navMenu {
+    display: flex;
+    gap: 20px;
+    flex-grow: 1;
+    /* Erlaubt, dass sich das Menü ausdehnt */
+}
+
+/* User-Icon rechts fixieren */
+.userMenu {
+    display: flex;
+    align-items: center;
+    margin-left: auto;
+    /* Schiebt es nach rechts */
+    cursor: pointer;
+}
+
+/* Avatar-Styling */
+.userAvatar {
+    width: 40px !important;
+    height: 40px !important;
+    border-radius: 50%;
+    transition: transform 0.2s ease-in-out;
+}
+
+.userAvatar:hover {
+    transform: scale(1.1);
+}

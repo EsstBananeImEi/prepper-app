@@ -11,7 +11,6 @@ import { CloseCircleOutlined, DownOutlined, UpOutlined } from '@ant-design/icons
 
 export default function Shopping(): ReactElement {
     const { store, dispatch } = useStore()
-
     const handleChange = (page: number) => {
         setCurrentPage(page)
         setMinValue(currentVal => (page - 1) * pageSize)

@@ -7,6 +7,8 @@ import StorageList from './storage-components/storage-list/StorageList';
 import StorageForm from './storage-components/storage-form/StorageForm';
 import StorageDetail from './storage-components/storage-detail/StorageDetail';
 import NotfallDetail from './home-component/notfall-detail-component/NotfallDetail';
+import LoginForm from './user-component/login-form/LoginForm';
+import User from './user-component/user-Form/UserForm';
 
 export default function AppRoutes(): ReactElement {
     return (
@@ -15,6 +17,8 @@ export default function AppRoutes(): ReactElement {
             <Route path="/items/:id/edit" element={<StorageForm key="edit" />} />
             <Route path="/items/new" element={<StorageForm key="new" />} />
             <Route path="/items/:id" element={<StorageDetail />} />
+            <Route path="/login" element={<LoginForm />} />
+            <Route path="/user" element={<User />} />
             <Route path="/items" element={<StorageList />} />
             <Route path="/details/:category" element={<NotfallDetail />} />
             <Route path="/basket" element={<Shopping />} />
