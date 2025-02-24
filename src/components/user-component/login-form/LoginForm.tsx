@@ -5,7 +5,7 @@ import { actionHandler } from "../../../store/Actions";
 import { Button, Card, Form, Input, Typography, Alert } from "antd";
 import { LoadingOutlined } from "@ant-design/icons";
 import { UserModel } from "../../../shared/Models";
-import { homeRoute } from "../../../shared/Constants";
+import { homeRoute, itemsRoute } from "../../../shared/Constants";
 import axios, { AxiosError } from "axios";
 import styles from "./LoginForm.module.css";
 
@@ -47,7 +47,7 @@ export default function AuthForm() {
 
         try {
             await actionHandler({ type: actionType, user }, dispatch);
-            navigate(homeRoute);
+            navigate(itemsRoute);
         } catch (err: unknown) {
             if (axios.isAxiosError(err) && err.response && err.response.data) {
                 const backendError = err.response.data as BackendError;

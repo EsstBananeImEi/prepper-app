@@ -5,10 +5,11 @@ import {
     ShoppingCartOutlined,
     UserOutlined,
     LogoutOutlined,
-    ProfileOutlined
+    ProfileOutlined,
+    ReconciliationOutlined
 } from '@ant-design/icons';
 import { Badge, Layout, Menu, Avatar, Dropdown, Card, Typography } from 'antd';
-import React, { ReactElement } from 'react';
+import React, { ReactElement, useEffect } from 'react';
 import { NavLink, useLocation, useNavigate } from "react-router-dom";
 import { useDemensions } from '../../hooks/StorageApi';
 import { homeRoute, basketRoute, itemsRoute, newItemRoute, userApi, loginApi } from '../../shared/Constants';
@@ -25,10 +26,15 @@ export default function NavBar(): ReactElement {
     const { store, dispatch } = useStore();
     const navigate = useNavigate();
     const isLoggedIn = !!store.user;
+    const [selectedKeys, setSelectedKeys] = React.useState<string[]>([]);
+
+    useEffect(() => {
+        setSelectedKeys(getSelectedKeysDesktop());
+    }, [location.pathname]);
 
     const getSelectedKeysDesktop = (): string[] => {
-        if (location.pathname === homeRoute) return [];
-        if (location.pathname === itemsRoute) return ['storage'];
+        if (isLoggedIn && location.pathname === homeRoute) return ['home'];
+        if (location.pathname === itemsRoute) return ['items'];
         if (location.pathname === newItemRoute) return ['newItem'];
         if (location.pathname === basketRoute) return ['shopping'];
         if (location.pathname === userApi || location.pathname === loginApi) return ['auth'];
@@ -138,7 +144,7 @@ export default function NavBar(): ReactElement {
                             <>
                                 <Menu.Item key="items">
                                     <NavLink to={itemsRoute}>
-                                        <UnorderedListOutlined className={style.icon} />
+                                        <ReconciliationOutlined className={style.icon} />
                                     </NavLink>
                                 </Menu.Item>
                                 <Menu.Item key="newItem">
