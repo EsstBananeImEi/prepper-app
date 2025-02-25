@@ -19,7 +19,7 @@ interface Props {
 export default function ShoppingList(props: Props): ReactElement {
     const { store, dispatch } = useStore();
     const onChangeCard = (event: SyntheticEvent, action: Action): void => {
-        event.preventDefault();
+        console.log('onChangeCard', action);
         actionHandler(action, dispatch);
     };
     const dimensions = props.dimensions;
@@ -51,7 +51,7 @@ export default function ShoppingList(props: Props): ReactElement {
     const onDecreaseAmount = (event: SyntheticEvent, basketItem: BasketModel) => {
         const action: Action = {
             type: 'DECREASE_AMOUNT',
-            storeageItem: { ...basketItem, amount: String(Number(basketItem.amount) - 1) }
+            basketItems: { ...basketItem, amount: String(Number(basketItem.amount) - 1) }
         };
         actionHandler(action, dispatch);
     };
@@ -59,7 +59,7 @@ export default function ShoppingList(props: Props): ReactElement {
     const onIncreaseAmount = (event: SyntheticEvent, basketItem: BasketModel) => {
         const action: Action = {
             type: 'INCREASE_AMOUNT',
-            storeageItem: { ...basketItem, amount: String(Number(basketItem.amount) + 1) }
+            basketItems: { ...basketItem, amount: String(Number(basketItem.amount) + 1) }
         };
         actionHandler(action, dispatch);
     };
@@ -101,7 +101,7 @@ export default function ShoppingList(props: Props): ReactElement {
                                         <DeleteOutlined
                                             className={styles.iconAction}
                                             onClick={e =>
-                                                onChangeCard(e, { type: 'CLEAR_ITEM_CARD', storeageItem: listItem })
+                                                onChangeCard(e, { type: 'CLEAR_ITEM_CARD', basketItems: listItem })
                                             }
                                             key="delete"
                                         />,
@@ -155,7 +155,7 @@ export default function ShoppingList(props: Props): ReactElement {
                             <DeleteOutlined
                                 className={styles.iconAction}
                                 onClick={e =>
-                                    onChangeCard(e, { type: 'CLEAR_ITEM_CARD', storeageItem: listItem })
+                                    onChangeCard(e, { type: 'CLEAR_ITEM_CARD', basketItems: listItem })
                                 }
                                 key="delete"
                             />,

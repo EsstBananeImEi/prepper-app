@@ -7,17 +7,19 @@ import {
 import Routes from './Routes';
 import Layout from './Layout';
 import { StoreProvider } from '../store/Store';
+import ScrollToTop from './ScrollToTop';
 
 function App(): ReactElement {
 
     return (
         <StoreProvider>
             <Router>
+                <ScrollToTop />
                 <Layout>
                     <Routes />
                 </Layout>
             </Router>
-        </StoreProvider>
+        </StoreProvider >
     )
 }
 

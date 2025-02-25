@@ -44,23 +44,23 @@ export default function ShoppingCard(props: Props): ReactElement {
     const countItems = (id: number) => {
         return store.shoppingCard.filter(storageItem => storageItem.id === id).reduce((acc, item) => acc + parseInt(item.amount), 0)
     }
-    const onDecreaseAmount = (event: SyntheticEvent, storeageItem: BasketModel) => {
+    const onDecreaseAmount = (event: SyntheticEvent, basketItems: BasketModel) => {
         const action: Action = {
-            type: 'DECREASE_AMOUNT', storeageItem:
+            type: 'DECREASE_AMOUNT', basketItems:
             {
-                ...storeageItem,
-                amount: String(Number(storeageItem.amount) - 1)
+                ...basketItems,
+                amount: String(Number(basketItems.amount) - 1)
             }
         }
         actionHandler(action, dispatch)
     }
 
-    const onIncreaseAmount = (event: SyntheticEvent, storeageItem: BasketModel) => {
+    const onIncreaseAmount = (event: SyntheticEvent, basketItems: BasketModel) => {
         const action: Action = {
-            type: 'INCREASE_AMOUNT', storeageItem:
+            type: 'INCREASE_AMOUNT', basketItems:
             {
-                ...storeageItem,
-                amount: String(Number(storeageItem.amount) + 1)
+                ...basketItems,
+                amount: String(Number(basketItems.amount) + 1)
             }
         }
         actionHandler(action, dispatch)
@@ -77,7 +77,7 @@ export default function ShoppingCard(props: Props): ReactElement {
                             actions={
                                 [
                                     <MinusCircleOutlined onClick={(e) => onDecreaseAmount(e, storeageItem)} key='minus' />,
-                                    <DeleteOutlined onClick={(e) => onChangeCard(e, { type: 'CLEAR_ITEM_CARD', storeageItem: storeageItem })} disabled key="shopping" />,
+                                    <DeleteOutlined onClick={(e) => onChangeCard(e, { type: 'CLEAR_ITEM_CARD', basketItems: storeageItem })} disabled key="shopping" />,
                                     <PlusCircleOutlined onClick={(e) => onIncreaseAmount(e, storeageItem)} key="plus" />
                                 ]}
                         >

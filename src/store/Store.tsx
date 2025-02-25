@@ -1,30 +1,32 @@
 import React, { createContext, Dispatch, ReactElement, useContext, useEffect, useReducer } from "react";
-import { BasketModel } from "../components/storage-components/StorageModel";
+import { BasketModel, NutrientModel, StorageModel } from "../components/storage-components/StorageModel";
 import { useStorageApi } from "../hooks/StorageApi";
-import { basketItemsApi } from "../shared/Constants";
+import { basketItemsApi, itemsApi } from "../shared/Constants";
 import { UserModel } from "~/shared/Models";
 
 // Store Interface
 export interface Store {
     shoppingCard: BasketModel[];
     user: UserModel | null;
+    storeItems: StorageModel[];
 }
 
 // Initialer Zustand
 export const initialState: Store = {
     shoppingCard: [],
-    user: JSON.parse(localStorage.getItem("user") || "null") // Benutzer nach Reload wiederherstellen
+    user: JSON.parse(localStorage.getItem("user") || "null"), // Benutzer nach Reload wiederherstellen
+    storeItems: [],
 };
 
 // Aktionen für den Reducer
 export interface AddToShoppingCard {
     type: 'ADD_TO_CARD';
-    storeageItem: BasketModel;
+    basketItems: BasketModel;
 }
 
 export interface DecreaseAmount {
     type: 'DECREASE_AMOUNT';
-    storeageItem: BasketModel;
+    basketItems: BasketModel;
 }
 
 export interface ClearCard {
@@ -33,17 +35,17 @@ export interface ClearCard {
 
 export interface ClearItemCard {
     type: 'CLEAR_ITEM_CARD';
-    storeageItem: BasketModel;
+    basketItems: BasketModel;
 }
 
 export interface InitialCards {
     type: 'INITIAL_CARDS';
-    storeageItem: BasketModel[] | undefined;
+    basketItems: BasketModel[] | undefined;
 }
 
 export interface IncreaseAmount {
     type: 'INCREASE_AMOUNT';
-    storeageItem: BasketModel;
+    basketItems: BasketModel;
 }
 
 // Neue Aktionen für User-Handling
@@ -66,19 +68,63 @@ export interface EditUser {
     user: UserModel;
 }
 
-export type Action = AddToShoppingCard | DecreaseAmount | ClearItemCard | ClearCard | InitialCards | IncreaseAmount | LoginUser | LogoutUser | RegisterUser | EditUser;
+export interface InitialStorage {
+    type: 'INITIAL_STORAGE';
+    storageItems: StorageModel[] | undefined;
+}
+
+export interface IncreaseStorageItem {
+    type: 'INCREASE_STORAGE_ITEM';
+    storageItem: StorageModel;
+}
+
+export interface DecreaseStorageItem {
+    type: 'DECREASE_STORAGE_ITEM';
+    storageItem: StorageModel;
+}
+
+export interface DeleteStorageItem {
+    type: 'DELETE_STORAGE_ITEM';
+    storageItem: StorageModel;
+}
+
+export interface AddStorageItem {
+    type: 'ADD_STORAGE_ITEM';
+    storageItem: StorageModel;
+}
+
+export interface UpdateStorageItem {
+    type: 'UPDATE_STORAGE_ITEM';
+    storageItem: StorageModel;
+}
+
+export interface UpdateNutrientItem {
+    type: 'UPDATE_NUTRIENT_ITEM';
+    storageItem: StorageModel;
+}
+
+export interface UpdateCardItem {
+    type: 'UPDATE_CARD_ITEM';
+    basketItems: BasketModel;
+}
+
+export type Action = AddToShoppingCard | UpdateCardItem | DecreaseAmount | ClearItemCard | UpdateNutrientItem | ClearCard | InitialCards | IncreaseAmount | LoginUser | LogoutUser | RegisterUser | EditUser | InitialStorage | IncreaseStorageItem | DecreaseStorageItem | DeleteStorageItem | AddStorageItem | UpdateStorageItem;
 
 export function reducer(store: Store, action: Action): Store {
     switch (action.type) {
         case 'ADD_TO_CARD':
-            return { ...store, shoppingCard: [...store.shoppingCard, action.storeageItem] };
-
+            return { ...store, shoppingCard: [...store.shoppingCard, action.basketItems] };
+        case 'UPDATE_CARD_ITEM':
+            return {
+                ...store,
+                shoppingCard: store.shoppingCard.map(item => item.id === action.basketItems.id ? action.basketItems : item)
+            };
         case 'DECREASE_AMOUNT': {
             return {
                 ...store,
                 shoppingCard: store.shoppingCard
                     .map(item => {
-                        if (item.id === action.storeageItem.id) {
+                        if (item.id === action.basketItems.id) {
                             const currentAmount = parseInt(item.amount, 10);
                             if (currentAmount > 1) {
                                 return { ...item, amount: (currentAmount - 1).toString() };
@@ -95,11 +141,12 @@ export function reducer(store: Store, action: Action): Store {
             return { ...store, shoppingCard: [] };
 
         case 'INITIAL_CARDS':
-            return { ...store, shoppingCard: action.storeageItem ? action.storeageItem : [] };
+            return { ...store, shoppingCard: action.basketItems ? action.basketItems : [] };
 
         case 'CLEAR_ITEM_CARD':
+            console.log("Clear Item Card:", action.basketItems);
             return {
-                ...store, shoppingCard: store.shoppingCard.filter(item => item.id !== action.storeageItem.id) as BasketModel[]
+                ...store, shoppingCard: store.shoppingCard.filter(item => item.id !== action.basketItems.id) as BasketModel[]
             };
 
         case 'INCREASE_AMOUNT':
@@ -107,7 +154,7 @@ export function reducer(store: Store, action: Action): Store {
                 ...store,
                 shoppingCard: store.shoppingCard
                     .map(item => {
-                        if (item.id === action.storeageItem.id) {
+                        if (item.id === action.basketItems.id) {
                             const currentAmount = parseInt(item.amount, 10);
                             return { ...item, amount: (currentAmount + 1).toString() };
                         }
@@ -133,6 +180,36 @@ export function reducer(store: Store, action: Action): Store {
             console.log("Set Store User:", action.user);
             localStorage.setItem("user", JSON.stringify(action.user));
             return { ...store, user: action.user };
+        case 'INITIAL_STORAGE':
+            return { ...store, storeItems: action.storageItems ? action.storageItems : [] };
+        case 'INCREASE_STORAGE_ITEM':
+            return { ...store, storeItems: store.storeItems?.map(item => item.id === action.storageItem.id ? { ...item, amount: action.storageItem.amount } : item) };
+        case 'DECREASE_STORAGE_ITEM':
+            return {
+                ...store,
+                storeItems: store.storeItems
+                    .map(item => {
+                        if (item.id === action.storageItem.id) {
+                            if (item.amount > 1) {
+                                return { ...item, amount: action.storageItem.amount };
+                            } else {
+                                return null;
+                            }
+                        }
+                        return item;
+                    })
+                    .filter(item => item !== null) as StorageModel[],
+            };
+        case 'DELETE_STORAGE_ITEM':
+            return { ...store, storeItems: store.storeItems.filter(item => item.id !== action.storageItem.id) };
+        case 'ADD_STORAGE_ITEM':
+            return { ...store, storeItems: [...store.storeItems, action.storageItem] };
+        case 'UPDATE_STORAGE_ITEM':
+            return { ...store, storeItems: store.storeItems.map(item => item.id === action.storageItem.id ? action.storageItem : item) };
+        case 'UPDATE_NUTRIENT_ITEM':
+            return {
+                ...store, storeItems: store.storeItems.map(item => item.id === action.storageItem.id ? { ...item, nutrients: action.storageItem.nutrients } : item)
+            };
         default:
             return store;
     }
@@ -149,13 +226,14 @@ export const useStore = (): StoreContextModel => useContext(StoreContext);
 
 export function StoreProvider(props: { children: ReactElement, store?: Store }): ReactElement {
     const [store, dispatch] = useReducer(reducer, props.store || initialState);
-    const [storageItems, setStorageItems] = useStorageApi<BasketModel[]>('get', localStorage.getItem("user") ? `${basketItemsApi}` : "");
+    const [basketItems, setBasketItems] = useStorageApi<BasketModel[]>('get', localStorage.getItem("user") ? `${basketItemsApi}` : "");
+    const [storageItems, setStorageItems] = useStorageApi<StorageModel[]>('get', localStorage.getItem("user") ? `${itemsApi}` : "");
 
     useEffect(() => {
-        dispatch({ type: 'INITIAL_CARDS', storeageItem: storageItems });
+        dispatch({ type: 'INITIAL_CARDS', basketItems: basketItems });
+        dispatch({ type: 'INITIAL_STORAGE', storageItems: storageItems });
 
-    }, [storageItems, dispatch]);
-
+    }, [basketItems, storageItems, dispatch]);
     return (
         <StoreContext.Provider value={{ store, dispatch }}>
             {props.children}

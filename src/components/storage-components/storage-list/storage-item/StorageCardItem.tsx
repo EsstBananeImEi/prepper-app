@@ -101,7 +101,7 @@ export default function StorageCardItem(props: Props): ReactElement {
                     key={`shopping${storageItem.id}`}
                     onClick={(e) => {
                         e.stopPropagation();
-                        onChangeCard(e, { type: 'ADD_TO_CARD', storeageItem: getBasketModel(storageItem) });
+                        onChangeCard(e, { type: 'ADD_TO_CARD', basketItems: getBasketModel(storageItem) });
                     }}
                 />,
 

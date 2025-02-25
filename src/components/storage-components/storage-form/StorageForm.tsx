@@ -1,6 +1,6 @@
 import React, { ReactElement, SyntheticEvent, useState, useEffect } from 'react';
-import { Descriptions, Image, Input, Select, Button, Alert } from 'antd';
-import { PlusOutlined, MinusOutlined } from '@ant-design/icons';
+import { Descriptions, Image, Input, Select, Button, Alert, Upload } from 'antd';
+import { PlusOutlined, MinusOutlined, UploadOutlined } from '@ant-design/icons';
 import { useNavigate, useParams } from 'react-router-dom';
 import axios from 'axios';
 import { storageApi, useDemensions, useStorageApi } from '../../../hooks/StorageApi';
@@ -16,9 +16,11 @@ import {
 } from '../../../shared/Constants';
 import { useStore } from '../../../store/Store';
 import LoadingSpinner from '../../loading-spinner/LoadingSpinner';
-import { NutrientValueModel, StorageModel } from '../StorageModel';
+import { BasketModel, NutrientValueModel, StorageModel } from '../StorageModel';
 import css from './StorageForm.module.css';
 import { NutrientFactory } from '../../../shared/Factories';
+import { actionHandler } from '../../../store/Actions';
+import { i } from 'react-router/dist/development/fog-of-war-CCAcUMgB';
 
 // No‑Op Callback (anstatt leerer Funktionen)
 const noop = () => {
@@ -33,7 +35,7 @@ export default function StorageDetailForm(): ReactElement {
     const [dimensions] = useDemensions(() => 1, 0);
 
     const apiUrl: string = id ? itemIdApi(id) : '';
-    const [storageItem, , axiosResponse] = useStorageApi<StorageModel>('GET', apiUrl);
+    const storageItem = store.storeItems.find((item) => id ? item.id === parseInt(id) : false);
 
     const initialItem: StorageModel = storageItem || {
         id: 0,
@@ -46,7 +48,7 @@ export default function StorageDetailForm(): ReactElement {
         packageUnit: '',
         storageLocation: '',
         categories: [],
-        icon: '',
+        icon: '', // icon wird als Base64-String gespeichert
         nutrients: {
             description: '',
             unit: '',
@@ -55,31 +57,25 @@ export default function StorageDetailForm(): ReactElement {
         },
     };
 
-    const [amount, setAmount] = useState<string>(isNew ? '' : initialItem.amount.toString());
-    const [lowestAmount, setLowestAmount] = useState<string>(
-        isNew ? '' : initialItem.lowestAmount.toString()
-    );
-    const [midAmount, setMidAmount] = useState<string>(isNew ? '' : initialItem.midAmount.toString());
-    const [packageQuantity, setPackageQuantity] = useState<string>(
-        isNew || initialItem.packageQuantity == null
-            ? ''
-            : initialItem.packageQuantity.toString()
-    );
-    const [nutrientAmount, setNutrientAmount] = useState<string>(
-        isNew || !initialItem.nutrients?.amount ? '' : initialItem.nutrients.amount.toString()
-    );
-
-    // Für Textfelder
+    // Zustände für Textfelder und numerische Felder
     const [name, setName] = useState<string>(initialItem.name);
+    const [amount, setAmount] = useState<string>(isNew ? '' : initialItem.amount.toString());
+    const [lowestAmount, setLowestAmount] = useState<string>(isNew ? '' : initialItem.lowestAmount.toString());
+    const [midAmount, setMidAmount] = useState<string>(isNew ? '' : initialItem.midAmount.toString());
     const [unit, setUnit] = useState<string>(initialItem.unit);
+    const [packageQuantity, setPackageQuantity] = useState<string>(
+        isNew || initialItem.packageQuantity == null ? '' : initialItem.packageQuantity.toString()
+    );
     const [packageUnit, setPackageUnit] = useState<string>(initialItem.packageUnit || '');
     const [storageLocation, setStorageLocation] = useState<string>(initialItem.storageLocation);
     const [categories, setCategories] = useState<string[]>(initialItem.categories || []);
+    // icon wird als Base64-String gespeichert
     const [icon, setIcon] = useState<string>(initialItem.icon || '');
-    const [nutrientDescription, setNutrientDescription] = useState<string>(
-        initialItem.nutrients?.description || ''
-    );
+    const [nutrientDescription, setNutrientDescription] = useState<string>(initialItem.nutrients?.description || '');
     const [nutrientUnit, setNutrientUnit] = useState<string>(initialItem.nutrients?.unit || '');
+    const [nutrientAmount, setNutrientAmount] = useState<string>(
+        isNew || !initialItem.nutrients?.amount ? '' : initialItem.nutrients.amount.toString()
+    );
     const [nutrients, setNutrients] = useState<NutrientValueModel[]>(
         initialItem.nutrients?.values || []
     );
@@ -95,6 +91,7 @@ export default function StorageDetailForm(): ReactElement {
     const [saving, setSaving] = useState(false);
     const [saveError, setSaveError] = useState<string>('');
 
+    // Bei Laden des Items aus der DB initialisieren wir die States
     useEffect(() => {
         if (storageItem) {
             setName(storageItem.name);
@@ -102,13 +99,11 @@ export default function StorageDetailForm(): ReactElement {
             setLowestAmount(storageItem.lowestAmount.toString());
             setMidAmount(storageItem.midAmount.toString());
             setUnit(storageItem.unit);
-            setPackageQuantity(
-                storageItem.packageQuantity != null ? storageItem.packageQuantity.toString() : ''
-            );
+            setPackageQuantity(storageItem.packageQuantity != null ? storageItem.packageQuantity.toString() : '');
             setPackageUnit(storageItem.packageUnit || '');
             setStorageLocation(storageItem.storageLocation);
             setCategories(storageItem.categories || []);
-            setIcon(storageItem.icon || '');
+            setIcon(storageItem.icon || ''); // icon kommt als Base64-String aus der DB
             setNutrientDescription(storageItem.nutrients?.description || '');
             setNutrientUnit(storageItem.nutrients?.unit || '');
             setNutrientAmount(
@@ -117,7 +112,6 @@ export default function StorageDetailForm(): ReactElement {
                     : ''
             );
             if (!storageItem.nutrients || storageItem.nutrients.values.length === 0) {
-                // Vordefinierte Nährstoffdaten
                 setNutrients(NutrientFactory());
             } else {
                 setNutrients(storageItem.nutrients.values);
@@ -130,16 +124,28 @@ export default function StorageDetailForm(): ReactElement {
         storageApi('GET', optionsNutrientUnitsApi, setDbNutrientUnits);
     }, [storageItem]);
 
-    if (axiosResponse) {
-        axiosResponse.catch((e) => {
-            history(e.message);
-        });
-    }
+
 
     if (!storageItem && !isNew) {
         return <LoadingSpinner message="Loading storage item..." />;
     }
 
+    // Custom Upload Handler: Wandelt die ausgewählte Bilddatei in einen Base64-String um
+    const handleBeforeUpload = (file: File) => {
+        const reader = new FileReader();
+        reader.onload = () => {
+            const base64String = reader.result as string;
+            setIcon(base64String);
+        };
+        reader.onerror = () => {
+            console.error("Fehler beim Lesen der Datei.");
+        };
+        reader.readAsDataURL(file);
+        // Rückgabe false verhindert den automatischen Upload
+        return false;
+    };
+
+    // Nutrient-Handler (unverändert)
     const onChangeNutrient = (nutrientIndex: number, key: string, value: string | number) => {
         setNutrients((curr) => {
             const updated = [...curr];
@@ -153,9 +159,8 @@ export default function StorageDetailForm(): ReactElement {
             const updated = [...curr];
             updated[nutrientIndex] = { ...updated[nutrientIndex], color };
             return updated;
-        }
-        );
-    }
+        });
+    };
 
     const onChangeNutrientType = (
         nutrientIndex: number,
@@ -222,7 +227,7 @@ export default function StorageDetailForm(): ReactElement {
         });
     };
 
-    // Beim Speichern werden die numerischen Werte in Zahlen konvertiert.
+    // Beim Speichern werden numerische Werte konvertiert
     const getUpdatedItem = (): StorageModel => ({
         ...initialItem,
         name,
@@ -234,7 +239,7 @@ export default function StorageDetailForm(): ReactElement {
         packageUnit,
         storageLocation,
         categories,
-        icon,
+        icon, // icon als Base64-String
         nutrients: {
             description: nutrientDescription,
             unit: nutrientUnit,
@@ -248,11 +253,10 @@ export default function StorageDetailForm(): ReactElement {
         if (
             name.trim() === '' ||
             amount.trim() === '' ||
-            unit.trim() === '' ||
-            storageLocation.trim() === ''
+            unit.trim() === ''
         ) {
             setSaveError(
-                'Bitte füllen Sie alle Pflichtfelder aus: Name, Amount, Unit und Storage Location'
+                'Bitte füllen Sie alle Pflichtfelder aus: Name, Amount und Unit'
             );
             window.scrollTo({ top: 0, behavior: 'smooth' });
             return false;
@@ -270,12 +274,15 @@ export default function StorageDetailForm(): ReactElement {
         const updatedItem = getUpdatedItem();
         try {
             if (isNew) {
-                await storageApi('POST', itemsRoute, noop, updatedItem);
+                await actionHandler({ type: 'ADD_STORAGE_ITEM', storageItem: updatedItem }, dispatch);
             } else if (id) {
                 await Promise.all([
-                    storageApi('PUT', itemIdApi(id), noop, updatedItem),
-                    storageApi('PUT', nutrientsApi(id), noop, updatedItem.nutrients),
+                    actionHandler({ type: 'UPDATE_STORAGE_ITEM', storageItem: updatedItem }, dispatch),
+                    actionHandler({ type: 'UPDATE_NUTRIENT_ITEM', storageItem: updatedItem }, dispatch),
                 ]);
+                if (store.shoppingCard.find(item => item.name === updatedItem.name || item.name === initialItem.name)) {
+                    await actionHandler({ type: 'UPDATE_CARD_ITEM', basketItems: getBasketModel(updatedItem) }, dispatch);
+                }
             }
             history(itemsRoute);
         } catch (error: unknown) {
@@ -293,36 +300,36 @@ export default function StorageDetailForm(): ReactElement {
         }
     };
 
-    const getBasketModel = (storeageItem: StorageModel) => {
-        return {
-            id: storeageItem.id,
-            name: storeageItem.name,
-            amount: "0",
-            categories: storeageItem.categories || [],
-            icon: storeageItem.icon || ""
-        };
-    }
+    const getBasketModel = (storeageItem: StorageModel) => ({
+        ...store.shoppingCard.find(item => item.name === storeageItem.name || item.name === initialItem.name),
+        icon: storeageItem.icon,
+        categories: storeageItem.categories,
+        name: storeageItem.name,
+    } as BasketModel);
 
     const onCancel = () => history(-1);
 
     const onDelete = (event: SyntheticEvent) => {
         event.preventDefault();
         if (id && storageItem) {
-            dispatch({ type: 'CLEAR_ITEM_CARD', storeageItem: getBasketModel(storageItem) });
+            dispatch({ type: 'CLEAR_ITEM_CARD', basketItems: getBasketModel(storageItem) });
             storageApi('DELETE', itemIdApi(id), noop, {}).then(() => history(itemsRoute));
         }
     };
 
     return (
         <div className={css.container}>
-            {/* Fehleranzeige oben */}
             {saveError && (
                 <Alert style={{ marginBottom: 16 }} message={saveError} type="error" showIcon />
             )}
-            <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 16 }}>
+            {/* Bildvorschau und Upload */}
+            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', marginBottom: 16 }}>
                 <Image.PreviewGroup>
                     <Image width={150} alt={name} src={icon || '/default.png'} />
                 </Image.PreviewGroup>
+                <Upload beforeUpload={handleBeforeUpload} showUploadList={false}>
+                    <Button icon={<UploadOutlined />}>Bild hochladen</Button>
+                </Upload>
             </div>
 
             <div className={css.itemFormCard}>
@@ -351,7 +358,7 @@ export default function StorageDetailForm(): ReactElement {
                             style={{ width: '100%' }}
                             value={categories}
                             placeholder="Kategorie(n)"
-                            onChange={(value) => setCategories(value.slice(-1))}
+                            onChange={(value) => setCategories(value.slice(-1))}  // entweder auswählen oder eigenen Eintrag verwenden
                         >
                             {dbCategories.map((category) => (
                                 <Select.Option key={category.id} value={category.name}>
@@ -415,7 +422,7 @@ export default function StorageDetailForm(): ReactElement {
                         </Select>
                     </div>
                     <div className={css.itemFieldRow}>
-                        <label>Storage Location<span style={{ color: 'red' }}> *</span></label>
+                        <label>Storage Location</label>
                         <Select
                             style={{ width: '100%' }}
                             value={storageLocation ? storageLocation : ''}
@@ -438,11 +445,10 @@ export default function StorageDetailForm(): ReactElement {
                     marginTop: 16,
                     display: 'flex',
                     justifyContent: 'center',
-                    flexDirection: 'column', // Vertikale Ausrichtung für kleine Bildschirme
+                    flexDirection: 'column',
                 }}
             >
                 <Descriptions.Item label={"Nährstoffangaben pro " + nutrientAmount + " " + nutrientUnit} style={{ fontWeight: 'bold', padding: '10px 10px', display: 'block', textAlign: 'center' }}>
-                    {/* input felder für nutrientAmount und nutrientUnit */}
                     <div className={css.nutrientAmountUnit}>
                         <div className={css.nutrientField}>
                             <label>Amount</label>
@@ -480,7 +486,6 @@ export default function StorageDetailForm(): ReactElement {
                                                 className={css.nutrientColor}
                                                 style={{ backgroundColor: nutrient.color }}
                                             ></div>
-                                            {/* Optional: Farbcode anzeigen */}
                                             <Input
                                                 value={nutrient.color}
                                                 placeholder="Farbcode"
@@ -489,7 +494,6 @@ export default function StorageDetailForm(): ReactElement {
                                                 }
                                                 className={css.nutrientColorInput}
                                             />
-
                                         </div>
                                     </div>
                                     <div className={css.nutrientHeader}>
@@ -560,9 +564,6 @@ export default function StorageDetailForm(): ReactElement {
                         </Button>
                     </div>
                 </Descriptions.Item>
-
-
-
             </Descriptions>
             <div className={css.buttonContainer}>
                 <Button className={css.formButton} onClick={onCancel} type="default">

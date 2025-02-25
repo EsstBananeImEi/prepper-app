@@ -51,7 +51,7 @@ export function storageApi<T>(method: Method, path: string, callback: Setter<T>,
         .then((response: AxiosResponse) => {
             callback(response.data);
         }).catch(error => {
-            console.error("StorageApi error:", error);
+            return Promise.reject(error);
         });
 }
 

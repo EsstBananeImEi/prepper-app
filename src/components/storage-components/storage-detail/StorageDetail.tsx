@@ -1,33 +1,32 @@
 import { Descriptions, Image, Button, Alert } from 'antd';
-import React, { ReactElement, SyntheticEvent } from 'react';
+import React, { ReactElement, SyntheticEvent, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { storageApi, useDemensions, useStorageApi } from '../../../hooks/StorageApi';
 import { editItemRoute, errorRoute, itemIdApi, itemsRoute } from '../../../shared/Constants';
 import LoadingSpinner from '../../loading-spinner/LoadingSpinner';
-import { NutrientValueModel, StorageModel } from '../StorageModel';
+import { BasketModel, NutrientValueModel, StorageModel } from '../StorageModel';
 import css from './StorageDetail.module.css';
+import { useStore } from '../../../store/Store';
+import { actionHandler } from '../../../store/Actions';
+import axios from 'axios';
 
 export default function StorageDetail(): ReactElement {
     const { id } = useParams<{ id: string }>();
     const navigate = useNavigate();
     const [dimensions] = useDemensions(() => 1, 0);
-
-
+    const [saving, setSaving] = useState(false);
+    const [saveError, setSaveError] = useState<string>('');
     const endpoint = id ? itemIdApi(id) : '';
-    const [storageItem, , axiosResponse] = useStorageApi<StorageModel>('GET', endpoint);
+    const { store, dispatch } = useStore();
+
+    const storageItem = store.storeItems.find((item) => id ? item.id === parseInt(id) : false);
     // Falls id nicht vorhanden ist, sofort einen Fehler anzeigen oder eine alternative UI rendern
     if (!id) {
-        return <div>Error: Keine ID angegeben</div>;
+        return <Alert style={{ marginBottom: 16 }} message="Keine ID gefunden" type="error" showIcon />;
     }
 
     // Jetzt ist id garantiert ein string
     const showLegend = dimensions.width > 450;
-
-    if (axiosResponse) {
-        axiosResponse.catch((e) => {
-            navigate(errorRoute(e.message));
-        });
-    }
 
     if (!storageItem) {
         return <LoadingSpinner message="Loading storage items ..." />;
@@ -41,14 +40,38 @@ export default function StorageDetail(): ReactElement {
     // In React Router v6: navigate(-1) geht einen Schritt zurück
     const onGoBack = () => navigate(-1);
     const onGoToEdit = () => navigate(editItemRoute(id));
-    const onDelete = (event: SyntheticEvent) => {
+
+    const onDelete = async (event: SyntheticEvent) => {
         event.preventDefault();
-        // Optional: Bestätigung einbauen
-        storageApi('DELETE', itemIdApi(id), () => navigate(itemsRoute));
+        setSaving(true);
+        setSaveError('');
+        try {
+            const basketItems = store.shoppingCard.find((item) => item.name === storageItem.name);
+
+            await actionHandler({ type: 'DELETE_STORAGE_ITEM', storageItem: storageItem }, dispatch);
+            if (basketItems)
+                await actionHandler({ type: 'CLEAR_ITEM_CARD', basketItems }, dispatch);
+            navigate(itemsRoute);
+        } catch (error) {
+            let errorMessage = 'Fehler beim Löschen des Elements';
+            if (axios.isAxiosError(error)) {
+                errorMessage = error.response?.data?.error || errorMessage;
+            } else if (error instanceof Error) {
+                errorMessage = error.message;
+            }
+            setSaveError(errorMessage);
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        } finally {
+            setSaving(false);
+        }
+
     };
 
     return (
         <div className={css.container}>
+            {saveError && (
+                <Alert style={{ marginBottom: 16 }} message={saveError} type="error" showIcon />
+            )}
             {/* Bildanzeige */}
             <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 16 }}>
                 <Image.PreviewGroup>
