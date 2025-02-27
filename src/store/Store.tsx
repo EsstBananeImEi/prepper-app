@@ -108,6 +108,7 @@ export interface UpdateCardItem {
     basketItems: BasketModel;
 }
 
+
 export type Action = AddToShoppingCard | UpdateCardItem | DecreaseAmount | ClearItemCard | UpdateNutrientItem | ClearCard | InitialCards | IncreaseAmount | LoginUser | LogoutUser | RegisterUser | EditUser | InitialStorage | IncreaseStorageItem | DecreaseStorageItem | DeleteStorageItem | AddStorageItem | UpdateStorageItem;
 
 export function reducer(store: Store, action: Action): Store {

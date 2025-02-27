@@ -6,13 +6,13 @@ import {
     UserOutlined,
     LogoutOutlined,
     ProfileOutlined,
-    ReconciliationOutlined
+    CheckSquareOutlined
 } from '@ant-design/icons';
 import { Badge, Layout, Menu, Avatar, Dropdown, Card, Typography } from 'antd';
 import React, { ReactElement, useEffect } from 'react';
 import { NavLink, useLocation, useNavigate } from "react-router-dom";
 import { useDemensions } from '../../hooks/StorageApi';
-import { homeRoute, basketRoute, itemsRoute, newItemRoute, userApi, loginApi } from '../../shared/Constants';
+import { homeRoute, basketRoute, itemsRoute, newItemRoute, userApi, loginApi, checklistRoute } from '../../shared/Constants';
 import logo from '../../static/images/prepper-app.svg';
 import { useStore } from '../../store/Store';
 import style from './NavBar.module.css';
@@ -37,6 +37,7 @@ export default function NavBar(): ReactElement {
         if (location.pathname === itemsRoute) return ['items'];
         if (location.pathname === newItemRoute) return ['newItem'];
         if (location.pathname === basketRoute) return ['shopping'];
+        if (location.pathname === checklistRoute) return ['checklist'];
         if (location.pathname === userApi || location.pathname === loginApi) return ['auth'];
         return [];
     };
@@ -62,7 +63,9 @@ export default function NavBar(): ReactElement {
                         <div>
                             <Text strong>{store.user?.username || "Benutzer"}</Text>
                             <br />
-                            <Text type="secondary" style={{ fontSize: 12 }}>{store.user?.email}</Text>
+                            <Text type="secondary" style={{ fontSize: 12 }}>
+                                {store.user?.email}
+                            </Text>
                         </div>
                     </div>
                     <Menu className={style.menuList}>
@@ -99,6 +102,9 @@ export default function NavBar(): ReactElement {
                             <Menu.Item key="newItem">
                                 <NavLink to={newItemRoute}>Add Item</NavLink>
                             </Menu.Item>
+                            <Menu.Item key="checklist">
+                                <NavLink to={checklistRoute}>Checkliste</NavLink>
+                            </Menu.Item>
                             <Menu.Item key="shopping">
                                 <NavLink to={basketRoute}>
                                     <Badge offset={[5, -5]} size="small" count={countItems()}>
@@ -109,18 +115,16 @@ export default function NavBar(): ReactElement {
                         </Menu>
                     )}
                     {isLoggedIn ? (
-                        <>
-                            <Dropdown overlay={userMenu} trigger={['click']} placement="bottomRight">
-                                <div className={style.userMenuMobile}>
-                                    <Avatar
-                                        src={store.user?.image || undefined}
-                                        icon={!store.user?.image ? <UserOutlined /> : undefined}
-                                        className={style.userAvatar}
-                                    />
-                                </div>
-                            </Dropdown>
-                        </>
-                    ) :
+                        <Dropdown overlay={userMenu} trigger={['click']} placement="bottomRight">
+                            <div className={style.userMenuMobile}>
+                                <Avatar
+                                    src={store.user?.image || undefined}
+                                    icon={!store.user?.image ? <UserOutlined /> : undefined}
+                                    className={style.userAvatar}
+                                />
+                            </div>
+                        </Dropdown>
+                    ) : (
                         <div className={style.userMenuMobile}>
                             <NavLink to={loginApi}>
                                 <Avatar
@@ -130,7 +134,7 @@ export default function NavBar(): ReactElement {
                                 />
                             </NavLink>
                         </div>
-                    }
+                    )}
                 </>
             ) : (
                 <div className={style.mobileNav}>
@@ -142,9 +146,14 @@ export default function NavBar(): ReactElement {
                         </Menu.Item>
                         {isLoggedIn && (
                             <>
+                                <Menu.Item key="checklist">
+                                    <NavLink to={checklistRoute}>
+                                        <CheckSquareOutlined className={style.icon} />
+                                    </NavLink>
+                                </Menu.Item>
                                 <Menu.Item key="items">
                                     <NavLink to={itemsRoute}>
-                                        <ReconciliationOutlined className={style.icon} />
+                                        <UnorderedListOutlined className={style.icon} />
                                     </NavLink>
                                 </Menu.Item>
                                 <Menu.Item key="newItem">
@@ -163,18 +172,16 @@ export default function NavBar(): ReactElement {
                         )}
                     </Menu>
                     {isLoggedIn ? (
-                        <>
-                            <Dropdown overlay={userMenu} trigger={['click']} placement="bottomRight">
-                                <div className={style.userMenuMobile}>
-                                    <Avatar
-                                        src={store.user?.image || undefined}
-                                        icon={!store.user?.image ? <UserOutlined /> : undefined}
-                                        className={style.userAvatar}
-                                    />
-                                </div>
-                            </Dropdown>
-                        </>
-                    ) :
+                        <Dropdown overlay={userMenu} trigger={['click']} placement="bottomRight">
+                            <div className={style.userMenuMobile}>
+                                <Avatar
+                                    src={store.user?.image || undefined}
+                                    icon={!store.user?.image ? <UserOutlined /> : undefined}
+                                    className={style.userAvatar}
+                                />
+                            </div>
+                        </Dropdown>
+                    ) : (
                         <div className={style.userMenuMobile}>
                             <NavLink to={loginApi}>
                                 <Avatar
@@ -184,8 +191,7 @@ export default function NavBar(): ReactElement {
                                 />
                             </NavLink>
                         </div>
-                    }
-
+                    )}
                 </div>
             )}
         </Header>

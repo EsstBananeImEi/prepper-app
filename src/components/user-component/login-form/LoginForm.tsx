@@ -37,6 +37,7 @@ export default function AuthForm() {
             email: values.email,
             password: values.password,
             username: values.username || "",
+            persons: null,
             id: null,
             access_token: null,
             refresh_token: null,

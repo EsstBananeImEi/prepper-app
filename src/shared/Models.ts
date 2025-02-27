@@ -6,4 +6,5 @@ export interface UserModel {
     access_token: string | null;
     refresh_token: string | null;
     image: string | null;
+    persons: number | null;
 }
