@@ -1,6 +1,6 @@
 import axios, { AxiosResponse, Method } from 'axios';
 import { baseApiUrl, itemsRoute, nutrientsApi } from '../shared/Constants';
-import { Action, AddToShoppingCard, IncreaseAmount, DecreaseAmount, ClearItemCard, LoginUser, RegisterUser, EditUser, IncreaseStorageItem, DecreaseStorageItem, AddStorageItem, DeleteStorageItem, UpdateStorageItem, UpdateNutrientItem, UpdateCardItem } from './Store';
+import { Action, AddToShoppingCard, IncreaseAmount, DecreaseAmount, ClearItemCard, LoginUser, RegisterUser, EditUser, IncreaseStorageItem, DecreaseStorageItem, AddStorageItem, DeleteStorageItem, UpdateStorageItem, UpdateNutrientItem, UpdateCardItem, ForgotPassword } from './Store';
 
 export const actionHandler = (action: Action, callback: React.Dispatch<Action>): Promise<void> => {
     console.log('actionHandler', action);
@@ -21,6 +21,8 @@ export const actionHandler = (action: Action, callback: React.Dispatch<Action>):
             return sendUserRequest('POST', `/register`, action, callback);
         case 'EDIT_USER':
             return sendUserRequest('PUT', `/user`, action, callback);
+        case 'FORGOT_PASSWORD':
+            return sendUserRequest('POST', `/forgot-password`, action, callback);
         case 'INCREASE_STORAGE_ITEM':
         case 'DECREASE_STORAGE_ITEM':
         case 'UPDATE_STORAGE_ITEM':
@@ -120,20 +122,24 @@ function sendNutrientRequest(
 function sendUserRequest(
     method: Method,
     path: string,
-    action: LoginUser | RegisterUser | EditUser,
+    action: LoginUser | RegisterUser | EditUser | ForgotPassword,
     callback: React.Dispatch<Action>
 ): Promise<void> {
     const userData = localStorage.getItem("user");
     const token = userData ? JSON.parse(userData).access_token : null;
+    const data = action.type === 'FORGOT_PASSWORD' ? { email: action.email } : { ...action.user };
+
     return axios({
         method,
         url: `${baseApiUrl}${path}`,
-        data: { ...action.user },
+        data: data,
         timeout: 3500,
         headers: token ? { "Authorization": `Bearer ${token}` } : {},
     })
         .then((response: AxiosResponse) => {
-            action = { ...action, user: response.data };
+            if (action.type !== 'FORGOT_PASSWORD') {
+                action = { ...action, user: response.data };
+            }
             callback(action);
         })
         .catch((error) => {

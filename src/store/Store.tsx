@@ -67,7 +67,10 @@ export interface EditUser {
     type: 'EDIT_USER';
     user: UserModel;
 }
-
+export interface ForgotPassword {
+    type: 'FORGOT_PASSWORD';
+    email: string;
+}
 export interface InitialStorage {
     type: 'INITIAL_STORAGE';
     storageItems: StorageModel[] | undefined;
@@ -109,8 +112,26 @@ export interface UpdateCardItem {
 }
 
 
-export type Action = AddToShoppingCard | UpdateCardItem | DecreaseAmount | ClearItemCard | UpdateNutrientItem | ClearCard | InitialCards | IncreaseAmount | LoginUser | LogoutUser | RegisterUser | EditUser | InitialStorage | IncreaseStorageItem | DecreaseStorageItem | DeleteStorageItem | AddStorageItem | UpdateStorageItem;
-
+export type Action =
+    AddToShoppingCard
+    | UpdateCardItem
+    | DecreaseAmount
+    | ClearItemCard
+    | UpdateNutrientItem
+    | ClearCard
+    | InitialCards
+    | IncreaseAmount
+    | LoginUser
+    | LogoutUser
+    | RegisterUser
+    | EditUser
+    | InitialStorage
+    | IncreaseStorageItem
+    | DecreaseStorageItem
+    | DeleteStorageItem
+    | AddStorageItem
+    | UpdateStorageItem
+    | ForgotPassword;
 export function reducer(store: Store, action: Action): Store {
     switch (action.type) {
         case 'ADD_TO_CARD':
@@ -174,13 +195,14 @@ export function reducer(store: Store, action: Action): Store {
             localStorage.removeItem("user");
             return { ...store, user: null };
 
-        case 'REGISTER_USER':
-            localStorage.setItem("user", JSON.stringify(action.user));
-            return { ...store, user: action.user };
+        // case 'REGISTER_USER':
+        //     localStorage.setItem("user", JSON.stringify(action.user));
+        //     return { ...store, user: action.user };
         case 'EDIT_USER':
             console.log("Set Store User:", action.user);
             localStorage.setItem("user", JSON.stringify(action.user));
             return { ...store, user: action.user };
+
         case 'INITIAL_STORAGE':
             return { ...store, storeItems: action.storageItems ? action.storageItems : [] };
         case 'INCREASE_STORAGE_ITEM':
