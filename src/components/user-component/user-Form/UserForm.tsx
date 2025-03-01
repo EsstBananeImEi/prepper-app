@@ -1,5 +1,5 @@
 import React, { useState, useEffect, JSX } from "react";
-import { Form, Input, Button, Avatar, Card, Alert, message, Upload } from "antd";
+import { Form, Input, Button, Avatar, Card, Alert, message, Upload, InputNumber } from "antd";
 import { UploadOutlined } from "@ant-design/icons";
 import type { UploadRequestOption } from "rc-upload/lib/interface";
 import { useStore } from "../../../store/Store";
@@ -11,6 +11,7 @@ interface FormValues {
     username: string;
     email: string;
     password?: string;
+    persons: number;
 }
 
 export default function UserProfileForm(): JSX.Element {
@@ -51,6 +52,7 @@ export default function UserProfileForm(): JSX.Element {
                 ...store.user,
                 username: values.username.trim(),
                 email: values.email.trim(),
+                persons: values.persons,
                 ...(values.password ? { password: values.password } : {}),
                 ...(image ? { image } : {}),
             };
@@ -70,6 +72,7 @@ export default function UserProfileForm(): JSX.Element {
             username: store.user?.username || "",
             email: store.user?.email || "",
             password: "",
+            persons: store.user?.persons || 1,
         });
         setImage(store.user?.image || null);
     }, [store.user, form]);
@@ -106,6 +109,17 @@ export default function UserProfileForm(): JSX.Element {
                         rules={[{ min: 6, message: "Das Passwort muss mindestens 6 Zeichen lang sein." }]}
                     >
                         <Input.Password placeholder="Neues Passwort (falls ändern)" />
+                    </Form.Item>
+                    {/* personen im haushalt default 1 */}
+                    <Form.Item
+                        label="Personen im Haushalt"
+                        name="persons"
+                        rules={[
+                            { required: false, message: "Bitte Anzahl der Personen eingeben" },
+                            { type: "number", message: "Bitte eine Zahl eingeben" },
+                        ]}
+                    >
+                        <InputNumber min={1} />
                     </Form.Item>
                     <Form.Item label="Profilbild">
                         <Upload customRequest={customUpload} showUploadList={false} accept="image/*">

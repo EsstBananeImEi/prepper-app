@@ -8,9 +8,9 @@ import { StorageModel } from '../StorageModel';
 import { debounce } from 'lodash';
 import { itemSearchApi } from '../../../shared/Constants';
 import style from './StorageSearchItem.module.css'
+
 interface Props {
     callback: Setter<StorageModel[]>
-
 }
 
 export default function StorageSearchItem(props: Props): ReactElement {

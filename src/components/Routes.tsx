@@ -9,17 +9,21 @@ import StorageDetail from './storage-components/storage-detail/StorageDetail';
 import NotfallDetail from './home-component/notfall-detail-component/NotfallDetail';
 import LoginForm from './user-component/login-form/LoginForm';
 import User from './user-component/user-Form/UserForm';
+import ChecklistComponent from './checklist-component/CheckListItem';
+import ResetSuccessForm from './user-component/reset-form/ResetSuccessForm';
 
 export default function AppRoutes(): ReactElement {
     return (
         <Routes>
             <Route path="/items/error/:message" element={<MyErrorMessage />} />
             <Route path="/items/:id/edit" element={<StorageForm key="edit" />} />
+            <Route path="/resetSuccess" element={<LoginForm />} />
             <Route path="/items/new" element={<StorageForm key="new" />} />
             <Route path="/items/:id" element={<StorageDetail />} />
             <Route path="/login" element={<LoginForm />} />
             <Route path="/user" element={<User />} />
             <Route path="/items" element={<StorageList />} />
+            <Route path="/checklist" element={<ChecklistComponent />} />
             <Route path="/details/:category" element={<NotfallDetail />} />
             <Route path="/basket" element={<Shopping />} />
             <Route path="/home" element={<Home />} />

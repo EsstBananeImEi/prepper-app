@@ -24,6 +24,7 @@ export const iconRoute = (icon: string): string => `/static/StorageItemsIcons/${
 export const homeRoute = '/home';
 export const itemsRoute = '/items';
 export const basketRoute = '/basket';
+export const checklistRoute = '/checklist';
 export const itemIdRoute = (id: number | string): string => `${itemsRoute}/${String(id)}`;
 export const newItemRoute = `${itemsRoute}/new`;
 export const editItemRoute = (id: number | string): string => `${itemIdRoute(id)}/edit`;

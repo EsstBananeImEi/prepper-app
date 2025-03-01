@@ -2,7 +2,7 @@ import { Button, Divider, Empty, Pagination, Select, Space } from 'antd';
 import React, { ReactElement, useState, useEffect, useMemo } from 'react';
 import { CloseCircleOutlined, DownOutlined, UpOutlined } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
-import { useDemensions, useStorageApi } from '../../../hooks/StorageApi';
+import { useDemensions } from '../../../hooks/StorageApi';
 import { itemsApi, errorRoute, newItemRoute } from '../../../shared/Constants';
 import LoadingSpinner from '../../loading-spinner/LoadingSpinner';
 import StorageSearchItem from '../storage-search-item/StorageSearchItem';
@@ -10,10 +10,11 @@ import { StorageModel } from '../StorageModel';
 import StorageCardItem from './storage-item/StorageCardItem';
 import StorageListItem from './storage-item/StorageListItem';
 import styles from './StorageList.module.css';
+import { useStore } from '../../../store/Store';
 
 export default function StorageList(): ReactElement {
-    // Hole Items via Custom Hook (führt GET-Request an itemsApi aus)
-    const [storageItems, setStorageItems, axiosResponse] = useStorageApi<StorageModel[]>('get', itemsApi);
+    // Statt useStorageApi holen wir die Items direkt aus dem Store:
+    const { store, dispatch } = useStore();
     const history = useNavigate();
     const [sortField, setSortField] = useState<string>('name');
 
@@ -27,15 +28,14 @@ export default function StorageList(): ReactElement {
     const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
     const [selectedLocation, setSelectedLocation] = useState<string | null>(null);
 
-
     // Toggle-Status für den Filtercontainer
     const [showFilters, setShowFilters] = useState<boolean>(false);
 
     const handleChange = (page: number) => {
         setCurrentPage(page);
     };
-
     const [dimensions] = useDemensions(handleChange, currentPage);
+
 
     // Aktualisiere pageSize basierend auf der Bildschirmbreite
     useEffect(() => {
@@ -56,19 +56,10 @@ export default function StorageList(): ReactElement {
         setMinValue((currentPage - 1) * pageSize);
     }, [currentPage, pageSize]);
 
-    // Error-Handling in einem useEffect verlagert
-    useEffect(() => {
-        if (axiosResponse) {
-            axiosResponse.catch((e) => {
-                history(errorRoute(e.message));
-            });
-        }
-    }, [axiosResponse, history]);
+    // Da die Items jetzt im Store verwaltet werden, verwenden wir diese:
+    const safeStorageItems = store.storeItems ?? [];
 
-    // Erstelle einen sicheren Standardwert (leeres Array), falls storageItems noch nicht geladen ist.
-    const safeStorageItems = storageItems ?? [];
-
-    // Hooks (useMemo) immer unconditionally aufrufen
+    // Erzeuge Filteroptionen basierend auf den im Store vorhandenen Items
     const categoryOptions = useMemo(
         () => Array.from(new Set(safeStorageItems.flatMap((item) => item.categories || []))),
         [safeStorageItems]
@@ -110,22 +101,25 @@ export default function StorageList(): ReactElement {
         return sortedItems.slice(minValue, maxValue);
     }, [sortedItems, minValue, maxValue]);
 
-    // Wenn noch keine Items geladen wurden, zeige den Loading Spinner
-    if (!storageItems) {
-        return <LoadingSpinner message="Loading items..." />;
-    }
+
 
     const onGoToNew = () => history(newItemRoute);
 
     return (
         <>
             {/* Suchfeld */}
-            <StorageSearchItem callback={setStorageItems} />
+            <StorageSearchItem callback={(items: StorageModel[]) => {
+                dispatch({ type: 'INITIAL_STORAGE', storageItems: items })
+            }} />
 
             {/* Balken zum Öffnen/Schließen der Filter */}
             <div className={styles.filterToggle} onClick={() => setShowFilters(!showFilters)}>
                 <span>Filter & Sortierung</span>
-                {showFilters ? <UpOutlined style={{ fontSize: 18, color: "#666" }} /> : <DownOutlined style={{ fontSize: 18, color: "#666" }} />}
+                {showFilters ? (
+                    <UpOutlined style={{ fontSize: 18, color: "#666" }} />
+                ) : (
+                    <DownOutlined style={{ fontSize: 18, color: "#666" }} />
+                )}
             </div>
 
             {showFilters && (
@@ -181,7 +175,7 @@ export default function StorageList(): ReactElement {
                                 setCurrentPage(1);
                             }}
                             allowClear
-                            suffixIcon={<DownOutlined style={{ fontSize: 18, color: "#666" }} />} // Größerer Pfeil
+                            suffixIcon={<DownOutlined style={{ fontSize: 18, color: "#666" }} />}
                         >
                             <Select.Option key="name" value="name">
                                 Name
@@ -209,7 +203,7 @@ export default function StorageList(): ReactElement {
                 </Empty>
             ) : (
                 <div
-                    className={`space-align-container`}
+                    className="space-align-container"
                     style={{
                         justifyContent: 'center',
                         display: 'flex',
