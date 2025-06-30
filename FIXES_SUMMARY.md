@@ -22,6 +22,11 @@
 - **Root Cause**: `useEffect` in `StorageCardItem.tsx` triggering automatic PUT requests when components mounted or amount state initialized
 - **Solution**: Improved `useEffect` logic with proper initial mount detection and storage item tracking
 
+### 5. **📱 Mobile Breadcrumb Alignment Issue**
+
+- **Root Cause**: Double padding from layout container and breadcrumb component causing misalignment in mobile view
+- **Solution**: Responsive CSS modules with optimized padding for different screen sizes
+
 ## New Components & Utilities Created 🔧
 
 ### 📁 `/src/utils/imageUtils.ts`

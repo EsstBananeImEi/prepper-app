@@ -4,6 +4,7 @@ import { BugOutlined } from '@ant-design/icons';
 import NavBar from './navbar-component/NavBar';
 import BreadcrumbNav from './breadcrumb/BreadcrumbNav';
 import ApiDebugPanel from './debug/ApiDebugPanel';
+import styles from './Layout.module.css';
 
 
 interface Props {
@@ -15,9 +16,9 @@ export default function Layout(props: Props): ReactElement {
     const [debugPanelVisible, setDebugPanelVisible] = useState(false);
 
     return (
-        <AntdLayout className="layout" style={{ height: 'auto', minHeight: '100%' }}>
+        <AntdLayout className={styles.layout}>
             <NavBar />
-            <Content style={{ padding: '10px 10px' }}>
+            <Content className={styles.layoutContent}>
                 <BreadcrumbNav />
                 {props.children}
             </Content>
@@ -31,14 +32,7 @@ export default function Layout(props: Props): ReactElement {
                         icon={<BugOutlined />}
                         size="large"
                         onClick={() => setDebugPanelVisible(true)}
-                        style={{
-                            position: 'fixed',
-                            bottom: 20,
-                            right: 20,
-                            zIndex: 1000,
-                            backgroundColor: '#722ed1',
-                            borderColor: '#722ed1'
-                        }}
+                        className={styles.debugButton}
                         title="API Debug Panel"
                     />
                     <ApiDebugPanel
@@ -48,7 +42,7 @@ export default function Layout(props: Props): ReactElement {
                 </>
             )}
 
-            <Footer style={{ textAlign: 'center', padding: '0' }}>Prepper App ©{new Date().getFullYear()} Created by Sebastian Meine</Footer>
+            <Footer className={styles.footer}>Prepper App ©{new Date().getFullYear()} Created by Sebastian Meine</Footer>
         </AntdLayout>
     )
 }

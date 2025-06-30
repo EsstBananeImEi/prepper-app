@@ -1,0 +1,60 @@
+/* Layout.module.css */
+.layoutContent {
+    padding: 10px;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+/* Mobile Optimierungen */
+@media (max-width: 768px) {
+    .layoutContent {
+        padding: 6px;
+        /* Reduziertes Padding für Tablets */
+    }
+}
+
+@media (max-width: 480px) {
+    .layoutContent {
+        padding: 2px;
+        /* Minimales Padding für Smartphones */
+    }
+}
+
+/* Layout Container */
+.layout {
+    height: auto;
+    min-height: 100%;
+}
+
+/* Footer Styling für mobile */
+.footer {
+    text-align: center;
+    padding: 0;
+    font-size: 14px;
+}
+
+@media (max-width: 480px) {
+    .footer {
+        font-size: 12px;
+        padding: 8px 0;
+    }
+}
+
+/* Debug Button mobile positioning */
+.debugButton {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    z-index: 1000;
+    background-color: #722ed1;
+    border-color: #722ed1;
+}
+
+@media (max-width: 480px) {
+    .debugButton {
+        bottom: 15px;
+        right: 15px;
+        width: 40px;
+        height: 40px;
+    }
+}

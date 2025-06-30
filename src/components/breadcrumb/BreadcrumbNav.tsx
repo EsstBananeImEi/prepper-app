@@ -2,6 +2,7 @@ import React from 'react';
 import { Breadcrumb } from 'antd';
 import { HomeOutlined } from '@ant-design/icons';
 import { useLocation, Link } from 'react-router-dom';
+import styles from './BreadcrumbNav.module.css';
 
 const BreadcrumbNav: React.FC = () => {
     const location = useLocation();
@@ -23,17 +24,17 @@ const BreadcrumbNav: React.FC = () => {
 
             if (pathname.includes('/new')) {
                 items.push({
-                    title: <span>Neues Item</span>,
+                    title: <Link to="/items/new">Neues Item</Link>,
                     key: 'new-item'
                 });
             } else if (pathname.includes('/edit')) {
                 items.push({
-                    title: <span>Item bearbeiten</span>,
+                    title: <Link to="">Item bearbeiten</Link>,
                     key: 'edit-item'
                 });
             } else if (pathname !== '/items') {
                 items.push({
-                    title: <span>Item Details</span>,
+                    title: <Link to="">Item Details</Link>,
                     key: 'item-details'
                 });
             }
@@ -52,32 +53,32 @@ const BreadcrumbNav: React.FC = () => {
             };
 
             items.push({
-                title: <span>Notfallvorsorge</span>,
+                title: <Link to="home">Notfallvorsorge</Link>,
                 key: 'emergency'
             });
 
             items.push({
-                title: <span>{categoryNames[category] || category}</span>,
+                title: <Link to="">{categoryNames[category] || category}</Link>,
                 key: category
             });
         } else if (pathname === '/checklist') {
             items.push({
-                title: <span>Checkliste</span>,
+                title: <Link to="">Checkliste</Link>,
                 key: 'checklist'
             });
         } else if (pathname === '/basket') {
             items.push({
-                title: <span>Einkaufsliste</span>,
+                title: <Link to="">Einkaufsliste</Link>,
                 key: 'basket'
             });
         } else if (pathname === '/user') {
             items.push({
-                title: <span>Benutzerprofil</span>,
+                title: <Link to="">Benutzerprofil</Link>,
                 key: 'user'
             });
         } else if (pathname === '/login') {
             items.push({
-                title: <span>Anmeldung</span>,
+                title: <Link to="">Anmeldung</Link>,
                 key: 'login'
             });
         }
@@ -90,16 +91,8 @@ const BreadcrumbNav: React.FC = () => {
     // Zeige Breadcrumb nur an, wenn mehr als nur Home vorhanden ist
     if (breadcrumbItems.length <= 1) {
         return null;
-    }
-
-    return (
-        <Breadcrumb
-            style={{
-                margin: '16px 0',
-                padding: '0 var(--spacing-md)',
-                fontSize: 'var(--font-size-base)'
-            }}
-        >
+    } return (
+        <Breadcrumb className={styles.breadcrumbContainer}>
             {breadcrumbItems.map(item => (
                 <Breadcrumb.Item key={item.key}>{item.title}</Breadcrumb.Item>
             ))}

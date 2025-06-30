@@ -1,0 +1,137 @@
+/* BreadcrumbNav.module.css */
+.breadcrumbContainer {
+    margin: 16px 0;
+    padding: 0 16px;
+    font-size: 14px;
+    width: 100%;
+    box-sizing: border-box;
+    display: block;
+}
+
+/* Ensure proper inline layout for breadcrumb items */
+.breadcrumbContainer :global(.ant-breadcrumb) {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    line-height: 1.5;
+}
+
+.breadcrumbContainer :global(.ant-breadcrumb > span) {
+    display: inline-flex;
+    align-items: center;
+    flex-shrink: 0;
+}
+
+/* Force all breadcrumb content to stay on one line */
+.breadcrumbContainer :global(.ant-breadcrumb),
+.breadcrumbContainer :global(.ant-breadcrumb > span),
+.breadcrumbContainer :global(.ant-breadcrumb-link),
+.breadcrumbContainer :global(.ant-breadcrumb-separator) {
+    white-space: nowrap;
+}
+
+/* Mobile-optimierte Darstellung */
+@media (max-width: 768px) {
+    .breadcrumbContainer {
+        margin: 12px 0;
+        padding: 0 4px;
+        /* Minimales Padding für bessere Ausrichtung */
+        font-size: 13px;
+    }
+}
+
+/* Sehr kleine Bildschirme */
+@media (max-width: 480px) {
+    .breadcrumbContainer {
+        margin: 8px 0;
+        padding: 0 2px;
+        /* Noch weniger Padding für sehr kleine Bildschirme */
+        font-size: 12px;
+    }
+}
+
+/* Breadcrumb Items Styling */
+.breadcrumbContainer :global(.ant-breadcrumb-link) {
+    color: #1890ff;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+}
+
+.breadcrumbContainer :global(.ant-breadcrumb-link:hover) {
+    color: #40a9ff;
+}
+
+/* Ensure separators are properly aligned */
+.breadcrumbContainer :global(.ant-breadcrumb-separator) {
+    margin: 0 8px;
+    display: inline-flex;
+    align-items: center;
+}
+
+/* Fix for breadcrumb item spacing and alignment */
+.breadcrumbContainer :global(.ant-breadcrumb > span) {
+    display: inline-flex;
+    align-items: center;
+    vertical-align: baseline;
+}
+
+/* Separator Styling für mobile */
+@media (max-width: 480px) {
+    .breadcrumbContainer :global(.ant-breadcrumb-separator) {
+        margin: 0 4px;
+        /* Reduzierte Abstände zwischen Separatoren für mobile */
+        display: inline-flex;
+        align-items: center;
+    }
+}
+
+/* Home Icon Styling */
+.breadcrumbContainer :global(.anticon-home) {
+    margin-right: 4px;
+}
+
+@media (max-width: 480px) {
+    .breadcrumbContainer :global(.anticon-home) {
+        margin-right: 2px;
+        font-size: 12px;
+    }
+}
+
+/* Breadcrumb Item Text */
+.breadcrumbContainer :global(.ant-breadcrumb > span:last-child) {
+    color: rgba(0, 0, 0, 0.45);
+}
+
+/* Responsive Text Wrapping */
+@media (max-width: 480px) {
+    .breadcrumbContainer {
+        /* Ensure no wrapping issues on very small screens */
+        overflow-x: auto;
+        overflow-y: hidden;
+        white-space: nowrap;
+    }
+
+    .breadcrumbContainer :global(.ant-breadcrumb) {
+        display: inline-flex;
+        flex-wrap: nowrap;
+        align-items: center;
+        min-width: max-content;
+    }
+
+    /* Kürze sehr lange Breadcrumb-Texte aber behalte inline Layout */
+    .breadcrumbContainer :global(.ant-breadcrumb-link),
+    .breadcrumbContainer :global(.ant-breadcrumb > span:last-child) {
+        max-width: 120px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        display: inline-flex;
+        align-items: center;
+    }
+
+    /* Home bleibt immer vollständig sichtbar */
+    .breadcrumbContainer :global(.ant-breadcrumb-link):first-child {
+        max-width: none;
+    }
+}
