@@ -1,5 +1,5 @@
 import { DeleteOutlined, MinusCircleOutlined, PlusCircleOutlined } from '@ant-design/icons'
-import { Avatar, Badge, Card, Space } from 'antd'
+import { Badge, Card, Space } from 'antd'
 import Meta from 'antd/lib/card/Meta'
 import React, { ReactElement, SyntheticEvent, useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
@@ -9,6 +9,7 @@ import { Action, useStore } from '../../../store/Store'
 import { Dimension } from '../../../types/Types'
 import { BasketModel, StorageModel } from '../StorageModel'
 import { actionHandler } from '../../../store/Actions'
+import SafeAvatar from '../../common/SafeAvatar'
 
 interface Props {
     storedItems: BasketModel[]
@@ -83,7 +84,7 @@ export default function ShoppingCard(props: Props): ReactElement {
                         >
                             <Link to={itemIdRoute(storeageItem.id)}>
                                 <Meta
-                                    avatar={<Avatar src={storeageItem.icon || '/default.png'} />}
+                                    avatar={<SafeAvatar src={storeageItem.icon} showWarnings={process.env.NODE_ENV === 'development'} />}
                                     title={storeageItem.name}
                                     description={storeageItem.categories && trimText(storeageItem.categories.join(', '))}
 

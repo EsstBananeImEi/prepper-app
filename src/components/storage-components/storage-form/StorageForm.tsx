@@ -25,7 +25,9 @@ import {
     fileToBase64,
     sanitizeBase64ForApi,
     ensureDataUrlPrefix,
-    compressBase64Image
+    compressBase64Image,
+    repairBase64Image,
+    debugImageData
 } from '../../../utils/imageUtils';
 import { handleApiError } from '../../../hooks/useApi';
 
@@ -96,11 +98,9 @@ export default function StorageDetailForm(): ReactElement {
 
     // Für Speichern & Fehleranzeige
     const [saving, setSaving] = useState(false);
-    const [saveError, setSaveError] = useState<string>('');
-
-    // Bei Laden des Items aus der DB initialisieren wir die States
+    const [saveError, setSaveError] = useState<string>('');    // Bei Laden des Items aus der DB initialisieren wir die States
     useEffect(() => {
-        if (storageItem) {
+        if (storageItem && (!name || name === '')) {  // Only initialize if not already initialized
             setName(storageItem.name);
             setAmount(storageItem.amount.toString());
             setLowestAmount(storageItem.lowestAmount.toString());
@@ -124,12 +124,16 @@ export default function StorageDetailForm(): ReactElement {
                 setNutrients(storageItem.nutrients.values);
             }
         }
+    }, [id]); // Only depend on id, not the entire storageItem
+
+    // Load options once when component mounts
+    useEffect(() => {
         storageApi('GET', optionsCategoriesApi, setDbCategories);
         storageApi('GET', optionsStorageLocationsApi, setDbStorageLocations);
         storageApi('GET', optionsItemUnitsApi, setDbItemUnits);
         storageApi('GET', optionsPackageUnitsApi, setDbPackageUnits);
         storageApi('GET', optionsNutrientUnitsApi, setDbNutrientUnits);
-    }, [storageItem]);
+    }, []); // Run only once
 
 
 
@@ -140,22 +144,46 @@ export default function StorageDetailForm(): ReactElement {
         try {
             message.loading('Bild wird verarbeitet...', 0);
 
+            console.group('🖼️ Image Upload Debug');
+            console.log('File info:', {
+                name: file.name,
+                type: file.type,
+                size: file.size,
+                lastModified: file.lastModified
+            });
+
             // Validate and convert file to Base64
             const validationResult = await fileToBase64(file);
 
-            if (!validationResult.isValid) {
-                message.destroy();
-                message.error(validationResult.error || 'Ungültige Bilddaten');
-                return false;
-            }
+            console.log('Validation result:', validationResult);
 
-            let processedImage = validationResult.processedData!;
+            if (!validationResult.isValid) {
+                console.error('Validation failed:', validationResult.error);
+                console.groupEnd();
+                message.destroy();
+                message.error(`${validationResult.error || 'Ungültige Bilddaten'} [File: ${file.name}, Type: ${file.type}]`);
+                return false;
+            } let processedImage = validationResult.processedData!;
+
+            // Enhanced debugging with detailed image analysis
+            debugImageData(processedImage, `Upload Handler - ${file.name}`);
+
+            console.log('Processed image info:', {
+                length: processedImage.length,
+                startsWithDataUrl: processedImage.startsWith('data:'),
+                mimeType: processedImage.split(',')[0]
+            });
 
             // Compress if image is large
             const imageSizeKB = (processedImage.length * 3) / 4 / 1024;
+            console.log('Image size:', Math.round(imageSizeKB * 100) / 100, 'KB');
+
             if (imageSizeKB > 500) { // Compress if larger than 500KB
                 try {
+                    console.log('Compressing image...');
                     processedImage = await compressBase64Image(processedImage, 800, 600, 0.8);
+                    const newSizeKB = (processedImage.length * 3) / 4 / 1024;
+                    console.log('Compressed to:', Math.round(newSizeKB * 100) / 100, 'KB');
                     message.info('Bild wurde komprimiert für bessere Performance');
                 } catch (compressionError) {
                     console.warn('Compression failed, using original:', compressionError);
@@ -163,12 +191,15 @@ export default function StorageDetailForm(): ReactElement {
             }
 
             setIcon(processedImage);
+            console.log('Image set successfully');
+            console.groupEnd();
             message.destroy();
             message.success('Bild erfolgreich geladen');
         } catch (error) {
+            console.error('Image processing error:', error);
+            console.groupEnd();
             message.destroy();
             message.error('Fehler beim Verarbeiten des Bildes');
-            console.error('Image processing error:', error);
         }
 
         return false; // Prevent automatic upload
@@ -259,15 +290,59 @@ export default function StorageDetailForm(): ReactElement {
         // Validate and sanitize icon data for API
         let processedIcon = '';
         if (icon) {
-            const iconValidation = validateBase64Image(icon);
-            if (iconValidation.isValid) {
-                // For API transmission, we might need just the Base64 data without data URL prefix
-                processedIcon = sanitizeBase64ForApi(icon);
+            console.group('🔧 Processing Icon for API');
+            console.log('Original icon length:', icon.length);
+            console.log('Icon starts with data URL:', icon.startsWith('data:'));
+
+            const iconValidation = validateBase64Image(icon); console.log('Icon validation result:', iconValidation); if (iconValidation.isValid) {
+                // EXPERIMENTAL: Try data URL format first since backend might expect it
+                // Many backends expect the full data URL instead of just Base64
+                processedIcon = ensureDataUrlPrefix(iconValidation.processedData || icon);
+                console.log('Processed icon with data URL prefix');
+                console.log('Processed icon length:', processedIcon.length);
+                console.log('First 50 chars:', processedIcon.substring(0, 50));
+
+                // Additional debugging: Test what backend might expect
+                console.group('🔬 Backend Format Testing'); console.log('Option 1 - With data URL (NEW APPROACH):', processedIcon.substring(0, 50) + '...');
+                console.log('Option 2 - Pure Base64 (old approach):', sanitizeBase64ForApi(processedIcon).substring(0, 30) + '...');
+                console.log('Option 3 - Original icon:', icon.substring(0, 50) + '...');
+
+                // Test if it's a valid image format
+                try {
+                    const binaryTest = window.atob(processedIcon.substring(0, 20));
+                    const bytes = new Uint8Array(binaryTest.length);
+                    for (let i = 0; i < binaryTest.length; i++) {
+                        bytes[i] = binaryTest.charCodeAt(i);
+                    }
+
+                    // Check image signature
+                    if (bytes[0] === 0xFF && bytes[1] === 0xD8) {
+                        console.log('✅ Detected JPEG format');
+                    } else if (bytes[0] === 0x89 && bytes[1] === 0x50) {
+                        console.log('✅ Detected PNG format');
+                    } else {
+                        console.warn('❓ Unknown image format, first bytes:', Array.from(bytes.slice(0, 8)).map(b => b.toString(16).padStart(2, '0')).join(' '));
+                    }
+                } catch (e) {
+                    console.error('❌ Cannot decode Base64 for format detection:', e);
+                }
+                console.groupEnd();
             } else {
-                console.warn('Invalid icon data:', iconValidation.error);
-                // Set empty icon if invalid
-                processedIcon = '';
+                console.warn('Invalid icon data, attempting repair:', iconValidation.error);
+                console.warn('Icon preview:', icon.substring(0, 100));
+
+                // Try to repair the image data
+                const repairResult = repairBase64Image(icon);
+                if (repairResult.isValid && repairResult.processedData) {
+                    console.log('✅ Image data repaired successfully');
+                    processedIcon = sanitizeBase64ForApi(repairResult.processedData);
+                } else {
+                    console.error('❌ Could not repair image data:', repairResult.error);
+                    // Set empty icon if repair also fails
+                    processedIcon = '';
+                }
             }
+            console.groupEnd();
         }
 
         return {
@@ -354,6 +429,25 @@ export default function StorageDetailForm(): ReactElement {
         console.log('Item Data:', updatedItem);
         console.log('Is New:', isNew);
         console.log('ID:', id);
+
+        // Detailed debugging for icon
+        if (updatedItem.icon) {
+            console.group('🖼️ Icon Details for Save');
+            console.log('Icon length:', updatedItem.icon.length);
+            console.log('First 50 chars:', updatedItem.icon.substring(0, 50));
+            console.log('Last 50 chars:', updatedItem.icon.substring(Math.max(0, updatedItem.icon.length - 50)));
+            console.log('Contains data URL prefix:', updatedItem.icon.startsWith('data:'));
+
+            // Test Base64 validity
+            try {
+                const testData = updatedItem.icon.startsWith('data:') ? updatedItem.icon.split(',')[1] : updatedItem.icon;
+                window.atob(testData.substring(0, Math.min(100, testData.length)));
+                console.log('✅ Icon Base64 is valid');
+            } catch (error) {
+                console.error('❌ Icon Base64 is invalid:', error);
+            }
+            console.groupEnd();
+        }
         console.groupEnd();
 
         try {
@@ -381,6 +475,16 @@ export default function StorageDetailForm(): ReactElement {
             }
             history(itemsRoute);
         } catch (error: unknown) {
+            console.group('🚨 Save Error Details');
+            console.error('Error object:', error);
+            console.error('Error type:', typeof error);
+            console.error('Error constructor:', error?.constructor?.name);
+            if (error instanceof Error) {
+                console.error('Error message:', error.message);
+                console.error('Error stack:', error.stack);
+            }
+            console.groupEnd();
+
             const errorMessage = handleApiError(error, false);
             setSaveError(errorMessage);
             window.scrollTo({ top: 0, behavior: 'smooth' });

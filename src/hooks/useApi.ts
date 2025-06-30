@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { notification } from 'antd';
 import axios from 'axios';
 
@@ -8,8 +8,8 @@ interface ApiState<T> {
     error: string | null;
 }
 
-interface UseApiOptions {
-    onSuccess?: (data: any) => void;
+interface UseApiOptions<T = unknown> {
+    onSuccess?: (data: T) => void;
     onError?: (error: string) => void;
     showNotification?: boolean;
 }
@@ -86,8 +86,8 @@ export function handleApiError(error: unknown, showNotification: boolean = true)
 
 export function useApi<T>(
     apiCall: () => Promise<T>,
-    dependencies: any[] = [],
-    options: UseApiOptions = {}
+    dependencies: React.DependencyList = [],
+    options: UseApiOptions<T> = {}
 ): ApiState<T> & { refetch: () => Promise<void> } {
     const [state, setState] = useState<ApiState<T>>({
         data: null,
@@ -133,7 +133,7 @@ export function useApi<T>(
 
 export function useMutation<T, P>(
     mutationFn: (params: P) => Promise<T>,
-    options: UseApiOptions = {}
+    options: UseApiOptions<T> = {}
 ): {
     mutate: (params: P) => Promise<T | null>;
     loading: boolean;

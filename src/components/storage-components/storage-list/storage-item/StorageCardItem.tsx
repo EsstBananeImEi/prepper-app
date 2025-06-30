@@ -1,5 +1,5 @@
 import { MinusCircleOutlined, PlusCircleOutlined, ShoppingCartOutlined } from '@ant-design/icons';
-import { Avatar, Card } from 'antd';
+import { Card } from 'antd';
 import { BiSolidFridge } from 'react-icons/bi';
 import { BsBookshelf } from 'react-icons/bs';
 import React, { ReactElement, SyntheticEvent, useEffect, useRef, useState } from 'react';
@@ -10,6 +10,7 @@ import { pluralFormFactory } from '../../../../shared/Factories';
 import { Action, useStore } from '../../../../store/Store';
 import { StorageModel } from '../../StorageModel';
 import { actionHandler } from '../../../../store/Actions';
+import SafeAvatar from '../../../common/SafeAvatar';
 
 interface Props {
     storageItem: StorageModel;
@@ -110,7 +111,7 @@ export default function StorageCardItem(props: Props): ReactElement {
         >
             <Link to={itemIdRoute(storageItem.id)}>
                 <Meta
-                    avatar={<Avatar src={storageItem.icon || '/default.png'} />}
+                    avatar={<SafeAvatar src={storageItem.icon} showWarnings={process.env.NODE_ENV === 'development'} />}
                     title={
                         <div style={{ display: 'flex', alignItems: 'center' }}>
                             <span>{storageItem.name}</span>

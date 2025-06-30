@@ -1,5 +1,5 @@
 import { DeleteOutlined, MinusCircleOutlined, PlusCircleOutlined, ShoppingCartOutlined } from '@ant-design/icons';
-import { Avatar, Badge, Divider, List } from 'antd';
+import { Badge, Divider, List } from 'antd';
 import React, { ReactElement, SyntheticEvent, useEffect, useState, useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import { itemIdRoute } from '../../../shared/Constants';
@@ -9,6 +9,7 @@ import { BasketModel } from '../StorageModel';
 import { actionHandler } from '../../../store/Actions';
 import styles from '../storage-list/storage-item/StorageListItem.module.css';
 import listStyles from './ShoppingList.module.css';
+import SafeAvatar from '../../common/SafeAvatar';
 
 interface Props {
     storedItems: BasketModel[];
@@ -113,7 +114,7 @@ export default function ShoppingList(props: Props): ReactElement {
                                     ]}
                                 >
                                     <List.Item.Meta
-                                        avatar={<Avatar src={listItem.icon || '/default.png'} />}
+                                        avatar={<SafeAvatar src={listItem.icon} showWarnings={process.env.NODE_ENV === 'development'} />}
                                         title={
                                             <div className={styles.metaTitleContainer}>
                                                 <span>{listItem.name}</span>
@@ -167,7 +168,7 @@ export default function ShoppingList(props: Props): ReactElement {
                         ]}
                     >
                         <List.Item.Meta
-                            avatar={<Avatar src={listItem.icon || '/default.png'} />}
+                            avatar={<SafeAvatar src={listItem.icon} showWarnings={process.env.NODE_ENV === 'development'} />}
                             title={
                                 <div className={styles.metaTitleContainer}>
                                     <span>{listItem.name}</span>

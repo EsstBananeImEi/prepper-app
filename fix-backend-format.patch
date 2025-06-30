@@ -1,0 +1,27 @@
+SUMMARY: Fix for Backend Image Format Error
+
+The backend is rejecting image uploads with error "Ungültige Bilddaten: Das Bildformat konnte nicht verarbeitet werden."
+
+ANALYSIS:
+- API debug logs show 400 Bad Request status
+- Backend expects data URL format (data:image/...;base64,...)
+- Current code strips the data URL prefix using sanitizeBase64ForApi()
+
+SOLUTION:
+Instead of stripping the data URL prefix, send the full data URL format to the backend.
+
+Change in StorageForm.tsx getUpdatedItem() function:
+FROM: processedIcon = sanitizeBase64ForApi(icon);
+TO:   processedIcon = ensureDataUrlPrefix(iconValidation.processedData || icon);
+
+This ensures the backend receives:
+"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAA..."
+
+Instead of just:
+"iVBORw0KGgoAAAANSUhEUgAA..."
+
+TEST STEPS:
+1. Apply this change
+2. Upload an image 
+3. Check API debug panel - should now show successful 200 response
+4. Verify image appears correctly in the storage item

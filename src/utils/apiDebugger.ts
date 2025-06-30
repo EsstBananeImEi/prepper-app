@@ -7,10 +7,9 @@ export interface ApiRequestLog {
     timestamp: string;
     method: string;
     url: string;
-    status?: number;
-    duration?: number;
+    status?: number; duration?: number;
     error?: string;
-    data?: any;
+    data?: unknown;
 }
 
 class ApiDebugger {
@@ -85,10 +84,22 @@ class ApiDebugger {
 
 export const apiDebugger = ApiDebugger.getInstance();
 
+// Define common error interface
+interface ApiError {
+    response?: {
+        status: number;
+        data?: { error?: string };
+    };
+    config?: {
+        url?: string;
+        method?: string;
+    };
+}
+
 /**
  * Analyzes common API errors and provides suggestions
  */
-export function analyzeApiError(error: any): {
+export function analyzeApiError(error: ApiError): {
     category: string;
     suggestion: string;
     severity: 'low' | 'medium' | 'high';
@@ -166,8 +177,26 @@ export function analyzeApiError(error: any): {
 /**
  * Enhanced error message formatting
  */
-export function formatApiError(error: any): string {
-    const analysis = analyzeApiError(error);
+export function formatApiError(error: {
+    response?: {
+        status?: number;
+        data?: unknown;
+    };
+    config?: {
+        url?: string;
+        method?: string;
+    };
+}): string {
+    // Convert to ApiError format for analysis
+    const apiError: ApiError = {
+        response: error.response?.status ? {
+            status: error.response.status,
+            data: error.response.data as { error?: string } | undefined
+        } : undefined,
+        config: error.config
+    };
+
+    const analysis = analyzeApiError(apiError);
 
     let message = analysis.suggestion;
 

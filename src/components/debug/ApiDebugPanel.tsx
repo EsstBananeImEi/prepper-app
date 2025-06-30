@@ -77,7 +77,7 @@ export default function ApiDebugPanel({ visible, onClose }: Props) {
         if (!log.error) return null;
 
         try {
-            const error = { response: { status: log.status, data: { error: log.error } } };
+            const error = { response: { status: log.status || 500, data: { error: log.error } } };
             return analyzeApiError(error);
         } catch {
             return null;

@@ -22,7 +22,7 @@ function App(): ReactElement {
             <StoreProvider>
                 <Router>
                     <ScrollToTop />
-                    <HideRoutes />
+                    {/* <HideRoutes /> */}
                     <Layout>
                         <Routes />
                     </Layout>
