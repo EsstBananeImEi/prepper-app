@@ -23,22 +23,38 @@
     }
 
     .iconAction {
-        font-size: 25px;
+        font-size: 28px;
         transform: translateY(2px);
         cursor: pointer;
         color: rgb(147, 146, 146);
+        padding: 8px;
+        min-width: 44px;
+        min-height: 44px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 4px;
+        transition: background-color 0.2s ease;
+    }
+
+    .iconAction:hover {
+        background-color: rgba(24, 144, 255, 0.1);
+        color: #1890ff;
     }
 
     .highAmount {
-        color: green;
+        color: var(--color-high-amount, #389e0d);
+        font-weight: 600;
     }
 
     .midAmount {
-        color: orange;
+        color: var(--color-mid-amount, #d46b08);
+        font-weight: 600;
     }
 
     .lowAmount {
-        color: red;
+        color: var(--color-low-amount, #cf1322);
+        font-weight: 600;
     }
 
     .metaTitleContainer {

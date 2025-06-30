@@ -8,7 +8,8 @@ import { BasketModel, NutrientValueModel, StorageModel } from '../StorageModel';
 import css from './StorageDetail.module.css';
 import { useStore } from '../../../store/Store';
 import { actionHandler } from '../../../store/Actions';
-import axios from 'axios';
+import { handleApiError } from '../../../hooks/useApi';
+import { ensureDataUrlPrefix } from '../../../utils/imageUtils';
 
 export default function StorageDetail(): ReactElement {
     const { id } = useParams<{ id: string }>();
@@ -53,12 +54,7 @@ export default function StorageDetail(): ReactElement {
                 await actionHandler({ type: 'CLEAR_ITEM_CARD', basketItems }, dispatch);
             navigate(itemsRoute);
         } catch (error) {
-            let errorMessage = 'Fehler beim Löschen des Elements';
-            if (axios.isAxiosError(error)) {
-                errorMessage = error.response?.data?.error || errorMessage;
-            } else if (error instanceof Error) {
-                errorMessage = error.message;
-            }
+            const errorMessage = handleApiError(error, false);
             setSaveError(errorMessage);
             window.scrollTo({ top: 0, behavior: 'smooth' });
         } finally {
@@ -72,10 +68,29 @@ export default function StorageDetail(): ReactElement {
             {saveError && (
                 <Alert style={{ marginBottom: 16 }} message={saveError} type="error" showIcon />
             )}
-            {/* Bildanzeige */}
+            {/* Enhanced image display with proper Base64 handling */}
             <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 16 }}>
                 <Image.PreviewGroup>
-                    <Image width={150} alt={storageItem.name} src={storageItem.icon || '/default.png'} />
+                    <Image
+                        width={150}
+                        alt={storageItem.name}
+                        src={storageItem.icon ? ensureDataUrlPrefix(storageItem.icon) : '/default.png'}
+                        placeholder={
+                            <div style={{
+                                width: 150,
+                                height: 150,
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                backgroundColor: '#f5f5f5',
+                                border: '1px solid #d9d9d9',
+                                borderRadius: '6px'
+                            }}>
+                                Bild wird geladen...
+                            </div>
+                        }
+                        fallback="/default.png"
+                    />
                 </Image.PreviewGroup>
             </div>
 

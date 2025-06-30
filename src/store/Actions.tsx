@@ -46,22 +46,34 @@ function sendRequest(
 ): Promise<void> {
     const userData = localStorage.getItem("user");
     const token = userData ? JSON.parse(userData).access_token : null;
-    console.log('sendRequest', action);
+
+    let requestData: any = { ...action.basketItems };
+    if (method === 'POST') {
+        const { id, ...dataWithoutId } = requestData;
+        requestData = dataWithoutId;
+    }
+
+    console.log('🛒 Basket API Request:', { method, path, data: requestData });
+
     return axios({
         method,
         url: `${baseApiUrl}${path}`,
-        data: { ...action.basketItems, id: 0 },
-        timeout: 6000,
-        headers: token ? { "Authorization": `Bearer ${token}` } : {},
+        data: requestData,
+        timeout: 8000,
+        headers: {
+            'Content-Type': 'application/json',
+            ...(token ? { "Authorization": `Bearer ${token}` } : {}),
+        },
     })
         .then((response: AxiosResponse) => {
-            console.log('sendRequest response', response);
+            console.log('✅ Basket API Success:', response.data);
             if (response.config.method?.toLowerCase() === 'post' || response.config.method?.toLowerCase() === 'put') {
                 action = { ...action, basketItems: response.data };
             }
             callback(action);
         })
         .catch((error) => {
+            console.error('❌ Basket API Error:', error.response?.data || error.message);
             return Promise.reject(error);
         });
 }
@@ -74,20 +86,47 @@ function sendStorageRequest(
 ): Promise<void> {
     const userData = localStorage.getItem("user");
     const token = userData ? JSON.parse(userData).access_token : null;
+
+    // Prepare data for API - ensure proper format
+    let requestData: any = { ...action.storageItem };
+
+    // For new items, remove ID from request
+    if (method === 'POST') {
+        const { id, ...dataWithoutId } = requestData;
+        requestData = dataWithoutId;
+    }
+
+    // Log request details for debugging
+    console.group('🌐 Storage API Request');
+    console.log('Method:', method);
+    console.log('URL:', `${baseApiUrl}${path}`);
+    console.log('Data:', requestData);
+    console.log('Has Token:', !!token);
+    console.groupEnd();
+
     return axios({
         method,
         url: `${baseApiUrl}${path}`,
-        data: { ...action.storageItem, id: 0 },
-        timeout: 3500,
-        headers: token ? { "Authorization": `Bearer ${token}` } : {},
+        data: requestData,
+        timeout: 10000, // Increased timeout
+        headers: {
+            'Content-Type': 'application/json',
+            ...(token ? { "Authorization": `Bearer ${token}` } : {}),
+        },
     })
         .then((response: AxiosResponse) => {
+            console.log('✅ Storage API Success:', response.data);
             if (response.config.method?.toLowerCase() === 'post' || response.config.method?.toLowerCase() === 'put') {
                 action = { ...action, storageItem: response.data };
             }
             callback(action);
         })
         .catch((error) => {
+            console.group('❌ Storage API Error');
+            console.error('Status:', error.response?.status);
+            console.error('Response:', error.response?.data);
+            console.error('Request Data:', requestData);
+            console.groupEnd();
             return Promise.reject(error);
         });
 }

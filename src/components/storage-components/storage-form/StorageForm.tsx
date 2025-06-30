@@ -1,5 +1,5 @@
 import React, { ReactElement, SyntheticEvent, useState, useEffect } from 'react';
-import { Descriptions, Image, Input, Select, Button, Alert, Upload } from 'antd';
+import { Descriptions, Image, Input, Select, Button, Alert, Upload, message } from 'antd';
 import { PlusOutlined, MinusOutlined, UploadOutlined } from '@ant-design/icons';
 import { useNavigate, useParams } from 'react-router-dom';
 import axios from 'axios';
@@ -20,7 +20,14 @@ import { BasketModel, NutrientValueModel, StorageModel } from '../StorageModel';
 import css from './StorageForm.module.css';
 import { NutrientFactory } from '../../../shared/Factories';
 import { actionHandler } from '../../../store/Actions';
-import { i } from 'react-router/dist/development/fog-of-war-CCAcUMgB';
+import {
+    validateBase64Image,
+    fileToBase64,
+    sanitizeBase64ForApi,
+    ensureDataUrlPrefix,
+    compressBase64Image
+} from '../../../utils/imageUtils';
+import { handleApiError } from '../../../hooks/useApi';
 
 // No‑Op Callback (anstatt leerer Funktionen)
 const noop = () => {
@@ -128,21 +135,43 @@ export default function StorageDetailForm(): ReactElement {
 
     if (!storageItem && !isNew) {
         return <LoadingSpinner message="Loading storage item..." />;
-    }
+    }    // Enhanced Upload Handler with validation and compression
+    const handleBeforeUpload = async (file: File) => {
+        try {
+            message.loading('Bild wird verarbeitet...', 0);
 
-    // Custom Upload Handler: Wandelt die ausgewählte Bilddatei in einen Base64-String um
-    const handleBeforeUpload = (file: File) => {
-        const reader = new FileReader();
-        reader.onload = () => {
-            const base64String = reader.result as string;
-            setIcon(base64String);
-        };
-        reader.onerror = () => {
-            console.error("Fehler beim Lesen der Datei.");
-        };
-        reader.readAsDataURL(file);
-        // Rückgabe false verhindert den automatischen Upload
-        return false;
+            // Validate and convert file to Base64
+            const validationResult = await fileToBase64(file);
+
+            if (!validationResult.isValid) {
+                message.destroy();
+                message.error(validationResult.error || 'Ungültige Bilddaten');
+                return false;
+            }
+
+            let processedImage = validationResult.processedData!;
+
+            // Compress if image is large
+            const imageSizeKB = (processedImage.length * 3) / 4 / 1024;
+            if (imageSizeKB > 500) { // Compress if larger than 500KB
+                try {
+                    processedImage = await compressBase64Image(processedImage, 800, 600, 0.8);
+                    message.info('Bild wurde komprimiert für bessere Performance');
+                } catch (compressionError) {
+                    console.warn('Compression failed, using original:', compressionError);
+                }
+            }
+
+            setIcon(processedImage);
+            message.destroy();
+            message.success('Bild erfolgreich geladen');
+        } catch (error) {
+            message.destroy();
+            message.error('Fehler beim Verarbeiten des Bildes');
+            console.error('Image processing error:', error);
+        }
+
+        return false; // Prevent automatic upload
     };
 
     // Nutrient-Handler (unverändert)
@@ -225,74 +254,134 @@ export default function StorageDetailForm(): ReactElement {
             updated[nutrientIndex] = nutrient;
             return updated;
         });
-    };
+    };    // Beim Speichern werden numerische Werte konvertiert und Daten validiert
+    const getUpdatedItem = (): StorageModel => {
+        // Validate and sanitize icon data for API
+        let processedIcon = '';
+        if (icon) {
+            const iconValidation = validateBase64Image(icon);
+            if (iconValidation.isValid) {
+                // For API transmission, we might need just the Base64 data without data URL prefix
+                processedIcon = sanitizeBase64ForApi(icon);
+            } else {
+                console.warn('Invalid icon data:', iconValidation.error);
+                // Set empty icon if invalid
+                processedIcon = '';
+            }
+        }
 
-    // Beim Speichern werden numerische Werte konvertiert
-    const getUpdatedItem = (): StorageModel => ({
-        ...initialItem,
-        name,
-        amount: Number(amount),
-        lowestAmount: Number(lowestAmount),
-        midAmount: Number(midAmount),
-        unit,
-        packageQuantity: packageQuantity !== '' ? Number(packageQuantity) : undefined,
-        packageUnit,
-        storageLocation,
-        categories,
-        icon, // icon als Base64-String
-        nutrients: {
-            description: nutrientDescription,
-            unit: nutrientUnit,
-            amount: Number(nutrientAmount),
-            values: nutrients,
-        },
-    });
-
-    // Validierung der Pflichtfelder: Name, Amount, Unit, Storage Location
+        return {
+            ...initialItem,
+            name: name.trim(),
+            amount: Number(amount) || 0,
+            lowestAmount: Number(lowestAmount) || 0,
+            midAmount: Number(midAmount) || 0,
+            unit: unit.trim(),
+            packageQuantity: packageQuantity && packageQuantity.trim() !== '' ? Number(packageQuantity) : undefined,
+            packageUnit: packageUnit.trim(),
+            storageLocation: storageLocation.trim(),
+            categories: categories.filter(cat => cat && cat.trim() !== ''), // Remove empty categories
+            icon: processedIcon,
+            nutrients: {
+                description: nutrientDescription.trim(),
+                unit: nutrientUnit.trim(),
+                amount: Number(nutrientAmount) || 100,
+                values: nutrients.map(nutrient => ({
+                    ...nutrient,
+                    name: nutrient.name.trim(),
+                    color: nutrient.color.trim(),
+                    values: nutrient.values.filter(val => val.typ && val.typ.trim() !== '') // Remove empty values
+                })).filter(nutrient => nutrient.name !== '') // Remove empty nutrients
+            },
+        };
+    };    // Enhanced validation of required fields
     const validateRequiredFields = (): boolean => {
-        if (
-            name.trim() === '' ||
-            amount.trim() === '' ||
-            unit.trim() === ''
-        ) {
-            setSaveError(
-                'Bitte füllen Sie alle Pflichtfelder aus: Name, Amount und Unit'
-            );
+        const errors: string[] = [];
+
+        if (!name || name.trim() === '') {
+            errors.push('Name ist erforderlich');
+        }
+
+        if (!amount || amount.trim() === '' || isNaN(Number(amount)) || Number(amount) < 0) {
+            errors.push('Gültige Menge ist erforderlich');
+        }
+
+        if (!unit || unit.trim() === '') {
+            errors.push('Einheit ist erforderlich');
+        }
+
+        // Validate numeric fields
+        if (lowestAmount && (isNaN(Number(lowestAmount)) || Number(lowestAmount) < 0)) {
+            errors.push('Minimaler Warn-Wert muss eine gültige Zahl sein');
+        }
+
+        if (midAmount && (isNaN(Number(midAmount)) || Number(midAmount) < 0)) {
+            errors.push('Mittlerer Warn-Wert muss eine gültige Zahl sein');
+        }
+
+        if (packageQuantity && packageQuantity.trim() !== '' &&
+            (isNaN(Number(packageQuantity)) || Number(packageQuantity) <= 0)) {
+            errors.push('Packungsgröße muss eine positive Zahl sein');
+        }
+
+        // Validate icon if present
+        if (icon && icon.trim() !== '') {
+            const iconValidation = validateBase64Image(icon);
+            if (!iconValidation.isValid) {
+                errors.push(`Bild ungültig: ${iconValidation.error}`);
+            }
+        }
+
+        if (errors.length > 0) {
+            setSaveError(errors.join('; '));
             window.scrollTo({ top: 0, behavior: 'smooth' });
             return false;
         }
-        return true;
-    };
 
-    const onSave = async () => {
+        return true;
+    }; const onSave = async () => {
         setSaving(true);
         setSaveError('');
+
         if (!validateRequiredFields()) {
             setSaving(false);
             return;
         }
+
         const updatedItem = getUpdatedItem();
+
+        console.group('💾 Saving Storage Item');
+        console.log('Item Data:', updatedItem);
+        console.log('Is New:', isNew);
+        console.log('ID:', id);
+        console.groupEnd();
+
         try {
             if (isNew) {
                 await actionHandler({ type: 'ADD_STORAGE_ITEM', storageItem: updatedItem }, dispatch);
+                message.success('Item erfolgreich erstellt');
             } else if (id) {
                 await Promise.all([
                     actionHandler({ type: 'UPDATE_STORAGE_ITEM', storageItem: updatedItem }, dispatch),
                     actionHandler({ type: 'UPDATE_NUTRIENT_ITEM', storageItem: updatedItem }, dispatch),
                 ]);
-                if (store.shoppingCard.find(item => item.name === updatedItem.name || item.name === initialItem.name)) {
-                    await actionHandler({ type: 'UPDATE_CARD_ITEM', basketItems: getBasketModel(updatedItem) }, dispatch);
+
+                // Update shopping card if item exists there
+                const basketItem = store.shoppingCard.find(item =>
+                    item.name === updatedItem.name || item.name === initialItem.name
+                );
+                if (basketItem) {
+                    await actionHandler({
+                        type: 'UPDATE_CARD_ITEM',
+                        basketItems: getBasketModel(updatedItem)
+                    }, dispatch);
                 }
+
+                message.success('Item erfolgreich aktualisiert');
             }
             history(itemsRoute);
         } catch (error: unknown) {
-            let errorMessage = 'Fehler beim Speichern des Items';
-            if (axios.isAxiosError(error)) {
-                errorMessage = error.response?.data?.error || error.message || errorMessage;
-            } else if (error instanceof Error) {
-                errorMessage = error.message;
-            }
-            console.error('Fehler beim Speichern:', error);
+            const errorMessage = handleApiError(error, false);
             setSaveError(errorMessage);
             window.scrollTo({ top: 0, behavior: 'smooth' });
         } finally {
@@ -321,15 +410,43 @@ export default function StorageDetailForm(): ReactElement {
         <div className={css.container}>
             {saveError && (
                 <Alert style={{ marginBottom: 16 }} message={saveError} type="error" showIcon />
-            )}
-            {/* Bildvorschau und Upload */}
+            )}            {/* Enhanced image preview and upload */}
             <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', marginBottom: 16 }}>
                 <Image.PreviewGroup>
-                    <Image width={150} alt={name} src={icon || '/default.png'} />
+                    <Image
+                        width={150}
+                        alt={name || 'Storage Item'}
+                        src={icon ? ensureDataUrlPrefix(icon) : '/default.png'}
+                        placeholder={
+                            <div style={{
+                                width: 150,
+                                height: 150,
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                backgroundColor: '#f5f5f5',
+                                border: '1px solid #d9d9d9',
+                                borderRadius: '6px'
+                            }}>
+                                Bildvorschau
+                            </div>
+                        }
+                        fallback="/default.png"
+                    />
                 </Image.PreviewGroup>
-                <Upload beforeUpload={handleBeforeUpload} showUploadList={false}>
+                <Upload beforeUpload={handleBeforeUpload} showUploadList={false} accept="image/*">
                     <Button icon={<UploadOutlined />}>Bild hochladen</Button>
                 </Upload>
+                {icon && (
+                    <Button
+                        type="link"
+                        size="small"
+                        onClick={() => setIcon('')}
+                        style={{ marginTop: 4 }}
+                    >
+                        Bild entfernen
+                    </Button>
+                )}
             </div>
 
             <div className={css.itemFormCard}>

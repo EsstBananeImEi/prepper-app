@@ -6,25 +6,32 @@
     overflow-y: auto;
 }
 
-/* Balken für das Ein-/Ausklappen */
+/* Balken für das Ein-/Ausklappen - verbessert für Touch */
 .filterToggle {
     display: flex;
     justify-content: space-between;
     align-items: center;
     background: #f0f0f0;
-    padding: 5px;
+    padding: var(--spacing-md, 16px);
     cursor: pointer;
     font-weight: bold;
-    border-radius: 5px;
+    border-radius: var(--border-radius-md, 8px);
     transition: background 0.3s;
+    min-height: var(--touch-target-min, 44px);
+    border: 1px solid #d9d9d9;
 }
 
 .filterToggle>span {
-    font-size: smaller;
+    font-size: var(--font-size-base, 14px);
 }
 
 .filterToggle:hover {
     background: #e0e0e0;
+    border-color: #40a9ff;
+}
+
+.filterToggle:active {
+    background: #d9d9d9;
 }
 
 /* Container für Filter und Sortierung */
