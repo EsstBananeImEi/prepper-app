@@ -110,18 +110,24 @@ export default function NavBar(): ReactElement {
                     {isLoggedIn && (
                         <Menu theme="dark" mode="horizontal" selectedKeys={getSelectedKeysDesktop()} className={style.menu}>
                             <Menu.Item key="storage">
-                                <NavLink to={itemsRoute}>Storage</NavLink>
+                                <NavLink to={itemsRoute}>
+                                    <span className="nav-text">Storage</span>
+                                </NavLink>
                             </Menu.Item>
                             <Menu.Item key="newItem">
-                                <NavLink to={newItemRoute}>Add Item</NavLink>
+                                <NavLink to={newItemRoute}>
+                                    <span className="nav-text">Add Item</span>
+                                </NavLink>
                             </Menu.Item>
                             <Menu.Item key="checklist">
-                                <NavLink to={checklistRoute}>Checkliste</NavLink>
+                                <NavLink to={checklistRoute}>
+                                    <span className="nav-text">Checklist</span>
+                                </NavLink>
                             </Menu.Item>
                             <Menu.Item key="shopping">
                                 <NavLink to={basketRoute}>
+                                    <span className="nav-text">Basket</span>
                                     <Badge offset={[5, -5]} size="small" count={countItems()}>
-                                        <span className="nav-text">Basket</span>
                                     </Badge>
                                 </NavLink>
                             </Menu.Item>

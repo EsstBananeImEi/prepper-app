@@ -23,8 +23,9 @@ export default function StorageCardItem(props: Props): ReactElement {
     const { store, dispatch } = useStore();
     const [amount, setAmount] = useState(storageItem.amount);
 
-    // Ref, um zu tracken, ob es der initiale Render ist
-    const isInitialRender = useRef(true);
+    // Track initial mount and prop changes separately  
+    const isInitialMount = useRef(true);
+    const previousStorageItemId = useRef(storageItem.id);
 
     const onChangeCard = (event: SyntheticEvent, action: Action): void => {
         event.preventDefault();
@@ -81,16 +82,34 @@ export default function StorageCardItem(props: Props): ReactElement {
         };
     }
 
+    // Sync amount state when storageItem changes (e.g., in lists)
     useEffect(() => {
-        if (isInitialRender.current) {
-            // Beim allerersten Render überspringen und den Ref aktualisieren
-            isInitialRender.current = false;
+        if (previousStorageItemId.current !== storageItem.id) {
+            // Different storage item - update amount without triggering API call
+            setAmount(storageItem.amount);
+            previousStorageItemId.current = storageItem.id;
+            isInitialMount.current = true; // Reset for new item
+        }
+    }, [storageItem.id, storageItem.amount]);
+
+    useEffect(() => {
+        // Skip API call on initial mount or when switching between different storage items
+        if (isInitialMount.current) {
+            isInitialMount.current = false;
             return;
         }
-        // Dieser PUT-Request wird nur ausgeführt, wenn sich der Wert von 'amount' ändert, NICHT beim initialen Rendern.
-        const onGoToList = () => history(itemsApi);
-        storageApi('PUT', itemIdApi(storageItem.id), onGoToList, { ...storageItem, amount: amount });
-    }, [amount, history, storageItem]);
+
+        // Only make API call when amount actually changes due to user interaction
+        if (amount !== storageItem.amount) {
+            console.log(`🔧 StorageCardItem: Amount changed for item ${storageItem.id} from ${storageItem.amount} to ${amount}, updating via API`);
+            const onGoToList = () => {
+                console.log(`📍 StorageCardItem: API update complete, but NOT navigating to avoid unwanted redirects`);
+                // Remove automatic navigation - this was causing unwanted redirects
+                // history(itemsApi);
+            };
+            storageApi('PUT', itemIdApi(storageItem.id), onGoToList, { ...storageItem, amount: amount });
+        }
+    }, [amount]); // Only depend on amount
 
     return (
         <Card

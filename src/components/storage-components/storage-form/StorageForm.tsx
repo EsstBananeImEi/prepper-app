@@ -335,7 +335,7 @@ export default function StorageDetailForm(): ReactElement {
                 const repairResult = repairBase64Image(icon);
                 if (repairResult.isValid && repairResult.processedData) {
                     console.log('✅ Image data repaired successfully');
-                    processedIcon = sanitizeBase64ForApi(repairResult.processedData);
+                    processedIcon = ensureDataUrlPrefix(repairResult.processedData);
                 } else {
                     console.error('❌ Could not repair image data:', repairResult.error);
                     // Set empty icon if repair also fails
@@ -360,8 +360,7 @@ export default function StorageDetailForm(): ReactElement {
             nutrients: {
                 description: nutrientDescription.trim(),
                 unit: nutrientUnit.trim(),
-                amount: Number(nutrientAmount) || 100,
-                values: nutrients.map(nutrient => ({
+                amount: Number(nutrientAmount) || 100, values: nutrients.map(nutrient => ({
                     ...nutrient,
                     name: nutrient.name.trim(),
                     color: nutrient.color.trim(),
@@ -369,7 +368,9 @@ export default function StorageDetailForm(): ReactElement {
                 })).filter(nutrient => nutrient.name !== '') // Remove empty nutrients
             },
         };
-    };    // Enhanced validation of required fields
+    }
+
+    // Enhanced validation of required fields
     const validateRequiredFields = (): boolean => {
         const errors: string[] = [];
 

@@ -39,6 +39,88 @@
     transition: color 0.2s ease-in-out;
 }
 
+/* Menu Text Styling */
+.menu .ant-menu-item a {
+    color: #ffffff !important;
+    text-decoration: none;
+}
+
+.menu .ant-menu-item:hover a {
+    color: #1890ff !important;
+}
+
+/* Navigation Text - für Texte wie "Basket" */
+:global(.nav-text) {
+    color: #ffffff !important;
+    font-size: 14px;
+    font-weight: 500;
+}
+
+.menu .ant-menu-item:hover :global(.nav-text) {
+    color: #1890ff !important;
+    transition: color 0.2s ease-in-out;
+}
+
+/* Badge component override for navbar */
+.menu .ant-menu-item .ant-badge,
+.menu .ant-menu-item .ant-badge .ant-badge-count {
+    color: inherit;
+}
+
+.menu .ant-menu-item .ant-badge :global(.nav-text) {
+    color: #ffffff !important;
+    font-size: 14px;
+    font-weight: 500;
+}
+
+.menu .ant-menu-item:hover .ant-badge :global(.nav-text) {
+    color: #1890ff !important;
+}
+
+/* Ensure all badge content inherits proper color */
+.menu .ant-menu-item .ant-badge>* {
+    color: #ffffff !important;
+}
+
+.menu .ant-menu-item:hover .ant-badge>* {
+    color: #1890ff !important;
+}
+
+/* Additional Badge text styling fix */
+.menu .ant-menu-item .ant-badge .ant-badge-status-text,
+.menu .ant-menu-item .ant-badge span:not(.ant-badge-count) {
+    color: #ffffff !important;
+    font-size: 14px;
+    font-weight: 500;
+}
+
+.menu .ant-menu-item:hover .ant-badge .ant-badge-status-text,
+.menu .ant-menu-item:hover .ant-badge span:not(.ant-badge-count) {
+    color: #1890ff !important;
+}
+
+/* Force Badge wrapper to inherit color */
+.menu .ant-menu-item .ant-badge {
+    color: #ffffff !important;
+}
+
+.menu .ant-menu-item:hover .ant-badge {
+    color: #1890ff !important;
+}
+
+/* Final Badge text override - highest specificity */
+.menu .ant-menu-item a .ant-badge span.nav-text,
+.menu .ant-menu-item a .ant-badge span:global(.nav-text) {
+    color: #ffffff !important;
+    font-size: 14px !important;
+    font-weight: 500 !important;
+}
+
+.menu .ant-menu-item:hover a .ant-badge span.nav-text,
+.menu .ant-menu-item:hover a .ant-badge span:global(.nav-text) {
+    color: #1890ff !important;
+}
+
 /* Mobile Navigation */
 .mobileNav {
     display: flex;

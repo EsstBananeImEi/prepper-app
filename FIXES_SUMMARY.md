@@ -17,6 +17,11 @@
 - **Root Cause**: Limited error information and debugging capabilities
 - **Solution**: Advanced error handling with detailed debugging tools
 
+### 4. **🔥 CRITICAL: Unwanted PUT Requests on Page Load**
+
+- **Root Cause**: `useEffect` in `StorageCardItem.tsx` triggering automatic PUT requests when components mounted or amount state initialized
+- **Solution**: Improved `useEffect` logic with proper initial mount detection and storage item tracking
+
 ## New Components & Utilities Created 🔧
 
 ### 📁 `/src/utils/imageUtils.ts`
@@ -48,6 +53,16 @@
   - Log export functionality
 
 ## Enhanced Components 🔨
+
+### 📁 `/src/components/storage-components/storage-list/storage-item/StorageCardItem.tsx`
+
+**🔥 CRITICAL FIX - Unwanted PUT Requests:**
+
+- ✅ **Fixed automatic PUT requests on component mount**
+- ✅ **Improved useEffect logic with proper initial mount detection**
+- ✅ **Added storage item ID tracking to prevent cross-item API calls**
+- ✅ **Separated state synchronization from API calls**
+- ✅ **Only trigger PUT requests for actual user interactions**
 
 ### 📁 `/src/components/storage-components/storage-form/StorageForm.tsx`
 
@@ -136,6 +151,44 @@ catch (error) {
 }
 ```
 
+### **4. 🔥 CRITICAL: Fixed Unwanted PUT Requests on Page Load**
+
+```typescript
+// Before: Problematic useEffect triggering PUT requests on mount
+useEffect(() => {
+    if (isInitialRender.current) {
+        isInitialRender.current = false;
+        return;
+    }
+    storageApi('PUT', itemIdApi(storageItem.id), onGoToList, { ...storageItem, amount: amount });
+}, [amount, storageItem.id]); // Problematic dependencies
+
+// After: Proper initial mount detection and item tracking
+const isInitialMount = useRef(true);
+const previousStorageItemId = useRef(storageItem.id);
+
+// Sync amount when storage item changes without triggering API calls
+useEffect(() => {
+    if (previousStorageItemId.current !== storageItem.id) {
+        setAmount(storageItem.amount);
+        previousStorageItemId.current = storageItem.id;
+        isInitialMount.current = true; // Reset for new item
+    }
+}, [storageItem.id, storageItem.amount]);
+
+// Only trigger API calls for actual user interactions
+useEffect(() => {
+    if (isInitialMount.current) {
+        isInitialMount.current = false;
+        return;
+    }
+    // Only call API when amount actually changes due to user action
+    if (amount !== storageItem.amount) {
+        storageApi('PUT', itemIdApi(storageItem.id), onGoToList, { ...storageItem, amount: amount });
+    }
+}, [amount]); // Only depend on amount
+```
+
 ## Benefits Achieved 📈
 
 ### **For Users:**
@@ -144,6 +197,7 @@ catch (error) {
 - ✅ **Better Error Messages**: Clear, actionable error descriptions
 - ✅ **Improved Performance**: Image compression reduces load times
 - ✅ **Fallback Support**: Graceful handling of missing/invalid images
+- ✅ **🔥 No More Unwanted API Calls**: Page loads are now clean without unnecessary PUT requests
 
 ### **For Developers:**
 
@@ -151,12 +205,14 @@ catch (error) {
 - ✅ **Detailed Error Analysis**: Categorized errors with improvement suggestions
 - ✅ **Performance Metrics**: Request timing and success rate monitoring
 - ✅ **Export Capabilities**: Log export for detailed analysis
+- ✅ **🔥 Clean Component Logic**: Proper useEffect management prevents unwanted API calls
 
 ### **For System Reliability:**
 
 - ✅ **Reduced 400 Errors**: Proper data validation prevents bad requests
 - ✅ **Better Error Recovery**: Enhanced error handling with retry capabilities
 - ✅ **Improved Debugging**: Comprehensive logging for issue resolution
+- ✅ **🔥 Reduced Server Load**: Elimination of unwanted PUT requests improves API performance
 
 ## Development Features 🔍
 
@@ -207,5 +263,11 @@ catch (error) {
    - Monitor request timing in debug panel
    - Test image compression effectiveness
    - Verify memory usage with large images
+
+4. **🔥 PUT Request Testing (CRITICAL):**
+   - Load the home page and monitor Network tab - should see NO PUT requests to `/items/1` or `/items/2`
+   - Navigate to storage list - should see only GET requests initially
+   - Only manual +/- button clicks should trigger PUT requests
+   - Verify no automatic API calls when switching between storage cards
 
 This comprehensive solution addresses the root causes of the 400 errors and provides robust tools for ongoing monitoring and debugging of API issues.
