@@ -3,7 +3,7 @@ import { Input, AutoComplete, Empty, Typography } from 'antd';
 import { SearchOutlined } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
 import { useStore } from '../../store/Store';
-import { StorageModel } from '../storage-components/StorageModel';
+import { BasketModel, StorageModel } from '../storage-components/StorageModel';
 
 const { Text } = Typography;
 
@@ -22,8 +22,8 @@ interface Page {
 interface SearchResult {
     value: string;
     label: React.ReactNode;
-    type: 'storage' | 'emergency' | 'page';
-    data?: StorageModel | EmergencyCategory | Page;
+    type: 'storage' | 'emergency' | 'page' | 'shopping';
+    data?: StorageModel | EmergencyCategory | Page | BasketModel;
 }
 
 const GlobalSearch: React.FC = () => {
@@ -89,6 +89,38 @@ const GlobalSearch: React.FC = () => {
                     data: item
                 }));
             results.push(...storageResults);
+        }
+
+        if (store.shoppingCard) {
+            // Einkaufswagen durchsuchen
+            const shoppingResults = store.shoppingCard
+                .filter((item: BasketModel) =>
+                    item.name.toLowerCase().includes(query) ||
+                    (item.categories && item.categories.some(cat => cat.toLowerCase().includes(query)))
+                )
+                .slice(0, 5) // Limit auf 5 Ergebnisse
+                .map((item: BasketModel) => ({
+                    value: `shopping-${item.id}`,
+                    label: (
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                            <img
+                                src={item.icon || '/default.png'}
+                                alt={item.name}
+                                style={{ width: 20, height: 20, borderRadius: '50%' }}
+                            />
+                            <div>
+                                <Text strong>{item.name}</Text>
+                                <br />
+                                <Text type="secondary" style={{ fontSize: 12 }}>
+                                    Einkaufswagen
+                                </Text>
+                            </div>
+                        </div>
+                    ),
+                    type: 'shopping' as const,
+                    data: item
+                }));
+            results.push(...shoppingResults);
         }
 
         // Emergency-Kategorien durchsuchen
@@ -157,6 +189,11 @@ const GlobalSearch: React.FC = () => {
             case 'page': {
                 const pageData = selected.data as Page;
                 navigate(pageData.path);
+                break;
+            }
+            case 'shopping': {
+                const basketItem = selected.data as BasketModel;
+                navigate(`/basket`);
                 break;
             }
         }

@@ -133,6 +133,7 @@ export type Action =
     | AddStorageItem
     | UpdateStorageItem
     | ForgotPassword;
+
 export function reducer(store: Store, action: Action): Store {
     switch (action.type) {
         case 'ADD_TO_CARD':

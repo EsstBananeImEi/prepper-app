@@ -74,7 +74,7 @@ export default function ShoppingCard(props: Props): ReactElement {
                     <Badge count={countItems(storeageItem.id)} offset={[-20, 20]} style={{ backgroundColor: '#52c41a' }}>
 
                         <Card
-                            style={{ width: 300 }}
+                            style={{ width: 300, minHeight: '145px' }}
                             actions={
                                 [
                                     <MinusCircleOutlined onClick={(e) => onDecreaseAmount(e, storeageItem)} key='minus' />,
@@ -86,9 +86,9 @@ export default function ShoppingCard(props: Props): ReactElement {
                                 <Meta
                                     avatar={<SafeAvatar src={storeageItem.icon} showWarnings={process.env.NODE_ENV === 'development'} />}
                                     title={storeageItem.name}
-                                    description={storeageItem.categories && trimText(storeageItem.categories.join(', '))}
-
+                                    description={(storeageItem.categories && trimText(storeageItem.categories.join(', '))) || <div style={{ minHeight: '22px' }} />}
                                 />
+                                {!storeageItem.categories && <span style={{ height: '1020px' }} />}
                             </Link>
                         </Card>
                     </Badge>

@@ -1,5 +1,5 @@
 import { MinusCircleOutlined, PlusCircleOutlined, ShoppingCartOutlined } from '@ant-design/icons';
-import { Card } from 'antd';
+import { Card, Badge } from 'antd';
 import { BiSolidFridge } from 'react-icons/bi';
 import { BsBookshelf } from 'react-icons/bs';
 import React, { ReactElement, SyntheticEvent, useEffect, useRef, useState } from 'react';
@@ -22,6 +22,7 @@ export default function StorageCardItem(props: Props): ReactElement {
     const history = useNavigate();
     const { store, dispatch } = useStore();
     const [amount, setAmount] = useState(storageItem.amount);
+    const [basketAmount, setBasketAmount] = useState(store.shoppingCard.find(item => item.name === storageItem.name)?.amount || 0);
 
     // Track initial mount and prop changes separately  
     const isInitialMount = useRef(true);
@@ -30,6 +31,7 @@ export default function StorageCardItem(props: Props): ReactElement {
     const onChangeCard = (event: SyntheticEvent, action: Action): void => {
         event.preventDefault();
         actionHandler(action, dispatch); // Deine Aktion, falls benötigt
+        setBasketAmount(prevAmount => parseInt(prevAmount.toString()) + 1)
     };
 
     const getAvailable = () => {
@@ -82,6 +84,12 @@ export default function StorageCardItem(props: Props): ReactElement {
         };
     }
 
+    const onAddToBasket = (e: React.FormEvent) => {
+        e.stopPropagation();
+        onChangeCard(e, { type: 'ADD_TO_CARD', basketItems: getBasketModel(storageItem) });
+        setAmount(prevAmount => parseInt(prevAmount.toString()) + 1);
+    };
+
     // Sync amount state when storageItem changes (e.g., in lists)
     useEffect(() => {
         if (previousStorageItemId.current !== storageItem.id) {
@@ -116,14 +124,22 @@ export default function StorageCardItem(props: Props): ReactElement {
             style={{ width: 300 }}
             actions={[
                 <MinusCircleOutlined onClick={onDecrease} key="minus" />,
-                <ShoppingCartOutlined
-                    style={{ fontSize: '30px', cursor: 'pointer' }}
+                <Badge
                     key={`shopping${storageItem.id}`}
-                    onClick={(e) => {
-                        e.stopPropagation();
-                        onChangeCard(e, { type: 'ADD_TO_CARD', basketItems: getBasketModel(storageItem) });
-                    }}
-                />,
+                    size="default"
+                    count={basketAmount}
+                    offset={[0, 0]}
+                    style={{ backgroundColor: '#52c41a' }}
+                >
+                    <ShoppingCartOutlined
+                        style={{ fontSize: '30px', cursor: 'pointer' }}
+                        key={`shopping${storageItem.id}`}
+                        onClick={(e) => {
+                            e.stopPropagation();
+                            onAddToBasket(e);
+                        }}
+                    />
+                </Badge>,
 
                 <PlusCircleOutlined onClick={onIncrease} key="plus" />
             ]}
@@ -134,7 +150,7 @@ export default function StorageCardItem(props: Props): ReactElement {
                     title={
                         <div style={{ display: 'flex', alignItems: 'center' }}>
                             <span>{storageItem.name}</span>
-                            {getLocationIcon(storageItem.storageLocation) || ""}
+                            <span>{getLocationIcon(storageItem.storageLocation) || ""}</span>
 
                         </div>
                     }

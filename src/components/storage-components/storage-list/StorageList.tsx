@@ -107,10 +107,6 @@ export default function StorageList(): ReactElement {
 
     return (
         <>
-            {/* Suchfeld */}
-            <StorageSearchItem callback={(items: StorageModel[]) => {
-                dispatch({ type: 'INITIAL_STORAGE', storageItems: items })
-            }} />
 
             {/* Balken zum Öffnen/Schließen der Filter */}
             <div className={styles.filterToggle} onClick={() => setShowFilters(!showFilters)}>
@@ -124,6 +120,9 @@ export default function StorageList(): ReactElement {
 
             {showFilters && (
                 <div className={styles.filterSortContainer}>
+                    <StorageSearchItem callback={(items: StorageModel[]) => {
+                        dispatch({ type: 'INITIAL_STORAGE', storageItems: items })
+                    }} />
                     <div className={styles.filterColumn}>
                         <Select
                             className={`${styles.dropdown} ${styles.mySelect}`}

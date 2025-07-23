@@ -1,4 +1,3 @@
-import React, { ReactElement, SyntheticEvent, useState } from 'react';
 import { MinusCircleOutlined, PlusCircleOutlined, ShoppingCartOutlined } from '@ant-design/icons';
 import { Badge, List } from 'antd';
 import { useNavigate } from 'react-router-dom';
@@ -11,6 +10,7 @@ import { BiSolidFridge } from 'react-icons/bi';
 import { BsBookshelf } from 'react-icons/bs';
 import styles from './StorageListItem.module.css';
 import SafeAvatar from '../../../common/SafeAvatar';
+import { ReactElement, SyntheticEvent, useEffect, useState } from 'react';
 
 interface Props {
     storageItem: StorageModel;
@@ -20,6 +20,8 @@ export default function StorageListItem(props: Props): ReactElement {
     const { storageItem } = props;
     const history = useNavigate();
     const { store, dispatch } = useStore();
+
+    const [amount, setAmount] = useState(store.shoppingCard.find(item => item.name === storageItem.name)?.amount || 0);
 
     // Statt einer lokalen amount-Variable greifen wir direkt auf storageItem.amount zu.
     // Aktionen für Bestandsänderungen werden über den actionHandler ausgelöst.
@@ -95,6 +97,7 @@ export default function StorageListItem(props: Props): ReactElement {
     const onAddToBasket = (e: React.FormEvent) => {
         e.stopPropagation();
         onChangeCard(e, { type: 'ADD_TO_CARD', basketItems: getBasketModel(storageItem) });
+        setAmount(prevAmount => parseInt(prevAmount.toString()) + 1);
     };
 
     return (
@@ -110,7 +113,7 @@ export default function StorageListItem(props: Props): ReactElement {
                 <Badge
                     key={`shopping${storageItem.id}`}
                     size="default"
-                    count={store.shoppingCard.filter(item => item.name === storageItem.name).length}
+                    count={amount}
                     offset={[0, 0]}
                     style={{ backgroundColor: '#52c41a' }}
                 >

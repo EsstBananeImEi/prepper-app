@@ -46,7 +46,12 @@ export default function NavBar(): ReactElement {
         return [];
     };
 
-    const countItems = () => store.shoppingCard.length;
+    const countItems = () => {
+        // filter items by unique name and count them
+        const uniqueItems = new Set(store.shoppingCard.map(item => item.name));
+        const items = uniqueItems.size;
+        return items > 0 ? items : null;
+    };
 
     const handleLogout = () => {
         localStorage.removeItem("user");
