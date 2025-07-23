@@ -1,7 +1,7 @@
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import { Typography, Button, Collapse, Alert } from 'antd';
 import { ArrowLeftOutlined } from '@ant-design/icons';
-import React from 'react';
+import React, { useEffect } from 'react';
 import style from './NotfallDetail.module.css';
 
 const { Title, Paragraph } = Typography;
@@ -909,11 +909,25 @@ const detailsContent: Record<string, DetailContent> = {
 export default function NotfallDetail() {
     const { category } = useParams<{ category: string }>();
     const navigate = useNavigate();
+    const location = useLocation();
     const detail = detailsContent[category || "lebensmittel"] || {
         title: "Nicht gefunden",
         image: "",
         content: "Für diese Kategorie liegen derzeit keine Informationen vor.",
     };
+
+    // Behandelt das Scrollen zu Anchor-Links innerhalb der Komponente
+    useEffect(() => {
+        if (location.hash) {
+            const element = document.querySelector(location.hash);
+            if (element) {
+                // Kleine Verzögerung, damit der Content gerendert ist
+                setTimeout(() => {
+                    element.scrollIntoView({ behavior: 'smooth' });
+                }, 100);
+            }
+        }
+    }, [location.hash, category]);
 
     return (
         <div className={style.container}>

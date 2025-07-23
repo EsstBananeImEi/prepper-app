@@ -39,6 +39,88 @@
     transition: color 0.2s ease-in-out;
 }
 
+/* Menu Text Styling */
+.menu .ant-menu-item a {
+    color: #ffffff !important;
+    text-decoration: none;
+}
+
+.menu .ant-menu-item:hover a {
+    color: #1890ff !important;
+}
+
+/* Navigation Text - für Texte wie "Basket" */
+:global(.nav-text) {
+    color: #ffffff !important;
+    font-size: 14px;
+    font-weight: 500;
+}
+
+.menu .ant-menu-item:hover :global(.nav-text) {
+    color: #1890ff !important;
+    transition: color 0.2s ease-in-out;
+}
+
+/* Badge component override for navbar */
+.menu .ant-menu-item .ant-badge,
+.menu .ant-menu-item .ant-badge .ant-badge-count {
+    color: inherit;
+}
+
+.menu .ant-menu-item .ant-badge :global(.nav-text) {
+    color: #ffffff !important;
+    font-size: 14px;
+    font-weight: 500;
+}
+
+.menu .ant-menu-item:hover .ant-badge :global(.nav-text) {
+    color: #1890ff !important;
+}
+
+/* Ensure all badge content inherits proper color */
+.menu .ant-menu-item .ant-badge>* {
+    color: #ffffff !important;
+}
+
+.menu .ant-menu-item:hover .ant-badge>* {
+    color: #1890ff !important;
+}
+
+/* Additional Badge text styling fix */
+.menu .ant-menu-item .ant-badge .ant-badge-status-text,
+.menu .ant-menu-item .ant-badge span:not(.ant-badge-count) {
+    color: #ffffff !important;
+    font-size: 14px;
+    font-weight: 500;
+}
+
+.menu .ant-menu-item:hover .ant-badge .ant-badge-status-text,
+.menu .ant-menu-item:hover .ant-badge span:not(.ant-badge-count) {
+    color: #1890ff !important;
+}
+
+/* Force Badge wrapper to inherit color */
+.menu .ant-menu-item .ant-badge {
+    color: #ffffff !important;
+}
+
+.menu .ant-menu-item:hover .ant-badge {
+    color: #1890ff !important;
+}
+
+/* Final Badge text override - highest specificity */
+.menu .ant-menu-item a .ant-badge span.nav-text,
+.menu .ant-menu-item a .ant-badge span:global(.nav-text) {
+    color: #ffffff !important;
+    font-size: 14px !important;
+    font-weight: 500 !important;
+}
+
+.menu .ant-menu-item:hover a .ant-badge span.nav-text,
+.menu .ant-menu-item:hover a .ant-badge span:global(.nav-text) {
+    color: #1890ff !important;
+}
+
 /* Mobile Navigation */
 .mobileNav {
     display: flex;
@@ -85,21 +167,47 @@
     background: #f0f0f0;
 }
 
-/* User Avatar */
+/* User Avatar - verbesserte Accessibility */
 .userAvatar {
     width: 40px !important;
     height: 40px !important;
     border-radius: 50%;
     margin-top: -5px;
     transition: transform 0.2s ease-in-out;
+    cursor: pointer;
+    /* Mindestgröße für Touch-Targets */
+    min-width: var(--touch-target-min, 44px);
+    min-height: var(--touch-target-min, 44px);
 }
 
 .userAvatar:hover {
     transform: scale(1.1);
 }
 
+.userAvatar:focus {
+    outline: 2px solid var(--color-info, #1890ff);
+    outline-offset: 2px;
+}
+
 /* Badge soll nicht überlappen */
 .badge-icon {
     position: relative;
     top: -2px;
+}
+
+/* Verbesserte Touch-Targets für mobile Navigation */
+.mobileNav .ant-menu-item {
+    min-height: var(--touch-target-min, 44px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.mobileNav .ant-menu-item a {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+    padding: var(--spacing-sm, 8px);
 }

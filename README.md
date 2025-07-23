@@ -13,8 +13,6 @@ Die **PrepperApp** ist eine umfassende Anwendung zur Vorbereitung auf Notfälle 
 - **Dynamische Checklisten**: Erstelle individuelle Listen für verschiedene Notfallszenarien
 - **Vorratsverwaltung**: Behalte den Überblick über Lebensmittel, Medikamente und Ausrüstung
 - **Benachrichtigungen & Erinnerungen**: Erhalte rechtzeitig Hinweise zu ablaufenden Vorräten
-- **Offline-Modus**: Nutzung der App ohne Internetverbindung
-- **Datenexport & -import**: Sichere und teile deine Checklisten problemlos
 
 ## 📱 Technologien
 - **React** (Frontend, ursprünglich als Prüfungsarbeit einer React-Schulung entwickelt)
@@ -45,9 +43,7 @@ python run.py
 Die Anwendung läuft unter `http://127.0.0.1:5000/`
 
 ## 🌍 Deployment
-- **Docker**: Erstelle ein Container-Image und deploye es einfach auf einem Server
 - **Render / Heroku**: Unterstützt einfaches Hosting und automatische Skalierung
-- **AWS / DigitalOcean**: Bereitstellung in der Cloud mit hoher Verfügbarkeit
 
 ## ⚠️ Sicherheitshinweise
 - Speichere sensible Daten wie API-Keys als Umgebungsvariablen

@@ -3,6 +3,7 @@ import { BasketModel, NutrientModel, StorageModel } from "../components/storage-
 import { useStorageApi } from "../hooks/StorageApi";
 import { basketItemsApi, itemsApi } from "../shared/Constants";
 import { UserModel } from "~/shared/Models";
+import { validateAndCleanStorageItems } from "../utils/imageUtils";
 
 // Store Interface
 export interface Store {
@@ -251,13 +252,37 @@ export const useStore = (): StoreContextModel => useContext(StoreContext);
 export function StoreProvider(props: { children: ReactElement, store?: Store }): ReactElement {
     const [store, dispatch] = useReducer(reducer, props.store || initialState);
     const [basketItems, setBasketItems] = useStorageApi<BasketModel[]>('get', localStorage.getItem("user") ? `${basketItemsApi}` : "");
-    const [storageItems, setStorageItems] = useStorageApi<StorageModel[]>('get', localStorage.getItem("user") ? `${itemsApi}` : "");
+    const [storageItems, setStorageItems] = useStorageApi<StorageModel[]>('get', localStorage.getItem("user") ? `${itemsApi}` : ""); useEffect(() => {
+        // Only validate and clean if we actually have items, and avoid infinite loops
+        if (basketItems && basketItems.length > 0) {
+            const cleanedBasketItems = validateAndCleanStorageItems(basketItems);
+            // Only dispatch if the cleaning actually changed something
+            if (JSON.stringify(cleanedBasketItems) !== JSON.stringify(basketItems)) {
+                console.log('Cleaned corrupted basket items');
+                dispatch({ type: 'INITIAL_CARDS', basketItems: cleanedBasketItems });
+            } else {
+                dispatch({ type: 'INITIAL_CARDS', basketItems: basketItems });
+            }
+        } else {
+            dispatch({ type: 'INITIAL_CARDS', basketItems: basketItems });
+        }
+    }, [basketItems, dispatch]);
 
     useEffect(() => {
-        dispatch({ type: 'INITIAL_CARDS', basketItems: basketItems });
-        dispatch({ type: 'INITIAL_STORAGE', storageItems: storageItems });
-
-    }, [basketItems, storageItems, dispatch]);
+        // Only validate and clean if we actually have items, and avoid infinite loops
+        if (storageItems && storageItems.length > 0) {
+            const cleanedStorageItems = validateAndCleanStorageItems(storageItems);
+            // Only dispatch if the cleaning actually changed something
+            if (JSON.stringify(cleanedStorageItems) !== JSON.stringify(storageItems)) {
+                console.log('Cleaned corrupted storage items');
+                dispatch({ type: 'INITIAL_STORAGE', storageItems: cleanedStorageItems });
+            } else {
+                dispatch({ type: 'INITIAL_STORAGE', storageItems: storageItems });
+            }
+        } else {
+            dispatch({ type: 'INITIAL_STORAGE', storageItems: storageItems });
+        }
+    }, [storageItems, dispatch]);
     return (
         <StoreContext.Provider value={{ store, dispatch }}>
             {props.children}

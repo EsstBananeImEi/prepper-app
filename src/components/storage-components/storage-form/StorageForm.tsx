@@ -1,5 +1,5 @@
 import React, { ReactElement, SyntheticEvent, useState, useEffect } from 'react';
-import { Descriptions, Image, Input, Select, Button, Alert, Upload } from 'antd';
+import { Descriptions, Image, Input, Select, Button, Alert, Upload, message } from 'antd';
 import { PlusOutlined, MinusOutlined, UploadOutlined } from '@ant-design/icons';
 import { useNavigate, useParams } from 'react-router-dom';
 import axios from 'axios';
@@ -20,7 +20,16 @@ import { BasketModel, NutrientValueModel, StorageModel } from '../StorageModel';
 import css from './StorageForm.module.css';
 import { NutrientFactory } from '../../../shared/Factories';
 import { actionHandler } from '../../../store/Actions';
-import { i } from 'react-router/dist/development/fog-of-war-CCAcUMgB';
+import {
+    validateBase64Image,
+    fileToBase64,
+    sanitizeBase64ForApi,
+    ensureDataUrlPrefix,
+    compressBase64Image,
+    repairBase64Image,
+    debugImageData
+} from '../../../utils/imageUtils';
+import { handleApiError } from '../../../hooks/useApi';
 
 // No‑Op Callback (anstatt leerer Funktionen)
 const noop = () => {
@@ -89,11 +98,9 @@ export default function StorageDetailForm(): ReactElement {
 
     // Für Speichern & Fehleranzeige
     const [saving, setSaving] = useState(false);
-    const [saveError, setSaveError] = useState<string>('');
-
-    // Bei Laden des Items aus der DB initialisieren wir die States
+    const [saveError, setSaveError] = useState<string>('');    // Bei Laden des Items aus der DB initialisieren wir die States
     useEffect(() => {
-        if (storageItem) {
+        if (storageItem && (!name || name === '')) {  // Only initialize if not already initialized
             setName(storageItem.name);
             setAmount(storageItem.amount.toString());
             setLowestAmount(storageItem.lowestAmount.toString());
@@ -117,32 +124,85 @@ export default function StorageDetailForm(): ReactElement {
                 setNutrients(storageItem.nutrients.values);
             }
         }
+    }, [id]); // Only depend on id, not the entire storageItem
+
+    // Load options once when component mounts
+    useEffect(() => {
         storageApi('GET', optionsCategoriesApi, setDbCategories);
         storageApi('GET', optionsStorageLocationsApi, setDbStorageLocations);
         storageApi('GET', optionsItemUnitsApi, setDbItemUnits);
         storageApi('GET', optionsPackageUnitsApi, setDbPackageUnits);
         storageApi('GET', optionsNutrientUnitsApi, setDbNutrientUnits);
-    }, [storageItem]);
+    }, []); // Run only once
 
 
 
     if (!storageItem && !isNew) {
         return <LoadingSpinner message="Loading storage item..." />;
-    }
+    }    // Enhanced Upload Handler with validation and compression
+    const handleBeforeUpload = async (file: File) => {
+        try {
+            message.loading('Bild wird verarbeitet...', 0);
 
-    // Custom Upload Handler: Wandelt die ausgewählte Bilddatei in einen Base64-String um
-    const handleBeforeUpload = (file: File) => {
-        const reader = new FileReader();
-        reader.onload = () => {
-            const base64String = reader.result as string;
-            setIcon(base64String);
-        };
-        reader.onerror = () => {
-            console.error("Fehler beim Lesen der Datei.");
-        };
-        reader.readAsDataURL(file);
-        // Rückgabe false verhindert den automatischen Upload
-        return false;
+            console.group('🖼️ Image Upload Debug');
+            console.log('File info:', {
+                name: file.name,
+                type: file.type,
+                size: file.size,
+                lastModified: file.lastModified
+            });
+
+            // Validate and convert file to Base64
+            const validationResult = await fileToBase64(file);
+
+            console.log('Validation result:', validationResult);
+
+            if (!validationResult.isValid) {
+                console.error('Validation failed:', validationResult.error);
+                console.groupEnd();
+                message.destroy();
+                message.error(`${validationResult.error || 'Ungültige Bilddaten'} [File: ${file.name}, Type: ${file.type}]`);
+                return false;
+            } let processedImage = validationResult.processedData!;
+
+            // Enhanced debugging with detailed image analysis
+            debugImageData(processedImage, `Upload Handler - ${file.name}`);
+
+            console.log('Processed image info:', {
+                length: processedImage.length,
+                startsWithDataUrl: processedImage.startsWith('data:'),
+                mimeType: processedImage.split(',')[0]
+            });
+
+            // Compress if image is large
+            const imageSizeKB = (processedImage.length * 3) / 4 / 1024;
+            console.log('Image size:', Math.round(imageSizeKB * 100) / 100, 'KB');
+
+            if (imageSizeKB > 500) { // Compress if larger than 500KB
+                try {
+                    console.log('Compressing image...');
+                    processedImage = await compressBase64Image(processedImage, 800, 600, 0.8);
+                    const newSizeKB = (processedImage.length * 3) / 4 / 1024;
+                    console.log('Compressed to:', Math.round(newSizeKB * 100) / 100, 'KB');
+                    message.info('Bild wurde komprimiert für bessere Performance');
+                } catch (compressionError) {
+                    console.warn('Compression failed, using original:', compressionError);
+                }
+            }
+
+            setIcon(processedImage);
+            console.log('Image set successfully');
+            console.groupEnd();
+            message.destroy();
+            message.success('Bild erfolgreich geladen');
+        } catch (error) {
+            console.error('Image processing error:', error);
+            console.groupEnd();
+            message.destroy();
+            message.error('Fehler beim Verarbeiten des Bildes');
+        }
+
+        return false; // Prevent automatic upload
     };
 
     // Nutrient-Handler (unverändert)
@@ -225,74 +285,208 @@ export default function StorageDetailForm(): ReactElement {
             updated[nutrientIndex] = nutrient;
             return updated;
         });
-    };
+    };    // Beim Speichern werden numerische Werte konvertiert und Daten validiert
+    const getUpdatedItem = (): StorageModel => {
+        // Validate and sanitize icon data for API
+        let processedIcon = '';
+        if (icon) {
+            console.group('🔧 Processing Icon for API');
+            console.log('Original icon length:', icon.length);
+            console.log('Icon starts with data URL:', icon.startsWith('data:'));
 
-    // Beim Speichern werden numerische Werte konvertiert
-    const getUpdatedItem = (): StorageModel => ({
-        ...initialItem,
-        name,
-        amount: Number(amount),
-        lowestAmount: Number(lowestAmount),
-        midAmount: Number(midAmount),
-        unit,
-        packageQuantity: packageQuantity !== '' ? Number(packageQuantity) : undefined,
-        packageUnit,
-        storageLocation,
-        categories,
-        icon, // icon als Base64-String
-        nutrients: {
-            description: nutrientDescription,
-            unit: nutrientUnit,
-            amount: Number(nutrientAmount),
-            values: nutrients,
-        },
-    });
+            const iconValidation = validateBase64Image(icon); console.log('Icon validation result:', iconValidation); if (iconValidation.isValid) {
+                // EXPERIMENTAL: Try data URL format first since backend might expect it
+                // Many backends expect the full data URL instead of just Base64
+                processedIcon = ensureDataUrlPrefix(iconValidation.processedData || icon);
+                console.log('Processed icon with data URL prefix');
+                console.log('Processed icon length:', processedIcon.length);
+                console.log('First 50 chars:', processedIcon.substring(0, 50));
 
-    // Validierung der Pflichtfelder: Name, Amount, Unit, Storage Location
+                // Additional debugging: Test what backend might expect
+                console.group('🔬 Backend Format Testing'); console.log('Option 1 - With data URL (NEW APPROACH):', processedIcon.substring(0, 50) + '...');
+                console.log('Option 2 - Pure Base64 (old approach):', sanitizeBase64ForApi(processedIcon).substring(0, 30) + '...');
+                console.log('Option 3 - Original icon:', icon.substring(0, 50) + '...');
+
+                // Test if it's a valid image format
+                try {
+                    const binaryTest = window.atob(processedIcon.substring(0, 20));
+                    const bytes = new Uint8Array(binaryTest.length);
+                    for (let i = 0; i < binaryTest.length; i++) {
+                        bytes[i] = binaryTest.charCodeAt(i);
+                    }
+
+                    // Check image signature
+                    if (bytes[0] === 0xFF && bytes[1] === 0xD8) {
+                        console.log('✅ Detected JPEG format');
+                    } else if (bytes[0] === 0x89 && bytes[1] === 0x50) {
+                        console.log('✅ Detected PNG format');
+                    } else {
+                        console.warn('❓ Unknown image format, first bytes:', Array.from(bytes.slice(0, 8)).map(b => b.toString(16).padStart(2, '0')).join(' '));
+                    }
+                } catch (e) {
+                    console.error('❌ Cannot decode Base64 for format detection:', e);
+                }
+                console.groupEnd();
+            } else {
+                console.warn('Invalid icon data, attempting repair:', iconValidation.error);
+                console.warn('Icon preview:', icon.substring(0, 100));
+
+                // Try to repair the image data
+                const repairResult = repairBase64Image(icon);
+                if (repairResult.isValid && repairResult.processedData) {
+                    console.log('✅ Image data repaired successfully');
+                    processedIcon = ensureDataUrlPrefix(repairResult.processedData);
+                } else {
+                    console.error('❌ Could not repair image data:', repairResult.error);
+                    // Set empty icon if repair also fails
+                    processedIcon = '';
+                }
+            }
+            console.groupEnd();
+        }
+
+        return {
+            ...initialItem,
+            name: name.trim(),
+            amount: Number(amount) || 0,
+            lowestAmount: Number(lowestAmount) || 0,
+            midAmount: Number(midAmount) || 0,
+            unit: unit.trim(),
+            packageQuantity: packageQuantity && packageQuantity.trim() !== '' ? Number(packageQuantity) : undefined,
+            packageUnit: packageUnit.trim(),
+            storageLocation: storageLocation.trim(),
+            categories: categories.filter(cat => cat && cat.trim() !== ''), // Remove empty categories
+            icon: processedIcon,
+            nutrients: {
+                description: nutrientDescription.trim(),
+                unit: nutrientUnit.trim(),
+                amount: Number(nutrientAmount) || 100, values: nutrients.map(nutrient => ({
+                    ...nutrient,
+                    name: nutrient.name.trim(),
+                    color: nutrient.color.trim(),
+                    values: nutrient.values.filter(val => val.typ && val.typ.trim() !== '') // Remove empty values
+                })).filter(nutrient => nutrient.name !== '') // Remove empty nutrients
+            },
+        };
+    }
+
+    // Enhanced validation of required fields
     const validateRequiredFields = (): boolean => {
-        if (
-            name.trim() === '' ||
-            amount.trim() === '' ||
-            unit.trim() === ''
-        ) {
-            setSaveError(
-                'Bitte füllen Sie alle Pflichtfelder aus: Name, Amount und Unit'
-            );
+        const errors: string[] = [];
+
+        if (!name || name.trim() === '') {
+            errors.push('Name ist erforderlich');
+        }
+
+        if (!amount || amount.trim() === '' || isNaN(Number(amount)) || Number(amount) < 0) {
+            errors.push('Gültige Menge ist erforderlich');
+        }
+
+        if (!unit || unit.trim() === '') {
+            errors.push('Einheit ist erforderlich');
+        }
+
+        // Validate numeric fields
+        if (lowestAmount && (isNaN(Number(lowestAmount)) || Number(lowestAmount) < 0)) {
+            errors.push('Minimaler Warn-Wert muss eine gültige Zahl sein');
+        }
+
+        if (midAmount && (isNaN(Number(midAmount)) || Number(midAmount) < 0)) {
+            errors.push('Mittlerer Warn-Wert muss eine gültige Zahl sein');
+        }
+
+        if (packageQuantity && packageQuantity.trim() !== '' &&
+            (isNaN(Number(packageQuantity)) || Number(packageQuantity) <= 0)) {
+            errors.push('Packungsgröße muss eine positive Zahl sein');
+        }
+
+        // Validate icon if present
+        if (icon && icon.trim() !== '') {
+            const iconValidation = validateBase64Image(icon);
+            if (!iconValidation.isValid) {
+                errors.push(`Bild ungültig: ${iconValidation.error}`);
+            }
+        }
+
+        if (errors.length > 0) {
+            setSaveError(errors.join('; '));
             window.scrollTo({ top: 0, behavior: 'smooth' });
             return false;
         }
-        return true;
-    };
 
-    const onSave = async () => {
+        return true;
+    }; const onSave = async () => {
         setSaving(true);
         setSaveError('');
+
         if (!validateRequiredFields()) {
             setSaving(false);
             return;
         }
+
         const updatedItem = getUpdatedItem();
+
+        console.group('💾 Saving Storage Item');
+        console.log('Item Data:', updatedItem);
+        console.log('Is New:', isNew);
+        console.log('ID:', id);
+
+        // Detailed debugging for icon
+        if (updatedItem.icon) {
+            console.group('🖼️ Icon Details for Save');
+            console.log('Icon length:', updatedItem.icon.length);
+            console.log('First 50 chars:', updatedItem.icon.substring(0, 50));
+            console.log('Last 50 chars:', updatedItem.icon.substring(Math.max(0, updatedItem.icon.length - 50)));
+            console.log('Contains data URL prefix:', updatedItem.icon.startsWith('data:'));
+
+            // Test Base64 validity
+            try {
+                const testData = updatedItem.icon.startsWith('data:') ? updatedItem.icon.split(',')[1] : updatedItem.icon;
+                window.atob(testData.substring(0, Math.min(100, testData.length)));
+                console.log('✅ Icon Base64 is valid');
+            } catch (error) {
+                console.error('❌ Icon Base64 is invalid:', error);
+            }
+            console.groupEnd();
+        }
+        console.groupEnd();
+
         try {
             if (isNew) {
                 await actionHandler({ type: 'ADD_STORAGE_ITEM', storageItem: updatedItem }, dispatch);
+                message.success('Item erfolgreich erstellt');
             } else if (id) {
                 await Promise.all([
                     actionHandler({ type: 'UPDATE_STORAGE_ITEM', storageItem: updatedItem }, dispatch),
                     actionHandler({ type: 'UPDATE_NUTRIENT_ITEM', storageItem: updatedItem }, dispatch),
                 ]);
-                if (store.shoppingCard.find(item => item.name === updatedItem.name || item.name === initialItem.name)) {
-                    await actionHandler({ type: 'UPDATE_CARD_ITEM', basketItems: getBasketModel(updatedItem) }, dispatch);
+
+                // Update shopping card if item exists there
+                const basketItem = store.shoppingCard.find(item =>
+                    item.name === updatedItem.name || item.name === initialItem.name
+                );
+                if (basketItem) {
+                    await actionHandler({
+                        type: 'UPDATE_CARD_ITEM',
+                        basketItems: getBasketModel(updatedItem)
+                    }, dispatch);
                 }
+
+                message.success('Item erfolgreich aktualisiert');
             }
             history(itemsRoute);
         } catch (error: unknown) {
-            let errorMessage = 'Fehler beim Speichern des Items';
-            if (axios.isAxiosError(error)) {
-                errorMessage = error.response?.data?.error || error.message || errorMessage;
-            } else if (error instanceof Error) {
-                errorMessage = error.message;
+            console.group('🚨 Save Error Details');
+            console.error('Error object:', error);
+            console.error('Error type:', typeof error);
+            console.error('Error constructor:', error?.constructor?.name);
+            if (error instanceof Error) {
+                console.error('Error message:', error.message);
+                console.error('Error stack:', error.stack);
             }
-            console.error('Fehler beim Speichern:', error);
+            console.groupEnd();
+
+            const errorMessage = handleApiError(error, false);
             setSaveError(errorMessage);
             window.scrollTo({ top: 0, behavior: 'smooth' });
         } finally {
@@ -321,15 +515,43 @@ export default function StorageDetailForm(): ReactElement {
         <div className={css.container}>
             {saveError && (
                 <Alert style={{ marginBottom: 16 }} message={saveError} type="error" showIcon />
-            )}
-            {/* Bildvorschau und Upload */}
+            )}            {/* Enhanced image preview and upload */}
             <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', marginBottom: 16 }}>
                 <Image.PreviewGroup>
-                    <Image width={150} alt={name} src={icon || '/default.png'} />
+                    <Image
+                        width={150}
+                        alt={name || 'Storage Item'}
+                        src={icon ? ensureDataUrlPrefix(icon) : '/default.png'}
+                        placeholder={
+                            <div style={{
+                                width: 150,
+                                height: 150,
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                backgroundColor: '#f5f5f5',
+                                border: '1px solid #d9d9d9',
+                                borderRadius: '6px'
+                            }}>
+                                Bildvorschau
+                            </div>
+                        }
+                        fallback="/default.png"
+                    />
                 </Image.PreviewGroup>
-                <Upload beforeUpload={handleBeforeUpload} showUploadList={false}>
+                <Upload beforeUpload={handleBeforeUpload} showUploadList={false} accept="image/*">
                     <Button icon={<UploadOutlined />}>Bild hochladen</Button>
                 </Upload>
+                {icon && (
+                    <Button
+                        type="link"
+                        size="small"
+                        onClick={() => setIcon('')}
+                        style={{ marginTop: 4 }}
+                    >
+                        Bild entfernen
+                    </Button>
+                )}
             </div>
 
             <div className={css.itemFormCard}>

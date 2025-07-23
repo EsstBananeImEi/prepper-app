@@ -6,16 +6,19 @@ import {
     UserOutlined,
     LogoutOutlined,
     ProfileOutlined,
-    CheckSquareOutlined
+    CheckSquareOutlined,
+    BugOutlined
 } from '@ant-design/icons';
-import { Badge, Layout, Menu, Avatar, Dropdown, Card, Typography } from 'antd';
-import React, { ReactElement, useEffect } from 'react';
+import { Badge, Layout, Menu, Avatar, Dropdown, Card, Typography, Button } from 'antd';
+import React, { ReactElement, useEffect, useState } from 'react';
 import { NavLink, useLocation, useNavigate } from "react-router-dom";
 import { useDemensions } from '../../hooks/StorageApi';
 import { homeRoute, basketRoute, itemsRoute, newItemRoute, userApi, loginApi, checklistRoute } from '../../shared/Constants';
 import logo from '../../static/images/prepper-app.svg';
 import { useStore } from '../../store/Store';
 import style from './NavBar.module.css';
+import GlobalSearch from '../search/GlobalSearch';
+import ApiDebugPanel from '../debug/ApiDebugPanel';
 
 const { Text } = Typography;
 
@@ -27,6 +30,7 @@ export default function NavBar(): ReactElement {
     const navigate = useNavigate();
     const isLoggedIn = !!store.user;
     const [selectedKeys, setSelectedKeys] = React.useState<string[]>([]);
+    const [debugPanelVisible, setDebugPanelVisible] = useState(false);
 
     useEffect(() => {
         setSelectedKeys(getSelectedKeysDesktop());
@@ -75,6 +79,15 @@ export default function NavBar(): ReactElement {
                         <Menu.Item key="logout" icon={<LogoutOutlined />} onClick={handleLogout}>
                             Logout
                         </Menu.Item>
+                        {process.env.NODE_ENV === 'development' && (
+                            <Menu.Item
+                                key="debug"
+                                icon={<BugOutlined />}
+                                onClick={() => setDebugPanelVisible(true)}
+                            >
+                                API Debug
+                            </Menu.Item>
+                        )}
                     </Menu>
                 </>
             ) : (
@@ -97,23 +110,37 @@ export default function NavBar(): ReactElement {
                     {isLoggedIn && (
                         <Menu theme="dark" mode="horizontal" selectedKeys={getSelectedKeysDesktop()} className={style.menu}>
                             <Menu.Item key="storage">
-                                <NavLink to={itemsRoute}>Storage</NavLink>
+                                <NavLink to={itemsRoute}>
+                                    <span className="nav-text">Storage</span>
+                                </NavLink>
                             </Menu.Item>
                             <Menu.Item key="newItem">
-                                <NavLink to={newItemRoute}>Add Item</NavLink>
+                                <NavLink to={newItemRoute}>
+                                    <span className="nav-text">Add Item</span>
+                                </NavLink>
                             </Menu.Item>
                             <Menu.Item key="checklist">
-                                <NavLink to={checklistRoute}>Checkliste</NavLink>
+                                <NavLink to={checklistRoute}>
+                                    <span className="nav-text">Checklist</span>
+                                </NavLink>
                             </Menu.Item>
                             <Menu.Item key="shopping">
                                 <NavLink to={basketRoute}>
+                                    <span className="nav-text">Basket</span>
                                     <Badge offset={[5, -5]} size="small" count={countItems()}>
-                                        <span className="nav-text">Basket</span>
                                     </Badge>
                                 </NavLink>
                             </Menu.Item>
                         </Menu>
                     )}
+
+                    {/* Globale Suche für Desktop */}
+                    {isLoggedIn && (
+                        <div style={{ marginRight: 'var(--spacing-md)', flex: '0 0 300px' }}>
+                            <GlobalSearch />
+                        </div>
+                    )}
+
                     {isLoggedIn ? (
                         <Dropdown overlay={userMenu} trigger={['click']} placement="bottomRight">
                             <div className={style.userMenuMobile}>
@@ -192,8 +219,25 @@ export default function NavBar(): ReactElement {
                             </NavLink>
                         </div>
                     )}
+
+                    {/* Debug button for development */}
+                    {process.env.NODE_ENV === 'development' && (
+                        <Button
+                            type="text"
+                            icon={<BugOutlined />}
+                            onClick={() => setDebugPanelVisible(true)}
+                            style={{ color: 'white', marginLeft: 8 }}
+                            title="API Debug Panel"
+                        />
+                    )}
                 </div>
             )}
+
+            {/* Debug Panel */}
+            <ApiDebugPanel
+                visible={debugPanelVisible}
+                onClose={() => setDebugPanelVisible(false)}
+            />
         </Header>
     );
 }

@@ -9,19 +9,26 @@ import Layout from './Layout';
 import { StoreProvider } from '../store/Store';
 import ScrollToTop from './ScrollToTop';
 import HideRoutes from './HideRoutes';
+import ErrorBoundary from './error-boundary/ErrorBoundary';
+import { usePerformanceMonitoring, useMemoryMonitoring } from '../hooks/usePerformance';
 
 function App(): ReactElement {
+    // Performance-Monitoring in Development
+    usePerformanceMonitoring();
+    useMemoryMonitoring();
 
     return (
-        <StoreProvider>
-            <Router>
-                <ScrollToTop />
-                <HideRoutes />
-                <Layout>
-                    <Routes />
-                </Layout>
-            </Router>
-        </StoreProvider >
+        <ErrorBoundary>
+            <StoreProvider>
+                <Router>
+                    <ScrollToTop />
+                    {/* <HideRoutes /> */}
+                    <Layout>
+                        <Routes />
+                    </Layout>
+                </Router>
+            </StoreProvider>
+        </ErrorBoundary>
     )
 }
 

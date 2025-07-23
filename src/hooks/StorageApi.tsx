@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react';
 import '../index.css';
 import { baseApiUrl } from '../shared/Constants';
 import { Dimension, Setter } from '../types/Types';
+import { createApiTimer, formatApiError } from '../utils/apiDebugger';
 
 const api = axios.create({
     baseURL: baseApiUrl,
@@ -45,12 +46,27 @@ api.interceptors.response.use(
 
 export default api;
 
-// storageApi: Führt eine API-Anfrage aus und übergibt das Ergebnis an den Callback
+// Enhanced storageApi with debugging and better error handling
 export function storageApi<T>(method: Method, path: string, callback: Setter<T>, data = {}): Promise<void> {
+    const timer = createApiTimer(method, path);
+
     return api({ method, url: path, data })
         .then((response: AxiosResponse) => {
+            timer.finish(response.status);
             callback(response.data);
-        }).catch(error => {
+        })
+        .catch(error => {
+            const errorMessage = formatApiError(error);
+            timer.finish(error.response?.status, errorMessage);
+
+            console.error('StorageAPI Error:', {
+                method,
+                path,
+                error: errorMessage,
+                status: error.response?.status,
+                data: error.response?.data
+            });
+
             return Promise.reject(error);
         });
 }

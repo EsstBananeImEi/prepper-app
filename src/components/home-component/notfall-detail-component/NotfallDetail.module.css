@@ -23,15 +23,50 @@ p {
 /* Responsives Design für kleinere Bildschirme */
 @media (max-width: 600px) {
     .container {
-        padding: 16px;
+        padding: var(--spacing-md, 16px);
+        margin: 0 var(--spacing-sm, 8px);
     }
 
     h2 {
-        font-size: 22px;
+        font-size: var(--font-size-xl, 18px);
     }
 
-    p {
-        font-size: 14px;
+    h3 {
+        font-size: var(--font-size-lg, 16px);
+    }
+
+    h4 {
+        font-size: var(--font-size-base, 14px);
+    }
+
+    p,
+    li {
+        font-size: var(--font-size-sm, 12px);
+        line-height: 1.5;
+    }
+
+    /* Bessere Touch-Targets für Links */
+    a {
+        padding: var(--spacing-xs, 4px);
+        margin: var(--spacing-xs, 4px) 0;
+        display: inline-block;
+        min-height: var(--touch-target-min, 44px);
+        display: flex;
+        align-items: center;
+    }
+
+    /* Verbesserte Tabellen für mobile Geräte */
+    .fullWidthTable {
+        font-size: var(--font-size-sm, 12px);
+        overflow-x: auto;
+        display: block;
+        white-space: nowrap;
+    }
+
+    .fullWidthTable th,
+    .fullWidthTable td {
+        padding: var(--spacing-xs, 4px);
+        min-width: 80px;
     }
 }
 

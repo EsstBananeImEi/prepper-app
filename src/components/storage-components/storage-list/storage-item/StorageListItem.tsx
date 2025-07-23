@@ -1,6 +1,6 @@
 import React, { ReactElement, SyntheticEvent, useState } from 'react';
 import { MinusCircleOutlined, PlusCircleOutlined, ShoppingCartOutlined } from '@ant-design/icons';
-import { Avatar, Badge, List } from 'antd';
+import { Badge, List } from 'antd';
 import { useNavigate } from 'react-router-dom';
 import { pluralFormFactory } from '../../../../shared/Factories';
 import { actionHandler } from '../../../../store/Actions';
@@ -10,6 +10,7 @@ import { StorageModel } from '../../StorageModel';
 import { BiSolidFridge } from 'react-icons/bi';
 import { BsBookshelf } from 'react-icons/bs';
 import styles from './StorageListItem.module.css';
+import SafeAvatar from '../../../common/SafeAvatar';
 
 interface Props {
     storageItem: StorageModel;
@@ -72,11 +73,15 @@ export default function StorageListItem(props: Props): ReactElement {
 
     const onIncrease = (e: React.FormEvent) => {
         e.stopPropagation();
+        console.log(`🔧 Manual increase triggered for item ${storageItem.id} (${storageItem.name})`);
+        console.trace('Increase action call stack');
         actionHandler({ type: 'INCREASE_STORAGE_ITEM', storageItem: { ...storageItem, amount: storageItem.amount + 1 } }, dispatch);
     };
 
     const onDecrease = (e: React.FormEvent) => {
         e.stopPropagation();
+        console.log(`🔧 Manual decrease triggered for item ${storageItem.id} (${storageItem.name})`);
+        console.trace('Decrease action call stack');
         actionHandler({ type: 'DECREASE_STORAGE_ITEM', storageItem: { ...storageItem, amount: storageItem.amount - 1 } }, dispatch);
     };
     const getBasketModel = (item: StorageModel) => ({
@@ -122,7 +127,7 @@ export default function StorageListItem(props: Props): ReactElement {
             ]}
         >
             <List.Item.Meta
-                avatar={<Avatar src={storageItem.icon || '/default.png'} />}
+                avatar={<SafeAvatar src={storageItem.icon} showWarnings={process.env.NODE_ENV === 'development'} />}
                 title={
                     <div className={styles.metaTitleContainer}>
                         <span>{storageItem.name}</span>

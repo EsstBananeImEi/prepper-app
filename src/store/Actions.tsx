@@ -1,9 +1,20 @@
 import axios, { AxiosResponse, Method } from 'axios';
 import { baseApiUrl, itemsRoute, nutrientsApi } from '../shared/Constants';
 import { Action, AddToShoppingCard, IncreaseAmount, DecreaseAmount, ClearItemCard, LoginUser, RegisterUser, EditUser, IncreaseStorageItem, DecreaseStorageItem, AddStorageItem, DeleteStorageItem, UpdateStorageItem, UpdateNutrientItem, UpdateCardItem, ForgotPassword } from './Store';
+import { validateBase64Image, debugImageData } from '../utils/imageUtils';
+import { apiDebugger } from '../utils/apiDebugger';
 
 export const actionHandler = (action: Action, callback: React.Dispatch<Action>): Promise<void> => {
-    console.log('actionHandler', action);
+    console.log('actionHandler called with action:', action);
+
+    // Add stack trace for automatic storage updates to help debug
+    if (action.type === 'INCREASE_STORAGE_ITEM' || action.type === 'DECREASE_STORAGE_ITEM' || action.type === 'UPDATE_STORAGE_ITEM') {
+        console.group(`🔍 Debugging Storage Action: ${action.type}`);
+        console.log('Action details:', action);
+        console.trace('Call stack for this storage action');
+        console.groupEnd();
+    }
+
     switch (action.type) {
         case 'ADD_TO_CARD':
             return sendRequest('POST', `/basket`, action, callback);
@@ -46,22 +57,34 @@ function sendRequest(
 ): Promise<void> {
     const userData = localStorage.getItem("user");
     const token = userData ? JSON.parse(userData).access_token : null;
-    console.log('sendRequest', action);
+
+    let requestData: Partial<typeof action.basketItems> = { ...action.basketItems };
+    if (method === 'POST') {
+        const { id, ...dataWithoutId } = requestData;
+        requestData = dataWithoutId;
+    }
+
+    console.log('🛒 Basket API Request:', { method, path, data: requestData });
+
     return axios({
         method,
         url: `${baseApiUrl}${path}`,
-        data: { ...action.basketItems, id: 0 },
-        timeout: 6000,
-        headers: token ? { "Authorization": `Bearer ${token}` } : {},
+        data: requestData,
+        timeout: 8000,
+        headers: {
+            'Content-Type': 'application/json',
+            ...(token ? { "Authorization": `Bearer ${token}` } : {}),
+        },
     })
         .then((response: AxiosResponse) => {
-            console.log('sendRequest response', response);
+            console.log('✅ Basket API Success:', response.data);
             if (response.config.method?.toLowerCase() === 'post' || response.config.method?.toLowerCase() === 'put') {
                 action = { ...action, basketItems: response.data };
             }
             callback(action);
         })
         .catch((error) => {
+            console.error('❌ Basket API Error:', error.response?.data || error.message);
             return Promise.reject(error);
         });
 }
@@ -73,21 +96,132 @@ function sendStorageRequest(
     callback: React.Dispatch<Action>
 ): Promise<void> {
     const userData = localStorage.getItem("user");
-    const token = userData ? JSON.parse(userData).access_token : null;
+    const token = userData ? JSON.parse(userData).access_token : null;    // Prepare data for API - ensure proper format
+    let requestData: Partial<typeof action.storageItem> = { ...action.storageItem };
+
+    // For new items, remove ID from request
+    if (method === 'POST') {
+        const { id, ...dataWithoutId } = requestData;
+        requestData = dataWithoutId;
+    }    // Additional validation for icon data before API call
+    if (requestData.icon) {
+        console.group('🔍 Icon Validation Before API Call');
+        console.log('Icon length:', requestData.icon.length);
+        console.log('Icon preview:', requestData.icon.substring(0, 50));
+
+        // Enhanced debugging with detailed image analysis
+        debugImageData(requestData.icon, `API Request - ${method} ${path}`);
+
+        // If icon looks like it might be a data URL (common mistake), strip the prefix
+        if (requestData.icon.startsWith('data:image/')) {
+            console.warn('Icon contains data URL prefix, this might cause API errors');
+            console.log('Original icon starts with:', requestData.icon.substring(0, 30));
+            // The sanitizeBase64ForApi should have already handled this, but double-check
+        }
+
+        // Check if it's valid base64
+        try {
+            if (requestData.icon.length > 0) {
+                window.atob(requestData.icon.substring(0, Math.min(requestData.icon.length, 100)));
+                console.log('✅ Icon appears to be valid Base64');
+            }
+        } catch (error) {
+            console.error('❌ Icon is not valid Base64:', error);
+            console.error('This will likely cause API errors');
+        }
+        console.groupEnd();
+    }
+
+    // Log request details for debugging
+    console.group('🌐 Storage API Request');
+    console.log('Method:', method);
+    console.log('URL:', `${baseApiUrl}${path}`);
+    console.log('Data keys:', Object.keys(requestData));
+    console.log('Has Icon:', !!requestData.icon);
+    console.log('Icon length:', requestData.icon?.length || 0); console.log('Has Token:', !!token);
+    console.groupEnd();
+
+    const startTime = Date.now();
+    const requestUrl = `${baseApiUrl}${path}`;
+
     return axios({
         method,
-        url: `${baseApiUrl}${path}`,
-        data: { ...action.storageItem, id: 0 },
-        timeout: 3500,
-        headers: token ? { "Authorization": `Bearer ${token}` } : {},
+        url: requestUrl,
+        data: requestData,
+        timeout: 10000, // Increased timeout
+        headers: {
+            'Content-Type': 'application/json',
+            ...(token ? { "Authorization": `Bearer ${token}` } : {}),
+        },
+    }).then((response: AxiosResponse) => {
+        const duration = Date.now() - startTime;
+
+        // Log to API debugger
+        apiDebugger.logRequest({
+            timestamp: new Date().toISOString(),
+            method: method.toUpperCase(),
+            url: requestUrl,
+            status: response.status,
+            duration,
+            data: response.data
+        });
+
+        console.group('✅ Storage API Response');
+        console.log('Status:', response.status);
+        console.log('Response Data:', response.data);
+        console.groupEnd();
+
+        // Check if the response contains an error message even with 200 status
+        if (response.data && typeof response.data === 'string' &&
+            (response.data.includes('Ungültige Bilddaten') ||
+                response.data.includes('Bildformat konnte nicht verarbeitet werden') ||
+                response.data.includes('error') ||
+                response.data.includes('Error'))) {
+
+            console.group('⚠️ API Response contains error message');
+            console.error('Error in successful response:', response.data);
+            console.error('This indicates backend validation failed');
+            console.groupEnd();
+
+            // Log the error to API debugger
+            apiDebugger.logRequest({
+                timestamp: new Date().toISOString(),
+                method: method.toUpperCase(),
+                url: requestUrl,
+                status: response.status,
+                duration,
+                error: `Backend validation error: ${response.data}`,
+                data: response.data
+            });
+
+            // Treat this as an error even though status is 200
+            return Promise.reject(new Error(`Backend validation error: ${response.data}`));
+        }
+
+        if (response.config.method?.toLowerCase() === 'post' || response.config.method?.toLowerCase() === 'put') {
+            action = { ...action, storageItem: response.data };
+        }
+        callback(action);
     })
-        .then((response: AxiosResponse) => {
-            if (response.config.method?.toLowerCase() === 'post' || response.config.method?.toLowerCase() === 'put') {
-                action = { ...action, storageItem: response.data };
-            }
-            callback(action);
-        })
         .catch((error) => {
+            const duration = Date.now() - startTime;
+
+            // Log to API debugger
+            apiDebugger.logRequest({
+                timestamp: new Date().toISOString(),
+                method: method.toUpperCase(),
+                url: requestUrl,
+                status: error.response?.status,
+                duration,
+                error: error.message || 'Unknown error',
+                data: error.response?.data
+            });
+
+            console.group('❌ Storage API Error');
+            console.error('Status:', error.response?.status);
+            console.error('Response:', error.response?.data);
+            console.error('Request Data:', requestData);
+            console.groupEnd();
             return Promise.reject(error);
         });
 }

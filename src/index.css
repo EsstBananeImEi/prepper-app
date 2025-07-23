@@ -2,10 +2,63 @@
 @import '~antd/dist/antd.css';
 @import '~antd-button-color/dist/css/style.css';
 
+/* Globale CSS-Variablen für konsistente Abstände und Farben */
+:root {
+    /* Spacing System */
+    --spacing-xs: 4px;
+    --spacing-sm: 8px;
+    --spacing-md: 16px;
+    --spacing-lg: 24px;
+    --spacing-xl: 32px;
+    --spacing-xxl: 48px;
+
+    /* Color System - verbesserte Kontraste für Accessibility */
+    --color-success: #52c41a;
+    --color-warning: #fa8c16;
+    --color-error: #ff4d4f;
+    --color-info: #1890ff;
+
+    /* Status Colors mit besseren Kontrasten */
+    --color-high-amount: #389e0d;
+    --color-mid-amount: #d46b08;
+    --color-low-amount: #cf1322;
+
+    /* Typography */
+    --font-size-sm: 12px;
+    --font-size-base: 14px;
+    --font-size-lg: 16px;
+    --font-size-xl: 18px;
+    --font-size-xxl: 20px;
+
+    /* Touch Targets */
+    --touch-target-min: 44px;
+
+    /* Border Radius */
+    --border-radius-sm: 4px;
+    --border-radius-md: 8px;
+    --border-radius-lg: 12px;
+}
+
 html {
     -webkit-text-size-adjust: 100%;
 }
 
 #root {
     height: 100%;
+}
+
+/* Globale Verbesserungen für bessere Accessibility */
+* {
+    box-sizing: border-box;
+}
+
+/* Fokus-Sichtbarkeit verbessern */
+*:focus {
+    outline: 2px solid var(--color-info);
+    outline-offset: 2px;
+}
+
+/* Smooth Scrolling für bessere UX */
+html {
+    scroll-behavior: smooth;
 }
