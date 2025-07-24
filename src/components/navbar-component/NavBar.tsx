@@ -8,7 +8,9 @@ import {
     ProfileOutlined,
     CheckSquareOutlined,
     BugOutlined,
-    SearchOutlined
+    SearchOutlined,
+    MenuOutlined,
+    CloseOutlined
 } from '@ant-design/icons';
 import { Badge, Layout, Menu, Avatar, Dropdown, Card, Typography, Button } from 'antd';
 import React, { ReactElement, useEffect, useState, useCallback } from 'react';
@@ -33,6 +35,10 @@ export default function NavBar(): ReactElement {
     const [selectedKeys, setSelectedKeys] = React.useState<string[]>([]);
     const [debugPanelVisible, setDebugPanelVisible] = useState(false);
     const [mobileSearchVisible, setMobileSearchVisible] = useState(false);
+    const [burgerMenuVisible, setBurgerMenuVisible] = useState(false);
+
+    // Check if we should show burger menu (screen width < 430px)
+    const shouldShowBurgerMenu = dimensions.width <= 430;
 
     const getSelectedKeysDesktop = useCallback((): string[] => {
         if (isLoggedIn && location.pathname === homeRoute) return ['home'];
@@ -47,6 +53,22 @@ export default function NavBar(): ReactElement {
     useEffect(() => {
         setSelectedKeys(getSelectedKeysDesktop());
     }, [getSelectedKeysDesktop]);
+
+    // Close burger menu when clicking outside or on route change
+    useEffect(() => {
+        setBurgerMenuVisible(false);
+    }, [location.pathname]);
+
+    useEffect(() => {
+        const handleClickOutside = (event: MouseEvent) => {
+            if (burgerMenuVisible && !(event.target as Element).closest(`.${style.mobileNav}`)) {
+                setBurgerMenuVisible(false);
+            }
+        };
+
+        document.addEventListener('mousedown', handleClickOutside);
+        return () => document.removeEventListener('mousedown', handleClickOutside);
+    }, [burgerMenuVisible]);
 
     const countItems = () => {
         // filter items by unique name and count them
@@ -171,78 +193,85 @@ export default function NavBar(): ReactElement {
                     )}
                 </>
             ) : (
-                <div className={style.mobileNavContainer}>
-                    <div className={style.mobileNav}>
-                        <Menu theme="dark" mode="horizontal" selectedKeys={getSelectedKeysDesktop()} className={style.menu}>
-                            <Menu.Item key="home">
-                                <NavLink to={homeRoute}>
-                                    <HomeOutlined className={style.icon} />
-                                </NavLink>
-                            </Menu.Item>
-                            {isLoggedIn && (
-                                <>
-                                    <Menu.Item key="checklist">
-                                        <NavLink to={checklistRoute}>
-                                            <CheckSquareOutlined className={style.icon} />
-                                        </NavLink>
-                                    </Menu.Item>
-                                    <Menu.Item key="items">
-                                        <NavLink to={itemsRoute}>
-                                            <UnorderedListOutlined className={style.icon} />
-                                        </NavLink>
-                                    </Menu.Item>
-                                    <Menu.Item key="newItem">
-                                        <NavLink to={newItemRoute}>
-                                            <PlusOutlined className={style.icon} />
-                                        </NavLink>
-                                    </Menu.Item>
-                                    <Menu.Item key="shopping">
-                                        <NavLink to={basketRoute}>
-                                            <Badge offset={[0, 0]} size="small" count={countItems()}>
-                                                <ShoppingCartOutlined className={style.icon} />
-                                            </Badge>
-                                        </NavLink>
-                                    </Menu.Item>
-                                    {/* Search Toggle Button */}
-                                    <Menu.Item key="search" onClick={() => setMobileSearchVisible(!mobileSearchVisible)}>
-                                        <SearchOutlined className={`${style.icon} ${mobileSearchVisible ? style.searchActive : ''}`} />
-                                    </Menu.Item>
-                                </>
-                            )}
-                        </Menu>
+                <>
+                    {/* Mobile Top Header - Simple with logo and user */}
+                    <div className={style.mobileTopHeader}>
+                        <NavLink to={homeRoute}>
+                            <img src={logo} alt="Logo" className={style.logo} />
+                        </NavLink>
 
-                        <div className={style.mobileUserSection}>
-                            {isLoggedIn ? (
-                                <Dropdown overlay={userMenu} trigger={['click']} placement="bottomRight">
-                                    <div className={style.userMenuMobile}>
-                                        <Avatar
-                                            src={store.user?.image || undefined}
-                                            icon={!store.user?.image ? <UserOutlined /> : undefined}
-                                            className={style.userAvatar}
-                                        />
-                                    </div>
-                                </Dropdown>
-                            ) : (
+                        {isLoggedIn ? (
+                            <Dropdown overlay={userMenu} trigger={['click']} placement="bottomRight">
                                 <div className={style.userMenuMobile}>
-                                    <NavLink to={loginApi}>
-                                        <Avatar
-                                            src={store.user?.image || undefined}
-                                            icon={!store.user?.image ? <UserOutlined /> : undefined}
-                                            className={style.userAvatar}
-                                        />
-                                    </NavLink>
+                                    <Avatar
+                                        src={store.user?.image || undefined}
+                                        icon={!store.user?.image ? <UserOutlined /> : undefined}
+                                        className={style.userAvatar}
+                                    />
                                 </div>
-                            )}
+                            </Dropdown>
+                        ) : (
+                            <div className={style.userMenuMobile}>
+                                <NavLink to={loginApi}>
+                                    <Avatar
+                                        src={store.user?.image || undefined}
+                                        icon={!store.user?.image ? <UserOutlined /> : undefined}
+                                        className={style.userAvatar}
+                                    />
+                                </NavLink>
+                            </div>
+                        )}
+                    </div>
+
+                    {/* Bottom Navigation */}
+                    <div className={style.mobileNavContainer}>
+                        <div className={style.mobileNav}>
+                            <Menu theme="dark" mode="horizontal" selectedKeys={getSelectedKeysDesktop()} className={style.menu}>
+                                {/* Home Item */}
+                                <Menu.Item key="home" data-menu-id="home" data-label="Home">
+                                    <NavLink to={homeRoute}>
+                                        <HomeOutlined className={style.icon} />
+                                    </NavLink>
+                                </Menu.Item>
+
+                                {/* Show all navigation items in bottom nav when logged in */}
+                                {isLoggedIn && (
+                                    <>
+                                        <Menu.Item key="checklist" data-label="Checklist">
+                                            <NavLink to={checklistRoute}>
+                                                <CheckSquareOutlined className={style.icon} />
+                                            </NavLink>
+                                        </Menu.Item>
+                                        <Menu.Item key="items" data-label="Storage">
+                                            <NavLink to={itemsRoute}>
+                                                <UnorderedListOutlined className={style.icon} />
+                                            </NavLink>
+                                        </Menu.Item>
+                                        <Menu.Item key="newItem" data-label="Add">
+                                            <NavLink to={newItemRoute}>
+                                                <PlusOutlined className={style.icon} />
+                                            </NavLink>
+                                        </Menu.Item>
+                                        <Menu.Item key="shopping" data-label="Basket">
+                                            <NavLink to={basketRoute}>
+                                                <Badge offset={[0, 0]} size="small" count={countItems()}>
+                                                    <ShoppingCartOutlined className={style.icon} />
+                                                </Badge>
+                                            </NavLink>
+                                        </Menu.Item>
+                                    </>
+                                )}
+                            </Menu>
                         </div>
                     </div>
 
-                    {/* Collapsible Mobile Search */}
+                    {/* Mobile Search - now triggered from top header or floating button */}
                     {isLoggedIn && mobileSearchVisible && (
-                        <div className={style.mobileSearchCollapsible}>
+                        <div className={style.mobileSearchCollapsible} style={{ top: '56px', position: 'fixed', left: 0, right: 0, zIndex: 998 }}>
                             <GlobalSearch />
                         </div>
                     )}
-                </div>
+                </>
             )}
 
             {/* Debug Panel */}

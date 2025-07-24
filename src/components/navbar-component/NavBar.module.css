@@ -4,7 +4,23 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 0 16px;
+}
+
+/* Mobile Navigation */
+.mobileNavContainer {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    position: relative;
+    /* Important: This creates positioning context for burger menu */
+}
+
+/* Burger Menu Styles for screens < 430px */
+@media (max-width: 430px) {
+    .mobileNav {
+        position: relative;
+    }
+
     min-height: 64px;
 }
 
@@ -16,6 +32,56 @@
         padding: 0;
         min-height: 64px;
         /* Standard Header-Höhe beibehalten */
+        position: relative;
+    }
+}
+
+/* Mobile Bottom Navigation - Modern Smartphone Style */
+@media (max-width: 600px) {
+    .mobileNavContainer {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        background-color: #001529;
+        border-top: 1px solid rgba(255, 255, 255, 0.1);
+        box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.15);
+        z-index: 1000;
+        padding: 0;
+        backdrop-filter: blur(10px);
+    }
+
+    .mobileNav {
+        padding: 8px 16px 12px 16px;
+        /* Extra bottom padding for safe area */
+        min-height: 60px;
+        justify-content: center;
+    }
+
+    /* Hide burger menu button on bottom nav */
+    .burgerMenuButton {
+        display: none !important;
+    }
+
+    /* Hide user section from bottom nav */
+    .mobileUserSection {
+        display: none !important;
+    }
+
+    .mobileRightSection {
+        display: none !important;
+    }
+
+    /* Make top header simpler for mobile */
+    .header {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        z-index: 999;
+        min-height: 56px;
+        justify-content: center;
+        padding: 8px 16px;
     }
 }
 
@@ -140,6 +206,168 @@
     width: 100%;
 }
 
+/* Burger Menu Styles for screens < 430px */
+@media (max-width: 1330px) {
+    .mobileNav {
+        position: relative;
+    }
+}
+
+/* Burger Menu Button - Clean version */
+.burgerMenuButton {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 8px;
+    border-radius: 6px;
+    transition: background-color 0.2s ease;
+    min-width: 44px;
+    min-height: 44px;
+    justify-content: center;
+    align-items: center;
+}
+
+.burgerMenuButton:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+.burgerMenuButton .anticon {
+    color: #ffffff !important;
+    font-size: 20px !important;
+}
+
+/* Burger Menu Dropdown */
+.burgerMenuDropdown {
+    position: absolute;
+    top: 64px;
+    /* Height of the navbar */
+    left: 8px;
+    right: 8px;
+    background-color: rgba(0, 21, 41, 0.98);
+    border-radius: 8px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    z-index: 999;
+    /* Higher than overlay */
+    animation: slideDownBurger 0.3s ease-out;
+    backdrop-filter: blur(10px);
+    pointer-events: auto;
+    /* Ensure menu items are clickable */
+}
+
+/* Burger Menu Overlay */
+.burgerMenuOverlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.2);
+    z-index: 998;
+    /* Lower z-index than dropdown */
+    animation: fadeIn 0.3s ease-out;
+    pointer-events: auto;
+    /* Allow clicks to close menu */
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes slideDownBurger {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Burger Menu Items */
+.burgerMenuItems {
+    padding: 12px 0;
+}
+
+.burgerMenuItem {
+    display: flex;
+    align-items: center;
+    padding: 12px 16px;
+    color: #ffffff !important;
+    text-decoration: none !important;
+    transition: all 0.2s ease;
+    border-radius: 6px;
+    margin: 2px 8px;
+    gap: 12px;
+    min-height: 44px;
+    cursor: pointer;
+    /* Ensure links work properly */
+    pointer-events: auto;
+    position: relative;
+    /* Ensure proper stacking */
+    z-index: 1;
+    /* Above other elements */
+    user-select: none;
+    /* Prevent text selection */
+}
+
+.burgerMenuItem:hover {
+    background-color: rgba(255, 255, 255, 0.1) !important;
+    color: #1890ff !important;
+    text-decoration: none !important;
+}
+
+.burgerMenuItem:visited {
+    color: #ffffff !important;
+}
+
+.burgerMenuItem:active {
+    color: #1890ff !important;
+}
+
+.burgerMenuItem .anticon {
+    color: inherit !important;
+    font-size: 18px !important;
+}
+
+.burgerMenuText {
+    color: inherit;
+    font-size: 14px;
+    font-weight: 500;
+    pointer-events: none;
+    /* Don't block clicks on parent */
+}
+
+/* Badge in burger menu */
+.burgerMenuItem .ant-badge {
+    color: inherit;
+    pointer-events: none;
+    /* Don't block clicks on parent */
+}
+
+.burgerMenuItem .ant-badge .ant-badge-count {
+    background-color: #f5222d;
+    border-color: #f5222d;
+    pointer-events: none;
+    /* Don't block clicks on parent */
+}
+
+/* Icons in burger menu */
+.burgerMenuItem .anticon {
+    color: inherit !important;
+    font-size: 18px !important;
+    pointer-events: none;
+    /* Don't block clicks on parent */
+}
+
 .mobileNav {
     display: flex;
     align-items: center;
@@ -157,6 +385,12 @@
     min-width: 40px;
     /* Ensuring minimum space for user avatar */
     justify-content: flex-end;
+}
+
+.mobileRightSection {
+    display: flex;
+    align-items: center;
+    gap: 8px;
 }
 
 /* Collapsible Mobile Search */
@@ -213,6 +447,34 @@
     transform: scale(1.1);
 }
 
+/* Bottom Navigation Icon Styling */
+@media (max-width: 600px) {
+    .icon {
+        font-size: 24px !important;
+        margin-bottom: 4px !important;
+        display: block !important;
+    }
+
+    /* Add text labels for bottom nav */
+    .mobileNav .menu .ant-menu-item::after {
+        content: attr(data-label);
+        font-size: 10px;
+        color: rgba(255, 255, 255, 0.7);
+        margin-top: 2px;
+        line-height: 1;
+        font-weight: 500;
+        transition: color 0.2s ease;
+    }
+
+    .mobileNav .menu .ant-menu-item-selected::after {
+        color: #1890ff !important;
+    }
+
+    .mobileNav .menu .ant-menu-item:hover::after {
+        color: #1890ff !important;
+    }
+}
+
 /* Mobile Navigation Menu Styling */
 .mobileNav .menu {
     flex: 1;
@@ -233,12 +495,81 @@
     background-color: rgba(255, 255, 255, 0.1) !important;
 }
 
-/* User-Dropdown */
-.userDropdown {
-    width: 300px;
-    padding: 15px;
-    border-radius: 8px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+/* Bottom Navigation Mobile Styling */
+@media (max-width: 600px) {
+    .mobileNav .menu {
+        width: 100%;
+        max-width: 100%;
+        justify-content: space-evenly;
+        align-items: center;
+    }
+
+    .mobileNav .menu .ant-menu-item {
+        flex: 1;
+        display: flex !important;
+        flex-direction: column !important;
+        align-items: center !important;
+        justify-content: center !important;
+        padding: 8px 4px !important;
+        min-height: 52px !important;
+        border-radius: 12px !important;
+        margin: 0 2px !important;
+        text-align: center;
+        position: relative;
+    }
+
+    /* Selected state for bottom nav */
+    .mobileNav .menu .ant-menu-item-selected {
+        background-color: rgba(24, 144, 255, 0.15) !important;
+    }
+
+    .mobileNav .menu .ant-menu-item-selected .icon {
+        color: #1890ff !important;
+        transform: scale(1.1);
+    }
+}
+
+/* Mobile Top Header - Simplified for bottom nav */
+@media (max-width: 600px) {
+    .mobileTopHeader {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 8px 16px;
+        background-color: #001529;
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        z-index: 999;
+        min-height: 56px;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+    }
+
+    .mobileTopHeader .logo {
+        height: 32px;
+        margin: 0;
+    }
+
+    .mobileTopHeader .userMenuMobile {
+        padding: 6px;
+        min-width: 40px;
+        min-height: 40px;
+    }
+
+    /* Add space for fixed headers */
+    body {
+        padding-top: 56px !important;
+        padding-bottom: 76px !important;
+    }
+
+    /* Main content area */
+    .mainContent {
+        margin-top: 56px;
+        margin-bottom: 76px;
+        min-height: calc(100vh - 132px);
+    }
 }
 
 .userMenuMobile {
