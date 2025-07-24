@@ -20,6 +20,15 @@ export const optionsItemUnitsApi = `/item-units`;
 export const optionsNutrientUnitsApi = `/nutrient-units`;
 export const optionsPackageUnitsApi = `/package-units`;
 
+// ✅ Groups API Endpoints
+export const groupsApi = `/groups`;
+export const groupIdApi = (id: number | string): string => `${groupsApi}/${id}`;
+export const groupMembersApi = (id: number | string): string => `${groupsApi}/${id}/members`;
+export const groupInviteApi = (id: number | string): string => `${groupsApi}/${id}/invite`;
+export const groupJoinApi = (code: string): string => `${groupsApi}/join/${code}`;
+export const groupJoinInvitationApi = (token: string): string => `${groupsApi}/join-invitation/${token}`;
+export const groupLeaveApi = (id: number | string): string => `${groupsApi}/${id}/leave`;
+
 // ✅ Anpassung der Frontend-Routen
 export const iconRoute = (icon: string): string => `/static/StorageItemsIcons/${icon}`;
 export const homeRoute = '/home';

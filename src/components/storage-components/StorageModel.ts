@@ -10,7 +10,7 @@ export interface StorageModel {
     packageUnit?: string,
     storageLocation: string,
     nutrients?: NutrientModel,
-    icon?: string
+    icon?: string  // Base64 encoded string or null if no icon
 }
 
 export interface NutrientModel {

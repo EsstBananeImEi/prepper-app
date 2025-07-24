@@ -1,10 +1,11 @@
 import React, { useState, useEffect, JSX } from "react";
-import { Form, Input, Button, Avatar, Card, Alert, message, Upload, InputNumber } from "antd";
-import { UploadOutlined } from "@ant-design/icons";
+import { Form, Input, Button, Avatar, Card, Alert, message, Upload, InputNumber, Tabs } from "antd";
+import { UploadOutlined, UserOutlined, TeamOutlined } from "@ant-design/icons";
 import type { UploadRequestOption } from "rc-upload/lib/interface";
 import { useStore } from "../../../store/Store";
 import { actionHandler } from "../../../store/Actions";
 import { UserModel } from "../../../shared/Models";
+import GroupManagement from "../group-management/GroupManagement";
 import styles from "./UserForm.module.css";
 
 interface FormValues {
@@ -19,7 +20,9 @@ export default function UserProfileForm(): JSX.Element {
     const [form] = Form.useForm<FormValues>();
     const [loading, setLoading] = useState<boolean>(false);
     const [error, setError] = useState<string>("");
-    const [image, setImage] = useState<string | null>(store.user?.image || null); const customUpload = async ({ file, onSuccess, onError }: UploadRequestOption): Promise<void> => {
+    const [image, setImage] = useState<string | null>(store.user?.image || null);
+
+    const customUpload = async ({ file, onSuccess, onError }: UploadRequestOption): Promise<void> => {
         if (!(file as File).type.startsWith("image/")) {
             message.error("Nur Bilddateien erlaubt.");
             return;
@@ -75,63 +78,93 @@ export default function UserProfileForm(): JSX.Element {
         setImage(store.user?.image || null);
     }, [store.user, form]);
 
+    const profileTab = (
+        <>
+            {error && <Alert message={error} type="error" className={styles.alert} />}
+            <Form<FormValues> form={form} layout="vertical" onFinish={handleSubmit}>
+                <Form.Item
+                    label="Benutzername"
+                    name="username"
+                    rules={[
+                        { required: true, message: "Bitte Benutzername eingeben" },
+                        { min: 3, message: "Der Benutzername muss mindestens 3 Zeichen lang sein." },
+                        { pattern: /^\S.*\S$/, message: "Benutzername darf keine Leerzeichen am Anfang/Ende haben." }
+                    ]}
+                >
+                    <Input />
+                </Form.Item>
+                <Form.Item
+                    label="E-Mail-Adresse"
+                    name="email"
+                    rules={[
+                        { required: true, message: "Bitte E-Mail eingeben" },
+                        { type: "email", message: "Ungültige E-Mail" },
+                    ]}
+                >
+                    <Input />
+                </Form.Item>
+                <Form.Item
+                    label="Neues Passwort (optional)"
+                    name="password"
+                    rules={[{ min: 6, message: "Das Passwort muss mindestens 6 Zeichen lang sein." }]}
+                >
+                    <Input.Password placeholder="Neues Passwort (falls ändern)" />
+                </Form.Item>
+                <Form.Item
+                    label="Personen im Haushalt"
+                    name="persons"
+                    rules={[
+                        { required: false, message: "Bitte Anzahl der Personen eingeben" },
+                        { type: "number", message: "Bitte eine Zahl eingeben" },
+                    ]}
+                >
+                    <InputNumber min={1} />
+                </Form.Item>
+                <Form.Item label="Profilbild">
+                    <Upload customRequest={customUpload} showUploadList={false} accept="image/*">
+                        <Button icon={<UploadOutlined />}>Bild hochladen</Button>
+                    </Upload>
+                    {image && <Avatar src={image} size={80} className={styles.avatar} />}
+                </Form.Item>
+                <Form.Item>
+                    <Button type="primary" htmlType="submit" loading={loading} block>
+                        Profil aktualisieren
+                    </Button>
+                </Form.Item>
+            </Form>
+        </>
+    );
+
     return (
         <div className={styles.container}>
-            <Card title="Benutzerprofil" className={styles.card}>
-                {error && <Alert message={error} type="error" className={styles.alert} />}
-                <Form<FormValues> form={form} layout="vertical" onFinish={handleSubmit}>
-                    <Form.Item
-                        label="Benutzername"
-                        name="username"
-                        rules={[
-                            { required: true, message: "Bitte Benutzername eingeben" },
-                            { min: 3, message: "Der Benutzername muss mindestens 3 Zeichen lang sein." },
-                            { pattern: /^\S.*\S$/, message: "Benutzername darf keine Leerzeichen am Anfang/Ende haben." }
-                        ]}
-                    >
-                        <Input />
-                    </Form.Item>
-                    <Form.Item
-                        label="E-Mail-Adresse"
-                        name="email"
-                        rules={[
-                            { required: true, message: "Bitte E-Mail eingeben" },
-                            { type: "email", message: "Ungültige E-Mail" },
-                        ]}
-                    >
-                        <Input />
-                    </Form.Item>
-                    <Form.Item
-                        label="Neues Passwort (optional)"
-                        name="password"
-                        rules={[{ min: 6, message: "Das Passwort muss mindestens 6 Zeichen lang sein." }]}
-                    >
-                        <Input.Password placeholder="Neues Passwort (falls ändern)" />
-                    </Form.Item>
-                    {/* personen im haushalt default 1 */}
-                    <Form.Item
-                        label="Personen im Haushalt"
-                        name="persons"
-                        rules={[
-                            { required: false, message: "Bitte Anzahl der Personen eingeben" },
-                            { type: "number", message: "Bitte eine Zahl eingeben" },
-                        ]}
-                    >
-                        <InputNumber min={1} />
-                    </Form.Item>
-                    <Form.Item label="Profilbild">
-                        <Upload customRequest={customUpload} showUploadList={false} accept="image/*">
-                            <Button icon={<UploadOutlined />}>Bild hochladen</Button>
-                        </Upload>
-                        {image && <Avatar src={image} size={80} className={styles.avatar} />}
-                    </Form.Item>
-                    <Form.Item>
-                        <Button type="primary" htmlType="submit" loading={loading} block>
-                            Profil aktualisieren
-                        </Button>
-                    </Form.Item>
-                </Form>
+            <Card title="Benutzerprofil & Gruppenverwaltung" className={styles.card}>
+                <Tabs
+                    defaultActiveKey="profile"
+                    items={[
+                        {
+                            key: 'profile',
+                            label: (
+                                <span>
+                                    <UserOutlined />
+                                    Profil
+                                </span>
+                            ),
+                            children: profileTab
+                        },
+                        {
+                            key: 'groups',
+                            label: (
+                                <span>
+                                    <TeamOutlined />
+                                    Gruppen
+                                </span>
+                            ),
+                            children: <GroupManagement />
+                        }
+                    ]}
+                />
             </Card>
         </div>
     );
 }
+

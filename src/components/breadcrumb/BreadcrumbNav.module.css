@@ -1,6 +1,6 @@
 /* BreadcrumbNav.module.css */
 .breadcrumbContainer {
-    margin: 16px 0;
+    margin: 5px 0 16px 0;
     padding: 0 16px;
     font-size: 14px;
     width: 100%;
@@ -33,18 +33,26 @@
 /* Mobile-optimierte Darstellung */
 @media (max-width: 768px) {
     .breadcrumbContainer {
-        margin: 12px 0;
-        padding: 0 4px;
-        /* Minimales Padding für bessere Ausrichtung */
-        font-size: 13px;
+        margin: 5px 0 16px 0;
+        padding: 0 16px;
+        font-size: 14px;
+    }
+}
+
+@media (max-width: 600px) {
+    .breadcrumbContainer {
+        margin: 25px 0 8px 0;
+        padding: 0 2px;
+        /* Noch weniger Padding für sehr kleine Bildschirme */
+        font-size: 12px;
     }
 }
 
 /* Sehr kleine Bildschirme */
 @media (max-width: 480px) {
     .breadcrumbContainer {
-        margin: 8px 0;
-        padding: 0 2px;
+        margin: 25px 0 4px 0;
+        padding: 6px 6px;
         /* Noch weniger Padding für sehr kleine Bildschirme */
         font-size: 12px;
     }

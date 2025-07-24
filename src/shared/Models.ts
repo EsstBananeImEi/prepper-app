@@ -8,4 +8,29 @@ export interface UserModel {
     image: string | null;
     persons: number | null;
     isAdmin?: boolean;
+    groups?: string[];
+}
+
+export interface GroupModel {
+    id: number;
+    name: string;
+    description?: string;
+    role: 'admin' | 'member';
+    memberCount: number;
+    inviteCode: string;
+    isCreator: boolean;
+    createdAt?: string;
+}
+
+export interface GroupMemberModel {
+    id: number;
+    username: string;
+    email: string;
+    role: 'admin' | 'member';
+    joinedAt?: string;
+}
+
+export interface GroupInvitationModel {
+    groupId: number;
+    invitedEmail: string;
 }

@@ -110,7 +110,7 @@ export default function StorageDetailForm(): ReactElement {
             setPackageUnit(storageItem.packageUnit || '');
             setStorageLocation(storageItem.storageLocation);
             setCategories(storageItem.categories || []);
-            setIcon(storageItem.icon || ''); // icon kommt als Base64-String aus der DB
+            setIcon(storageItem.icon || ''); // icon kommt als Base64-String aus der DB sonst leerer ba
             setNutrientDescription(storageItem.nutrients?.description || '');
             setNutrientUnit(storageItem.nutrients?.unit || '');
             setNutrientAmount(
@@ -431,8 +431,8 @@ export default function StorageDetailForm(): ReactElement {
         console.log('Is New:', isNew);
         console.log('ID:', id);
 
-        // Detailed debugging for icon
-        if (updatedItem.icon) {
+        // Detailed debugging for icon if icon is != ''
+        if (updatedItem.icon && updatedItem.icon !== '') {
             console.group('🖼️ Icon Details for Save');
             console.log('Icon length:', updatedItem.icon.length);
             console.log('First 50 chars:', updatedItem.icon.substring(0, 50));

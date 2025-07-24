@@ -200,9 +200,9 @@ export function reducer(store: Store, action: Action): Store {
         case 'FORGOT_PASSWORD':
             localStorage.removeItem("user");
             return { ...store, user: null };
-        // case 'REGISTER_USER':
-        //     localStorage.setItem("user", JSON.stringify(action.user));
-        //     return { ...store, user: action.user };
+        case 'REGISTER_USER':
+            localStorage.setItem("user", JSON.stringify(action.user));
+            return { ...store, user: action.user };
         case 'EDIT_USER':
             localStorage.setItem("user", JSON.stringify(action.user));
             return { ...store, user: action.user };

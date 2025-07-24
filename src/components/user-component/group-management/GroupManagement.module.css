@@ -1,0 +1,300 @@
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 16px;
+    margin-bottom: 16px;
+}
+
+.emptyState {
+    text-align: center;
+    padding: 40px 20px;
+}
+
+.emptyState h4 {
+    margin-top: 16px;
+    margin-bottom: 8px;
+}
+
+/* Desktop-spezifische Verbesserungen */
+@media (min-width: 769px) {
+    .container {
+        padding: 24px;
+    }
+
+    /* Bessere Darstellung der List Items auf Desktop */
+    :global(.ant-list-item) {
+        padding: 20px 24px !important;
+        border-radius: 8px;
+        margin-bottom: 16px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        transition: box-shadow 0.3s ease;
+    }
+
+    :global(.ant-list-item:hover) {
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+    }
+
+    :global(.ant-list-item-action) {
+        gap: 12px;
+        flex-wrap: wrap;
+        margin-left: 16px !important;
+    }
+
+    :global(.ant-list-item-action > li) {
+        margin: 0 4px;
+    }
+
+    :global(.ant-list-item-action button) {
+        min-width: 100px;
+    }
+}
+
+/* Tablet Responsive */
+@media (max-width: 768px) and (min-width: 577px) {
+    .container {
+        padding: 16px;
+    }
+
+    .header {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 12px;
+    }
+
+    .header>div:last-child {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+
+    .header button {
+        flex: 1;
+        min-width: 140px;
+        max-width: 200px;
+    }
+
+    /* List Items auf Tablet */
+    :global(.ant-list-item) {
+        padding: 16px !important;
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    :global(.ant-list-item-meta) {
+        margin-bottom: 12px;
+    }
+
+    :global(.ant-list-item-action) {
+        margin-left: 0 !important;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        justify-content: center;
+    }
+
+    :global(.ant-list-item-action > li) {
+        margin: 0;
+        flex: 1;
+        min-width: 120px;
+    }
+
+    :global(.ant-list-item-action button) {
+        width: 100%;
+    }
+}
+
+/* Mobile Responsive */
+@media (max-width: 576px) {
+    .container {
+        padding: 12px;
+        margin: 0;
+    }
+
+    .header {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 12px;
+    }
+
+    .header>div:first-child h4 {
+        text-align: center;
+        font-size: 18px;
+    }
+
+    .header>div:last-child {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+    }
+
+    .header button {
+        width: 100%;
+        height: 40px;
+    }
+
+    /* List Items auf Mobile komplett überarbeitet */
+    :global(.ant-list-item) {
+        padding: 16px 12px !important;
+        flex-direction: column !important;
+        align-items: stretch !important;
+        border-radius: 8px;
+        margin-bottom: 12px;
+        background: #fafafa;
+        border: 1px solid #f0f0f0;
+    }
+
+    :global(.ant-list-item-meta) {
+        margin-bottom: 12px !important;
+        text-align: left;
+    }
+
+    :global(.ant-list-item-meta-avatar) {
+        margin-right: 12px !important;
+        align-self: flex-start;
+    }
+
+    :global(.ant-list-item-meta-content) {
+        flex: 1;
+    }
+
+    :global(.ant-list-item-action) {
+        margin-left: 0 !important;
+        margin-top: 12px !important;
+        display: grid !important;
+        grid-template-columns: repeat(2, 1fr) !important;
+        gap: 8px !important;
+        width: 100% !important;
+    }
+
+    :global(.ant-list-item-action > li) {
+        margin: 0 !important;
+        width: 100% !important;
+    }
+
+    :global(.ant-list-item-action button) {
+        width: 100% !important;
+        height: 32px !important;
+        font-size: 12px !important;
+        padding: 4px 8px !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+    }
+
+    /* Spezielle Behandlung für Buttons mit Text */
+    :global(.ant-list-item-action button span:last-child) {
+        font-size: 11px;
+    }
+
+    /* Empty State auf Mobile */
+    .emptyState {
+        padding: 20px 10px;
+    }
+
+    .emptyState h4 {
+        font-size: 16px;
+    }
+}
+
+/* Extra kleine Screens (< 400px) */
+@media (max-width: 400px) {
+    .container {
+        padding: 8px;
+    }
+
+    .header>div:first-child h4 {
+        font-size: 16px;
+    }
+
+    :global(.ant-list-item) {
+        padding: 12px 8px !important;
+        margin-bottom: 8px;
+    }
+
+    :global(.ant-list-item-action button) {
+        height: 28px !important;
+        font-size: 11px !important;
+        padding: 2px 6px !important;
+    }
+
+    :global(.ant-tag) {
+        font-size: 10px;
+        padding: 0 4px;
+        line-height: 16px;
+    }
+}
+
+/* Modal Responsive */
+@media (max-width: 480px) {
+    :global(.ant-modal) {
+        margin: 8px !important;
+        max-width: calc(100vw - 16px) !important;
+        top: 20px !important;
+    }
+
+    :global(.ant-modal-content) {
+        border-radius: 8px;
+    }
+
+    :global(.ant-modal-body) {
+        padding: 16px;
+    }
+
+    :global(.ant-modal-header) {
+        padding: 16px 16px 8px 16px;
+    }
+}
+
+/* Zusätzliche Fixes für Ant Design Components */
+:global(.ant-card-body) {
+    padding: 16px;
+}
+
+:global(.ant-list) {
+    background: transparent;
+}
+
+/* Tag-Styling Verbesserungen */
+:global(.ant-tag) {
+    margin: 2px;
+    border-radius: 4px;
+}
+
+/* Button-Gruppe Styling */
+@media (max-width: 576px) {
+    :global(.ant-space-compact) {
+        width: 100%;
+    }
+
+    :global(.ant-space-compact .ant-btn) {
+        flex: 1;
+    }
+
+    /* Hide text on mobile, show only icons */
+    :global(.desktop-text) {
+        display: none;
+    }
+
+    :global(.mobile-text) {
+        display: inline;
+    }
+}
+
+@media (min-width: 577px) {
+    :global(.desktop-text) {
+        display: inline;
+    }
+
+    :global(.mobile-text) {
+        display: none;
+    }
+}
