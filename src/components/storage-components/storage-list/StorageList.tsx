@@ -1,11 +1,10 @@
 import { Button, Divider, Empty, Pagination, Select, Space } from 'antd';
-import React, { ReactElement, useState, useEffect, useMemo, useCallback } from 'react';
+import React, { ReactElement, useState, useEffect, useMemo, useRef, useCallback } from 'react';
 import { CloseCircleOutlined, DownOutlined, UpOutlined } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
 import { useDemensions } from '../../../hooks/StorageApi';
 import { itemsApi, errorRoute, newItemRoute } from '../../../shared/Constants';
 import LoadingSpinner from '../../loading-spinner/LoadingSpinner';
-import StorageSearchItem from '../storage-search-item/StorageSearchItem';
 import { StorageModel } from '../StorageModel';
 import StorageCardItem from './storage-item/StorageCardItem';
 import StorageListItem from './storage-item/StorageListItem';
@@ -36,6 +35,14 @@ export default function StorageList(): ReactElement {
     };
     const [dimensions] = useDemensions(handleChange, currentPage);
 
+    // Stabiler Callback für StorageSearchItem um Re-Render Probleme zu vermeiden
+    const dispatchRef = useRef(dispatch);
+    dispatchRef.current = dispatch;
+
+    const handleSearchCallback = useCallback((items: StorageModel[]) => {
+        dispatchRef.current({ type: 'INITIAL_STORAGE', storageItems: items });
+    }, []); // Leere Dependencies da wir Ref verwenden
+
 
     // Aktualisiere pageSize basierend auf der Bildschirmbreite
     useEffect(() => {
@@ -56,8 +63,8 @@ export default function StorageList(): ReactElement {
         setMinValue((currentPage - 1) * pageSize);
     }, [currentPage, pageSize]);
 
-    // Da die Items jetzt im Store verwaltet werden, verwenden wir diese:
-    const safeStorageItems = store.storeItems ?? [];
+    // Da die Items jetzt im Store verwaltet werden, verwenden wir diese mit useMemo:
+    const safeStorageItems = useMemo(() => store.storeItems ?? [], [store.storeItems]);
 
     // Erzeuge Filteroptionen basierend auf den im Store vorhandenen Items
     const categoryOptions = useMemo(
@@ -120,9 +127,7 @@ export default function StorageList(): ReactElement {
 
             {showFilters && (
                 <div className={styles.filterSortContainer}>
-                    <StorageSearchItem callback={(items: StorageModel[]) => {
-                        dispatch({ type: 'INITIAL_STORAGE', storageItems: items })
-                    }} />
+
                     <div className={styles.filterColumn}>
                         <Select
                             className={`${styles.dropdown} ${styles.mySelect}`}

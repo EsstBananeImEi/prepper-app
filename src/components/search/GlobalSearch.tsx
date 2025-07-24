@@ -19,11 +19,22 @@ interface Page {
     path: string;
 }
 
+interface ChecklistItem {
+    name: string;
+    description: string;
+    requiredKeys: string[];
+    requiredAmount: number;
+    unit: string;
+    perPerson: boolean;
+    consumable: boolean;
+    groupName: string; // Für die Suche hinzugefügt
+}
+
 interface SearchResult {
     value: string;
     label: React.ReactNode;
-    type: 'storage' | 'emergency' | 'page' | 'shopping';
-    data?: StorageModel | EmergencyCategory | Page | BasketModel;
+    type: 'storage' | 'emergency' | 'page' | 'shopping' | 'checklist';
+    data?: StorageModel | EmergencyCategory | Page | BasketModel | ChecklistItem;
 }
 
 const GlobalSearch: React.FC = () => {
@@ -51,6 +62,48 @@ const GlobalSearch: React.FC = () => {
         { key: 'checklist', title: 'Checkliste', path: '/checklist' },
         { key: 'basket', title: 'Einkaufsliste', path: '/basket' },
         { key: 'add-item', title: 'Neues Item hinzufügen', path: '/items/new' }
+    ];
+
+    // Checklist-Daten für die Suche (aus CheckListItem.tsx)
+    const checklistItems: ChecklistItem[] = [
+        // Lebensmittel
+        { name: 'Trinkwasser', description: 'Mindestens 2 Liter pro Tag pro Person, also 20 Liter für 10 Tage.', requiredKeys: ['wasser', 'trinkwasser', 'mineralwasser'], requiredAmount: 2, unit: 'Liter', perPerson: true, consumable: true, groupName: 'Lebensmittel' },
+        { name: 'Getreide, Getreideprodukte, Brot', description: '3,5 kg für 10 Tage pro Person.', requiredKeys: ['getreide', 'brot', 'getreideprodukte'], requiredAmount: 3.5, unit: 'kg', perPerson: true, consumable: true, groupName: 'Lebensmittel' },
+        { name: 'Gemüse & Hülsenfrüchte', description: '4,0 kg für 10 Tage pro Person.', requiredKeys: ['gemüse', 'hülsenfrüchte'], requiredAmount: 4.0, unit: 'kg', perPerson: true, consumable: true, groupName: 'Lebensmittel' },
+        { name: 'Obst & Nüsse', description: '2,5 kg für 10 Tage pro Person.', requiredKeys: ['obst', 'nüsse'], requiredAmount: 2.5, unit: 'kg', perPerson: true, consumable: true, groupName: 'Lebensmittel' },
+        { name: 'Milch & Milchprodukte', description: '2,8 kg für 10 Tage pro Person.', requiredKeys: ['milch', 'milchprodukte'], requiredAmount: 2.8, unit: 'kg', perPerson: true, consumable: true, groupName: 'Lebensmittel' },
+        { name: 'Fleisch, Fisch & Eier', description: '1,5 kg für 10 Tage pro Person.', requiredKeys: ['fleisch', 'fisch', 'eier'], requiredAmount: 1.5, unit: 'kg', perPerson: true, consumable: true, groupName: 'Lebensmittel' },
+        { name: 'Fette & Öle', description: '0,4 kg für 10 Tage pro Person.', requiredKeys: ['fette', 'öle', 'öl'], requiredAmount: 0.4, unit: 'kg', perPerson: true, consumable: true, groupName: 'Lebensmittel' },
+
+        // Hygiene
+        { name: 'Seife', description: 'Handseife und Körperseife für die tägliche Körperpflege.', requiredKeys: ['seife', 'handseife'], requiredAmount: 2, unit: 'Stück', perPerson: true, consumable: false, groupName: 'Hygiene' },
+        { name: 'Zahnbürste', description: 'Zahnbürste für die tägliche Zahnpflege.', requiredKeys: ['zahnbürste'], requiredAmount: 1, unit: 'Stück', perPerson: true, consumable: false, groupName: 'Hygiene' },
+        { name: 'Zahnpasta', description: 'Zahnpasta für die tägliche Zahnpflege.', requiredKeys: ['zahnpasta'], requiredAmount: 1, unit: 'Tube', perPerson: true, consumable: false, groupName: 'Hygiene' },
+        { name: 'Toilettenpapier', description: 'Toilettenpapier für die tägliche Hygiene.', requiredKeys: ['toilettenpapier', 'klopapier'], requiredAmount: 4, unit: 'Rollen', perPerson: true, consumable: false, groupName: 'Hygiene' },
+
+        // Hausapotheke
+        { name: 'Schmerzmittel', description: 'Schmerzmittel für verschiedene Beschwerden.', requiredKeys: ['schmerzmittel', 'aspirin', 'ibuprofen'], requiredAmount: 1, unit: 'Packung', perPerson: false, consumable: false, groupName: 'Hausapotheke' },
+        { name: 'Pflaster', description: 'Verschiedene Pflaster für kleine Wunden.', requiredKeys: ['pflaster'], requiredAmount: 1, unit: 'Packung', perPerson: false, consumable: false, groupName: 'Hausapotheke' },
+        { name: 'Verband', description: 'Verbandsmaterial für größere Wunden.', requiredKeys: ['verband', 'verbandsmaterial'], requiredAmount: 3, unit: 'Stück', perPerson: false, consumable: false, groupName: 'Hausapotheke' },
+        { name: 'Desinfektionsmittel', description: 'Desinfektionsmittel für Wunden und Hände.', requiredKeys: ['desinfektionsmittel'], requiredAmount: 1, unit: 'Flasche', perPerson: false, consumable: false, groupName: 'Hausapotheke' },
+
+        // Energieausfall
+        { name: 'Taschenlampe', description: 'Batteriegetriebene Taschenlampe für Beleuchtung.', requiredKeys: ['taschenlampe'], requiredAmount: 2, unit: 'Stück', perPerson: false, consumable: false, groupName: 'Energieausfall' },
+        { name: 'Kerzen', description: 'Kerzen als alternative Lichtquelle.', requiredKeys: ['kerzen'], requiredAmount: 10, unit: 'Stück', perPerson: false, consumable: false, groupName: 'Energieausfall' },
+        { name: 'Streichhölzer', description: 'Streichhölzer zum Anzünden von Kerzen.', requiredKeys: ['streichhölzer'], requiredAmount: 3, unit: 'Schachteln', perPerson: false, consumable: false, groupName: 'Energieausfall' },
+        { name: 'Batterien', description: 'Verschiedene Batterien für Geräte.', requiredKeys: ['batterien'], requiredAmount: 20, unit: 'Stück', perPerson: false, consumable: false, groupName: 'Energieausfall' },
+
+        // Brandschutz
+        { name: 'Feuerlöscher', description: 'Feuerlöscher für den Hausgebrauch.', requiredKeys: ['feuerlöscher'], requiredAmount: 1, unit: 'Stück', perPerson: false, consumable: false, groupName: 'Brandschutz' },
+        { name: 'Rauchmelder', description: 'Rauchmelder für frühzeitige Branderkennung.', requiredKeys: ['rauchmelder'], requiredAmount: 1, unit: 'Stück pro Raum', perPerson: false, consumable: false, groupName: 'Brandschutz' },
+
+        // Dokumentensicherung
+        { name: 'Personalausweis Kopie', description: 'Kopie des Personalausweises.', requiredKeys: ['personalausweis'], requiredAmount: 1, unit: 'Kopie', perPerson: true, consumable: false, groupName: 'Dokumentensicherung' },
+        { name: 'Versicherungsdokumente', description: 'Wichtige Versicherungsdokumente.', requiredKeys: ['versicherung'], requiredAmount: 1, unit: 'Satz', perPerson: false, consumable: false, groupName: 'Dokumentensicherung' },
+
+        // Notgepäck
+        { name: 'Rucksack', description: 'Robuster Rucksack für Notfallausrüstung.', requiredKeys: ['rucksack'], requiredAmount: 1, unit: 'Stück', perPerson: true, consumable: false, groupName: 'Notgepäck' },
+        { name: 'Wechselkleidung', description: 'Wechselkleidung für mehrere Tage.', requiredKeys: ['kleidung'], requiredAmount: 3, unit: 'Sätze', perPerson: true, consumable: false, groupName: 'Notgepäck' }
     ];
 
     const searchResults = useMemo(() => {
@@ -165,37 +218,94 @@ const GlobalSearch: React.FC = () => {
             }));
         results.push(...pageResults);
 
+        // Checklist-Items durchsuchen
+        const checklistResults = checklistItems
+            .filter(item =>
+                item.name.toLowerCase().includes(query) ||
+                item.description.toLowerCase().includes(query) ||
+                item.groupName.toLowerCase().includes(query) ||
+                item.requiredKeys.some(key => key.toLowerCase().includes(query))
+            )
+            .slice(0, 4)
+            .map(item => ({
+                value: `checklist-${item.name.replace(/\s+/g, '-').toLowerCase()}`,
+                label: (
+                    <div>
+                        <Text strong>{item.name}</Text>
+                        <br />
+                        <Text type="secondary" style={{ fontSize: 12 }}>
+                            {item.groupName} • Checkliste
+                        </Text>
+                    </div>
+                ),
+                type: 'checklist' as const,
+                data: item
+            }));
+        results.push(...checklistResults);
+
         return results;
     }, [searchValue, store.storeItems]);
 
     const handleSearch = (value: string) => {
         setSearchValue(value);
         setOptions(searchResults);
-    }; const handleSelect = (value: string) => {
-        const selected = searchResults.find(item => item.value === value);
-        if (!selected || !selected.data) return;
+    };
 
-        switch (selected.type) {
-            case 'storage': {
-                const storageItem = selected.data as StorageModel;
-                navigate(`/items/${storageItem.id}`);
-                break;
+    const handleSelect = (value: string) => {
+        const selected = searchResults.find(item => item.value === value);
+        if (!selected || !selected.data) {
+            console.warn('GlobalSearch: Kein Item oder Daten für selected value gefunden:', value);
+            return;
+        }
+
+        try {
+            switch (selected.type) {
+                case 'storage': {
+                    const storageItem = selected.data as StorageModel;
+                    if (storageItem.id) {
+                        navigate(`/items/${storageItem.id}`);
+                    } else {
+                        console.warn('GlobalSearch: StorageModel hat keine ID:', storageItem);
+                    }
+                    break;
+                }
+                case 'emergency': {
+                    const emergencyData = selected.data as EmergencyCategory;
+                    if (emergencyData.path) {
+                        navigate(emergencyData.path);
+                    } else {
+                        console.warn('GlobalSearch: EmergencyCategory hat keinen path:', emergencyData);
+                    }
+                    break;
+                }
+                case 'page': {
+                    const pageData = selected.data as Page;
+                    if (pageData.path) {
+                        navigate(pageData.path);
+                    } else {
+                        console.warn('GlobalSearch: Page hat keinen path:', pageData);
+                    }
+                    break;
+                }
+                case 'shopping': {
+                    const basketItem = selected.data as BasketModel;
+                    // Für Einkaufswagen navigieren wir immer zur basket-Seite
+                    navigate('/basket');
+                    break;
+                }
+                case 'checklist': {
+                    const checklistItem = selected.data as ChecklistItem;
+                    // Für Checklist-Items navigieren wir zur Checklist-Seite
+                    navigate('/checklist');
+                    break;
+                }
+                default: {
+                    console.warn('GlobalSearch: Unbekannter type:', selected.type);
+                    break;
+                }
             }
-            case 'emergency': {
-                const emergencyData = selected.data as EmergencyCategory;
-                navigate(emergencyData.path);
-                break;
-            }
-            case 'page': {
-                const pageData = selected.data as Page;
-                navigate(pageData.path);
-                break;
-            }
-            case 'shopping': {
-                const basketItem = selected.data as BasketModel;
-                navigate(`/basket`);
-                break;
-            }
+        } catch (error) {
+            console.error('GlobalSearch: Fehler bei Navigation:', error, selected);
         }
 
         setSearchValue('');
@@ -212,7 +322,7 @@ const GlobalSearch: React.FC = () => {
             notFoundContent={searchValue ? <Empty description="Keine Ergebnisse gefunden" /> : null}
         >
             <Input
-                placeholder="Suche nach Items, Kategorien oder Seiten..."
+                placeholder="Suche nach Items, Checkliste, Kategorien oder Seiten..."
                 prefix={<SearchOutlined />}
                 allowClear
                 style={{ borderRadius: 'var(--border-radius-md)' }}

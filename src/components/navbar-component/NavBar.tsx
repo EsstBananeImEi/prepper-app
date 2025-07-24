@@ -7,10 +7,11 @@ import {
     LogoutOutlined,
     ProfileOutlined,
     CheckSquareOutlined,
-    BugOutlined
+    BugOutlined,
+    SearchOutlined
 } from '@ant-design/icons';
 import { Badge, Layout, Menu, Avatar, Dropdown, Card, Typography, Button } from 'antd';
-import React, { ReactElement, useEffect, useState } from 'react';
+import React, { ReactElement, useEffect, useState, useCallback } from 'react';
 import { NavLink, useLocation, useNavigate } from "react-router-dom";
 import { useDemensions } from '../../hooks/StorageApi';
 import { homeRoute, basketRoute, itemsRoute, newItemRoute, userApi, loginApi, checklistRoute } from '../../shared/Constants';
@@ -31,12 +32,9 @@ export default function NavBar(): ReactElement {
     const isLoggedIn = !!store.user;
     const [selectedKeys, setSelectedKeys] = React.useState<string[]>([]);
     const [debugPanelVisible, setDebugPanelVisible] = useState(false);
+    const [mobileSearchVisible, setMobileSearchVisible] = useState(false);
 
-    useEffect(() => {
-        setSelectedKeys(getSelectedKeysDesktop());
-    }, [location.pathname]);
-
-    const getSelectedKeysDesktop = (): string[] => {
+    const getSelectedKeysDesktop = useCallback((): string[] => {
         if (isLoggedIn && location.pathname === homeRoute) return ['home'];
         if (location.pathname === itemsRoute) return ['items'];
         if (location.pathname === newItemRoute) return ['newItem'];
@@ -44,7 +42,11 @@ export default function NavBar(): ReactElement {
         if (location.pathname === checklistRoute) return ['checklist'];
         if (location.pathname === userApi || location.pathname === loginApi) return ['auth'];
         return [];
-    };
+    }, [isLoggedIn, location.pathname]);
+
+    useEffect(() => {
+        setSelectedKeys(getSelectedKeysDesktop());
+    }, [getSelectedKeysDesktop]);
 
     const countItems = () => {
         // filter items by unique name and count them
@@ -169,71 +171,76 @@ export default function NavBar(): ReactElement {
                     )}
                 </>
             ) : (
-                <div className={style.mobileNav}>
-                    <Menu theme="dark" mode="horizontal" selectedKeys={getSelectedKeysDesktop()} className={style.menu}>
-                        <Menu.Item key="home">
-                            <NavLink to={homeRoute}>
-                                <HomeOutlined className={style.icon} />
-                            </NavLink>
-                        </Menu.Item>
-                        {isLoggedIn && (
-                            <>
-                                <Menu.Item key="checklist">
-                                    <NavLink to={checklistRoute}>
-                                        <CheckSquareOutlined className={style.icon} />
-                                    </NavLink>
-                                </Menu.Item>
-                                <Menu.Item key="items">
-                                    <NavLink to={itemsRoute}>
-                                        <UnorderedListOutlined className={style.icon} />
-                                    </NavLink>
-                                </Menu.Item>
-                                <Menu.Item key="newItem">
-                                    <NavLink to={newItemRoute}>
-                                        <PlusOutlined className={style.icon} />
-                                    </NavLink>
-                                </Menu.Item>
-                                <Menu.Item key="shopping">
-                                    <NavLink to={basketRoute}>
-                                        <Badge offset={[0, 0]} size="small" count={countItems()}>
-                                            <ShoppingCartOutlined className={style.icon} />
-                                        </Badge>
-                                    </NavLink>
-                                </Menu.Item>
-                            </>
-                        )}
-                    </Menu>
-                    {isLoggedIn ? (
-                        <Dropdown overlay={userMenu} trigger={['click']} placement="bottomRight">
-                            <div className={style.userMenuMobile}>
-                                <Avatar
-                                    src={store.user?.image || undefined}
-                                    icon={!store.user?.image ? <UserOutlined /> : undefined}
-                                    className={style.userAvatar}
-                                />
-                            </div>
-                        </Dropdown>
-                    ) : (
-                        <div className={style.userMenuMobile}>
-                            <NavLink to={loginApi}>
-                                <Avatar
-                                    src={store.user?.image || undefined}
-                                    icon={!store.user?.image ? <UserOutlined /> : undefined}
-                                    className={style.userAvatar}
-                                />
-                            </NavLink>
-                        </div>
-                    )}
+                <div className={style.mobileNavContainer}>
+                    <div className={style.mobileNav}>
+                        <Menu theme="dark" mode="horizontal" selectedKeys={getSelectedKeysDesktop()} className={style.menu}>
+                            <Menu.Item key="home">
+                                <NavLink to={homeRoute}>
+                                    <HomeOutlined className={style.icon} />
+                                </NavLink>
+                            </Menu.Item>
+                            {isLoggedIn && (
+                                <>
+                                    <Menu.Item key="checklist">
+                                        <NavLink to={checklistRoute}>
+                                            <CheckSquareOutlined className={style.icon} />
+                                        </NavLink>
+                                    </Menu.Item>
+                                    <Menu.Item key="items">
+                                        <NavLink to={itemsRoute}>
+                                            <UnorderedListOutlined className={style.icon} />
+                                        </NavLink>
+                                    </Menu.Item>
+                                    <Menu.Item key="newItem">
+                                        <NavLink to={newItemRoute}>
+                                            <PlusOutlined className={style.icon} />
+                                        </NavLink>
+                                    </Menu.Item>
+                                    <Menu.Item key="shopping">
+                                        <NavLink to={basketRoute}>
+                                            <Badge offset={[0, 0]} size="small" count={countItems()}>
+                                                <ShoppingCartOutlined className={style.icon} />
+                                            </Badge>
+                                        </NavLink>
+                                    </Menu.Item>
+                                    {/* Search Toggle Button */}
+                                    <Menu.Item key="search" onClick={() => setMobileSearchVisible(!mobileSearchVisible)}>
+                                        <SearchOutlined className={`${style.icon} ${mobileSearchVisible ? style.searchActive : ''}`} />
+                                    </Menu.Item>
+                                </>
+                            )}
+                        </Menu>
 
-                    {/* Debug button for development */}
-                    {process.env.NODE_ENV === 'development' && (
-                        <Button
-                            type="text"
-                            icon={<BugOutlined />}
-                            onClick={() => setDebugPanelVisible(true)}
-                            style={{ color: 'white', marginLeft: 8 }}
-                            title="API Debug Panel"
-                        />
+                        <div className={style.mobileUserSection}>
+                            {isLoggedIn ? (
+                                <Dropdown overlay={userMenu} trigger={['click']} placement="bottomRight">
+                                    <div className={style.userMenuMobile}>
+                                        <Avatar
+                                            src={store.user?.image || undefined}
+                                            icon={!store.user?.image ? <UserOutlined /> : undefined}
+                                            className={style.userAvatar}
+                                        />
+                                    </div>
+                                </Dropdown>
+                            ) : (
+                                <div className={style.userMenuMobile}>
+                                    <NavLink to={loginApi}>
+                                        <Avatar
+                                            src={store.user?.image || undefined}
+                                            icon={!store.user?.image ? <UserOutlined /> : undefined}
+                                            className={style.userAvatar}
+                                        />
+                                    </NavLink>
+                                </div>
+                            )}
+                        </div>
+                    </div>
+
+                    {/* Collapsible Mobile Search */}
+                    {isLoggedIn && mobileSearchVisible && (
+                        <div className={style.mobileSearchCollapsible}>
+                            <GlobalSearch />
+                        </div>
                     )}
                 </div>
             )}
