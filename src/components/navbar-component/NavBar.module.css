@@ -566,12 +566,12 @@
             padding: 6px 12px;
             gap: 8px;
         }
-        
+
         .mobileSearchContainer {
             margin: 0 4px;
             max-width: 200px;
         }
-        
+
         .mobileTopHeader .logo {
             height: 28px;
         }
