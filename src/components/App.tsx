@@ -1,4 +1,4 @@
-import React, { ReactElement } from 'react';
+import React, { ReactElement, useEffect } from 'react';
 import logo from './logo.svg';
 import './App.css';
 import {
@@ -11,7 +11,7 @@ import ScrollToTop from './ScrollToTop';
 import HideRoutes from './HideRoutes';
 import ErrorBoundary from './error-boundary/ErrorBoundary';
 import { usePerformanceMonitoring, useMemoryMonitoring } from '../hooks/usePerformance';
-
+import { useInviteProcessor } from '../hooks/useInviteProcessor';
 
 function App(): ReactElement {
     // Performance-Monitoring in Development
@@ -22,15 +22,26 @@ function App(): ReactElement {
         <ErrorBoundary>
             <StoreProvider>
                 <Router>
-                    <ScrollToTop />
-                    {/* <HideRoutes /> */}
-                    <Layout>
-                        <Routes />
-                    </Layout>
+                    <AppContent />
                 </Router>
             </StoreProvider>
         </ErrorBoundary>
     )
+}
+
+function AppContent(): ReactElement {
+    // Invite Processing für automatisches Gruppenbeitritt (muss innerhalb Router sein)
+    useInviteProcessor();
+
+    return (
+        <>
+            <ScrollToTop />
+            {/* <HideRoutes /> */}
+            <Layout>
+                <Routes />
+            </Layout>
+        </>
+    );
 }
 
 export default App;

@@ -30,13 +30,16 @@ import {
     EditOutlined,
     CameraOutlined,
     UploadOutlined,
-    CompressOutlined
+    CompressOutlined,
+    ShareAltOutlined
 } from '@ant-design/icons';
 import { groupsApiService } from '../../../hooks/useGroupsApi';
-import { GroupModel, GroupMemberModel } from '../../../shared/Models';
+import { GroupModel, GroupMemberModel, UserModel } from '../../../shared/Models';
 import { useApi, useMutation } from '../../../hooks/useApi';
 import { ImageCompressionUtils } from '../../../utils/imageCompressionUtils';
+import InviteButton from '../../invite/InviteButton';
 import styles from './GroupManagement.module.css';
+import { useStore } from '~/store/Store';
 
 const { Title, Text } = Typography;
 const { TextArea } = Input;
@@ -319,6 +322,11 @@ export default function GroupManagement(): React.ReactElement {
         }
     };
 
+    const getUserName = (): string => {
+        const user: UserModel | null = JSON.parse(localStorage.getItem('user') || 'null');
+        return user?.username || user?.email || 'Unbekannt';
+    };
+
     const getRoleText = (role: string): string => {
         switch (role) {
             case 'admin': return 'Administrator';
@@ -405,6 +413,14 @@ export default function GroupManagement(): React.ReactElement {
                                         >
                                             <span className={styles.desktopText} >Code kopieren</span>
                                         </Button>,
+                                        <InviteButton
+                                            key={`share-${group.id}`}
+                                            groupId={group.id.toString()}
+                                            groupName={group.name}
+                                            inviterName={getUserName()}
+                                            size="small"
+                                            disabled={group.role !== 'admin'}
+                                        />,
                                         group.isCreator ? (
                                             <Popconfirm
                                                 key="delete"

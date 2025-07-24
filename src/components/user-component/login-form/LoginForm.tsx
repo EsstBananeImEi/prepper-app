@@ -8,6 +8,7 @@ import { UserModel } from "../../../shared/Models";
 import { itemsRoute } from "../../../shared/Constants";
 import axios from "axios";
 import styles from "./LoginForm.module.css";
+import { useInviteRedirect } from "../../../hooks/useInviteProcessor";
 
 const { Title, Text } = Typography;
 
@@ -27,6 +28,7 @@ export default function AuthForm() {
     const navigate = useNavigate();
     const location = useLocation();
     const { dispatch } = useStore();
+    const { handleLoginSuccess, isFromInvite } = useInviteRedirect();
 
     // Beim Laden der Komponente prüfen wir, ob ein Query-Parameter für resetSuccess vorliegt
     useEffect(() => {
@@ -70,7 +72,13 @@ export default function AuthForm() {
                     image: null,
                 };
                 await actionHandler({ type: "LOGIN_USER", user }, dispatch);
-                navigate(itemsRoute);
+
+                // Verwende Invite-Redirect falls vorhanden, sonst Standard-Navigation
+                if (isFromInvite()) {
+                    handleLoginSuccess();
+                } else {
+                    navigate(itemsRoute);
+                }
             } else if (formMode === 'register') {
                 const user: UserModel = {
                     email: values.email,
@@ -83,7 +91,12 @@ export default function AuthForm() {
                     image: null,
                 };
                 await actionHandler({ type: "REGISTER_USER", user }, dispatch);
-                setInfo("Registrierung erfolgreich. Bitte aktivieren Sie Ihren Account über den in der E-Mail enthaltenen Link, bevor Sie sich einloggen.");
+
+                if (isFromInvite()) {
+                    setInfo("Registrierung erfolgreich. Du wirst automatisch der Gruppe hinzugefügt, sobald du dich einloggst.");
+                } else {
+                    setInfo("Registrierung erfolgreich. Bitte aktivieren Sie Ihren Account über den in der E-Mail enthaltenen Link, bevor Sie sich einloggen.");
+                }
             } else if (formMode === 'forgotPassword') {
                 // Bei 'forgotPassword' senden wir lediglich die E-Mail-Adresse
                 await actionHandler({ type: "FORGOT_PASSWORD", email: values.email }, dispatch);
