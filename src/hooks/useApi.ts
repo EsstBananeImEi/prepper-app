@@ -95,7 +95,7 @@ export function useApi<T>(
         error: null
     });
 
-    const { onSuccess, onError, showNotification = true } = options;
+    const { onSuccess, onError, showNotification = false } = options;
 
     const fetchData = async () => {
         setState(prev => ({ ...prev, loading: true, error: null }));

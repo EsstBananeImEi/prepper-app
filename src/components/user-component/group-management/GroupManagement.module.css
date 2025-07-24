@@ -1,21 +1,41 @@
+/* Basis Container - nimmt maximale Breite ein */
 .container {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 20px;
+    width: 100%;
+    max-width: none;
+    margin: 0;
+    padding: 8px;
+    min-height: 100vh;
 }
 
+/* Header Layout - responsive Flex */
 .header {
     display: flex;
     justify-content: space-between;
-    align-items: center;
+    align-items: flex-start;
     flex-wrap: wrap;
-    gap: 16px;
+    gap: 12px;
     margin-bottom: 16px;
+    width: 100%;
 }
 
+.header>div:first-child {
+    flex: 1;
+    min-width: 200px;
+}
+
+.header>div:last-child {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    align-items: center;
+}
+
+
+/* Empty State */
 .emptyState {
     text-align: center;
     padding: 40px 20px;
+    width: 100%;
 }
 
 .emptyState h4 {
@@ -23,99 +43,301 @@
     margin-bottom: 8px;
 }
 
-/* Desktop-spezifische Verbesserungen */
-@media (min-width: 769px) {
+/* Desktop Layout - Optimale Nutzung des Platzes */
+@media (min-width: 1024px) {
     .container {
-        padding: 24px;
+        padding: 16px 24px;
     }
 
-    /* Bessere Darstellung der List Items auf Desktop */
-    :global(.ant-list-item) {
-        padding: 20px 24px !important;
-        border-radius: 8px;
-        margin-bottom: 16px;
-        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-        transition: box-shadow 0.3s ease;
+    .header {
+        align-items: center;
+        gap: 24px;
+        margin-bottom: 24px;
     }
 
-    :global(.ant-list-item:hover) {
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
-    }
-
-    :global(.ant-list-item-action) {
+    .header>div:last-child {
         gap: 12px;
-        flex-wrap: wrap;
-        margin-left: 16px !important;
+        flex-shrink: 0;
     }
 
-    :global(.ant-list-item-action > li) {
-        margin: 0 4px;
+    .container .listItem {
+        padding: 24px !important;
+        border-radius: 12px;
+        margin-bottom: 16px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+        transition: all 0.3s ease;
+        background: #fff;
+        border: 1px solid #f0f0f0;
     }
 
-    :global(.ant-list-item-action button) {
-        min-width: 100px;
+    .container .listItem:hover {
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+        transform: translateY(-2px);
+    }
+
+    .container .listItem .ant-list-item-action {
+        gap: 16px;
+        flex-wrap: nowrap;
+        margin-left: 24px !important;
+        align-items: center;
+        flex-shrink: 0;
+    }
+
+    .container .listItem .ant-list-item-action>li {
+        margin: 0 8px;
+        flex-shrink: 0;
+    }
+
+    .container .listItem .ant-list-item-action button {
+        min-width: 120px;
+        height: 36px;
+        font-size: 14px;
+    }
+
+    .container .listItem .ant-list-item-meta {
+        flex: 1;
+        min-width: 0;
+        margin-right: 16px;
+    }
+
+    .container .listItem .ant-list-item-meta-content {
+        flex: 1;
+        min-width: 0;
+        word-wrap: break-word;
+        overflow-wrap: break-word;
+    }
+
+    .container .listItem .ant-list-item-meta-title {
+        white-space: normal;
+        word-wrap: break-word;
+        overflow-wrap: break-word;
+    }
+
+    .container .listItem .ant-list-item-meta-description {
+        white-space: nowrap;
+        word-wrap: normal;
+        overflow-wrap: normal;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        max-width: 100%;
     }
 }
 
-/* Tablet Responsive */
-@media (max-width: 768px) and (min-width: 577px) {
+/* Medium Layout - List.Item.Meta über Buttons */
+@media (min-width: 600px) and (max-width: 1000px) {
     .container {
-        padding: 16px;
+        padding: 12px 16px;
+    }
+
+    .header {
+        gap: 16px;
+        margin-bottom: 20px;
+    }
+
+    .container .listItem {
+        padding: 20px !important;
+        border-radius: 8px;
+        margin-bottom: 12px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        transition: box-shadow 0.3s ease;
+        background: #fafafa;
+        border: 1px solid #f0f0f0;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .container .listItem:hover {
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    }
+
+    .container .listItem .ant-list-item-meta {
+        margin-bottom: 16px;
+        flex: none;
+        width: 100%;
+    }
+
+    .container .listItem .ant-list-item-meta-content {
+        flex: 1;
+        min-width: 0;
+        word-wrap: break-word;
+        overflow-wrap: break-word;
+    }
+
+    .container .listItem .ant-list-item-meta-title {
+        white-space: normal;
+        word-wrap: break-word;
+        overflow-wrap: break-word;
+        font-size: 16px;
+        line-height: 1.4;
+    }
+
+    .container .listItem .ant-list-item-meta-description {
+        white-space: nowrap;
+        word-wrap: normal;
+        overflow-wrap: normal;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        max-width: 100%;
+        font-size: 14px;
+        line-height: 1.4;
+    }
+
+    .container .listItem .ant-list-item-action {
+        margin-left: 0 !important;
+        margin-top: 0 !important;
+        display: flex !important;
+        flex-wrap: wrap !important;
+        gap: 12px !important;
+        width: 100% !important;
+        justify-content: flex-start !important;
+        align-self: flex-end;
+    }
+
+    .container .listItem .ant-list-item-action>li {
+        margin: 0 !important;
+        flex: 0 1 auto !important;
+        min-width: 120px !important;
+    }
+
+    .container .listItem .ant-list-item-action button {
+        width: 100% !important;
+        height: 36px !important;
+        font-size: 13px !important;
+        padding: 4px 8px !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        white-space: nowrap !important;
+        overflow: hidden !important;
+        text-overflow: ellipsis !important;
+        box-sizing: border-box !important;
+    }
+}
+
+/* Tablet Landscape - Optimiert für mittlere Bildschirme */
+@media (min-width: 769px) and (max-width: 1023px) {
+    .container {
+        padding: 12px 16px;
+    }
+
+    .header {
+        gap: 16px;
+        margin-bottom: 20px;
+    }
+
+    .container .listItem {
+        padding: 20px !important;
+        border-radius: 8px;
+        margin-bottom: 12px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        transition: box-shadow 0.3s ease;
+        background: #fafafa;
+        border: 1px solid #f0f0f0;
+    }
+
+    .container .listItem:hover {
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    }
+
+    .container .listItem :global(.ant-list-item-action) {
+        gap: 12px;
+        flex-wrap: wrap;
+        margin-left: 16px !important;
+        justify-content: flex-end;
+    }
+
+    .container .listItem :global(.ant-list-item-action > li) {
+        margin: 2px 4px;
+        flex: 0 0 auto;
+    }
+
+    .container .listItem :global(.ant-list-item-action button) {
+        min-width: 100px;
+        height: 32px;
+    }
+}
+
+/* Tablet Portrait - Responsive Anpassung */
+@media (min-width: 577px) and (max-width: 768px) {
+    .container {
+        padding: 12px;
     }
 
     .header {
         flex-direction: column;
         align-items: stretch;
-        gap: 12px;
+        gap: 16px;
+        text-align: center;
+    }
+
+    .header>div:first-child h4 {
+        text-align: center;
+        margin-bottom: 8px;
     }
 
     .header>div:last-child {
-        display: flex;
-        gap: 8px;
-        flex-wrap: wrap;
         justify-content: center;
+        gap: 12px;
     }
 
     .header button {
         flex: 1;
         min-width: 140px;
         max-width: 200px;
+        height: 40px;
     }
 
-    /* List Items auf Tablet */
-    :global(.ant-list-item) {
-        padding: 16px !important;
-        flex-direction: column;
-        align-items: stretch;
-    }
-
-    :global(.ant-list-item-meta) {
+    .container .listItem {
+        padding: 18px !important;
+        border-radius: 8px;
         margin-bottom: 12px;
+        background: #fafafa;
+        border: 1px solid #e8e8e8;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
     }
 
-    :global(.ant-list-item-action) {
+    .container .listItem :global(.ant-list-item-meta) {
+        margin-bottom: 16px;
+        text-align: left;
+    }
+
+    .container .listItem :global(.ant-list-item-action) {
         margin-left: 0 !important;
-        display: flex;
-        flex-wrap: wrap;
-        gap: 8px;
-        justify-content: center;
+        margin-top: 16px !important;
+        display: flex !important;
+        flex-wrap: wrap !important;
+        gap: 8px !important;
+        width: 100% !important;
+        justify-content: flex-start !important;
     }
 
-    :global(.ant-list-item-action > li) {
-        margin: 0;
-        flex: 1;
-        min-width: 120px;
+    .container .listItem :global(.ant-list-item-action > li) {
+        margin: 0 !important;
+        flex: 1 1 0 !important;
+        min-width: 0 !important;
+        max-width: none !important;
+        width: 0 !important;
     }
 
-    :global(.ant-list-item-action button) {
-        width: 100%;
+    .container .listItem :global(.ant-list-item-action button) {
+        width: 100% !important;
+        height: 36px !important;
+        font-size: 13px !important;
+        padding: 4px 6px !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        white-space: nowrap !important;
+        overflow: hidden !important;
+        text-overflow: ellipsis !important;
+        box-sizing: border-box !important;
     }
 }
 
-/* Mobile Responsive */
+/* Mobile Layout - Kompakt und übersichtlich */
 @media (max-width: 576px) {
     .container {
-        padding: 12px;
+        padding: 8px;
         margin: 0;
     }
 
@@ -123,81 +345,110 @@
         flex-direction: column;
         align-items: stretch;
         gap: 12px;
+        text-align: center;
     }
 
     .header>div:first-child h4 {
         text-align: center;
         font-size: 18px;
+        margin-bottom: 12px;
     }
 
     .header>div:last-child {
         display: flex;
-        flex-direction: column;
-        gap: 8px;
+        flex-direction: row;
+        flex-wrap: nowrap;
+        gap: 6px;
+        width: 100%;
+        justify-content: center;
     }
 
     .header button {
-        width: 100%;
+        flex: 1;
+        min-width: 0;
+        max-width: 180px;
         height: 40px;
+        font-size: 13px;
+        font-weight: 500;
+        padding: 4px 6px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
     }
 
-    /* List Items auf Mobile komplett überarbeitet */
-    :global(.ant-list-item) {
+    .container .listItem {
         padding: 16px 12px !important;
-        flex-direction: column !important;
-        align-items: stretch !important;
         border-radius: 8px;
         margin-bottom: 12px;
         background: #fafafa;
         border: 1px solid #f0f0f0;
+        box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
     }
 
-    :global(.ant-list-item-meta) {
-        margin-bottom: 12px !important;
+    .container .listItem :global(.ant-list-item-meta) {
+        margin-bottom: 16px !important;
         text-align: left;
     }
 
-    :global(.ant-list-item-meta-avatar) {
+    .container .listItem :global(.ant-list-item-meta-avatar) {
         margin-right: 12px !important;
         align-self: flex-start;
     }
 
-    :global(.ant-list-item-meta-content) {
+    .container .listItem :global(.ant-list-item-meta-content) {
         flex: 1;
+        min-width: 0;
     }
 
-    :global(.ant-list-item-action) {
+    .container .listItem :global(.ant-list-item-meta-title) {
+        font-size: 16px !important;
+        line-height: 1.4 !important;
+        margin-bottom: 8px !important;
+    }
+
+    .container .listItem :global(.ant-list-item-meta-description) {
+        font-size: 14px !important;
+        line-height: 1.4 !important;
+    }
+
+    .container .listItem :global(.ant-list-item-action) {
         margin-left: 0 !important;
-        margin-top: 12px !important;
-        display: grid !important;
-        grid-template-columns: repeat(2, 1fr) !important;
+        margin-top: 16px !important;
+        display: flex !important;
+        flex-wrap: wrap !important;
         gap: 8px !important;
         width: 100% !important;
+        justify-content: flex-start !important;
     }
 
-    :global(.ant-list-item-action > li) {
+    .container .listItem :global(.ant-list-item-action > li) {
         margin: 0 !important;
-        width: 100% !important;
+        flex: 1 1 0 !important;
+        min-width: 0 !important;
+        max-width: none !important;
+        width: 0 !important;
     }
 
-    :global(.ant-list-item-action button) {
+    .container .listItem :global(.ant-list-item-action button) {
         width: 100% !important;
-        height: 32px !important;
-        font-size: 12px !important;
-        padding: 4px 8px !important;
+        height: 36px !important;
+        font-size: 13px !important;
+        padding: 4px 6px !important;
         display: flex !important;
         align-items: center !important;
         justify-content: center !important;
+        white-space: nowrap !important;
+        overflow: hidden !important;
+        text-overflow: ellipsis !important;
+        box-sizing: border-box !important;
     }
 
-    /* Spezielle Behandlung für Buttons mit Text */
-    :global(.ant-list-item-action button span:last-child) {
-        font-size: 11px;
+    .container .listItem :global(.ant-list-item-action button span:last-child) {
+        font-size: 12px;
     }
 
-    /* Empty State auf Mobile */
     .emptyState {
-        padding: 20px 10px;
+        padding: 24px 16px;
     }
 
     .emptyState h4 {
@@ -205,96 +456,181 @@
     }
 }
 
-/* Extra kleine Screens (< 400px) */
+/* Sehr kleine Bildschirme - Ultra kompakt */
 @media (max-width: 400px) {
     .container {
-        padding: 8px;
+        padding: 4px;
+    }
+
+    .header>div:first-child {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 8px;
+        text-align: center;
+        width: 100%;
     }
 
     .header>div:first-child h4 {
         font-size: 16px;
     }
 
-    :global(.ant-list-item) {
-        padding: 12px 8px !important;
-        margin-bottom: 8px;
+    /* Header Button als grid buttons immer nebeneinander */
+    .header>div:last-child {
+        display: flex;
+        flex-direction: row;
+        flex-wrap: nowrap;
+        gap: 4px;
+        width: 100%;
+        justify-content: center;
     }
 
-    :global(.ant-list-item-action button) {
-        height: 28px !important;
-        font-size: 11px !important;
+    .header button {
+        flex: 1;
+        min-width: 0;
+        max-width: 150px;
+        height: 36px;
+        font-size: 12px;
+        padding: 4px 2px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .container .listItem {
+        padding: 12px 8px !important;
+        margin-bottom: 8px;
+        border-radius: 6px;
+    }
+
+    .container .listItem :global(.ant-list-item-meta-title) {
+        font-size: 15px !important;
+    }
+
+    .container .listItem :global(.ant-list-item-meta-description) {
+        font-size: 13px !important;
+    }
+
+    .container .listItem :global(.ant-list-item-action button) {
+        height: 32px !important;
+        font-size: 12px !important;
         padding: 2px 6px !important;
     }
 
-    :global(.ant-tag) {
+    .container :global(.ant-tag) {
         font-size: 10px;
         padding: 0 4px;
         line-height: 16px;
     }
+
+    .emptyState {
+        padding: 16px 8px;
+    }
 }
 
-/* Modal Responsive */
+/* Buttons 2x2 Grid Layout für kleine Bildschirme */
 @media (max-width: 480px) {
-    :global(.ant-modal) {
+    .container .listItem :global(.ant-list-item-action) {
+        margin-left: 0 !important;
+        margin-top: 16px !important;
+        display: grid !important;
+        grid-template-columns: 1fr 1fr !important;
+        grid-template-rows: auto auto !important;
+        gap: 8px !important;
+        width: 100% !important;
+        justify-content: stretch !important;
+    }
+
+    .container .listItem :global(.ant-list-item-action > li) {
+        margin: 0 !important;
+        width: 100% !important;
+        display: flex !important;
+    }
+
+    .container .listItem .ant-list-item-action button {
+        width: 100% !important;
+        height: 40px !important;
+        font-size: 12px !important;
+        padding: 4px 8px !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        white-space: nowrap !important;
+        overflow: hidden !important;
+        text-overflow: ellipsis !important;
+        box-sizing: border-box !important;
+        min-height: 40px !important;
+    }
+
+    .container :global(.ant-modal) {
         margin: 8px !important;
         max-width: calc(100vw - 16px) !important;
         top: 20px !important;
     }
 
-    :global(.ant-modal-content) {
+    .container :global(.ant-modal-content) {
         border-radius: 8px;
     }
 
-    :global(.ant-modal-body) {
+    .container :global(.ant-modal-body) {
         padding: 16px;
     }
 
-    :global(.ant-modal-header) {
+    .container :global(.ant-modal-header) {
         padding: 16px 16px 8px 16px;
+    }
+
+    button.copyButton {
+        width: 50px;
+
     }
 }
 
-/* Zusätzliche Fixes für Ant Design Components */
-:global(.ant-card-body) {
-    padding: 16px;
-}
 
-:global(.ant-list) {
-    background: transparent;
-}
-
-/* Tag-Styling Verbesserungen */
-:global(.ant-tag) {
-    margin: 2px;
-    border-radius: 4px;
-}
-
-/* Button-Gruppe Styling */
+/* Text-Responsive Klassen */
 @media (max-width: 576px) {
-    :global(.ant-space-compact) {
+    .container :global(.ant-space-compact) {
         width: 100%;
     }
 
-    :global(.ant-space-compact .ant-btn) {
+    .container :global(.ant-space-compact .ant-btn) {
         flex: 1;
     }
 
-    /* Hide text on mobile, show only icons */
-    :global(.desktop-text) {
+    .desktopText {
         display: none;
     }
 
-    :global(.mobile-text) {
+    .mobileText {
         display: inline;
     }
 }
 
 @media (min-width: 577px) {
-    :global(.desktop-text) {
+    .desktopText {
         display: inline;
     }
 
-    :global(.mobile-text) {
+    .mobileText {
         display: none;
     }
+}
+
+/* Accessibility und Performance Verbesserungen */
+.container .listItem {
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    will-change: transform, box-shadow;
+}
+
+.container .listItem:focus-within {
+    outline: 2px solid #1890ff;
+    outline-offset: 2px;
+}
+
+/* Scroll-Performance Optimierung */
+.container {
+    contain: layout style;
 }

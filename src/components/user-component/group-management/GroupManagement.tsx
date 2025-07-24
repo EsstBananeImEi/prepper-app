@@ -13,7 +13,8 @@ import {
     Typography,
     Divider,
     Avatar,
-    Tooltip
+    Tooltip,
+    Upload
 } from 'antd';
 import {
     PlusOutlined,
@@ -24,7 +25,10 @@ import {
     UsergroupAddOutlined,
     ExclamationCircleOutlined,
     LoginOutlined,
-    LogoutOutlined
+    LogoutOutlined,
+    EditOutlined,
+    CameraOutlined,
+    UploadOutlined
 } from '@ant-design/icons';
 import { groupsApiService } from '../../../hooks/useGroupsApi';
 import { GroupModel, GroupMemberModel } from '../../../shared/Models';
@@ -37,6 +41,14 @@ const { TextArea } = Input;
 interface CreateGroupForm {
     name: string;
     description?: string;
+    image?: File;
+}
+
+interface UpdateGroupForm {
+    name: string;
+    description?: string;
+    image?: File;
+    removeImage?: boolean;
 }
 
 interface InviteUserForm {
@@ -49,13 +61,18 @@ interface JoinGroupForm {
 
 export default function GroupManagement(): React.ReactElement {
     const [createModalVisible, setCreateModalVisible] = useState(false);
+    const [updateModalVisible, setUpdateModalVisible] = useState(false);
     const [inviteModalVisible, setInviteModalVisible] = useState(false);
     const [joinModalVisible, setJoinModalVisible] = useState(false);
     const [membersModalVisible, setMembersModalVisible] = useState(false);
     const [selectedGroup, setSelectedGroup] = useState<GroupModel | null>(null);
     const [groupMembers, setGroupMembers] = useState<GroupMemberModel[]>([]);
+    const [createImageFile, setCreateImageFile] = useState<File | null>(null);
+    const [updateImageFile, setUpdateImageFile] = useState<File | null>(null);
+    const [removeCurrentImage, setRemoveCurrentImage] = useState<boolean>(false);
 
     const [createForm] = Form.useForm<CreateGroupForm>();
+    const [updateForm] = Form.useForm<UpdateGroupForm>();
     const [inviteForm] = Form.useForm<InviteUserForm>();
     const [joinForm] = Form.useForm<JoinGroupForm>();
 
@@ -66,12 +83,36 @@ export default function GroupManagement(): React.ReactElement {
     );
 
     const { mutate: createGroup, loading: createLoading } = useMutation(
-        (data: CreateGroupForm) => groupsApiService.createGroup(data),
+        (data: CreateGroupForm) => groupsApiService.createGroup({
+            name: data.name,
+            description: data.description,
+            image: createImageFile || undefined
+        }),
         {
             onSuccess: () => {
                 message.success('Gruppe erfolgreich erstellt');
                 setCreateModalVisible(false);
                 createForm.resetFields();
+                setCreateImageFile(null);
+                refetchGroups();
+            }
+        }
+    );
+
+    const { mutate: updateGroup, loading: updateLoading } = useMutation(
+        ({ groupId, data }: { groupId: number; data: UpdateGroupForm }) => groupsApiService.updateGroup(groupId, {
+            name: data.name,
+            description: data.description,
+            image: removeCurrentImage ? undefined : (updateImageFile || undefined)
+        }),
+        {
+            onSuccess: () => {
+                message.success('Gruppe erfolgreich aktualisiert');
+                setUpdateModalVisible(false);
+                updateForm.resetFields();
+                setSelectedGroup(null);
+                setUpdateImageFile(null);
+                setRemoveCurrentImage(false);
                 refetchGroups();
             }
         }
@@ -83,6 +124,18 @@ export default function GroupManagement(): React.ReactElement {
             onSuccess: () => {
                 message.success('Gruppe erfolgreich gelöscht');
                 refetchGroups();
+            }
+        }
+    );
+
+    const { mutate: removeUserFromGroup, loading: removeUserLoading } = useMutation(
+        ({ groupId, userId }: { groupId: number; userId: number }) => groupsApiService.removeUserFromGroup(groupId, userId),
+        {
+            onSuccess: () => {
+                message.success('Benutzer erfolgreich aus der Gruppe entfernt');
+                if (selectedGroup) {
+                    handleShowMembers(selectedGroup);
+                }
             }
         }
     );
@@ -135,9 +188,60 @@ export default function GroupManagement(): React.ReactElement {
         }
     };
 
+    const handleEditGroup = (group: GroupModel) => {
+        setSelectedGroup(group);
+        setUpdateImageFile(null);
+        setRemoveCurrentImage(false);
+        updateForm.setFieldsValue({
+            name: group.name,
+            description: group.description || ''
+        });
+        setUpdateModalVisible(true);
+    };
+
+    const handleRemoveUser = async (userId: number) => {
+        if (selectedGroup) {
+            removeUserFromGroup({ groupId: selectedGroup.id, userId });
+        }
+    };
+
     const handleCopyInviteCode = (inviteCode: string) => {
         navigator.clipboard.writeText(inviteCode);
         message.success('Einladungscode kopiert');
+    };
+
+    const handleCreateImageUpload = (file: File) => {
+        const isImage = file.type.startsWith('image/');
+        if (!isImage) {
+            message.error('Bitte wählen Sie eine Bilddatei aus');
+            return false;
+        }
+
+        const isLt5M = file.size / 1024 / 1024 < 5;
+        if (!isLt5M) {
+            message.error('Das Bild darf nicht größer als 5MB sein');
+            return false;
+        }
+
+        setCreateImageFile(file);
+        return false;
+    };
+
+    const handleUpdateImageUpload = (file: File) => {
+        const isImage = file.type.startsWith('image/');
+        if (!isImage) {
+            message.error('Bitte wählen Sie eine Bilddatei aus');
+            return false;
+        }
+
+        const isLt5M = file.size / 1024 / 1024 < 5;
+        if (!isLt5M) {
+            message.error('Das Bild darf nicht größer als 5MB sein');
+            return false;
+        }
+
+        setUpdateImageFile(file);
+        return false;
     };
 
     const getRoleColor = (role: string): string => {
@@ -159,6 +263,7 @@ export default function GroupManagement(): React.ReactElement {
     return (
         <div className={styles.container}>
             <Card
+                className={styles.card}
                 title={
                     <div className={styles.header}>
                         <div>
@@ -187,12 +292,13 @@ export default function GroupManagement(): React.ReactElement {
                 bodyStyle={{ padding: '0' }}
             >
                 {groups && groups.length > 0 ? (
-                    <div style={{ padding: '16px' }}>
+                    <div className={styles.listContainer} style={{ padding: '16px' }}>
                         <List
                             dataSource={groups}
                             split={false}
                             renderItem={(group) => (
                                 <List.Item
+                                    className={styles.listItem}
                                     actions={[
                                         <Button
                                             key="members"
@@ -200,7 +306,16 @@ export default function GroupManagement(): React.ReactElement {
                                             onClick={() => handleShowMembers(group)}
                                             size="small"
                                         >
-                                            <span className="desktop-text">Mitglieder</span> ({group.memberCount})
+                                            <span className={styles.desktopText}>Mitglieder</span> ({group.memberCount})
+                                        </Button>,
+                                        <Button
+                                            key="edit"
+                                            icon={<EditOutlined />}
+                                            onClick={() => handleEditGroup(group)}
+                                            disabled={group.role !== 'admin' && !group.isCreator}
+                                            size="small"
+                                        >
+                                            <span className={styles.desktopText}>Bearbeiten</span>
                                         </Button>,
                                         <Button
                                             key="invite"
@@ -212,15 +327,17 @@ export default function GroupManagement(): React.ReactElement {
                                             disabled={group.role !== 'admin'}
                                             size="small"
                                         >
-                                            <span className="desktop-text">Einladen</span>
+                                            <span className={styles.desktopText}>Einladen</span>
                                         </Button>,
-                                        <Tooltip title="Einladungscode kopieren" key="copy">
-                                            <Button
-                                                icon={<CopyOutlined />}
-                                                onClick={() => handleCopyInviteCode(group.inviteCode)}
-                                                size="small"
-                                            />
-                                        </Tooltip>,
+                                        <Button
+                                            key={`copy-${group.id}`}
+                                            icon={<CopyOutlined />}
+                                            onClick={() => handleCopyInviteCode(group.inviteCode)}
+                                            size="small"
+                                            className={styles.copyButton}
+                                        >
+                                            <span className={styles.desktopText} >Code kopieren</span>
+                                        </Button>,
                                         group.isCreator ? (
                                             <Popconfirm
                                                 key="delete"
@@ -236,7 +353,7 @@ export default function GroupManagement(): React.ReactElement {
                                                     loading={deleteLoading}
                                                     size="small"
                                                 >
-                                                    <span className="mobile-text">Löschen</span>
+                                                    <span className={styles.mobileText}>Löschen</span>
                                                 </Button>
                                             </Popconfirm>
                                         ) : (
@@ -266,7 +383,17 @@ export default function GroupManagement(): React.ReactElement {
                                     }}
                                 >
                                     <List.Item.Meta
-                                        avatar={<Avatar icon={<UsergroupAddOutlined />} size="large" />}
+                                        avatar={
+                                            <Avatar
+                                                src={group.image || undefined}
+                                                icon={!group.image && <UsergroupAddOutlined />}
+                                                size="large"
+                                                onError={() => {
+                                                    console.warn('Avatar image failed to load for group:', group.name);
+                                                    return false;
+                                                }}
+                                            />
+                                        }
                                         title={
                                             <Space wrap>
                                                 <span style={{ fontWeight: 'bold' }}>{group.name}</span>
@@ -277,13 +404,28 @@ export default function GroupManagement(): React.ReactElement {
                                             </Space>
                                         }
                                         description={
-                                            <div>
+                                            <div style={{
+                                                textWrap: 'nowrap',
+                                                overflow: 'hidden',
+                                                textOverflow: 'ellipsis',
+                                                maxWidth: '100%'
+                                            }}>
                                                 {group.description && (
-                                                    <div style={{ marginBottom: '8px' }}>
+                                                    <div style={{
+                                                        marginBottom: '8px',
+                                                        overflow: 'hidden',
+                                                        textOverflow: 'ellipsis',
+                                                        whiteSpace: 'nowrap'
+                                                    }}>
                                                         <Text>{group.description}</Text>
                                                     </div>
                                                 )}
-                                                <Text type="secondary">
+                                                <Text type="secondary" style={{
+                                                    overflow: 'hidden',
+                                                    textOverflow: 'ellipsis',
+                                                    whiteSpace: 'nowrap',
+                                                    display: 'block'
+                                                }}>
                                                     Einladungscode: <Text code copyable>{group.inviteCode}</Text>
                                                 </Text>
                                             </div>
@@ -311,6 +453,7 @@ export default function GroupManagement(): React.ReactElement {
                 onCancel={() => {
                     setCreateModalVisible(false);
                     createForm.resetFields();
+                    setCreateImageFile(null);
                 }}
                 footer={null}
             >
@@ -340,9 +483,46 @@ export default function GroupManagement(): React.ReactElement {
                         />
                     </Form.Item>
 
+                    <Form.Item label="Gruppenbild (optional)">
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+                            <Avatar
+                                src={createImageFile ? URL.createObjectURL(createImageFile) : undefined}
+                                icon={!createImageFile && <UsergroupAddOutlined />}
+                                size={64}
+                            />
+                            <div>
+                                <Upload
+                                    accept="image/*"
+                                    showUploadList={false}
+                                    beforeUpload={handleCreateImageUpload}
+                                >
+                                    <Button icon={<UploadOutlined />}>
+                                        Bild auswählen
+                                    </Button>
+                                </Upload>
+                                {createImageFile && (
+                                    <Button
+                                        icon={<DeleteOutlined />}
+                                        danger
+                                        style={{ marginLeft: '8px' }}
+                                        onClick={() => setCreateImageFile(null)}
+                                    >
+                                        Entfernen
+                                    </Button>
+                                )}
+                                <div style={{ marginTop: '8px', color: '#666', fontSize: '12px' }}>
+                                    Unterstützte Formate: JPG, PNG, GIF (max. 5MB)
+                                </div>
+                            </div>
+                        </div>
+                    </Form.Item>
+
                     <Form.Item style={{ marginBottom: 0 }}>
                         <Space style={{ width: '100%', justifyContent: 'flex-end' }}>
-                            <Button onClick={() => setCreateModalVisible(false)}>
+                            <Button onClick={() => {
+                                setCreateModalVisible(false);
+                                setCreateImageFile(null);
+                            }}>
                                 Abbrechen
                             </Button>
                             <Button
@@ -351,6 +531,106 @@ export default function GroupManagement(): React.ReactElement {
                                 loading={createLoading}
                             >
                                 Erstellen
+                            </Button>
+                        </Space>
+                    </Form.Item>
+                </Form>
+            </Modal>
+
+            {/* Gruppe bearbeiten Modal */}
+            <Modal
+                title="Gruppe bearbeiten"
+                open={updateModalVisible}
+                onCancel={() => {
+                    setUpdateModalVisible(false);
+                    updateForm.resetFields();
+                    setSelectedGroup(null);
+                    setUpdateImageFile(null);
+                    setRemoveCurrentImage(false);
+                }}
+                footer={null}
+            >
+                <Form
+                    form={updateForm}
+                    layout="vertical"
+                    onFinish={(values) => selectedGroup && updateGroup({ groupId: selectedGroup.id, data: values })}
+                >
+                    <Form.Item
+                        label="Gruppenname"
+                        name="name"
+                        rules={[
+                            { required: true, message: 'Bitte geben Sie einen Gruppennamen ein' },
+                            { min: 3, message: 'Der Gruppenname muss mindestens 3 Zeichen lang sein' }
+                        ]}
+                    >
+                        <Input placeholder="z.B. Familie Schmidt" />
+                    </Form.Item>
+
+                    <Form.Item
+                        label="Beschreibung (optional)"
+                        name="description"
+                    >
+                        <TextArea
+                            placeholder="Beschreibung der Gruppe..."
+                            rows={3}
+                        />
+                    </Form.Item>
+
+                    <Form.Item label="Gruppenbild (optional)">
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+                            <Avatar
+                                src={updateImageFile ? URL.createObjectURL(updateImageFile) : (removeCurrentImage ? undefined : selectedGroup?.image)}
+                                icon={(!updateImageFile && (removeCurrentImage || !selectedGroup?.image)) && <UsergroupAddOutlined />}
+                                size={64}
+                            />
+                            <div>
+                                <Upload
+                                    accept="image/*"
+                                    showUploadList={false}
+                                    beforeUpload={handleUpdateImageUpload}
+                                >
+                                    <Button icon={<UploadOutlined />}>
+                                        {updateImageFile ? 'Anderes Bild wählen' : (selectedGroup?.image && !removeCurrentImage ? 'Bild ändern' : 'Bild auswählen')}
+                                    </Button>
+                                </Upload>
+                                {(updateImageFile || (selectedGroup?.image && !removeCurrentImage)) && (
+                                    <Button
+                                        icon={<DeleteOutlined />}
+                                        danger
+                                        style={{ marginLeft: '8px' }}
+                                        onClick={() => {
+                                            if (updateImageFile) {
+                                                setUpdateImageFile(null);
+                                            } else {
+                                                setRemoveCurrentImage(true);
+                                            }
+                                        }}
+                                    >
+                                        {updateImageFile ? 'Neue Auswahl entfernen' : 'Aktuelles Bild entfernen'}
+                                    </Button>
+                                )}
+                                <div style={{ marginTop: '8px', color: '#666', fontSize: '12px' }}>
+                                    Unterstützte Formate: JPG, PNG, GIF (max. 5MB)
+                                </div>
+                            </div>
+                        </div>
+                    </Form.Item>
+
+                    <Form.Item style={{ marginBottom: 0 }}>
+                        <Space style={{ width: '100%', justifyContent: 'flex-end' }}>
+                            <Button onClick={() => {
+                                setUpdateModalVisible(false);
+                                setUpdateImageFile(null);
+                                setRemoveCurrentImage(false);
+                            }}>
+                                Abbrechen
+                            </Button>
+                            <Button
+                                type="primary"
+                                htmlType="submit"
+                                loading={updateLoading}
+                            >
+                                Speichern
                             </Button>
                         </Space>
                     </Form.Item>
@@ -470,7 +750,29 @@ export default function GroupManagement(): React.ReactElement {
                 <List
                     dataSource={groupMembers}
                     renderItem={(member) => (
-                        <List.Item>
+                        <List.Item
+                            actions={
+                                selectedGroup?.role === 'admin' && member.role !== 'admin' ? [
+                                    <Popconfirm
+                                        key="remove"
+                                        title={`Sind Sie sicher, dass Sie ${member.username} aus der Gruppe entfernen möchten?`}
+                                        icon={<ExclamationCircleOutlined style={{ color: 'orange' }} />}
+                                        onConfirm={() => handleRemoveUser(member.id)}
+                                        okText="Ja"
+                                        cancelText="Nein"
+                                    >
+                                        <Button
+                                            danger
+                                            size="small"
+                                            icon={<DeleteOutlined />}
+                                            loading={removeUserLoading}
+                                        >
+                                            Entfernen
+                                        </Button>
+                                    </Popconfirm>
+                                ] : undefined
+                            }
+                        >
                             <List.Item.Meta
                                 avatar={<Avatar icon={<UserOutlined />} />}
                                 title={

@@ -28,6 +28,9 @@ export const groupInviteApi = (id: number | string): string => `${groupsApi}/${i
 export const groupJoinApi = (code: string): string => `${groupsApi}/join/${code}`;
 export const groupJoinInvitationApi = (token: string): string => `${groupsApi}/join-invitation/${token}`;
 export const groupLeaveApi = (id: number | string): string => `${groupsApi}/${id}/leave`;
+export const groupUpdateApi = (id: number | string): string => `${groupsApi}/${id}`;
+export const groupDeleteApi = (id: number | string): string => `${groupsApi}/${id}`;
+export const groupRemoveUserApi = (id: number | string, userId: number | string): string => `${groupsApi}/${id}/remove/${userId}`;
 
 // ✅ Anpassung der Frontend-Routen
 export const iconRoute = (icon: string): string => `/static/StorageItemsIcons/${icon}`;

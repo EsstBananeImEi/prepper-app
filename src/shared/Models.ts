@@ -15,6 +15,7 @@ export interface GroupModel {
     id: number;
     name: string;
     description?: string;
+    image?: string;
     role: 'admin' | 'member';
     memberCount: number;
     inviteCode: string;
