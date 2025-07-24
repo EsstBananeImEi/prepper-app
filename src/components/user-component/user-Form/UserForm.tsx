@@ -19,9 +19,7 @@ export default function UserProfileForm(): JSX.Element {
     const [form] = Form.useForm<FormValues>();
     const [loading, setLoading] = useState<boolean>(false);
     const [error, setError] = useState<string>("");
-    const [image, setImage] = useState<string | null>(store.user?.image || null);
-
-    const customUpload = async ({ file, onSuccess, onError }: UploadRequestOption): Promise<void> => {
+    const [image, setImage] = useState<string | null>(store.user?.image || null); const customUpload = async ({ file, onSuccess, onError }: UploadRequestOption): Promise<void> => {
         if (!(file as File).type.startsWith("image/")) {
             message.error("Nur Bilddateien erlaubt.");
             return;

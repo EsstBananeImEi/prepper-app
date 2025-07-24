@@ -6,6 +6,7 @@ export const sortByName = (sortBy: string): string => `?_sort=${sortBy}`;
 export const loginApi = `/login`;
 export const registerApi = `/register`;
 export const userApi = `/user`;
+export const adminApi = `/admin`;
 export const itemsApi = `/items`;
 export const basketItemsApi = `/basket`; // Oder den richtigen API-Pfad
 export const updateBasketItemApi = (itemId: number | string): string => `${basketItemsApi}/${itemId}`;
@@ -25,6 +26,7 @@ export const homeRoute = '/home';
 export const itemsRoute = '/items';
 export const basketRoute = '/basket';
 export const checklistRoute = '/checklist';
+export const adminRoute = '/admin';
 export const itemIdRoute = (id: number | string): string => `${itemsRoute}/${String(id)}`;
 export const newItemRoute = `${itemsRoute}/new`;
 export const editItemRoute = (id: number | string): string => `${itemIdRoute(id)}/edit`;

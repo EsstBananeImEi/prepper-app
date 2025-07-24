@@ -23,24 +23,7 @@ export default function Layout(props: Props): ReactElement {
                 {props.children}
             </Content>
 
-            {/* Debug Panel for development */}
-            {process.env.NODE_ENV === 'development' && (
-                <>
-                    <Button
-                        type="primary"
-                        shape="circle"
-                        icon={<BugOutlined />}
-                        size="large"
-                        onClick={() => setDebugPanelVisible(true)}
-                        className={styles.debugButton}
-                        title="API Debug Panel"
-                    />
-                    <ApiDebugPanel
-                        visible={debugPanelVisible}
-                        onClose={() => setDebugPanelVisible(false)}
-                    />
-                </>
-            )}
+
 
             <Footer className={styles.footer}>Prepper App ©{new Date().getFullYear()} Created by Sebastian Meine</Footer>
         </AntdLayout>

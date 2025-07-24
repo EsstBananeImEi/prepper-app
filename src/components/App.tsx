@@ -12,6 +12,7 @@ import HideRoutes from './HideRoutes';
 import ErrorBoundary from './error-boundary/ErrorBoundary';
 import { usePerformanceMonitoring, useMemoryMonitoring } from '../hooks/usePerformance';
 
+
 function App(): ReactElement {
     // Performance-Monitoring in Development
     usePerformanceMonitoring();

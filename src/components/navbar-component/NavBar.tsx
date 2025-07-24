@@ -10,18 +10,20 @@ import {
     BugOutlined,
     SearchOutlined,
     MenuOutlined,
-    CloseOutlined
+    CloseOutlined,
+    SettingOutlined
 } from '@ant-design/icons';
 import { Badge, Layout, Menu, Avatar, Dropdown, Card, Typography, Button } from 'antd';
 import React, { ReactElement, useEffect, useState, useCallback } from 'react';
 import { NavLink, useLocation, useNavigate } from "react-router-dom";
 import { useDemensions } from '../../hooks/StorageApi';
-import { homeRoute, basketRoute, itemsRoute, newItemRoute, userApi, loginApi, checklistRoute } from '../../shared/Constants';
+import { homeRoute, basketRoute, itemsRoute, newItemRoute, userApi, loginApi, checklistRoute, adminRoute } from '../../shared/Constants';
 import logo from '../../static/images/prepper-app.svg';
 import { useStore } from '../../store/Store';
 import style from './NavBar.module.css';
 import GlobalSearch from '../search/GlobalSearch';
 import ApiDebugPanel from '../debug/ApiDebugPanel';
+import DraggableDebugButton from '../debug/DraggableDebugButton';
 
 const { Text } = Typography;
 
@@ -36,6 +38,12 @@ export default function NavBar(): ReactElement {
     const [debugPanelVisible, setDebugPanelVisible] = useState(false);
     const [mobileSearchVisible, setMobileSearchVisible] = useState(false);
     const [burgerMenuVisible, setBurgerMenuVisible] = useState(false);
+
+    // Check if user is admin and debug panel is enabled
+    const isAdmin = store.user?.isAdmin ?? false;
+
+    const debugPanelEnabled = localStorage.getItem('debugPanelEnabled') === 'true';
+    const shouldShowDebugButton = isLoggedIn && isAdmin && debugPanelEnabled;
 
     // Check if we should show burger menu (screen width < 430px)
     const shouldShowBurgerMenu = dimensions.width <= 430;
@@ -105,18 +113,14 @@ export default function NavBar(): ReactElement {
                         <Menu.Item key="profile" icon={<ProfileOutlined />}>
                             <NavLink to={userApi}>Profil</NavLink>
                         </Menu.Item>
+                        {isAdmin && (
+                            <Menu.Item key="admin" icon={<SettingOutlined />}>
+                                <NavLink to={adminRoute}>Admin-Panel</NavLink>
+                            </Menu.Item>
+                        )}
                         <Menu.Item key="logout" icon={<LogoutOutlined />} onClick={handleLogout}>
                             Logout
                         </Menu.Item>
-                        {process.env.NODE_ENV === 'development' && (
-                            <Menu.Item
-                                key="debug"
-                                icon={<BugOutlined />}
-                                onClick={() => setDebugPanelVisible(true)}
-                            >
-                                API Debug
-                            </Menu.Item>
-                        )}
                     </Menu>
                 </>
             ) : (
@@ -279,6 +283,13 @@ export default function NavBar(): ReactElement {
                 visible={debugPanelVisible}
                 onClose={() => setDebugPanelVisible(false)}
             />
+
+            {/* Draggable Debug Button - only for admin users with debug enabled */}
+            {shouldShowDebugButton && (
+                <DraggableDebugButton
+                    onClick={() => setDebugPanelVisible(true)}
+                />
+            )}
         </Header>
     );
 }

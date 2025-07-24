@@ -7,4 +7,5 @@ export interface UserModel {
     refresh_token: string | null;
     image: string | null;
     persons: number | null;
+    isAdmin?: boolean;
 }

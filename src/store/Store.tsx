@@ -195,6 +195,7 @@ export function reducer(store: Store, action: Action): Store {
         // Benutzer Logout
         case 'LOGOUT_USER':
             localStorage.removeItem("user");
+            localStorage.removeItem("debugPanelEnabled");
             return { ...store, user: null };
         case 'FORGOT_PASSWORD':
             localStorage.removeItem("user");

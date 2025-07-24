@@ -1,0 +1,90 @@
+/* Draggable Debug Button */
+.debugButton {
+    position: fixed !important;
+    z-index: 9999;
+    background-color: #722ed1 !important;
+    border-color: #722ed1 !important;
+    box-shadow: 0 4px 12px rgba(114, 46, 209, 0.4) !important;
+    width: 56px !important;
+    height: 56px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    transition: all 0.2s ease !important;
+    user-select: none !important;
+    touch-action: none !important;
+}
+
+.debugButton:hover {
+    background-color: #9254de !important;
+    border-color: #9254de !important;
+    box-shadow: 0 6px 16px rgba(114, 46, 209, 0.6) !important;
+    transform: scale(1.05) !important;
+}
+
+.debugButton:active {
+    background-color: #531dab !important;
+    border-color: #531dab !important;
+    transform: scale(0.98) !important;
+}
+
+.debugButton .anticon {
+    font-size: 20px !important;
+    color: white !important;
+}
+
+/* Badge styling */
+.debugButton .ant-badge {
+    display: block !important;
+}
+
+.debugButton .ant-badge-count {
+    background-color: #ff4d4f !important;
+    border-color: #ff4d4f !important;
+    font-size: 10px !important;
+    min-width: 16px !important;
+    height: 16px !important;
+    line-height: 14px !important;
+    padding: 0 4px !important;
+}
+
+/* Mobile optimizations */
+@media (max-width: 600px) {
+    .debugButton {
+        width: 48px !important;
+        height: 48px !important;
+        box-shadow: 0 3px 10px rgba(114, 46, 209, 0.4) !important;
+    }
+
+    .debugButton .anticon {
+        font-size: 18px !important;
+    }
+
+    .debugButton .ant-badge-count {
+        font-size: 9px !important;
+        min-width: 14px !important;
+        height: 14px !important;
+        line-height: 12px !important;
+    }
+}
+
+/* Ensure button is above everything including modals and navigation */
+@media (max-width: 600px) {
+
+    /* Ensure debug button is above bottom navigation */
+    .debugButton {
+        z-index: 9999 !important;
+    }
+}
+
+/* Smooth transitions when dragging */
+.debugButton:not(.dragging) {
+    transition: all 0.2s ease !important;
+}
+
+/* Visual feedback when dragging */
+.debugButton.dragging {
+    box-shadow: 0 8px 24px rgba(114, 46, 209, 0.8) !important;
+    transform: scale(1.1) !important;
+    transition: none !important;
+}

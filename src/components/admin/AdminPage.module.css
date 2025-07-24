@@ -1,0 +1,184 @@
+/* Admin Page Styles */
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 24px;
+    background-color: #f5f5f5;
+    min-height: calc(100vh - 140px);
+}
+
+.headerCard {
+    margin-bottom: 24px;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    background: linear-gradient(135deg, #722ed1 0%, #9254de 100%);
+    border: none;
+}
+
+.headerCard .ant-card-body {
+    padding: 32px;
+}
+
+.headerContent {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+}
+
+.title {
+    color: white !important;
+    margin-bottom: 8px !important;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.titleIcon {
+    color: white;
+    font-size: 28px;
+}
+
+.headerCard .ant-typography {
+    color: rgba(255, 255, 255, 0.9);
+}
+
+.infoButton {
+    background-color: rgba(255, 255, 255, 0.2);
+    border-color: rgba(255, 255, 255, 0.3);
+    color: white;
+}
+
+.infoButton:hover {
+    background-color: rgba(255, 255, 255, 0.3);
+    border-color: rgba(255, 255, 255, 0.5);
+    color: white;
+}
+
+.userInfoCard,
+.systemCard,
+.toolsCard {
+    margin-bottom: 24px;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+}
+
+.userInfoCard .ant-card-head-title,
+.systemCard .ant-card-head-title,
+.toolsCard .ant-card-head-title {
+    color: #722ed1;
+    font-weight: 600;
+}
+
+.userInfo,
+.systemInfo {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 0;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.userInfo:last-child,
+.systemInfo:last-child {
+    border-bottom: none;
+}
+
+.accessDeniedCard {
+    margin-top: 48px;
+    text-align: center;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.toolsCard .ant-space {
+    width: 100%;
+}
+
+/* Mobile optimizations */
+@media (max-width: 768px) {
+    .container {
+        padding: 16px;
+        margin-top: 0;
+    }
+
+    .headerCard .ant-card-body {
+        padding: 24px 16px;
+    }
+
+    .headerContent {
+        flex-direction: column;
+        gap: 16px;
+        align-items: flex-start;
+    }
+
+    .title {
+        font-size: 20px !important;
+    }
+
+    .titleIcon {
+        font-size: 22px;
+    }
+
+    .userInfo,
+    .systemInfo {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 4px;
+    }
+
+    .infoButton {
+        align-self: flex-start;
+    }
+}
+
+@media (max-width: 480px) {
+    .container {
+        padding: 12px;
+    }
+
+    .headerCard .ant-card-body {
+        padding: 20px 12px;
+    }
+
+    .title {
+        font-size: 18px !important;
+    }
+
+    .titleIcon {
+        font-size: 20px;
+    }
+}
+
+/* Card hover effects */
+.userInfoCard:hover,
+.systemCard:hover,
+.toolsCard:hover {
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+    transition: box-shadow 0.3s ease;
+}
+
+/* Button styling */
+.toolsCard .ant-btn {
+    margin-bottom: 8px;
+}
+
+.toolsCard .ant-btn:last-child {
+    margin-bottom: 0;
+}
+
+/* Alert styling */
+.accessDeniedCard .ant-alert {
+    border: none;
+    background-color: #fff2f0;
+}
+
+/* Custom spacing for mobile */
+@media (max-width: 600px) {
+
+    /* Adjust for mobile navigation */
+    .container {
+        margin-top: 56px;
+        margin-bottom: 76px;
+        min-height: calc(100vh - 132px);
+    }
+}

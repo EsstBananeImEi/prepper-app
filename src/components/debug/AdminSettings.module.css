@@ -1,0 +1,69 @@
+/* Admin Settings */
+.adminCard {
+    margin-top: 16px;
+    border: 1px solid #722ed1;
+    border-radius: 8px;
+}
+
+.adminCard .ant-card-head {
+    background: linear-gradient(135deg, #f0f2ff 0%, #efdbff 100%);
+    border-bottom: 1px solid #722ed1;
+}
+
+.adminCard .ant-card-head-title {
+    color: #722ed1;
+    font-weight: 600;
+}
+
+.settingItem {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    padding: 12px 0;
+}
+
+.settingInfo {
+    flex: 1;
+    margin-right: 16px;
+}
+
+.debugInfo {
+    margin-top: 16px;
+}
+
+.debugInfo h5 {
+    color: #722ed1;
+    margin-bottom: 12px;
+}
+
+.featureList {
+    margin: 0;
+    padding-left: 20px;
+    color: #666;
+}
+
+.featureList li {
+    margin-bottom: 4px;
+    font-size: 13px;
+}
+
+/* Mobile optimizations */
+@media (max-width: 600px) {
+    .settingItem {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 8px;
+    }
+
+    .settingInfo {
+        margin-right: 0;
+    }
+
+    .featureList {
+        padding-left: 16px;
+    }
+
+    .featureList li {
+        font-size: 12px;
+    }
+}

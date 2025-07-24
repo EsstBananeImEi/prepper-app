@@ -11,6 +11,7 @@ import LoginForm from './user-component/login-form/LoginForm';
 import User from './user-component/user-Form/UserForm';
 import ChecklistComponent from './checklist-component/CheckListItem';
 import ResetSuccessForm from './user-component/reset-form/ResetSuccessForm';
+import AdminPage from './admin/AdminPage';
 
 export default function AppRoutes(): ReactElement {
     return (
@@ -22,6 +23,7 @@ export default function AppRoutes(): ReactElement {
             <Route path="/items/:id" element={<StorageDetail />} />
             <Route path="/login" element={<LoginForm />} />
             <Route path="/user" element={<User />} />
+            <Route path="/admin" element={<AdminPage />} />
             <Route path="/items" element={<StorageList />} />
             <Route path="/checklist" element={<ChecklistComponent />} />
             <Route path="/details/:category" element={<NotfallDetail />} />
