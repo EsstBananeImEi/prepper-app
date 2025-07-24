@@ -14,7 +14,8 @@ import {
     Divider,
     Avatar,
     Tooltip,
-    Upload
+    Upload,
+    Progress
 } from 'antd';
 import {
     PlusOutlined,
@@ -28,11 +29,13 @@ import {
     LogoutOutlined,
     EditOutlined,
     CameraOutlined,
-    UploadOutlined
+    UploadOutlined,
+    CompressOutlined
 } from '@ant-design/icons';
 import { groupsApiService } from '../../../hooks/useGroupsApi';
 import { GroupModel, GroupMemberModel } from '../../../shared/Models';
 import { useApi, useMutation } from '../../../hooks/useApi';
+import { ImageCompressionUtils } from '../../../utils/imageCompressionUtils';
 import styles from './GroupManagement.module.css';
 
 const { Title, Text } = Typography;
@@ -70,6 +73,8 @@ export default function GroupManagement(): React.ReactElement {
     const [createImageFile, setCreateImageFile] = useState<File | null>(null);
     const [updateImageFile, setUpdateImageFile] = useState<File | null>(null);
     const [removeCurrentImage, setRemoveCurrentImage] = useState<boolean>(false);
+    const [imageCompressionProgress, setImageCompressionProgress] = useState<number>(0);
+    const [isCompressing, setIsCompressing] = useState<boolean>(false);
 
     const [createForm] = Form.useForm<CreateGroupForm>();
     const [updateForm] = Form.useForm<UpdateGroupForm>();
@@ -210,7 +215,7 @@ export default function GroupManagement(): React.ReactElement {
         message.success('Einladungscode kopiert');
     };
 
-    const handleCreateImageUpload = (file: File) => {
+    const handleCreateImageUpload = async (file: File) => {
         const isImage = file.type.startsWith('image/');
         if (!isImage) {
             message.error('Bitte wählen Sie eine Bilddatei aus');
@@ -223,11 +228,42 @@ export default function GroupManagement(): React.ReactElement {
             return false;
         }
 
-        setCreateImageFile(file);
+        setIsCompressing(true);
+        setImageCompressionProgress(0);
+
+        try {
+            // Show compression progress
+            const progressInterval = setInterval(() => {
+                setImageCompressionProgress(prev => Math.min(prev + 10, 90));
+            }, 100);
+
+            const compressionOptions = ImageCompressionUtils.getOptimalCompressionSettings(file.size);
+            const compressedFile = await ImageCompressionUtils.compressImage(file, compressionOptions);
+
+            clearInterval(progressInterval);
+            setImageCompressionProgress(100);
+
+            const originalSize = file.size;
+            const compressedSize = compressedFile.size;
+            const compressionRatio = ((originalSize - compressedSize) / originalSize * 100).toFixed(1);
+
+            setCreateImageFile(compressedFile);
+            message.success(`Bild komprimiert (${compressionRatio}% kleiner)`);
+
+            setTimeout(() => {
+                setIsCompressing(false);
+                setImageCompressionProgress(0);
+            }, 1000);
+        } catch (error) {
+            message.error('Fehler bei der Bildkomprimierung');
+            setIsCompressing(false);
+            setImageCompressionProgress(0);
+        }
+
         return false;
     };
 
-    const handleUpdateImageUpload = (file: File) => {
+    const handleUpdateImageUpload = async (file: File) => {
         const isImage = file.type.startsWith('image/');
         if (!isImage) {
             message.error('Bitte wählen Sie eine Bilddatei aus');
@@ -240,7 +276,38 @@ export default function GroupManagement(): React.ReactElement {
             return false;
         }
 
-        setUpdateImageFile(file);
+        setIsCompressing(true);
+        setImageCompressionProgress(0);
+
+        try {
+            // Show compression progress
+            const progressInterval = setInterval(() => {
+                setImageCompressionProgress(prev => Math.min(prev + 10, 90));
+            }, 100);
+
+            const compressionOptions = ImageCompressionUtils.getOptimalCompressionSettings(file.size);
+            const compressedFile = await ImageCompressionUtils.compressImage(file, compressionOptions);
+
+            clearInterval(progressInterval);
+            setImageCompressionProgress(100);
+
+            const originalSize = file.size;
+            const compressedSize = compressedFile.size;
+            const compressionRatio = ((originalSize - compressedSize) / originalSize * 100).toFixed(1);
+
+            setUpdateImageFile(compressedFile);
+            message.success(`Bild komprimiert (${compressionRatio}% kleiner)`);
+
+            setTimeout(() => {
+                setIsCompressing(false);
+                setImageCompressionProgress(0);
+            }, 1000);
+        } catch (error) {
+            message.error('Fehler bei der Bildkomprimierung');
+            setIsCompressing(false);
+            setImageCompressionProgress(0);
+        }
+
         return false;
     };
 
@@ -495,12 +562,13 @@ export default function GroupManagement(): React.ReactElement {
                                     accept="image/*"
                                     showUploadList={false}
                                     beforeUpload={handleCreateImageUpload}
+                                    disabled={isCompressing}
                                 >
-                                    <Button icon={<UploadOutlined />}>
-                                        Bild auswählen
+                                    <Button icon={<UploadOutlined />} loading={isCompressing}>
+                                        {isCompressing ? 'Komprimiere...' : 'Bild auswählen'}
                                     </Button>
                                 </Upload>
-                                {createImageFile && (
+                                {createImageFile && !isCompressing && (
                                     <Button
                                         icon={<DeleteOutlined />}
                                         danger
@@ -510,8 +578,22 @@ export default function GroupManagement(): React.ReactElement {
                                         Entfernen
                                     </Button>
                                 )}
+                                {isCompressing && (
+                                    <div style={{ marginTop: '8px', width: '200px' }}>
+                                        <Progress
+                                            percent={imageCompressionProgress}
+                                            size="small"
+                                            status="active"
+                                            format={() => <CompressOutlined />}
+                                        />
+                                        <Text type="secondary" style={{ fontSize: '12px' }}>
+                                            Bild wird komprimiert...
+                                        </Text>
+                                    </div>
+                                )}
                                 <div style={{ marginTop: '8px', color: '#666', fontSize: '12px' }}>
-                                    Unterstützte Formate: JPG, PNG, GIF (max. 5MB)
+                                    Unterstützte Formate: JPG, PNG, GIF (max. 5MB)<br />
+                                    Bilder werden automatisch optimiert
                                 </div>
                             </div>
                         </div>
@@ -588,12 +670,13 @@ export default function GroupManagement(): React.ReactElement {
                                     accept="image/*"
                                     showUploadList={false}
                                     beforeUpload={handleUpdateImageUpload}
+                                    disabled={isCompressing}
                                 >
-                                    <Button icon={<UploadOutlined />}>
-                                        {updateImageFile ? 'Anderes Bild wählen' : (selectedGroup?.image && !removeCurrentImage ? 'Bild ändern' : 'Bild auswählen')}
+                                    <Button icon={<UploadOutlined />} loading={isCompressing}>
+                                        {isCompressing ? 'Komprimiere...' : updateImageFile ? 'Anderes Bild wählen' : (selectedGroup?.image && !removeCurrentImage ? 'Bild ändern' : 'Bild auswählen')}
                                     </Button>
                                 </Upload>
-                                {(updateImageFile || (selectedGroup?.image && !removeCurrentImage)) && (
+                                {(updateImageFile || (selectedGroup?.image && !removeCurrentImage)) && !isCompressing && (
                                     <Button
                                         icon={<DeleteOutlined />}
                                         danger
@@ -609,8 +692,22 @@ export default function GroupManagement(): React.ReactElement {
                                         {updateImageFile ? 'Neue Auswahl entfernen' : 'Aktuelles Bild entfernen'}
                                     </Button>
                                 )}
+                                {isCompressing && (
+                                    <div style={{ marginTop: '8px', width: '200px' }}>
+                                        <Progress
+                                            percent={imageCompressionProgress}
+                                            size="small"
+                                            status="active"
+                                            format={() => <CompressOutlined />}
+                                        />
+                                        <Text type="secondary" style={{ fontSize: '12px' }}>
+                                            Bild wird komprimiert...
+                                        </Text>
+                                    </div>
+                                )}
                                 <div style={{ marginTop: '8px', color: '#666', fontSize: '12px' }}>
-                                    Unterstützte Formate: JPG, PNG, GIF (max. 5MB)
+                                    Unterstützte Formate: JPG, PNG, GIF (max. 5MB)<br />
+                                    Bilder werden automatisch optimiert
                                 </div>
                             </div>
                         </div>

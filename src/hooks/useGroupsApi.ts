@@ -2,6 +2,8 @@ import axios from 'axios';
 import { baseApiUrl, groupsApi, groupIdApi, groupMembersApi, groupInviteApi, groupJoinApi, groupJoinInvitationApi, groupLeaveApi, groupUpdateApi, groupDeleteApi, groupRemoveUserApi } from '../shared/Constants';
 import { GroupModel, GroupMemberModel, GroupInvitationModel } from '../shared/Models';
 import { handleApiError } from './useApi';
+import { ImageCompressionUtils } from '../utils/imageCompressionUtils';
+import { ImageCacheManager } from '../utils/imageCacheManager';
 
 // API-Instanz mit Auth-Header
 const createAuthenticatedRequest = () => {
@@ -21,7 +23,24 @@ export const groupsApiService = {
     getUserGroups: async (): Promise<GroupModel[]> => {
         try {
             const response = await axios.get(`${baseApiUrl}${groupsApi}`, createAuthenticatedRequest());
-            return response.data;
+            const groups = response.data;
+
+            // Load cached images for groups that have images
+            const groupsWithCachedImages = groups.map((group: GroupModel) => {
+                if (group.image) {
+                    // Try to get cached image first
+                    const cachedImage = ImageCacheManager.getCachedImage(group.id);
+                    if (cachedImage) {
+                        return { ...group, image: cachedImage };
+                    } else {
+                        // Cache the image from server response
+                        ImageCacheManager.cacheImage(group.id, group.image);
+                    }
+                }
+                return group;
+            });
+
+            return groupsWithCachedImages;
         } catch (error) {
             throw new Error(handleApiError(error, false));
         }
@@ -36,18 +55,21 @@ export const groupsApiService = {
             };
 
             if (data.image) {
-                // Convert image to base64
-                const base64 = await new Promise<string>((resolve, reject) => {
-                    const reader = new FileReader();
-                    reader.onload = () => resolve(reader.result as string);
-                    reader.onerror = reject;
-                    reader.readAsDataURL(data.image!);
-                });
-                requestData.image = base64;
+                // Compress and convert image to base64
+                const compressionOptions = ImageCompressionUtils.getOptimalCompressionSettings(data.image.size);
+                const compressedBase64 = await ImageCompressionUtils.compressToBase64(data.image, compressionOptions);
+                requestData.image = compressedBase64;
             }
 
             const response = await axios.post(`${baseApiUrl}${groupsApi}`, requestData, createAuthenticatedRequest());
-            return response.data;
+            const newGroup = response.data;
+
+            // Cache the image if it exists
+            if (newGroup.image) {
+                ImageCacheManager.cacheImage(newGroup.id, newGroup.image);
+            }
+
+            return newGroup;
         } catch (error) {
             throw new Error(handleApiError(error, false));
         }
@@ -62,21 +84,27 @@ export const groupsApiService = {
             };
 
             if (data.image) {
-                // Convert image to base64
-                const base64 = await new Promise<string>((resolve, reject) => {
-                    const reader = new FileReader();
-                    reader.onload = () => resolve(reader.result as string);
-                    reader.onerror = reject;
-                    reader.readAsDataURL(data.image!);
-                });
-                requestData.image = base64;
+                // Compress and convert image to base64
+                const compressionOptions = ImageCompressionUtils.getOptimalCompressionSettings(data.image.size);
+                const compressedBase64 = await ImageCompressionUtils.compressToBase64(data.image, compressionOptions);
+                requestData.image = compressedBase64;
             } else if (data.image === undefined) {
                 // Explicitly set to null to remove image
                 requestData.image = null;
             }
 
             const response = await axios.put(`${baseApiUrl}${groupUpdateApi(groupId)}`, requestData, createAuthenticatedRequest());
-            return response.data;
+            const updatedGroup = response.data;
+
+            // Update cache
+            if (updatedGroup.image) {
+                ImageCacheManager.cacheImage(groupId, updatedGroup.image);
+            } else {
+                // Remove from cache if image was deleted
+                ImageCacheManager.removeCachedImage(groupId);
+            }
+
+            return updatedGroup;
         } catch (error) {
             throw new Error(handleApiError(error, false));
         }
@@ -86,6 +114,8 @@ export const groupsApiService = {
     deleteGroup: async (groupId: number): Promise<void> => {
         try {
             await axios.delete(`${baseApiUrl}${groupDeleteApi(groupId)}`, createAuthenticatedRequest());
+            // Remove from cache when group is deleted
+            ImageCacheManager.removeCachedImage(groupId);
         } catch (error) {
             throw new Error(handleApiError(error, false));
         }
