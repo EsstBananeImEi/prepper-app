@@ -3,17 +3,17 @@ import { baseApiUrl, itemsRoute, nutrientsApi } from '../shared/Constants';
 import { Action, AddToShoppingCard, IncreaseAmount, DecreaseAmount, ClearItemCard, LoginUser, RegisterUser, EditUser, IncreaseStorageItem, DecreaseStorageItem, AddStorageItem, DeleteStorageItem, UpdateStorageItem, UpdateNutrientItem, UpdateCardItem, ForgotPassword } from './Store';
 import { validateBase64Image, debugImageData } from '../utils/imageUtils';
 import { apiDebugger } from '../utils/apiDebugger';
+import { env } from 'process';
 
 export const actionHandler = (action: Action, callback: React.Dispatch<Action>): Promise<void> => {
-    console.log('actionHandler called with action:', action);
 
     // Add stack trace for automatic storage updates to help debug
-    if (action.type === 'INCREASE_STORAGE_ITEM' || action.type === 'DECREASE_STORAGE_ITEM' || action.type === 'UPDATE_STORAGE_ITEM') {
-        console.group(`🔍 Debugging Storage Action: ${action.type}`);
-        console.log('Action details:', action);
-        console.trace('Call stack for this storage action');
-        console.groupEnd();
-    }
+    // if (action.type === 'INCREASE_STORAGE_ITEM' || action.type === 'DECREASE_STORAGE_ITEM' || action.type === 'UPDATE_STORAGE_ITEM') {
+    //     console.group(`🔍 Debugging Storage Action: ${action.type}`);
+    //     console.log('Action details:', action);
+    //     console.trace('Call stack for this storage action');
+    //     console.groupEnd();
+    // }
 
     switch (action.type) {
         case 'ADD_TO_CARD':
@@ -24,7 +24,6 @@ export const actionHandler = (action: Action, callback: React.Dispatch<Action>):
         case 'INCREASE_AMOUNT':
             return sendRequest('PUT', `/basket/${action.basketItems.id}`, action, callback);
         case 'CLEAR_ITEM_CARD':
-            console.log("Clear Item Card:", action.basketItems);
             return sendRequest('DELETE', `/basket/${action.basketItems.id}`, action, callback);
         case 'LOGIN_USER':
             return sendUserRequest('POST', `/login`, action, callback);
@@ -64,8 +63,6 @@ function sendRequest(
         requestData = dataWithoutId;
     }
 
-    console.log('🛒 Basket API Request:', { method, path, data: requestData });
-
     return axios({
         method,
         url: `${baseApiUrl}${path}`,
@@ -77,14 +74,12 @@ function sendRequest(
         },
     })
         .then((response: AxiosResponse) => {
-            console.log('✅ Basket API Success:', response.data);
             if (response.config.method?.toLowerCase() === 'post' || response.config.method?.toLowerCase() === 'put') {
                 action = { ...action, basketItems: response.data };
             }
             callback(action);
         })
         .catch((error) => {
-            console.error('❌ Basket API Error:', error.response?.data || error.message);
             return Promise.reject(error);
         });
 }
@@ -105,25 +100,20 @@ function sendStorageRequest(
         requestData = dataWithoutId;
     }    // Additional validation for icon data before API call
     if (requestData.icon) {
-        console.group('🔍 Icon Validation Before API Call');
-        console.log('Icon length:', requestData.icon.length);
-        console.log('Icon preview:', requestData.icon.substring(0, 50));
-
         // Enhanced debugging with detailed image analysis
         debugImageData(requestData.icon, `API Request - ${method} ${path}`);
 
         // If icon looks like it might be a data URL (common mistake), strip the prefix
-        if (requestData.icon.startsWith('data:image/')) {
-            console.warn('Icon contains data URL prefix, this might cause API errors');
-            console.log('Original icon starts with:', requestData.icon.substring(0, 30));
-            // The sanitizeBase64ForApi should have already handled this, but double-check
-        }
+        // if (requestData.icon.startsWith('data:image/')) {
+        //     console.warn('Icon contains data URL prefix, this might cause API errors');
+        //     console.log('Original icon starts with:', requestData.icon.substring(0, 30));
+        //     // The sanitizeBase64ForApi should have already handled this, but double-check
+        // }
 
         // Check if it's valid base64
         try {
             if (requestData.icon.length > 0) {
                 window.atob(requestData.icon.substring(0, Math.min(requestData.icon.length, 100)));
-                console.log('✅ Icon appears to be valid Base64');
             }
         } catch (error) {
             console.error('❌ Icon is not valid Base64:', error);
@@ -133,13 +123,13 @@ function sendStorageRequest(
     }
 
     // Log request details for debugging
-    console.group('🌐 Storage API Request');
-    console.log('Method:', method);
-    console.log('URL:', `${baseApiUrl}${path}`);
-    console.log('Data keys:', Object.keys(requestData));
-    console.log('Has Icon:', !!requestData.icon);
-    console.log('Icon length:', requestData.icon?.length || 0); console.log('Has Token:', !!token);
-    console.groupEnd();
+    // console.group('🌐 Storage API Request');
+    // console.log('Method:', method);
+    // console.log('URL:', `${baseApiUrl}${path}`);
+    // console.log('Data keys:', Object.keys(requestData));
+    // console.log('Has Icon:', !!requestData.icon);
+    // console.log('Icon length:', requestData.icon?.length || 0); console.log('Has Token:', !!token);
+    // console.groupEnd();
 
     const startTime = Date.now();
     const requestUrl = `${baseApiUrl}${path}`;
@@ -166,10 +156,10 @@ function sendStorageRequest(
             data: response.data
         });
 
-        console.group('✅ Storage API Response');
-        console.log('Status:', response.status);
-        console.log('Response Data:', response.data);
-        console.groupEnd();
+        // console.group('✅ Storage API Response');
+        // console.log('Status:', response.status);
+        // console.log('Response Data:', response.data);
+        // console.groupEnd();
 
         // Check if the response contains an error message even with 200 status
         if (response.data && typeof response.data === 'string' &&
@@ -178,10 +168,10 @@ function sendStorageRequest(
                 response.data.includes('error') ||
                 response.data.includes('Error'))) {
 
-            console.group('⚠️ API Response contains error message');
-            console.error('Error in successful response:', response.data);
-            console.error('This indicates backend validation failed');
-            console.groupEnd();
+            // console.group('⚠️ API Response contains error message');
+            // console.error('Error in successful response:', response.data);
+            // console.error('This indicates backend validation failed');
+            // console.groupEnd();
 
             // Log the error to API debugger
             apiDebugger.logRequest({
@@ -217,11 +207,11 @@ function sendStorageRequest(
                 data: error.response?.data
             });
 
-            console.group('❌ Storage API Error');
-            console.error('Status:', error.response?.status);
-            console.error('Response:', error.response?.data);
-            console.error('Request Data:', requestData);
-            console.groupEnd();
+            // console.group('❌ Storage API Error');
+            // console.error('Status:', error.response?.status);
+            // console.error('Response:', error.response?.data);
+            // console.error('Request Data:', requestData);
+            // console.groupEnd();
             return Promise.reject(error);
         });
 }

@@ -121,7 +121,7 @@ const GlobalSearch: React.FC = () => {
                 )
                 .slice(0, 5) // Limit auf 5 Ergebnisse
                 .map((item: StorageModel) => ({
-                    value: `storage-${item.id}`,
+                    value: `${item.id}`,
                     label: (
                         <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                             <img
@@ -184,7 +184,7 @@ const GlobalSearch: React.FC = () => {
             )
             .slice(0, 3)
             .map(category => ({
-                value: `emergency-${category.key}`,
+                value: `${category.key}`,
                 label: (
                     <div>
                         <Text strong>{category.title}</Text>
@@ -195,6 +195,7 @@ const GlobalSearch: React.FC = () => {
                 type: 'emergency' as const,
                 data: category
             }));
+        console.log('Emergency search results:', emergencyResults);
         results.push(...emergencyResults);
 
         // Seiten durchsuchen
@@ -253,6 +254,7 @@ const GlobalSearch: React.FC = () => {
 
     const handleSelect = (value: string) => {
         const selected = searchResults.find(item => item.value === value);
+        console.log('Selected search result:', selected);
         if (!selected || !selected.data) {
             console.warn('GlobalSearch: Kein Item oder Daten für selected value gefunden:', value);
             return;
@@ -262,6 +264,7 @@ const GlobalSearch: React.FC = () => {
             switch (selected.type) {
                 case 'storage': {
                     const storageItem = selected.data as StorageModel;
+                    console.log('Navigating to storage item:', storageItem);
                     if (storageItem.id) {
                         navigate(`/items/${storageItem.id}`);
                     } else {
@@ -271,6 +274,7 @@ const GlobalSearch: React.FC = () => {
                 }
                 case 'emergency': {
                     const emergencyData = selected.data as EmergencyCategory;
+                    console.log('Navigating to emergency category:', emergencyData);
                     if (emergencyData.path) {
                         navigate(emergencyData.path);
                     } else {
