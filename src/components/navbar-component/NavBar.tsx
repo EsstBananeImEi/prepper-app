@@ -36,7 +36,6 @@ export default function NavBar(): ReactElement {
     const isLoggedIn = !!store.user;
     const [selectedKeys, setSelectedKeys] = React.useState<string[]>([]);
     const [debugPanelVisible, setDebugPanelVisible] = useState(false);
-    const [mobileSearchVisible, setMobileSearchVisible] = useState(false);
     const [burgerMenuVisible, setBurgerMenuVisible] = useState(false);
 
     // Check if user is admin and debug panel is enabled
@@ -198,11 +197,18 @@ export default function NavBar(): ReactElement {
                 </>
             ) : (
                 <>
-                    {/* Mobile Top Header - Simple with logo and user */}
+                    {/* Mobile Top Header - Logo, GlobalSearch, User */}
                     <div className={style.mobileTopHeader}>
                         <NavLink to={homeRoute}>
                             <img src={logo} alt="Logo" className={style.logo} />
                         </NavLink>
+
+                        {/* GlobalSearch in der Mitte für Mobile */}
+                        {isLoggedIn && (
+                            <div className={style.mobileSearchContainer}>
+                                <GlobalSearch />
+                            </div>
+                        )}
 
                         {isLoggedIn ? (
                             <Dropdown overlay={userMenu} trigger={['click']} placement="bottomRight">
@@ -268,13 +274,6 @@ export default function NavBar(): ReactElement {
                             </Menu>
                         </div>
                     </div>
-
-                    {/* Mobile Search - now triggered from top header or floating button */}
-                    {isLoggedIn && mobileSearchVisible && (
-                        <div className={style.mobileSearchCollapsible} style={{ top: '56px', position: 'fixed', left: 0, right: 0, zIndex: 998 }}>
-                            <GlobalSearch />
-                        </div>
-                    )}
                 </>
             )}
 

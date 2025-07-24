@@ -545,17 +545,50 @@
         min-height: 56px;
         border-bottom: 1px solid rgba(255, 255, 255, 0.1);
         box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+        gap: 12px;
     }
 
     .mobileTopHeader .logo {
         height: 32px;
         margin: 0;
+        flex-shrink: 0;
+    }
+
+    .mobileSearchContainer {
+        flex: 1;
+        max-width: 300px;
+        margin: 0 8px;
+    }
+
+    /* Optimize for very small screens */
+    @media (max-width: 430px) {
+        .mobileTopHeader {
+            padding: 6px 12px;
+            gap: 8px;
+        }
+        
+        .mobileSearchContainer {
+            margin: 0 4px;
+            max-width: 200px;
+        }
+        
+        .mobileTopHeader .logo {
+            height: 28px;
+        }
+    }
+
+    /* Extra small screens */
+    @media (max-width: 360px) {
+        .mobileSearchContainer {
+            max-width: 150px;
+        }
     }
 
     .mobileTopHeader .userMenuMobile {
         padding: 6px;
         min-width: 40px;
         min-height: 40px;
+        flex-shrink: 0;
     }
 
     /* Add space for fixed headers */
