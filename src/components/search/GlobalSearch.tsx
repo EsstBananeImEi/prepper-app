@@ -113,15 +113,17 @@ const GlobalSearch: React.FC = () => {
         const results: SearchResult[] = [];
 
         // Storage Items durchsuchen
-        if (store.storeItems) {
+        if (store.storeItems && Array.isArray(store.storeItems) && store.storeItems.length > 0) {
             const storageResults = store.storeItems
                 .filter((item: StorageModel) =>
-                    item.name.toLowerCase().includes(query) ||
-                    (item.categories && item.categories.some(cat => cat.toLowerCase().includes(query)))
+                    item && item.name && item.id && (
+                        item.name.toLowerCase().includes(query) ||
+                        (item.categories && Array.isArray(item.categories) && item.categories.some(cat => cat && cat.toLowerCase().includes(query)))
+                    )
                 )
                 .slice(0, 5) // Limit auf 5 Ergebnisse
                 .map((item: StorageModel) => ({
-                    value: `${item.id}`,
+                    value: `storage-${item.id}`,
                     label: (
                         <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                             <img
@@ -133,7 +135,7 @@ const GlobalSearch: React.FC = () => {
                                 <Text strong>{item.name}</Text>
                                 <br />
                                 <Text type="secondary" style={{ fontSize: 12 }}>
-                                    {item.amount} {item.unit} • Lagerbestand
+                                    {item.amount || 0} {item.unit || ''} • Lagerbestand
                                 </Text>
                             </div>
                         </div>
@@ -144,12 +146,14 @@ const GlobalSearch: React.FC = () => {
             results.push(...storageResults);
         }
 
-        if (store.shoppingCard) {
+        if (store.shoppingCard && Array.isArray(store.shoppingCard) && store.shoppingCard.length > 0) {
             // Einkaufswagen durchsuchen
             const shoppingResults = store.shoppingCard
                 .filter((item: BasketModel) =>
-                    item.name.toLowerCase().includes(query) ||
-                    (item.categories && item.categories.some(cat => cat.toLowerCase().includes(query)))
+                    item && item.name && item.id && (
+                        item.name.toLowerCase().includes(query) ||
+                        (item.categories && Array.isArray(item.categories) && item.categories.some(cat => cat && cat.toLowerCase().includes(query)))
+                    )
                 )
                 .slice(0, 5) // Limit auf 5 Ergebnisse
                 .map((item: BasketModel) => ({
@@ -184,7 +188,7 @@ const GlobalSearch: React.FC = () => {
             )
             .slice(0, 3)
             .map(category => ({
-                value: `${category.key}`,
+                value: `emergency-${category.key}`,
                 label: (
                     <div>
                         <Text strong>{category.title}</Text>
@@ -245,18 +249,40 @@ const GlobalSearch: React.FC = () => {
         results.push(...checklistResults);
 
         return results;
-    }, [searchValue, store.storeItems]);
+    }, [searchValue, store.storeItems, store.shoppingCard]);
 
     const handleSearch = (value: string) => {
         setSearchValue(value);
-        setOptions(searchResults);
+        // options werden automatisch durch useEffect aktualisiert
     };
 
+    // Synchronisation von searchResults und options
+    useEffect(() => {
+        console.log('Setting options from searchResults:', searchResults);
+        setOptions(searchResults);
+    }, [searchResults]);
+
     const handleSelect = (value: string) => {
-        const selected = searchResults.find(item => item.value === value);
+        console.log('handleSelect called with value:', value);
+        console.log('Current searchResults:', searchResults);
+        console.log('Current options:', options);
+
+        // Suche sowohl in searchResults als auch in options als Fallback
+        let selected = searchResults.find(item => item.value === value);
+        if (!selected) {
+            console.warn('Not found in searchResults, searching in options...');
+            const optionItem = options.find(item => typeof item === 'object' && 'value' in item && item.value === value);
+            if (optionItem && typeof optionItem === 'object' && 'data' in optionItem) {
+                selected = optionItem as SearchResult;
+            }
+        }
+
         console.log('Selected search result:', selected);
+
         if (!selected || !selected.data) {
             console.warn('GlobalSearch: Kein Item oder Daten für selected value gefunden:', value);
+            console.warn('Available values in searchResults:', searchResults.map(r => r.value));
+            console.warn('Available values in options:', options.map(o => typeof o === 'object' && 'value' in o ? o.value : 'invalid'));
             return;
         }
 
@@ -265,51 +291,58 @@ const GlobalSearch: React.FC = () => {
                 case 'storage': {
                     const storageItem = selected.data as StorageModel;
                     console.log('Navigating to storage item:', storageItem);
-                    if (storageItem.id) {
+                    if (storageItem && storageItem.id) {
                         navigate(`/items/${storageItem.id}`);
                     } else {
                         console.warn('GlobalSearch: StorageModel hat keine ID:', storageItem);
+                        navigate('/items'); // Fallback zur Items-Liste
                     }
                     break;
                 }
                 case 'emergency': {
                     const emergencyData = selected.data as EmergencyCategory;
                     console.log('Navigating to emergency category:', emergencyData);
-                    if (emergencyData.path) {
+                    if (emergencyData && emergencyData.path) {
                         navigate(emergencyData.path);
                     } else {
                         console.warn('GlobalSearch: EmergencyCategory hat keinen path:', emergencyData);
+                        navigate('/'); // Fallback zur Hauptseite
                     }
                     break;
                 }
                 case 'page': {
                     const pageData = selected.data as Page;
-                    if (pageData.path) {
+                    if (pageData && pageData.path) {
                         navigate(pageData.path);
                     } else {
                         console.warn('GlobalSearch: Page hat keinen path:', pageData);
+                        navigate('/'); // Fallback zur Hauptseite
                     }
                     break;
                 }
                 case 'shopping': {
                     const basketItem = selected.data as BasketModel;
+                    console.log('Navigating to basket for item:', basketItem);
                     // Für Einkaufswagen navigieren wir immer zur basket-Seite
                     navigate('/basket');
                     break;
                 }
                 case 'checklist': {
                     const checklistItem = selected.data as ChecklistItem;
+                    console.log('Navigating to checklist for item:', checklistItem);
                     // Für Checklist-Items navigieren wir zur Checklist-Seite
                     navigate('/checklist');
                     break;
                 }
                 default: {
                     console.warn('GlobalSearch: Unbekannter type:', selected.type);
+                    navigate('/'); // Fallback zur Hauptseite
                     break;
                 }
             }
         } catch (error) {
             console.error('GlobalSearch: Fehler bei Navigation:', error, selected);
+            navigate('/'); // Fallback zur Hauptseite
         }
 
         setSearchValue('');
