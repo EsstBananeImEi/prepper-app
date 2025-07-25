@@ -134,7 +134,7 @@ export const groupsApiService = {
     // User per E-Mail zur Gruppe einladen
     inviteUserToGroup: async (groupId: number, data: GroupInvitationModel): Promise<{ message: string; inviteToken: string }> => {
         try {
-            const response = await axios.post(`${baseApiUrl}${groupInviteApi(groupId)}`, { email: data.invitedEmail }, createAuthenticatedRequest());
+            const response = await axios.post(`${baseApiUrl}${groupInviteApi(groupId)}`, data, createAuthenticatedRequest());
             return response.data;
         } catch (error) {
             throw new Error(handleApiError(error, false));

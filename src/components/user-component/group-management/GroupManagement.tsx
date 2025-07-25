@@ -21,7 +21,6 @@ import {
     PlusOutlined,
     DeleteOutlined,
     UserOutlined,
-    MailOutlined,
     CopyOutlined,
     UsergroupAddOutlined,
     ExclamationCircleOutlined,
@@ -57,10 +56,6 @@ interface UpdateGroupForm {
     removeImage?: boolean;
 }
 
-interface InviteUserForm {
-    email: string;
-}
-
 interface JoinGroupForm {
     inviteCode: string;
 }
@@ -68,7 +63,6 @@ interface JoinGroupForm {
 export default function GroupManagement(): React.ReactElement {
     const [createModalVisible, setCreateModalVisible] = useState(false);
     const [updateModalVisible, setUpdateModalVisible] = useState(false);
-    const [inviteModalVisible, setInviteModalVisible] = useState(false);
     const [joinModalVisible, setJoinModalVisible] = useState(false);
     const [membersModalVisible, setMembersModalVisible] = useState(false);
     const [selectedGroup, setSelectedGroup] = useState<GroupModel | null>(null);
@@ -81,7 +75,6 @@ export default function GroupManagement(): React.ReactElement {
 
     const [createForm] = Form.useForm<CreateGroupForm>();
     const [updateForm] = Form.useForm<UpdateGroupForm>();
-    const [inviteForm] = Form.useForm<InviteUserForm>();
     const [joinForm] = Form.useForm<JoinGroupForm>();
 
     // API Hooks
@@ -144,18 +137,6 @@ export default function GroupManagement(): React.ReactElement {
                 if (selectedGroup) {
                     handleShowMembers(selectedGroup);
                 }
-            }
-        }
-    );
-
-    const { mutate: inviteUser, loading: inviteLoading } = useMutation(
-        ({ groupId, email }: { groupId: number; email: string }) =>
-            groupsApiService.inviteUserToGroup(groupId, { groupId, invitedEmail: email }),
-        {
-            onSuccess: () => {
-                message.success('Einladung erfolgreich versendet');
-                setInviteModalVisible(false);
-                inviteForm.resetFields();
             }
         }
     );
@@ -392,29 +373,8 @@ export default function GroupManagement(): React.ReactElement {
                                         >
                                             <span className={styles.desktopText}>Bearbeiten</span>
                                         </Button>,
-                                        <Button
-                                            key="invite"
-                                            icon={<MailOutlined />}
-                                            onClick={() => {
-                                                setSelectedGroup(group);
-                                                setInviteModalVisible(true);
-                                            }}
-                                            disabled={group.role !== 'admin'}
-                                            size="small"
-                                        >
-                                            <span className={styles.desktopText}>Einladen</span>
-                                        </Button>,
-                                        <Button
-                                            key={`copy-${group.id}`}
-                                            icon={<CopyOutlined />}
-                                            onClick={() => handleCopyInviteCode(group.inviteCode)}
-                                            size="small"
-                                            className={styles.copyButton}
-                                        >
-                                            <span className={styles.desktopText} >Code kopieren</span>
-                                        </Button>,
                                         <InviteButton
-                                            key={`share-${group.id}`}
+                                            key={`invite-${group.id}`}
                                             groupId={group.id.toString()}
                                             groupName={group.name}
                                             inviterName={getUserName()}
@@ -744,50 +704,6 @@ export default function GroupManagement(): React.ReactElement {
                                 loading={updateLoading}
                             >
                                 Speichern
-                            </Button>
-                        </Space>
-                    </Form.Item>
-                </Form>
-            </Modal>
-
-            {/* User einladen Modal */}
-            <Modal
-                title={`Mitglied zu "${selectedGroup?.name}" einladen`}
-                open={inviteModalVisible}
-                onCancel={() => {
-                    setInviteModalVisible(false);
-                    inviteForm.resetFields();
-                    setSelectedGroup(null);
-                }}
-                footer={null}
-            >
-                <Form
-                    form={inviteForm}
-                    layout="vertical"
-                    onFinish={(values) => selectedGroup && inviteUser({ groupId: selectedGroup.id, email: values.email })}
-                >
-                    <Form.Item
-                        label="E-Mail-Adresse"
-                        name="email"
-                        rules={[
-                            { required: true, message: 'Bitte geben Sie eine E-Mail-Adresse ein' },
-                            { type: 'email', message: 'Bitte geben Sie eine gültige E-Mail-Adresse ein' }
-                        ]}
-                    >
-                        <Input placeholder="benutzer@example.com" />
-                    </Form.Item>
-
-                    <Form.Item style={{ marginBottom: 0 }}>
-                        <Space style={{ width: '100%', justifyContent: 'flex-end' }}>
-                            <Button onClick={() => setInviteModalVisible(false)}>
-                                Abbrechen
-                            </Button>
-                            <Button
-                                type="primary"
-                                htmlType="submit"
-                                loading={inviteLoading}
-                            >
-                                Einladung senden
                             </Button>
                         </Space>
                     </Form.Item>

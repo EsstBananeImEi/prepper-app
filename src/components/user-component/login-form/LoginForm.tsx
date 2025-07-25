@@ -73,6 +73,10 @@ export default function AuthForm() {
                 };
                 await actionHandler({ type: "LOGIN_USER", user }, dispatch);
 
+                // Flag löschen bei erfolgreichem Login, damit Invite-Verarbeitung funktioniert
+                sessionStorage.removeItem('just_registered');
+                sessionStorage.removeItem('prevent_auto_calls');
+
                 // Verwende Invite-Redirect falls vorhanden, sonst Standard-Navigation
                 if (isFromInvite()) {
                     handleLoginSuccess();
@@ -91,6 +95,13 @@ export default function AuthForm() {
                     image: null,
                 };
                 await actionHandler({ type: "REGISTER_USER", user }, dispatch);
+
+                // Wichtig: Flag setzen um automatische Invite-Verarbeitung zu verhindern
+                sessionStorage.setItem('just_registered', 'true');
+
+                // WICHTIG: Verhindere automatische API-Calls nach Registrierung
+                // Setze Flag um Store-Updates und API-Calls zu verhindern
+                sessionStorage.setItem('prevent_auto_calls', 'true');
 
                 if (isFromInvite()) {
                     setInfo("Registrierung erfolgreich. Du wirst automatisch der Gruppe hinzugefügt, sobald du dich einloggst.");

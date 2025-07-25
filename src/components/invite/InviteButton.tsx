@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
-import { Button, Modal, Input, Typography, Space, Alert, message, Divider } from 'antd';
-import { ShareAltOutlined, CopyOutlined, LinkOutlined, UserAddOutlined } from '@ant-design/icons';
+import { Button, Modal, Input, Typography, Space, Alert, message, Divider, Form } from 'antd';
+import { ShareAltOutlined, CopyOutlined, LinkOutlined, UserAddOutlined, MailOutlined, SendOutlined } from '@ant-design/icons';
 import { InviteManager } from '../../utils/inviteManager';
+import { groupsApiService } from '../../hooks/useGroupsApi';
 
 const { Text, Paragraph } = Typography;
 
@@ -27,6 +28,8 @@ const InviteButton: React.FC<InviteButtonProps> = ({
     const [modalVisible, setModalVisible] = useState(false);
     const [inviteUrl, setInviteUrl] = useState('');
     const [loading, setLoading] = useState(false);
+    const [emailForm] = Form.useForm();
+    const [sendingEmail, setSendingEmail] = useState(false);
 
     const generateInviteLink = async () => {
         try {
@@ -103,6 +106,46 @@ const InviteButton: React.FC<InviteButtonProps> = ({
 
         const whatsappUrl = `https://wa.me/?text=${text}`;
         window.open(whatsappUrl, '_blank');
+    };
+
+    const handleSendEmailViaBackend = async (values: { email: string }) => {
+        try {
+            setSendingEmail(true);
+
+            // Erstelle Token falls noch nicht vorhanden
+            let token = '';
+            if (!inviteUrl) {
+                const newToken = InviteManager.createInviteToken(
+                    groupId,
+                    groupName,
+                    'current-user-id', // TODO: Aus Store holen
+                    inviterName
+                );
+                token = newToken;
+                const url = InviteManager.createInviteUrl(newToken);
+                setInviteUrl(url);
+            } else {
+                // Extrahiere Token aus URL
+                const urlParts = inviteUrl.split('/invite/');
+                token = urlParts[1] || '';
+            }
+
+            // Sende Email über Backend mit Token
+            await groupsApiService.inviteUserToGroup(parseInt(groupId), {
+                groupId: parseInt(groupId),
+                invitedEmail: values.email,
+                inviteToken: token, // Übergebe Token an Backend
+                inviteUrl: inviteUrl || InviteManager.createInviteUrl(token)
+            });
+
+            message.success(`Einladung erfolgreich an ${values.email} gesendet!`);
+            emailForm.resetFields();
+        } catch (error) {
+            console.error('Fehler beim Senden der Email-Einladung:', error);
+            message.error('Fehler beim Senden der Email-Einladung');
+        } finally {
+            setSendingEmail(false);
+        }
     };
 
     return (
@@ -190,6 +233,49 @@ const InviteButton: React.FC<InviteButtonProps> = ({
                                             Per WhatsApp teilen
                                         </Button>
                                     </Space>
+                                </div>
+
+                                <Divider />
+
+                                {/* Email-Einladung über Backend */}
+                                <div>
+                                    <Typography.Title level={5} style={{ margin: '0 0 16px 0' }}>
+                                        <MailOutlined style={{ marginRight: 8 }} />
+                                        Per E-Mail einladen
+                                    </Typography.Title>
+                                    <Form
+                                        form={emailForm}
+                                        onFinish={handleSendEmailViaBackend}
+                                        layout="vertical"
+                                    >
+                                        <Form.Item
+                                            name="email"
+                                            rules={[
+                                                { required: true, message: 'Bitte E-Mail-Adresse eingeben' },
+                                                { type: 'email', message: 'Ungültige E-Mail-Adresse' }
+                                            ]}
+                                            style={{ marginBottom: 12 }}
+                                        >
+                                            <Input
+                                                placeholder="benutzer@example.com"
+                                                prefix={<MailOutlined />}
+                                            />
+                                        </Form.Item>
+                                        <Form.Item style={{ marginBottom: 0 }}>
+                                            <Button
+                                                type="primary"
+                                                htmlType="submit"
+                                                icon={<SendOutlined />}
+                                                loading={sendingEmail}
+                                                block
+                                            >
+                                                {sendingEmail ? 'Sende Einladung...' : 'Einladung senden'}
+                                            </Button>
+                                        </Form.Item>
+                                    </Form>
+                                    <div style={{ marginTop: 8, fontSize: 12, color: '#666' }}>
+                                        Eine E-Mail mit dem Einladungslink wird automatisch versendet
+                                    </div>
                                 </div>
                             </div>
                         )

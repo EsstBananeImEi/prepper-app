@@ -201,7 +201,7 @@ export function reducer(store: Store, action: Action): Store {
             localStorage.removeItem("user");
             return { ...store, user: null };
         case 'REGISTER_USER':
-            localStorage.setItem("user", JSON.stringify(action.user));
+            // localStorage.setItem("user", JSON.stringify(action.user));
             return { ...store, user: action.user };
         case 'EDIT_USER':
             localStorage.setItem("user", JSON.stringify(action.user));

@@ -34,4 +34,6 @@ export interface GroupMemberModel {
 export interface GroupInvitationModel {
     groupId: number;
     invitedEmail: string;
+    inviteToken?: string;  // Neues Token-System
+    inviteUrl?: string;    // Vollständige URL für Email-Templates
 }

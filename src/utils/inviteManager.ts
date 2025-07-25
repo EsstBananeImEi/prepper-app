@@ -22,6 +22,8 @@ export interface PendingInvite {
     groupName: string;
     inviterName: string;
     expiresAt: number;
+    persistent?: boolean; // Bleibt auch nach Registrierung bestehen
+    email?: string; // Für Account-Aktivierung
 }
 
 export class InviteManager {
@@ -60,19 +62,32 @@ export class InviteManager {
 
     /**
      * Speichert einen ausstehenden Invite für späteren Beitritt
+     * Mit erweiterten Optionen für Account-Aktivierung
      */
-    static storePendingInvite(token: string, groupId: string, groupName: string, inviterName: string, expiresAt: number): void {
+    static storePendingInvite(
+        token: string,
+        groupId: string,
+        groupName: string,
+        inviterName: string,
+        expiresAt: number,
+        options?: {
+            persistent?: boolean; // Für Registrierung + Aktivierung
+            email?: string; // Für Account-Aktivierung
+        }
+    ): void {
         const pendingInvites = this.getPendingInvites();
 
         // Entferne bestehende Invites für die gleiche Gruppe
         const filteredInvites = pendingInvites.filter(invite => invite.groupId !== groupId);
 
-        const newInvite: PendingInvite = {
+        const newInvite: PendingInvite & { persistent?: boolean; email?: string } = {
             token,
             groupId,
             groupName,
             inviterName,
-            expiresAt
+            expiresAt,
+            persistent: options?.persistent || false,
+            email: options?.email
         };
 
         filteredInvites.push(newInvite);
@@ -108,29 +123,84 @@ export class InviteManager {
     }
 
     /**
-     * Verarbeitet ausstehende Invites nach erfolgreichem Login
-     */
-    static async processPendingInvites(userId: string): Promise<void> {
+ * Verarbeitet alle ausstehenden Invites für einen User
+ */
+    static async processPendingInvites(userId: string, userEmail?: string): Promise<void> {
         const pendingInvites = this.getPendingInvites();
 
         if (pendingInvites.length === 0) {
-            console.log('Keine ausstehenden Invites vorhanden');
+            console.log('ℹ️ Keine ausstehenden Invites vorhanden');
             return;
         }
 
-        console.log(`Verarbeite ${pendingInvites.length} ausstehende Invites für User ${userId}`);
+        console.log(`🚀 Verarbeite ${pendingInvites.length} ausstehende Invites für User ${userId}`);
+
+        const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:4000';
+
+        // ✅ KORRIGIERT: Token aus User-Objekt im localStorage lesen
+        const user = JSON.parse(localStorage.getItem('user') || 'null');
+        const authToken = user?.access_token;
+
+        if (!authToken) {
+            console.error('❌ Kein Access-Token gefunden - User muss eingeloggt sein');
+            return;
+        }
+
+        console.log('🔑 Access-Token gefunden:', authToken ? 'Ja' : 'Nein');
 
         for (const invite of pendingInvites) {
             try {
-                await this.joinGroupViaInvite(invite.token, userId);
-                console.log(`✅ Erfolgreich Gruppe ${invite.groupName} beigetreten`);
-            } catch (error) {
-                console.error(`❌ Fehler beim Beitritt zu Gruppe ${invite.groupName}:`, error);
+                console.log(`🔄 Verarbeite Token ${invite.token}`);
+
+                const response = await fetch(`${API_BASE_URL}/groups/join-invitation/${invite.token}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${authToken}`  // ✅ Korrekt aus User-Objekt
+                    }
+                });
+
+                console.log(`📡 Response Status für Token ${invite.token}: ${response.status}`);
+
+                if (response.ok) {
+                    const data = await response.json();
+                    console.log(`✅ Token ${invite.token} erfolgreich verarbeitet: "${data.group?.name}"`);
+                    this.removePendingInvite(invite.token);
+                } else if (response.status === 409) {
+                    console.log(`ℹ️ Token ${invite.token}: Bereits Mitglied der Gruppe`);
+                    this.removePendingInvite(invite.token);
+                } else if (response.status === 404) {
+                    console.warn(`❌ Token ${invite.token}: Nicht gefunden oder abgelaufen`);
+                    this.removePendingInvite(invite.token);
+                } else if (response.status === 422) {
+                    console.error(`❌ Token ${invite.token}: Unprocessable Entity (422) - möglicherweise Token-Problem`);
+                    const errorData = await response.text();
+                    console.error('Error details:', errorData);
+
+                    // Bei 422 Token behalten, da es ein Server-Problem sein könnte
+                    if (!invite.persistent) {
+                        this.removePendingInvite(invite.token);
+                    }
+                } else {
+                    const error = await response.json().catch(() => ({ error: 'Backend-Fehler' }));
+                    console.error(`❌ Token ${invite.token} fehlgeschlagen (${response.status}):`, error);
+
+                    if (!invite.persistent) {
+                        console.log(`🗑️ Entferne nicht-persistenten Token ${invite.token}`);
+                        this.removePendingInvite(invite.token);
+                    }
+                }
+            } catch (error: unknown) {
+                const errorMessage = error instanceof Error ? error.message : String(error);
+                console.error(`❌ Fehler beim Verarbeiten von Token ${invite.token}:`, errorMessage);
+
+                // Bei Netzwerkfehlern Token behalten
+                if (!errorMessage.includes('Failed to fetch') && !errorMessage.includes('Network')) {
+                    console.log(`🗑️ Entferne fehlerhaften Token ${invite.token}`);
+                    this.removePendingInvite(invite.token);
+                }
             }
         }
-
-        // Alle ausstehenden Invites löschen
-        this.clearPendingInvites();
     }
 
     /**
@@ -155,8 +225,48 @@ export class InviteManager {
      */
     static async validateInviteToken(token: string): Promise<InviteToken | null> {
         try {
-            // Hier würde normalerweise eine API-Anfrage stattfinden
-            // Für Demo verwenden wir localStorage
+            // Versuche zuerst Backend-Validierung
+            const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:4000';
+            console.log(`🔍 Validiere Token im Backend: ${API_BASE_URL}/groups/validate-invitation/${token}`);
+
+            const response = await fetch(`${API_BASE_URL}/groups/validate-invitation/${token}`);
+
+            console.log(`📡 Backend Response Status: ${response.status}`);
+
+            if (response.ok) {
+                const data = await response.json();
+                console.log('📨 Backend Response Data:', data);
+
+                if (data.valid) {
+                    // Sichere Behandlung des expiresAt Datums
+                    const expiresAt = data.expiresAt
+                        ? new Date(data.expiresAt).getTime()
+                        : Date.now() + (7 * 24 * 60 * 60 * 1000); // 7 Tage Fallback
+
+                    const inviteToken: InviteToken = {
+                        id: `backend-${token}`,
+                        token,
+                        groupId: data.groupId.toString(),
+                        groupName: data.groupName,
+                        inviterId: 'backend-user',
+                        inviterName: data.inviterName,
+                        expiresAt,
+                        createdAt: Date.now()
+                    };
+
+                    console.log('✅ Backend-Token erfolgreich validiert:', inviteToken);
+                    return inviteToken;
+                } else {
+                    console.warn('❌ Backend sagt Token ist ungültig:', data);
+                    return null;
+                }
+            } else {
+                const errorData = await response.json().catch(() => ({}));
+                console.warn(`❌ Backend Response nicht OK (${response.status}):`, errorData);
+            }
+
+            // Fallback: Frontend-Token-Validierung
+            console.log('🔄 Fallback zu Frontend-Validierung');
             const storedInvites = this.getStoredInviteTokens();
             const invite = storedInvites.find(inv => inv.token === token);
 
@@ -178,36 +288,133 @@ export class InviteManager {
             return invite;
         } catch (error) {
             console.error('Fehler beim Validieren des Invite-Tokens:', error);
+
+            // Fallback bei Netzwerkfehlern
+            const storedInvites = this.getStoredInviteTokens();
+            const invite = storedInvites.find(inv => inv.token === token);
+
+            if (invite && invite.expiresAt > Date.now() && !invite.usedAt) {
+                return invite;
+            }
+
             return null;
         }
     }
 
     /**
-     * Tritt einer Gruppe über einen Invite-Token bei
-     */
+ * Tritt einer Gruppe über einen Invite-Token bei
+ */
     static async joinGroupViaInvite(token: string, userId: string): Promise<boolean> {
         try {
-            const invite = await this.validateInviteToken(token);
+            const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:4000';
 
-            if (!invite) {
-                throw new Error('Ungültiger oder abgelaufener Invite-Token');
+            // ✅ KORRIGIERT: Token aus User-Objekt lesen
+            const user = JSON.parse(localStorage.getItem('user') || 'null');
+            const authToken = user?.access_token;
+
+            if (!authToken) {
+                console.error('❌ Kein Access-Token gefunden - User muss eingeloggt sein');
+                throw new Error('No access token available');
             }
 
-            // Hier würde normalerweise eine API-Anfrage zum Gruppenbeitritt stattfinden
-            // Für Demo simulieren wir das
-            console.log(`User ${userId} tritt Gruppe ${invite.groupName} (${invite.groupId}) bei`);
+            console.log(`🔄 Backend-Gruppenbeitritt für Token: ${token}`);
 
-            // Markiere Token als verwendet
-            await this.markTokenAsUsed(token, userId);
+            try {
+                const controller = new AbortController();
+                const timeoutId = setTimeout(() => controller.abort(), 10000);
 
-            // Entferne aus pending invites
-            this.removePendingInvite(token);
+                const response = await fetch(`${API_BASE_URL}/groups/join-invitation/${token}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${authToken}`  // ✅ Korrekt aus User-Objekt
+                    },
+                    signal: controller.signal
+                });
 
-            return true;
-        } catch (error) {
-            console.error('Fehler beim Gruppenbeitritt:', error);
+                clearTimeout(timeoutId);
+
+                console.log(`📡 Response Status: ${response.status}`);
+
+                if (response.ok) {
+                    const data = await response.json();
+                    console.log(`✅ Backend-Gruppenbeitritt erfolgreich: "${data.group?.name}"`);
+                    this.removePendingInvite(token);
+                    return true;
+                } else if (response.status === 422) {
+                    console.error('❌ 422 Unprocessable Entity - Token oder Request Problem');
+                    const errorText = await response.text();
+                    console.error('Error details:', errorText);
+                    throw new Error(`422 Unprocessable Entity: ${errorText}`);
+                } else if (response.status === 404) {
+                    console.warn('❌ Token nicht gefunden (404)');
+                    this.removePendingInvite(token);
+                    throw new Error('Token nicht gefunden');
+                } else if (response.status === 409) {
+                    console.warn('❌ Bereits Mitglied der Gruppe (409)');
+                    this.removePendingInvite(token);
+                    return true;
+                } else {
+                    const error = await response.json().catch(() => ({ error: 'Backend-Fehler' }));
+                    console.warn(`❌ Backend-Gruppenbeitritt fehlgeschlagen (${response.status}):`, error);
+                    throw new Error(error.error || 'Backend-Fehler beim Gruppenbeitritt');
+                }
+            } catch (fetchError: unknown) {
+                const errorMessage = fetchError instanceof Error ? fetchError.message : String(fetchError);
+                console.warn('⚠️ Backend-API Fehler:', errorMessage);
+                throw fetchError;
+            }
+        } catch (error: unknown) {
+            const errorMessage = error instanceof Error ? error.message : String(error);
+            console.error('❌ Fehler beim Gruppenbeitritt:', errorMessage);
             throw error;
         }
+    }
+
+    /**
+     * Verknüpft ausstehende Invites mit einer Email-Adresse
+     * Wird nach der Registrierung aufgerufen
+     */
+    static linkPendingInvitesToEmail(email: string): void {
+        const pendingInvites = this.getPendingInvites();
+        const persistentInvites = pendingInvites.filter(invite => invite.persistent);
+
+        if (persistentInvites.length > 0) {
+            // Verknüpfe persistente Invites mit der Email
+            const updatedInvites = pendingInvites.map(invite => ({
+                ...invite,
+                email: invite.persistent ? email : invite.email
+            }));
+
+            localStorage.setItem(this.STORAGE_KEY, JSON.stringify(updatedInvites));
+            console.log(`${persistentInvites.length} persistente Invites mit Email ${email} verknüpft`);
+        }
+    }
+
+    /**
+     * Debug-Funktion: Zeigt alle pending Invites in der Console
+     */
+    static debugPendingInvites(): void {
+        const pendingInvites = this.getPendingInvites();
+        console.log('🔍 Aktuelle pending Invites:', pendingInvites);
+
+        if (pendingInvites.length === 0) {
+            console.log('✅ Keine pending Invites vorhanden');
+        } else {
+            pendingInvites.forEach((invite, index) => {
+                const expiredText = invite.expiresAt < Date.now() ? ' (ABGELAUFEN)' : '';
+                console.log(`${index + 1}. ${invite.groupName} - Token: ${invite.token.substring(0, 10)}...${expiredText}`);
+            });
+        }
+    }
+
+    /**
+     * Debug-Funktion: Löscht alle hängenden Invites
+     */
+    static forceCleanPendingInvites(): void {
+        const beforeCount = this.getPendingInvites().length;
+        this.clearPendingInvites();
+        console.log(`🗑️ ${beforeCount} pending Invites zwangsweise gelöscht`);
     }
 
     /**

@@ -25,6 +25,32 @@ const InvitePage: React.FC = () => {
         }
     }, [token]);
 
+    // Automatische Weiterleitung für nicht angemeldete Benutzer
+    useEffect(() => {
+        // Warte bis Loading abgeschlossen ist und Invite validiert wurde
+        if (loading) return;
+
+        // Wenn Fehler aufgetreten ist, keine Weiterleitung
+        if (error || !invite) return;
+
+        // Prüfe ob User nicht angemeldet ist
+        const isLoggedIn = store.user && store.user.id;
+
+        if (!isLoggedIn && token) {
+            // Speichere Invite für nach dem Login
+            InviteManager.storePendingInvite(
+                token,
+                invite.groupId,
+                invite.groupName,
+                invite.inviterName,
+                invite.expiresAt
+            );
+
+            // Sofortige Weiterleitung zum Login
+            navigate(`/login?redirect=/invite/${token}`, { replace: true });
+        }
+    }, [loading, invite, error, store.user, token, navigate]);
+
     const validateInvite = async (inviteToken: string) => {
         try {
             setLoading(true);
@@ -65,13 +91,20 @@ const InvitePage: React.FC = () => {
 
         try {
             setJoining(true);
+
+            // Token für Backend-Authentifizierung bereitstellen
+            if (store.user?.access_token) {
+                localStorage.setItem('access_token', store.user.access_token);
+            }
+
             const success = await InviteManager.joinGroupViaInvite(token, store.user.id?.toString() || '');
 
             if (success) {
-                // Erfolgreicher Beitritt
-                navigate('/groups', {
+                // Erfolgreicher Beitritt - Navigate zur Gruppenverwaltung
+                navigate('/user', {
                     state: {
-                        message: `Du bist erfolgreich der Gruppe "${invite.groupName}" beigetreten!`
+                        message: `Du bist erfolgreich der Gruppe "${invite.groupName}" beigetreten!`,
+                        tab: 'groups' // Falls es Tabs gibt
                     }
                 });
             }
@@ -86,13 +119,17 @@ const InvitePage: React.FC = () => {
     const handleRegister = () => {
         if (!invite || !token) return;
 
-        // Speichere Invite für nach der Registrierung
+        // Speichere Invite als persistent für nach der Registrierung UND Account-Aktivierung
         InviteManager.storePendingInvite(
             token,
             invite.groupId,
             invite.groupName,
             invite.inviterName,
-            invite.expiresAt
+            invite.expiresAt,
+            {
+                persistent: true, // Wichtig: Bleibt auch nach Registrierung bestehen!
+                email: undefined // Wird später bei der Registrierung gesetzt
+            }
         );
 
         // Leite zur Registrierung weiter
