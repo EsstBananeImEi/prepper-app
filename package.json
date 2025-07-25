@@ -72,5 +72,5 @@
         "eslint-plugin-react-hooks": "^5.1.0",
         "react-virtualized-compat": "^2.0.0"
     },
-    "homepage": "."
+    "homepage": "/"
 }
