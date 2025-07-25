@@ -33,11 +33,15 @@ export default function AuthForm() {
     // Beim Laden der Komponente prüfen wir, ob ein Query-Parameter für resetSuccess vorliegt
     useEffect(() => {
         const searchParams = new URLSearchParams(location.search);
-        if (searchParams.get('resetSuccess')) {
+
+        // Prüfe ob wir auf der /register Route sind
+        if (location.pathname === '/register') {
+            setFormMode('register');
+        } else if (searchParams.get('resetSuccess')) {
             setFormMode('resetSuccess');
             setInfo(searchParams.get('message') || 'Passwort erfolgreich zurückgesetzt.');
         }
-    }, []);
+    }, [location.pathname]);
 
     // Löscht error und info, wenn sich entweder die Route oder der Formularmodus ändert
     useEffect(() => {
@@ -104,7 +108,7 @@ export default function AuthForm() {
                 sessionStorage.setItem('prevent_auto_calls', 'true');
 
                 if (isFromInvite()) {
-                    setInfo("Registrierung erfolgreich. Du wirst automatisch der Gruppe hinzugefügt, sobald du dich einloggst.");
+                    setInfo("Registrierung erfolgreich. Bitte aktivieren Sie Ihren Account über den in der E-Mail enthaltenen Link, wenn sie sich danach einloggen, werden Sie automatisch der Gruppe hinzugefügt.");
                 } else {
                     setInfo("Registrierung erfolgreich. Bitte aktivieren Sie Ihren Account über den in der E-Mail enthaltenen Link, bevor Sie sich einloggen.");
                 }

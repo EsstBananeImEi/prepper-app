@@ -25,6 +25,7 @@ export default function AppRoutes(): ReactElement {
             <Route path="/invite/:token" element={<InvitePage />} />
             <Route path="/groups/join/:token" element={<InvitePage />} />
             <Route path="/login" element={<LoginForm />} />
+            <Route path="/register" element={<LoginForm />} />
             <Route path="/user" element={<User />} />
             <Route path="/admin" element={<AdminPage />} />
             <Route path="/items" element={<StorageList />} />

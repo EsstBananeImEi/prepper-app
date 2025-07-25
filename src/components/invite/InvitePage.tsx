@@ -36,8 +36,12 @@ const InvitePage: React.FC = () => {
         // Prüfe ob User nicht angemeldet ist
         const isLoggedIn = store.user && store.user.id;
 
+        // 🚫 KEINE automatische Weiterleitung mehr!
+        // Das verursacht Probleme auf dem Server und Endlosschleifen
+        // Stattdessen zeigen wir die Invite-Page mit Login/Register-Buttons
+
         if (!isLoggedIn && token) {
-            // Speichere Invite für nach dem Login
+            // Speichere Invite für nach dem Login (ohne Weiterleitung)
             InviteManager.storePendingInvite(
                 token,
                 invite.groupId,
@@ -46,8 +50,8 @@ const InvitePage: React.FC = () => {
                 invite.expiresAt
             );
 
-            // Sofortige Weiterleitung zum Login
-            navigate(`/login?redirect=/invite/${token}`, { replace: true });
+            console.log('📝 Invite gespeichert, zeige Login-Buttons an');
+            // KEINE navigate() mehr - die UI zeigt Login/Register-Buttons
         }
     }, [loading, invite, error, store.user, token, navigate]);
 
