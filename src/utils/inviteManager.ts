@@ -3,6 +3,13 @@
  * Verwaltet Einladungen zu Gruppen mit automatischem Beitritt nach Login/Registration
  */
 
+import {
+    baseApiUrl,
+    groupValidateInvitationApi,
+    groupJoinInvitationApi,
+    buildApiUrl
+} from '../shared/Constants';
+
 export interface InviteToken {
     id: string;
     groupId: string;
@@ -135,8 +142,6 @@ export class InviteManager {
 
         console.log(`🚀 Verarbeite ${pendingInvites.length} ausstehende Invites für User ${userId}`);
 
-        const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:4000';
-
         // ✅ KORRIGIERT: Token aus User-Objekt im localStorage lesen
         const user = JSON.parse(localStorage.getItem('user') || 'null');
         const authToken = user?.access_token;
@@ -152,7 +157,7 @@ export class InviteManager {
             try {
                 console.log(`🔄 Verarbeite Token ${invite.token}`);
 
-                const response = await fetch(`${API_BASE_URL}/groups/join-invitation/${invite.token}`, {
+                const response = await fetch(buildApiUrl(groupJoinInvitationApi(invite.token)), {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -226,10 +231,9 @@ export class InviteManager {
     static async validateInviteToken(token: string): Promise<InviteToken | null> {
         try {
             // Versuche zuerst Backend-Validierung
-            const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:4000';
-            console.log(`🔍 Validiere Token im Backend: ${API_BASE_URL}/groups/validate-invitation/${token}`);
+            console.log(`🔍 Validiere Token im Backend: ${buildApiUrl(groupValidateInvitationApi(token))}`);
 
-            const response = await fetch(`${API_BASE_URL}/groups/validate-invitation/${token}`);
+            const response = await fetch(buildApiUrl(groupValidateInvitationApi(token)));
 
             console.log(`📡 Backend Response Status: ${response.status}`);
 
@@ -306,8 +310,6 @@ export class InviteManager {
  */
     static async joinGroupViaInvite(token: string, userId: string): Promise<boolean> {
         try {
-            const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:4000';
-
             // ✅ KORRIGIERT: Token aus User-Objekt lesen
             const user = JSON.parse(localStorage.getItem('user') || 'null');
             const authToken = user?.access_token;
@@ -323,7 +325,7 @@ export class InviteManager {
                 const controller = new AbortController();
                 const timeoutId = setTimeout(() => controller.abort(), 10000);
 
-                const response = await fetch(`${API_BASE_URL}/groups/join-invitation/${token}`, {
+                const response = await fetch(buildApiUrl(groupJoinInvitationApi(token)), {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
