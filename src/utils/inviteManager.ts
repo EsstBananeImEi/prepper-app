@@ -64,9 +64,19 @@ export class InviteManager {
      */
     static createInviteUrl(token: string, baseUrl?: string): string {
         const base = baseUrl || window.location.origin;
-        // Entferne trailing slash von base und führenden slash von path, um doppelte slashes zu vermeiden
-        const cleanBase = base.replace(/\/+$/, '');
-        return `${cleanBase}/invite/${token}`;
+        // Normalisiere die URL - entferne alle trailing slashes und füge genau einen hinzu
+        const normalizedBase = base.replace(/\/+$/, '');
+        const url = `${normalizedBase}/invite/${token}`;
+
+        // Debug-Ausgabe um das Problem zu verfolgen
+        console.log('🔗 URL Generation Debug:', {
+            originalBase: base,
+            normalizedBase,
+            token,
+            finalUrl: url
+        });
+
+        return url;
     }
 
     /**
