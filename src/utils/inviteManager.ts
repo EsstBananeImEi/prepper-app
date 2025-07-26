@@ -226,11 +226,11 @@ export class InviteManager {
     }
 
     /**
-     * Validiert einen Invite-Token
+     * Validiert einen Invite-Token (Backend-first für Email-Invites)
      */
     static async validateInviteToken(token: string): Promise<InviteToken | null> {
         try {
-            // Versuche zuerst Backend-Validierung
+            // ✅ BACKEND-FIRST: Für Email-Invites muss das Backend die Quelle der Wahrheit sein
             console.log(`🔍 Validiere Token im Backend: ${buildApiUrl(groupValidateInvitationApi(token))}`);
 
             const response = await fetch(buildApiUrl(groupValidateInvitationApi(token)));
@@ -252,10 +252,10 @@ export class InviteManager {
                         token,
                         groupId: data.groupId.toString(),
                         groupName: data.groupName,
-                        inviterId: 'backend-user',
+                        inviterId: data.inviterId?.toString() || 'backend-user',
                         inviterName: data.inviterName,
                         expiresAt,
-                        createdAt: Date.now()
+                        createdAt: data.createdAt ? new Date(data.createdAt).getTime() : Date.now()
                     };
 
                     console.log('✅ Backend-Token erfolgreich validiert:', inviteToken);
@@ -264,43 +264,54 @@ export class InviteManager {
                     console.warn('❌ Backend sagt Token ist ungültig:', data);
                     return null;
                 }
+            } else if (response.status === 404) {
+                console.warn('❌ Token nicht gefunden oder abgelaufen (404)');
+                return null;
+            } else if (response.status >= 500) {
+                console.error(`❌ Backend-Fehler (${response.status}) - versuche localStorage-Fallback`);
+                // Nur bei Server-Fehlern lokalen Fallback versuchen
             } else {
                 const errorData = await response.json().catch(() => ({}));
                 console.warn(`❌ Backend Response nicht OK (${response.status}):`, errorData);
+                return null; // Bei 4xx Fehlern kein Fallback
             }
 
-            // Fallback: Frontend-Token-Validierung
-            console.log('🔄 Fallback zu Frontend-Validierung');
+            // ⚠️ FALLBACK: Nur bei Server-Fehlern oder wenn lokaler Token existiert
+            console.log('🔄 Backend nicht verfügbar - prüfe lokalen Fallback');
             const storedInvites = this.getStoredInviteTokens();
             const invite = storedInvites.find(inv => inv.token === token);
 
             if (!invite) {
-                console.warn('Invite token nicht gefunden:', token);
+                console.warn('❌ Token weder im Backend noch lokal gefunden:', token);
                 return null;
             }
 
             if (invite.expiresAt < Date.now()) {
-                console.warn('Invite token ist abgelaufen:', token);
+                console.warn('❌ Lokaler Token ist abgelaufen:', token);
                 return null;
             }
 
             if (invite.usedAt) {
-                console.warn('Invite token wurde bereits verwendet:', token);
+                console.warn('❌ Lokaler Token wurde bereits verwendet:', token);
                 return null;
             }
 
+            console.log('✅ Fallback zu lokalem Token erfolgreich');
             return invite;
         } catch (error) {
-            console.error('Fehler beim Validieren des Invite-Tokens:', error);
+            console.error('❌ Fehler beim Validieren des Invite-Tokens:', error);
 
-            // Fallback bei Netzwerkfehlern
+            // Bei Netzwerkfehlern lokalen Fallback versuchen
+            console.log('🔄 Netzwerkfehler - versuche lokalen Fallback');
             const storedInvites = this.getStoredInviteTokens();
             const invite = storedInvites.find(inv => inv.token === token);
 
             if (invite && invite.expiresAt > Date.now() && !invite.usedAt) {
+                console.log('✅ Lokaler Fallback erfolgreich');
                 return invite;
             }
 
+            console.warn('❌ Kein gültiger lokaler Token verfügbar');
             return null;
         }
     }
