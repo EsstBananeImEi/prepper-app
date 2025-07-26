@@ -35,19 +35,16 @@ const InviteButton: React.FC<InviteButtonProps> = ({
         try {
             setLoading(true);
 
-            // Erstelle Invite-Token
-            const token = InviteManager.createInviteToken(
-                groupId,
-                groupName,
-                'current-user-id', // TODO: Aus Store holen
-                inviterName
-            );
+            // ✅ NEUE API: Nur Token-Generierung (funktioniert auch für bestehende Mitglieder)
+            const response = await groupsApiService.generateInviteToken(parseInt(groupId));
 
-            // Generiere URL
-            const url = InviteManager.createInviteUrl(token);
+            // Verwende Token vom Backend
+            const backendToken = response.inviteToken;
+            const url = InviteManager.createInviteUrl(backendToken);
             setInviteUrl(url);
 
-            console.log('Invite link generated:', url);
+            console.log('✅ Backend-Token erstellt:', backendToken);
+            console.log('🔗 Invite link generated:', url);
         } catch (error) {
             console.error('Fehler beim Erstellen des Invite-Links:', error);
             message.error('Fehler beim Erstellen des Einladungslinks');
@@ -112,32 +109,20 @@ const InviteButton: React.FC<InviteButtonProps> = ({
         try {
             setSendingEmail(true);
 
-            // Erstelle Token falls noch nicht vorhanden
-            let token = '';
-            if (!inviteUrl) {
-                const newToken = InviteManager.createInviteToken(
-                    groupId,
-                    groupName,
-                    'current-user-id', // TODO: Aus Store holen
-                    inviterName
-                );
-                token = newToken;
-                const url = InviteManager.createInviteUrl(newToken);
-                setInviteUrl(url);
-            } else {
-                // Extrahiere Token aus URL
-                const urlParts = inviteUrl.split('/invite/');
-                token = urlParts[1] || '';
-            }
-
-            // Sende Email über Backend mit Token
-            await groupsApiService.inviteUserToGroup(parseInt(groupId), {
+            // ✅ BACKEND-FIRST: Lasse Backend Token erstellen und Email senden
+            const response = await groupsApiService.inviteUserToGroup(parseInt(groupId), {
                 groupId: parseInt(groupId),
                 invitedEmail: values.email,
-                inviteToken: token, // Übergebe Token an Backend
-                inviteUrl: inviteUrl || InviteManager.createInviteUrl(token)
+                inviteToken: '', // Backend erstellt Token
+                inviteUrl: '' // Backend berechnet URL
             });
 
+            // Aktualisiere lokale URL mit Backend-Token
+            const backendToken = response.inviteToken;
+            const url = InviteManager.createInviteUrl(backendToken);
+            setInviteUrl(url);
+
+            console.log('✅ Backend-Email gesendet mit Token:', backendToken);
             message.success(`Einladung erfolgreich an ${values.email} gesendet!`);
             emailForm.resetFields();
         } catch (error) {
@@ -176,7 +161,7 @@ const InviteButton: React.FC<InviteButtonProps> = ({
                 <Space direction="vertical" size="large" style={{ width: '100%' }}>
                     <Alert
                         message="Einladungslink erstellen"
-                        description="Teile diesen Link mit Personen, die du zur Gruppe einladen möchtest. Der Link ist 7 Tage gültig."
+                        description="Teile diesen Link mit Personen, die du zur Gruppe einladen möchtest. Der Link ist 48 Stunden gültig."
                         type="info"
                         showIcon
                     />

@@ -35,7 +35,7 @@ export interface PendingInvite {
 
 export class InviteManager {
     private static readonly STORAGE_KEY = 'pending_invites';
-    private static readonly TOKEN_EXPIRY = 7 * 24 * 60 * 60 * 1000; // 7 Tage
+    private static readonly TOKEN_EXPIRY = 48 * 60 * 60 * 1000; // 48 Stunden
 
     /**
      * Erstellt einen neuen Einladungstoken
@@ -245,7 +245,7 @@ export class InviteManager {
                     // Sichere Behandlung des expiresAt Datums
                     const expiresAt = data.expiresAt
                         ? new Date(data.expiresAt).getTime()
-                        : Date.now() + (7 * 24 * 60 * 60 * 1000); // 7 Tage Fallback
+                        : Date.now() + (48 * 60 * 60 * 1000); // 48 Stunden Fallback
 
                     const inviteToken: InviteToken = {
                         id: `backend-${token}`,

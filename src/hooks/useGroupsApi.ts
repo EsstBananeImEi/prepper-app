@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { baseApiUrl, groupsApi, groupIdApi, groupMembersApi, groupInviteApi, groupJoinApi, groupJoinInvitationApi, groupLeaveApi, groupUpdateApi, groupDeleteApi, groupRemoveUserApi } from '../shared/Constants';
+import { baseApiUrl, groupsApi, groupIdApi, groupMembersApi, groupInviteApi, groupGenerateInviteTokenApi, groupJoinApi, groupJoinInvitationApi, groupLeaveApi, groupUpdateApi, groupDeleteApi, groupRemoveUserApi } from '../shared/Constants';
 import { GroupModel, GroupMemberModel, GroupInvitationModel } from '../shared/Models';
 import { handleApiError } from './useApi';
 import { ImageCompressionUtils } from '../utils/imageCompressionUtils';
@@ -135,6 +135,16 @@ export const groupsApiService = {
     inviteUserToGroup: async (groupId: number, data: GroupInvitationModel): Promise<{ message: string; inviteToken: string }> => {
         try {
             const response = await axios.post(`${baseApiUrl}${groupInviteApi(groupId)}`, data, createAuthenticatedRequest());
+            return response.data;
+        } catch (error) {
+            throw new Error(handleApiError(error, false));
+        }
+    },
+
+    // ✅ NEU: Nur Invite-Token generieren (ohne E-Mail)
+    generateInviteToken: async (groupId: number): Promise<{ message: string; inviteToken: string }> => {
+        try {
+            const response = await axios.post(`${baseApiUrl}${groupGenerateInviteTokenApi(groupId)}`, {}, createAuthenticatedRequest());
             return response.data;
         } catch (error) {
             throw new Error(handleApiError(error, false));
