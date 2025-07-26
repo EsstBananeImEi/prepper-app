@@ -26,37 +26,11 @@ export default function ApiDebugPanel({ visible, onClose }: Props) {
         lastHourRequests: 0
     });
 
-    // Draggable functionality
-    const [position, setPosition] = useState<Position>({ x: 20, y: 20 });
+    // Simplified draggable functionality - only track if dragging
     const [isDragging, setIsDragging] = useState(false);
     const [dragOffset, setDragOffset] = useState({ x: 0, y: 0 });
+    const [position, setPosition] = useState<Position | null>(null); // null = use CSS positioning
     const panelRef = useRef<HTMLDivElement>(null);
-
-    // Set initial position based on screen size
-    useEffect(() => {
-        const updateInitialPosition = () => {
-            const isMobile = window.innerWidth <= 600;
-            if (isMobile) {
-                // Mobile: position above bottom navigation (90px from bottom)
-                setPosition({
-                    x: 20,
-                    y: window.innerHeight - 450 // panel height + bottom nav height
-                });
-            } else {
-                // Desktop: bottom right corner
-                setPosition({
-                    x: window.innerWidth - 420, // panel width + margin
-                    y: window.innerHeight - 500 // panel height + margin
-                });
-            }
-        };
-
-        if (visible) {
-            updateInitialPosition();
-            window.addEventListener('resize', updateInitialPosition);
-            return () => window.removeEventListener('resize', updateInitialPosition);
-        }
-    }, [visible]);
 
     useEffect(() => {
         const interval = setInterval(() => {
@@ -66,8 +40,6 @@ export default function ApiDebugPanel({ visible, onClose }: Props) {
 
         return () => clearInterval(interval);
     }, []);
-
-    // Mouse event handlers for dragging
     const handleMouseDown = useCallback((e: React.MouseEvent) => {
         if (!panelRef.current) return;
 
@@ -85,13 +57,18 @@ export default function ApiDebugPanel({ visible, onClose }: Props) {
         const newX = e.clientX - dragOffset.x;
         const newY = e.clientY - dragOffset.y;
 
-        // Constrain to viewport
-        const maxX = window.innerWidth - 400; // panel width
-        const maxY = window.innerHeight - 500; // panel height
+        // Simple viewport constraints
+        const panelWidth = 400;
+        const panelHeight = 450; // Estimate
+
+        const minX = 10;
+        const maxX = window.innerWidth - panelWidth - 10;
+        const minY = 84; // Below navbar (64px + 20px margin)
+        const maxY = window.innerHeight - panelHeight - 20;
 
         setPosition({
-            x: Math.max(0, Math.min(newX, maxX)),
-            y: Math.max(0, Math.min(newY, maxY))
+            x: Math.max(minX, Math.min(newX, maxX)),
+            y: Math.max(minY, Math.min(newY, maxY))
         });
     }, [isDragging, dragOffset]);
 
@@ -120,13 +97,18 @@ export default function ApiDebugPanel({ visible, onClose }: Props) {
         const newX = touch.clientX - dragOffset.x;
         const newY = touch.clientY - dragOffset.y;
 
-        // Constrain to viewport
-        const maxX = window.innerWidth - 400; // panel width
-        const maxY = window.innerHeight - 500; // panel height
+        // Simple viewport constraints 
+        const panelWidth = 400;
+        const panelHeight = 450; // Estimate
+
+        const minX = 10;
+        const maxX = window.innerWidth - panelWidth - 10;
+        const minY = 84; // Below navbar (64px + 20px margin)
+        const maxY = window.innerHeight - panelHeight - 20;
 
         setPosition({
-            x: Math.max(0, Math.min(newX, maxX)),
-            y: Math.max(0, Math.min(newY, maxY))
+            x: Math.max(minX, Math.min(newX, maxX)),
+            y: Math.max(minY, Math.min(newY, maxY))
         });
     }, [isDragging, dragOffset]);
 
@@ -213,10 +195,13 @@ export default function ApiDebugPanel({ visible, onClose }: Props) {
             ref={panelRef}
             className={styles.debugPanel}
             style={{
-                left: position.x,
-                top: position.y,
-                cursor: isDragging ? 'grabbing' : 'grab',
-                zIndex: 10000 // Above everything including bottom navigation
+                // Only override CSS positioning when being dragged
+                ...(position && {
+                    left: position.x,
+                    top: position.y,
+                    right: 'auto' // Remove CSS right positioning when dragged
+                }),
+                cursor: isDragging ? 'grabbing' : 'grab'
             }}
         >
             {/* Draggable Header */}

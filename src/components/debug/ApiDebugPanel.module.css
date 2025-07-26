@@ -1,0 +1,135 @@
+.debugPanel {
+    position: fixed;
+    width: 400px;
+    max-width: calc(100vw - 20px);
+    max-height: calc(100vh - 140px);
+    /* Leave space for navbars */
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    border: 1px solid #d9d9d9;
+    overflow: hidden;
+    user-select: none;
+
+    /* Default positioning - below top navbar */
+    top: 84px;
+    /* 64px navbar + 20px margin */
+    right: 20px;
+    z-index: 998;
+    /* Below navbar (999) but above content */
+}
+
+/* Mobile positioning */
+@media (max-width: 600px) {
+    .debugPanel {
+        top: 84px;
+        /* 64px mobile navbar + 20px margin */
+        left: 10px;
+        right: 10px;
+        width: auto;
+        max-width: none;
+        max-height: calc(100vh - 156px);
+        /* 64px top + 72px bottom + 20px margins */
+    }
+}
+
+.dragHandle {
+    background: #001529;
+    color: white;
+    padding: 8px 12px;
+    cursor: grab;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid #d9d9d9;
+    font-size: 12px;
+    font-weight: 500;
+}
+
+.dragHandle:active {
+    cursor: grabbing;
+}
+
+.closeButton {
+    color: white !important;
+    border: none !important;
+    background: transparent !important;
+}
+
+.closeButton:hover {
+    background: rgba(255, 255, 255, 0.1) !important;
+}
+
+.panelContent {
+    padding: 12px;
+    max-height: calc(100vh - 200px);
+    /* Account for header and navbars */
+    overflow-y: auto;
+    overflow-x: hidden;
+}
+
+/* Mobile panel content */
+@media (max-width: 600px) {
+    .panelContent {
+        max-height: calc(100vh - 216px);
+        /* Account for both navbars and header */
+        padding: 8px;
+    }
+}
+
+.actionButtons {
+    margin-bottom: 8px;
+    text-align: right;
+}
+
+/* Mobile action buttons */
+@media (max-width: 600px) {
+    .actionButtons {
+        margin-bottom: -40px;
+    }
+}
+
+.statusCard .ant-card-body {
+    padding: 8px 12px;
+}
+
+.timelineCard .ant-card-body {
+    padding: 8px 12px;
+}
+
+.timelineContainer {
+    max-height: 300px;
+    overflow-y: auto;
+}
+
+/* Ensure timeline items are compact */
+.timelineContainer .ant-timeline-item {
+    padding-bottom: 8px;
+}
+
+.timelineContainer .ant-timeline-item-content {
+    margin-left: 24px;
+}
+
+/* Make badges smaller */
+.timelineContainer .ant-badge-count {
+    font-size: 10px;
+    min-width: 16px;
+    height: 16px;
+    line-height: 14px;
+}
+
+/* Compact alerts */
+.timelineContainer .ant-alert {
+    padding: 4px 8px;
+    margin-top: 4px;
+}
+
+.timelineContainer .ant-alert-message {
+    font-size: 10px;
+    margin-bottom: 2px;
+}
+
+.timelineContainer .ant-alert-description {
+    font-size: 10px;
+}
