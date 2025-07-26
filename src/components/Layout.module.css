@@ -5,7 +5,7 @@
     box-sizing: border-box;
 }
 
-/* Mobile Optimierungen */
+/* Mobile Optimierungen - Account for fixed navbars */
 @media (max-width: 768px) {
     .layoutContent {
         padding: 6px;
@@ -13,17 +13,44 @@
     }
 }
 
+@media (max-width: 600px) {
+    .layoutContent {
+        padding: 6px;
+        /* Space for fixed navbars on mobile */
+        margin-top: 40px;
+        /* Space for top fixed navbar */
+        margin-bottom: 72px;
+        /* Space for bottom fixed navbar */
+        min-height: calc(100vh - 120px);
+        /* Adjust for both navbars */
+    }
+}
+
 @media (max-width: 480px) {
     .layoutContent {
-        padding: 2px;
+        padding: 4px;
         /* Minimales Padding für Smartphones */
+        margin-top: 5px;
+        /* Adjusted for mobile header height */
+        margin-bottom: 68px;
+        /* Adjusted for mobile bottom nav */
+        min-height: calc(100vh - 124px);
+        /* Total space minus navbars */
     }
 }
 
 /* Layout Container */
 .layout {
     height: auto;
-    min-height: 100%;
+    min-height: 100vh;
+}
+
+/* Mobile Layout adjustments */
+@media (max-width: 600px) {
+    .layout {
+        min-height: 100vh;
+        position: relative;
+    }
 }
 
 /* Footer Styling für mobile */
@@ -33,10 +60,17 @@
     font-size: 14px;
 }
 
+@media (max-width: 600px) {
+    .footer {
+        /* Hide footer on mobile since we have bottom nav */
+        display: none;
+    }
+}
+
 @media (max-width: 480px) {
     .footer {
-        font-size: 12px;
-        padding: 8px 0;
+        /* Keep hidden on mobile */
+        display: none;
     }
 }
 

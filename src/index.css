@@ -41,10 +41,21 @@
 
 html {
     -webkit-text-size-adjust: 100%;
+    scroll-behavior: smooth;
+}
+
+body,
+html {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    overflow-x: hidden;
+    /* Prevent horizontal scroll */
 }
 
 #root {
     height: 100%;
+    min-height: 100vh;
 }
 
 /* Globale Verbesserungen für bessere Accessibility */
@@ -56,9 +67,4 @@ html {
 *:focus {
     outline: 2px solid var(--color-info);
     outline-offset: 2px;
-}
-
-/* Smooth Scrolling für bessere UX */
-html {
-    scroll-behavior: smooth;
 }

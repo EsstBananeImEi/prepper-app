@@ -1,5 +1,24 @@
 .mycontainer {
     padding: 24px;
+    padding-top: 32px;
+    /* Extra top padding for home page */
+}
+
+/* Mobile adjustments for home page */
+@media (max-width: 600px) {
+    .mycontainer {
+        padding: 16px;
+        padding-top: 24px;
+        /* Extra top padding on mobile */
+    }
+}
+
+@media (max-width: 480px) {
+    .mycontainer {
+        padding: 12px;
+        padding-top: 50px;
+        /* Extra top padding on smaller mobile */
+    }
 }
 
 .panelHeader {
