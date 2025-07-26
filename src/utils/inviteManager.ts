@@ -64,7 +64,9 @@ export class InviteManager {
      */
     static createInviteUrl(token: string, baseUrl?: string): string {
         const base = baseUrl || window.location.origin;
-        return `${base}/invite/${token}`;
+        // Entferne trailing slash von base und führenden slash von path, um doppelte slashes zu vermeiden
+        const cleanBase = base.replace(/\/+$/, '');
+        return `${cleanBase}/invite/${token}`;
     }
 
     /**
