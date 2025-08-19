@@ -37,3 +37,13 @@ export interface GroupInvitationModel {
     inviteToken?: string;  // Neues Token-System
     inviteUrl?: string;    // Vollständige URL für Email-Templates
 }
+
+export interface GroupPendingInvitationModel {
+    id: number;
+    token: string;
+    invitedEmail?: string;
+    inviterName: string;
+    createdAt: string;
+    expiresAt: string;
+    status: 'pending' | 'used' | 'expired';
+}

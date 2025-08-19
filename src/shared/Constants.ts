@@ -44,6 +44,8 @@ export const groupIdApi = (id: number | string): string => `${groupsApi}/${id}`;
 export const groupMembersApi = (id: number | string): string => `${groupsApi}/${id}/members`;
 export const groupInviteApi = (id: number | string): string => `${groupsApi}/${id}/invite`;
 export const groupGenerateInviteTokenApi = (id: number | string): string => `${groupsApi}/${id}/generate-invite-token`;
+export const groupInvitationsApi = (id: number | string): string => `${groupsApi}/${id}/invitations`;
+export const groupRevokeInvitationApi = (id: number | string, token: string): string => `${groupsApi}/${id}/invitations/${token}/revoke`;
 export const groupJoinApi = (code: string): string => `${groupsApi}/join/${code}`;
 export const groupJoinInvitationApi = (token: string): string => `${groupsApi}/join-invitation/${token}`;
 export const groupValidateInvitationApi = (token: string): string => `${groupsApi}/validate-invitation/${token}`;

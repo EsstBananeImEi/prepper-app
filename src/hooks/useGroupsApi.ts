@@ -1,6 +1,6 @@
 import axios from 'axios';
-import { baseApiUrl, groupsApi, groupIdApi, groupMembersApi, groupInviteApi, groupGenerateInviteTokenApi, groupJoinApi, groupJoinInvitationApi, groupLeaveApi, groupUpdateApi, groupDeleteApi, groupRemoveUserApi } from '../shared/Constants';
-import { GroupModel, GroupMemberModel, GroupInvitationModel } from '../shared/Models';
+import { baseApiUrl, groupsApi, groupIdApi, groupMembersApi, groupInviteApi, groupGenerateInviteTokenApi, groupInvitationsApi, groupRevokeInvitationApi, groupJoinApi, groupJoinInvitationApi, groupLeaveApi, groupUpdateApi, groupDeleteApi, groupRemoveUserApi } from '../shared/Constants';
+import { GroupModel, GroupMemberModel, GroupInvitationModel, GroupPendingInvitationModel } from '../shared/Models';
 import { handleApiError } from './useApi';
 import { ImageCompressionUtils } from '../utils/imageCompressionUtils';
 import { ImageCacheManager } from '../utils/imageCacheManager';
@@ -145,6 +145,26 @@ export const groupsApiService = {
     generateInviteToken: async (groupId: number): Promise<{ message: string; inviteToken: string }> => {
         try {
             const response = await axios.post(`${baseApiUrl}${groupGenerateInviteTokenApi(groupId)}`, {}, createAuthenticatedRequest());
+            return response.data;
+        } catch (error) {
+            throw new Error(handleApiError(error, false));
+        }
+    },
+
+    // ✅ NEU: Ausstehende Einladungen einer Gruppe abrufen
+    getGroupInvitations: async (groupId: number): Promise<{ invitations: GroupPendingInvitationModel[] }> => {
+        try {
+            const response = await axios.get(`${baseApiUrl}${groupInvitationsApi(groupId)}`, createAuthenticatedRequest());
+            return response.data;
+        } catch (error) {
+            throw new Error(handleApiError(error, false));
+        }
+    },
+
+    // ✅ NEU: Einladung widerrufen
+    revokeInvitation: async (groupId: number, token: string): Promise<{ message: string }> => {
+        try {
+            const response = await axios.delete(`${baseApiUrl}${groupRevokeInvitationApi(groupId, token)}`, createAuthenticatedRequest());
             return response.data;
         } catch (error) {
             throw new Error(handleApiError(error, false));

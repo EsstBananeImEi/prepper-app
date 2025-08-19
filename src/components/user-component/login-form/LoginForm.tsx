@@ -108,7 +108,7 @@ export default function AuthForm() {
                 sessionStorage.setItem('prevent_auto_calls', 'true');
 
                 if (isFromInvite()) {
-                    setInfo("Registrierung erfolgreich. Bitte aktivieren Sie Ihren Account über den in der E-Mail enthaltenen Link, wenn sie sich danach einloggen, werden Sie automatisch der Gruppe hinzugefügt.");
+                    setInfo("Registrierung erfolgreich. Bitte aktivieren Sie Ihren Account über den in der E-Mail enthaltenen Link. Bei erneuter Anmeldung werden Sie automatisch der Gruppe hinzugefügt.");
                 } else {
                     setInfo("Registrierung erfolgreich. Bitte aktivieren Sie Ihren Account über den in der E-Mail enthaltenen Link, bevor Sie sich einloggen.");
                 }

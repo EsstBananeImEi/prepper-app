@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
 import { Button, Modal, Input, Typography, Space, Alert, message, Divider, Form } from 'antd';
-import { ShareAltOutlined, CopyOutlined, LinkOutlined, UserAddOutlined, MailOutlined, SendOutlined } from '@ant-design/icons';
+import { ShareAltOutlined, CopyOutlined, LinkOutlined, UserAddOutlined, MailOutlined, SendOutlined, SettingOutlined } from '@ant-design/icons';
 import { InviteManager } from '../../utils/inviteManager';
 import { groupsApiService } from '../../hooks/useGroupsApi';
+import InvitationManager from './InvitationManager';
 
 const { Text, Paragraph } = Typography;
 
@@ -26,6 +27,7 @@ const InviteButton: React.FC<InviteButtonProps> = ({
     disabled = false
 }) => {
     const [modalVisible, setModalVisible] = useState(false);
+    const [managerVisible, setManagerVisible] = useState(false);
     const [inviteUrl, setInviteUrl] = useState('');
     const [loading, setLoading] = useState(false);
     const [emailForm] = Form.useForm();
@@ -217,6 +219,12 @@ const InviteButton: React.FC<InviteButtonProps> = ({
                                         >
                                             Per WhatsApp teilen
                                         </Button>
+                                        <Button
+                                            icon={<SettingOutlined />}
+                                            onClick={() => setManagerVisible(true)}
+                                        >
+                                            Einladungen verwalten
+                                        </Button>
                                     </Space>
                                 </div>
 
@@ -289,6 +297,13 @@ const InviteButton: React.FC<InviteButtonProps> = ({
                     />
                 </Space>
             </Modal>
+
+            <InvitationManager
+                groupId={groupId}
+                groupName={groupName}
+                visible={managerVisible}
+                onClose={() => setManagerVisible(false)}
+            />
         </>
     );
 };
