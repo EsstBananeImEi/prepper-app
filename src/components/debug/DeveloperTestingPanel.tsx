@@ -1,5 +1,5 @@
 import React from 'react';
-import { Card, Typography, Space, Alert, Button } from 'antd';
+import { Card, Typography, Space, Alert, Button, Divider } from 'antd';
 import {
     BugOutlined,
     ExperimentOutlined,
@@ -170,18 +170,37 @@ const DeveloperTestingPanel: React.FC = () => {
                             <Text type="secondary" style={{ fontSize: '14px' }}>
                                 Führen Sie diese Befehle in der Browser-Konsole aus:
                             </Text>
-                            <div className={styles.codeBlock}>
-                                <div className={styles.codeComment}>{`// Alle Error-Logs anzeigen:`}</div>
-                                <div className={styles.codeCommand}>console.log(JSON.parse(localStorage.getItem(&apos;error_logs&apos;) || &apos;[]&apos;));</div>
-                                <br />
-                                <div className={styles.codeComment}>{`// Nur failed uploads anzeigen:`}</div>
-                                <div className={styles.codeCommand}>
-                                    const logs = JSON.parse(localStorage.getItem(&apos;error_logs&apos;) || &apos;[]&apos;));<br />
-                                    console.log(&apos;Failed uploads:&apos;, logs.filter(log =&gt; log.failedServerUpload));
+
+                            {/* ErrorBoundary Logs */}
+                            <div>
+                                <Text strong>📊 ErrorBoundary-Logs (abgefangene Fehler):</Text>
+                                <div className={styles.codeBlock}>
+                                    <div className={styles.codeComment}>{`// Alle ErrorBoundary-Logs anzeigen:`}</div>
+                                    <div className={styles.codeCommand}>console.log(JSON.parse(localStorage.getItem(&apos;error_logs&apos;) || &apos;[]&apos;));</div>
+                                    <br />
+                                    <div className={styles.codeComment}>{`// Nur failed uploads anzeigen:`}</div>
+                                    <div className={styles.codeCommand}>
+                                        const logs = JSON.parse(localStorage.getItem(&apos;error_logs&apos;) || &apos;[]&apos;));<br />
+                                        console.log(&apos;Failed uploads:&apos;, logs.filter(log =&gt; log.failedServerUpload));
+                                    </div>
+                                    <br />
+                                    <div className={styles.codeComment}>{`// ErrorBoundary-Logs löschen:`}</div>
+                                    <div className={styles.codeCommand}>localStorage.removeItem(&apos;error_logs&apos;);</div>
                                 </div>
-                                <br />
-                                <div className={styles.codeComment}>{`// Logs löschen:`}</div>
-                                <div className={styles.codeCommand}>localStorage.removeItem(&apos;error_logs&apos;);</div>
+                            </div>
+
+                            <Divider />
+
+                            {/* Manuelle Logs */}
+                            <div>
+                                <Text strong>📋 Manuelle Logs (nicht-abgefangene Fehler):</Text>
+                                <div className={styles.codeBlock}>
+                                    <div className={styles.codeComment}>{`// Manuelle Error-Logs anzeigen:`}</div>
+                                    <div className={styles.codeCommand}>console.log(JSON.parse(localStorage.getItem(&apos;manual_error_logs&apos;) || &apos;[]&apos;));</div>
+                                    <br />
+                                    <div className={styles.codeComment}>{`// Manuelle Logs löschen:`}</div>
+                                    <div className={styles.codeCommand}>localStorage.removeItem(&apos;manual_error_logs&apos;);</div>
+                                </div>
                             </div>
                         </Space>
                     </Card>
