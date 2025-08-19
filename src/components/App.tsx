@@ -9,9 +9,9 @@ import Layout from './Layout';
 import { StoreProvider } from '../store/Store';
 import ScrollToTop from './ScrollToTop';
 import HideRoutes from './HideRoutes';
-import ErrorBoundary from './error-boundary/ErrorBoundary';
 import { usePerformanceMonitoring, useMemoryMonitoring } from '../hooks/usePerformance';
 import { useInviteProcessor } from '../hooks/useInviteProcessor';
+import ErrorBoundary from './error-boundary/ErrorBoundary';
 
 function App(): ReactElement {
     // Performance-Monitoring in Development
@@ -30,7 +30,7 @@ function App(): ReactElement {
 }
 
 function AppContent(): ReactElement {
-    // Invite Processing für automatisches Gruppenbeitritt (muss innerhalb Router sein)
+    // Invite Processing für  automatisches Gruppenbeitritt (muss innerhalb Router sein)
     useInviteProcessor();
 
     return (

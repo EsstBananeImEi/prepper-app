@@ -13,6 +13,7 @@ import ChecklistComponent from './checklist-component/CheckListItem';
 import ResetSuccessForm from './user-component/reset-form/ResetSuccessForm';
 import AdminPage from './admin/AdminPage';
 import InvitePage from './invite/InvitePage';
+import DeveloperTestingPanel from './debug/DeveloperTestingPanel';
 
 export default function AppRoutes(): ReactElement {
     return (
@@ -28,6 +29,7 @@ export default function AppRoutes(): ReactElement {
             <Route path="/register" element={<LoginForm />} />
             <Route path="/user" element={<User />} />
             <Route path="/admin" element={<AdminPage />} />
+            <Route path="/dev-testing" element={<DeveloperTestingPanel />} />
             <Route path="/items" element={<StorageList />} />
             <Route path="/checklist" element={<ChecklistComponent />} />
             <Route path="/details/:category" element={<NotfallDetail />} />

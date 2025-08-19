@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import { Card, Typography, Space, Alert, Divider, Button, Modal } from 'antd';
-import { SettingOutlined, BugOutlined, UserOutlined, InfoCircleOutlined } from '@ant-design/icons';
+import { SettingOutlined, BugOutlined, UserOutlined, InfoCircleOutlined, ExperimentOutlined } from '@ant-design/icons';
 import { useStore } from '../../store/Store';
+import { useNavigate } from 'react-router-dom';
 import AdminSettings from '../debug/AdminSettings';
 import styles from './AdminPage.module.css';
 
@@ -9,6 +10,7 @@ const { Title, Text, Paragraph } = Typography;
 
 export default function AdminPage() {
     const { store } = useStore();
+    const navigate = useNavigate();
     const [debugPanelEnabled, setDebugPanelEnabled] = useState<boolean>(
         localStorage.getItem('debugPanelEnabled') === 'true'
     );
@@ -24,6 +26,10 @@ export default function AdminPage() {
 
     const showAdminInfo = () => {
         setModalVisible(true);
+    };
+
+    const goToDeveloperTesting = () => {
+        navigate('/dev-testing');
     };
 
     if (!isAdmin) {
@@ -151,6 +157,19 @@ export default function AdminPage() {
                         disabled={!debugPanelEnabled}
                     >
                         Debug Panel deaktivieren
+                    </Button>
+
+                    <Button
+                        type="default"
+                        icon={<ExperimentOutlined />}
+                        onClick={goToDeveloperTesting}
+                        style={{
+                            background: '#f0f8ff',
+                            borderColor: '#1890ff',
+                            color: '#1890ff'
+                        }}
+                    >
+                        Developer Testing Panel
                     </Button>
 
                     <Button
