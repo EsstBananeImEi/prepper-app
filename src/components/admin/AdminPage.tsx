@@ -1,9 +1,11 @@
 import React, { useState } from 'react';
-import { Card, Typography, Space, Alert, Divider, Button, Modal } from 'antd';
-import { SettingOutlined, BugOutlined, UserOutlined, InfoCircleOutlined, ExperimentOutlined } from '@ant-design/icons';
+import { Card, Typography, Space, Alert, Divider, Button, Modal, Spin } from 'antd';
+import { SettingOutlined, BugOutlined, UserOutlined, InfoCircleOutlined, ExperimentOutlined, LockOutlined } from '@ant-design/icons';
 import { useStore } from '../../store/Store';
 import { useNavigate } from 'react-router-dom';
 import AdminSettings from '../debug/AdminSettings';
+import SecurityWarning from '../auth/SecurityWarning';
+import { useAdminValidation } from '../../hooks/useAdminValidation';
 import styles from './AdminPage.module.css';
 
 const { Title, Text, Paragraph } = Typography;
@@ -16,8 +18,8 @@ export default function AdminPage() {
     );
     const [modalVisible, setModalVisible] = useState(false);
 
-    // Check if current user is admin
-    const isAdmin = store.user?.isAdmin ?? false;
+    // Secure admin validation using server-side check
+    const { isAdmin, isValidating, error } = useAdminValidation();
 
     const handleDebugPanelToggle = (enabled: boolean) => {
         setDebugPanelEnabled(enabled);
@@ -32,17 +34,57 @@ export default function AdminPage() {
         navigate('/dev-testing');
     };
 
+    // Show loading spinner while validating
+    if (isValidating) {
+        return (
+            <div className={styles.container}>
+                <div style={{
+                    display: 'flex',
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                    minHeight: '400px'
+                }}>
+                    <Space direction="vertical" align="center">
+                        <Spin size="large" />
+                        <Typography.Text type="secondary">
+                            Berechtigung wird überprüft...
+                        </Typography.Text>
+                    </Space>
+                </div>
+            </div>
+        );
+    }
+
+    // Show access denied if not admin (after validation completed)
     if (!isAdmin) {
         return (
             <div className={styles.container}>
                 <Card className={styles.accessDeniedCard}>
                     <Alert
                         message="Zugriff verweigert"
-                        description="Sie haben keine Berechtigung, diese Seite zu betreten. Nur Administratoren können auf diesen Bereich zugreifen."
+                        description={
+                            <div>
+                                <p>
+                                    <LockOutlined style={{ marginRight: '8px', color: '#ff4d4f' }} />
+                                    Sie haben keine Administrator-Berechtigung für diesen Bereich.
+                                </p>
+                                <p style={{ marginTop: '12px', fontSize: '14px', color: '#666' }}>
+                                    <strong>Sicherheitsdetails:</strong><br />
+                                    • Admin-Status wird server-seitig validiert<br />
+                                    • Client-seitige Manipulation ist nicht möglich<br />
+                                    • {error || 'Unbekannter Validierungsfehler'}
+                                </p>
+                            </div>
+                        }
                         type="error"
                         showIcon
                         icon={<UserOutlined />}
                     />
+                    <div style={{ marginTop: '16px', textAlign: 'center' }}>
+                        <Button type="primary" onClick={() => navigate('/')}>
+                            Zur Startseite
+                        </Button>
+                    </div>
                 </Card>
             </div>
         );
@@ -50,6 +92,9 @@ export default function AdminPage() {
 
     return (
         <div className={styles.container}>
+            {/* Security Warning for Developers */}
+            <SecurityWarning />
+
             {/* Header */}
             <Card className={styles.headerCard}>
                 <Space direction="vertical" style={{ width: '100%' }}>

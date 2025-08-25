@@ -15,6 +15,7 @@ export const loginApi = `/login`;
 export const registerApi = `/register`;
 export const forgotPasswordApi = `/forgot-password`;
 export const refreshTokenApi = `/refresh`;
+export const validateAdminApi = `${baseApiUrl}/auth/validate-admin`;
 export const activateAccountApi = (token: string): string => `/activate-account/${token}`;
 export const resetPasswordApi = (token: string): string => `/reset-password/${token}`;
 

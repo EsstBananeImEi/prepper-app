@@ -1,15 +1,18 @@
 import React from 'react';
-import { Card, Typography, Space, Alert, Button, Divider } from 'antd';
+import { Card, Typography, Space, Alert, Button, Divider, Spin } from 'antd';
 import {
     BugOutlined,
     ExperimentOutlined,
     CodeOutlined,
     ToolOutlined,
-    HomeOutlined
+    HomeOutlined,
+    LockOutlined,
+    UserOutlined
 } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
 import ErrorTester from '../debug/ErrorTester';
 import { useStore } from '../../store/Store';
+import { useAdminValidation } from '../../hooks/useAdminValidation';
 import styles from './DeveloperTestingPanel.module.css';
 
 const { Title, Text, Paragraph } = Typography;
@@ -18,8 +21,8 @@ const DeveloperTestingPanel: React.FC = () => {
     const navigate = useNavigate();
     const { store } = useStore();
 
-    // Check if current user is admin
-    const isAdmin = store.user?.isAdmin ?? false;
+    // Secure admin validation using server-side check
+    const { isAdmin, isValidating, error } = useAdminValidation();
 
     const goToHome = () => {
         navigate('/');
@@ -29,19 +32,58 @@ const DeveloperTestingPanel: React.FC = () => {
         navigate('/admin');
     };
 
+    // Show loading spinner while validating
+    if (isValidating) {
+        return (
+            <div className={styles.container}>
+                <div style={{
+                    display: 'flex',
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                    minHeight: '400px'
+                }}>
+                    <Space direction="vertical" align="center">
+                        <Spin size="large" />
+                        <Typography.Text type="secondary">
+                            Berechtigung wird überprüft...
+                        </Typography.Text>
+                    </Space>
+                </div>
+            </div>
+        );
+    }
+
+    // Show access denied if not admin (after validation completed)
     if (!isAdmin) {
         return (
             <div className={styles.container}>
                 <Card className={styles.accessDeniedCard}>
                     <Space direction="vertical" size="large">
-                        <BugOutlined style={{ fontSize: 48, color: '#ff4d4f' }} />
-                        <Title level={3}>Zugriff verweigert</Title>
-                        <Text type="secondary">
-                            Das Developer Testing Panel ist nur für Administratoren verfügbar.
-                        </Text>
-                        <Button type="primary" icon={<HomeOutlined />} onClick={goToHome}>
-                            Zur Startseite
-                        </Button>
+                        <Alert
+                            message="Zugriff verweigert - Developer Testing Panel"
+                            description={
+                                <div>
+                                    <p>
+                                        <LockOutlined style={{ marginRight: '8px', color: '#ff4d4f' }} />
+                                        Sie haben keine Administrator-Berechtigung für diesen Entwicklerbereich.
+                                    </p>
+                                    <p style={{ marginTop: '12px', fontSize: '14px', color: '#666' }}>
+                                        <strong>Sicherheitsdetails:</strong><br />
+                                        • Admin-Status wird server-seitig validiert<br />
+                                        • Testing-Tools sind nur für autorisierte Entwickler<br />
+                                        • {error || 'Unbekannter Validierungsfehler'}
+                                    </p>
+                                </div>
+                            }
+                            type="error"
+                            showIcon
+                            icon={<UserOutlined />}
+                        />
+                        <Space>
+                            <Button type="primary" icon={<HomeOutlined />} onClick={goToHome}>
+                                Zur Startseite
+                            </Button>
+                        </Space>
                     </Space>
                 </Card>
             </div>

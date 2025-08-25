@@ -24,6 +24,7 @@ import style from './NavBar.module.css';
 import GlobalSearch from '../search/GlobalSearch';
 import ApiDebugPanel from '../debug/ApiDebugPanel';
 import DraggableDebugButton from '../debug/DraggableDebugButton';
+import { useAdminValidation } from '../../hooks/useAdminValidation';
 
 const { Text } = Typography;
 
@@ -38,11 +39,11 @@ export default function NavBar(): ReactElement {
     const [debugPanelVisible, setDebugPanelVisible] = useState(false);
     const [burgerMenuVisible, setBurgerMenuVisible] = useState(false);
 
-    // Check if user is admin and debug panel is enabled
-    const isAdmin = store.user?.isAdmin ?? false;
+    // Secure admin validation using server-side check
+    const { isAdmin, isValidating: adminValidating } = useAdminValidation();
 
     const debugPanelEnabled = localStorage.getItem('debugPanelEnabled') === 'true';
-    const shouldShowDebugButton = isLoggedIn && isAdmin && debugPanelEnabled;
+    const shouldShowDebugButton = isLoggedIn && isAdmin && debugPanelEnabled && !adminValidating;
 
     // Check if we should show burger menu (screen width < 430px)
     const shouldShowBurgerMenu = dimensions.width <= 430;
@@ -112,7 +113,7 @@ export default function NavBar(): ReactElement {
                         <Menu.Item key="profile" icon={<ProfileOutlined />}>
                             <NavLink to={userApi}>Profil</NavLink>
                         </Menu.Item>
-                        {isAdmin && (
+                        {(isAdmin && !adminValidating) && (
                             <Menu.Item key="admin" icon={<SettingOutlined />}>
                                 <NavLink to={adminRoute}>Admin-Panel</NavLink>
                             </Menu.Item>
