@@ -19,6 +19,23 @@
     justify-content: center;
 }
 
+/* Sticky action bar to match form */
+.actionBar {
+    position: sticky;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    padding: 12px 8px;
+    background: rgba(255, 255, 255, 0.85);
+    backdrop-filter: blur(6px);
+    border-top: 1px solid #eee;
+    margin-top: 16px;
+    z-index: 2;
+}
+
 /* ----------------- Item Form Card Layout ----------------- */
 .itemFormCard {
     border: 1px solid #ddd;
@@ -160,6 +177,16 @@
 
 .nutrientValues th {
     background-color: #eee;
+}
+
+/* Alignment helpers to mirror form styles */
+.text_right {
+    text-align: right;
+    width: 70px;
+}
+
+.unit {
+    width: 50px;
 }
 
 

@@ -1,10 +1,9 @@
-import { Descriptions, Image, Button, Alert } from 'antd';
+import { Image, Button, Alert, Tag } from 'antd';
 import React, { ReactElement, SyntheticEvent, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { storageApi, useDemensions, useStorageApi } from '../../../hooks/StorageApi';
-import { editItemRoute, errorRoute, itemIdApi, itemsRoute } from '../../../shared/Constants';
+import { itemsRoute, editItemRoute } from '../../../shared/Constants';
 import LoadingSpinner from '../../loading-spinner/LoadingSpinner';
-import { BasketModel, NutrientValueModel, StorageModel } from '../StorageModel';
+import { NutrientValueModel } from '../StorageModel';
 import css from './StorageDetail.module.css';
 import { useStore } from '../../../store/Store';
 import { actionHandler } from '../../../store/Actions';
@@ -14,10 +13,8 @@ import { ensureDataUrlPrefix } from '../../../utils/imageUtils';
 export default function StorageDetail(): ReactElement {
     const { id } = useParams<{ id: string }>();
     const navigate = useNavigate();
-    const [dimensions] = useDemensions(() => 1, 0);
     const [saving, setSaving] = useState(false);
     const [saveError, setSaveError] = useState<string>('');
-    const endpoint = id ? itemIdApi(id) : '';
     const { store, dispatch } = useStore();
 
     const storageItem = store.storeItems.find((item) => id ? item.id === parseInt(id) : false);
@@ -25,9 +22,6 @@ export default function StorageDetail(): ReactElement {
     if (!id) {
         return <Alert style={{ marginBottom: 16 }} message="Keine ID gefunden" type="error" showIcon />;
     }
-
-    // Jetzt ist id garantiert ein string
-    const showLegend = dimensions.width > 450;
 
     if (!storageItem) {
         return <LoadingSpinner message="Loading storage items ..." />;
@@ -40,7 +34,14 @@ export default function StorageDetail(): ReactElement {
 
     // In React Router v6: navigate(-1) geht einen Schritt zurück
     const onGoBack = () => navigate(-1);
-    const onGoToEdit = () => navigate(editItemRoute(id));
+    const onGoToEdit = () => {
+        try {
+            window.scrollTo({ top: 0, left: 0, behavior: 'auto' });
+        } catch {
+            window.scrollTo(0, 0);
+        }
+        navigate(editItemRoute(id));
+    };
 
     const onDelete = async (event: SyntheticEvent) => {
         event.preventDefault();
@@ -68,7 +69,8 @@ export default function StorageDetail(): ReactElement {
             {saveError && (
                 <Alert style={{ marginBottom: 16 }} message={saveError} type="error" showIcon />
             )}
-            {/* Enhanced image display with proper Base64 handling */}
+
+            {/* Bild */}
             <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 16 }}>
                 <Image.PreviewGroup>
                     <Image
@@ -94,7 +96,7 @@ export default function StorageDetail(): ReactElement {
                 </Image.PreviewGroup>
             </div>
 
-            {/* Allgemeine Felder als Card (read‑only) */}
+            {/* Basis */}
             <div className={css.itemFormCard}>
                 <div className={css.itemHeader}>{storageItem.name}</div>
                 <div className={css.itemFields}>
@@ -103,46 +105,71 @@ export default function StorageDetail(): ReactElement {
                         <div>{storageItem.id}</div>
                     </div>
                     <div className={css.itemFieldRow}>
-                        <label>Amount</label>
+                        <label>Menge</label>
                         <div>{storageItem.amount}</div>
                     </div>
                     <div className={css.itemFieldRow}>
-                        <label>Categories</label>
-                        <div>{storageItem.categories ? storageItem.categories.join(', ') : '-'}</div>
+                        <label>Mengeneinheit</label>
+                        <div>{storageItem.unit && storageItem.unit.trim() !== '' ? storageItem.unit : '-'}</div>
                     </div>
                     <div className={css.itemFieldRow}>
-                        <label>Minimal Warn</label>
+                        <label>Kategorien</label>
+                        <div>
+                            {storageItem.categories && storageItem.categories.length > 0
+                                ? storageItem.categories.map((c, idx) => (
+                                    <Tag key={`${c}-${idx}`} style={{ marginBottom: 4 }}>{c}</Tag>
+                                ))
+                                : '-'}
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            {/* Details */}
+            <div className={css.itemFormCard}>
+                <div className={css.itemHeader}>Details</div>
+                <div className={css.itemFields}>
+                    <div className={css.itemFieldRow}>
+                        <label>Warnschwelle (minimal)</label>
                         <div>{storageItem.lowestAmount}</div>
                     </div>
                     <div className={css.itemFieldRow}>
-                        <label>Middel Warn</label>
+                        <label>Warnschwelle (mittel)</label>
                         <div>{storageItem.midAmount}</div>
                     </div>
                     <div className={css.itemFieldRow}>
-                        <label>Unit</label>
-                        <div>{storageItem.unit}</div>
-                    </div>
-                    <div className={css.itemFieldRow}>
-                        <label>Package Quantity</label>
-                        <div>{storageItem.packageQuantity ? storageItem.packageQuantity : '-'}</div>
-                    </div>
-                    <div className={css.itemFieldRow}>
-                        <label>Package Unit</label>
-                        <div>{storageItem.packageUnit ? storageItem.packageUnit : '-'}</div>
-                    </div>
-                    <div className={css.itemFieldRow}>
-                        <label>Storage Location</label>
+                        <label>Lagerort</label>
                         <div>{storageItem.storageLocation ? storageItem.storageLocation : '-'}</div>
                     </div>
                 </div>
             </div>
 
-            {/* Nutrients-Bereich als Card Layout */}
+            {/* Verpackung */}
+            <div className={css.itemFormCard}>
+                <div className={css.itemHeader}>Verpackung</div>
+                <div className={css.itemFields}>
+                    <div className={css.itemFieldRow}>
+                        <label>Packungsmenge</label>
+                        <div>{storageItem.packageQuantity != null ? storageItem.packageQuantity : '-'}</div>
+                    </div>
+                    <div className={css.itemFieldRow}>
+                        <label>Packungseinheit</label>
+                        <div>{storageItem.packageUnit ? storageItem.packageUnit : '-'}</div>
+                    </div>
+                </div>
+            </div>
+
+            {/* Nährwerte */}
             {storageItem.nutrients && storageItem.nutrients.values.length > 0 && (
                 <div className={css.nutrientSection}>
                     <div className={css.nutrientSectionHeader}>
-                        {`Nährstoffangaben pro ${storageItem.nutrients.amount} ${storageItem.nutrients.unit}`}
+                        {`Nährwertangaben pro ${storageItem.nutrients.amount} ${storageItem.nutrients.unit}`}
                     </div>
+                    {storageItem.nutrients.description && (
+                        <div style={{ marginBottom: 12, textAlign: 'center' }}>
+                            {storageItem.nutrients.description}
+                        </div>
+                    )}
                     <div className={css.nutrientCardsContainer}>
                         {orderNutrientValues(storageItem.nutrients.values).map((nutrientValue, index) => (
                             <div key={index} className={css.nutrientCard}>
@@ -158,8 +185,8 @@ export default function StorageDetail(): ReactElement {
                                     <table>
                                         <thead>
                                             <tr>
-                                                <th style={{ textAlign: 'right' }}>Value</th>
-                                                <th style={{ textAlign: 'right' }}>Unit</th>
+                                                <th style={{ textAlign: 'right' }}>Wert</th>
+                                                <th style={{ textAlign: 'right' }}>Einheit</th>
                                             </tr>
                                         </thead>
                                         <tbody>
@@ -178,15 +205,15 @@ export default function StorageDetail(): ReactElement {
                 </div>
             )}
 
-            {/* Aktions-Buttons */}
-            <div className={css.buttonContainer}>
+            {/* Aktions-Buttons (sticky, wie im Formular) */}
+            <div className={css.actionBar}>
                 <Button onClick={onGoBack} type="default">
                     Zurück
                 </Button>
                 <Button onClick={onGoToEdit} type="primary">
                     Bearbeiten
                 </Button>
-                <Button onClick={onDelete} danger>
+                <Button onClick={onDelete} danger loading={saving}>
                     Löschen
                 </Button>
             </div>

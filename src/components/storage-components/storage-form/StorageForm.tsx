@@ -100,6 +100,28 @@ export default function StorageDetailForm(): ReactElement {
     const [currentStep, setCurrentStep] = useState<number>(0);
     const stepsDef = useMemo(() => ['Basis', 'Details', 'Verpackung', 'Bild', 'Nährwerte'], []);
 
+    // Always open the form at the top when navigating here (from detail or elsewhere)
+    useEffect(() => {
+        const scrollNow = () => {
+            // Try common scroll targets
+            window.scrollTo({ top: 0, left: 0, behavior: 'auto' });
+            const docEl = document.documentElement as HTMLElement | null;
+            const bodyEl = document.body as HTMLElement | null;
+            if (docEl && typeof docEl.scrollTo === 'function') docEl.scrollTo({ top: 0, left: 0 } as ScrollToOptions);
+            if (bodyEl && typeof bodyEl.scrollTo === 'function') bodyEl.scrollTo({ top: 0, left: 0 } as ScrollToOptions);
+            // Also set scrollTop directly as fallback
+            if (docEl) docEl.scrollTop = 0;
+            if (bodyEl) bodyEl.scrollTop = 0;
+        };
+        // Immediate
+        scrollNow();
+        // Next frame
+        requestAnimationFrame(scrollNow);
+        // After microtask and slight delay
+        setTimeout(scrollNow, 0);
+        setTimeout(scrollNow, 50);
+    }, []);
+
     // Auto-center active step in scroller (AntD Steps)
     const stepsScrollerRef = useRef<HTMLDivElement | null>(null);
     useEffect(() => {
@@ -963,19 +985,22 @@ export default function StorageDetailForm(): ReactElement {
             </Card>
 
             <div className={css.actionBar}>
-                {!isNew && (
-                    <Button className={css.formButton} onClick={onCancel} type="default">Go Back</Button>
-                )}
-                <Button className={css.formButton} onClick={prev} disabled={currentStep === 0}>Zurück</Button>
-                {currentStep < 4 && (
-                    <Button className={css.formButton} type="default" onClick={next}>Weiter</Button>
-                )}
-                <Button className={css.formButton} onClick={onSave} type="primary" loading={saving}>Speichern</Button>
-                {isNew ? (
-                    <Button className={css.formButton} onClick={onCancel}>Cancel</Button>
-                ) : (
-                    <Button className={css.formButton} onClick={(e) => onDelete(e)} danger>Delete</Button>
-                )}
+                <div className={css.actionLeft}></div>
+                <div className={css.actionCenter}>
+                    {!isNew && (
+                        <Button className={css.formButton} onClick={onCancel} type="default">Go Back</Button>
+                    )}
+                    <Button className={css.formButton} onClick={prev} disabled={currentStep === 0}>Zurück</Button>
+                    {currentStep < 4 && (
+                        <Button className={css.formButton} type="default" onClick={next}>Weiter</Button>
+                    )}
+                </div>
+                <div className={css.actionRight}>
+                    <Button className={css.formButton} onClick={onSave} type="primary" loading={saving}>Speichern</Button>
+                    {isNew && (
+                        <Button className={css.formButton} onClick={onCancel}>Cancel</Button>
+                    )}
+                </div>
             </div>
         </div>
     );

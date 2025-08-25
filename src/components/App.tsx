@@ -33,6 +33,17 @@ function AppContent(): ReactElement {
     // Invite Processing für  automatisches Gruppenbeitritt (muss innerhalb Router sein)
     useInviteProcessor();
 
+    // Ensure route changes don't restore previous scroll positions
+    useEffect(() => {
+        try {
+            if ('scrollRestoration' in window.history) {
+                window.history.scrollRestoration = 'manual';
+            }
+        } catch {
+            // no-op
+        }
+    }, []);
+
     return (
         <>
             <ScrollToTop />
