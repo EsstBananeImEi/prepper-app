@@ -114,7 +114,7 @@ export default function StorageListItem(props: Props): ReactElement {
                     key={`shopping${storageItem.id}`}
                     size="default"
                     count={amount}
-                    offset={[0, 0]}
+                    offset={[0, 5]}
                     style={{ backgroundColor: '#52c41a' }}
                 >
                     <ShoppingCartOutlined

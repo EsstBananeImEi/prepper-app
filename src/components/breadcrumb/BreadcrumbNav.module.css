@@ -41,7 +41,7 @@
 
 @media (max-width: 600px) {
     .breadcrumbContainer {
-        margin: 25px 0 8px 0;
+        margin: 5px 0 8px 0;
         padding: 0 2px;
         /* Noch weniger Padding für sehr kleine Bildschirme */
         font-size: 12px;
