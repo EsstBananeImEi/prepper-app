@@ -16,6 +16,29 @@
     margin-left: 5px;
 }
 
+/* Modern layout additions */
+.tabsCard {
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06);
+}
+
+.actionBar {
+    position: sticky;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    padding: 12px 8px;
+    background: rgba(255, 255, 255, 0.85);
+    backdrop-filter: blur(6px);
+    border-top: 1px solid #eee;
+    margin-top: 16px;
+    z-index: 2;
+}
+
 .naehrwert_table .bg_orange {
     padding: 5px;
 }

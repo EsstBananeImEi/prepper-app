@@ -1,5 +1,5 @@
 import React, { ReactElement, SyntheticEvent, useState, useEffect } from 'react';
-import { Descriptions, Image, Input, Select, Button, Alert, Upload, message } from 'antd';
+import { Descriptions, Image, Input, Select, Button, Alert, Upload, message, Card, Steps } from 'antd';
 import { PlusOutlined, MinusOutlined, UploadOutlined } from '@ant-design/icons';
 import { useNavigate, useParams } from 'react-router-dom';
 import axios from 'axios';
@@ -95,6 +95,9 @@ export default function StorageDetailForm(): ReactElement {
     const [dbItemUnits, setDbItemUnits] = useState<{ id: number; name: string }[]>([]);
     const [dbPackageUnits, setDbPackageUnits] = useState<{ id: number; name: string }[]>([]);
     const [dbNutrientUnits, setDbNutrientUnits] = useState<{ id: number; name: string }[]>([]);
+
+    // Wizard state
+    const [currentStep, setCurrentStep] = useState<number>(0);
 
     // Für Speichern & Fehleranzeige
     const [saving, setSaving] = useState(false);
@@ -370,7 +373,7 @@ export default function StorageDetailForm(): ReactElement {
         };
     }
 
-    // Enhanced validation of required fields
+    // Enhanced validation of required fields (overall)
     const validateRequiredFields = (): boolean => {
         const errors: string[] = [];
 
@@ -382,9 +385,7 @@ export default function StorageDetailForm(): ReactElement {
             errors.push('Gültige Menge ist erforderlich');
         }
 
-        if (!unit || unit.trim() === '') {
-            errors.push('Einheit ist erforderlich');
-        }
+        // Unit is optional
 
         // Validate numeric fields
         if (lowestAmount && (isNaN(Number(lowestAmount)) || Number(lowestAmount) < 0)) {
@@ -486,12 +487,59 @@ export default function StorageDetailForm(): ReactElement {
             }
             console.groupEnd();
 
-            const errorMessage = handleApiError(error, false);
-            setSaveError(errorMessage);
+            // Prefer backend message for 409 (Conflict)
+            type BackendErrorData = { error?: string; message?: string };
+            type HttpError = { response?: { status?: number; data?: BackendErrorData } };
+            const httpErr = error as HttpError;
+            const status = httpErr?.response?.status;
+            const backendMsg = httpErr?.response?.data?.error || httpErr?.response?.data?.message;
+            if (status === 409 && backendMsg) {
+                setSaveError(backendMsg);
+                message.error(backendMsg);
+            } else {
+                const errorMessage = handleApiError(error, false);
+                setSaveError(errorMessage);
+                if (errorMessage) message.error(errorMessage);
+            }
             window.scrollTo({ top: 0, behavior: 'smooth' });
         } finally {
             setSaving(false);
         }
+    };
+
+    // Step-specific validation (lightweight)
+    const validateStep = (step: number): boolean => {
+        if (step === 0) { // Basis
+            const errors: string[] = [];
+            if (!name || name.trim() === '') errors.push('Name ist erforderlich');
+            if (!amount || amount.trim() === '' || isNaN(Number(amount)) || Number(amount) < 0) errors.push('Gültige Menge ist erforderlich');
+            // Unit is optional
+            if (errors.length) {
+                setSaveError(errors.join('; '));
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+                return false;
+            }
+        }
+        return true;
+    };
+
+    const next = () => {
+        if (!validateStep(currentStep)) return;
+        setSaveError('');
+        setCurrentStep((s) => Math.min(s + 1, 4));
+    };
+
+    const prev = () => {
+        setSaveError('');
+        setCurrentStep((s) => Math.max(s - 1, 0));
+    };
+
+    const onStepChange = (targetStep: number) => {
+        if (targetStep === currentStep) return;
+        // Validate only when moving forward
+        if (targetStep > currentStep && !validateStep(currentStep)) return;
+        setSaveError('');
+        setCurrentStep(targetStep);
     };
 
     const getBasketModel = (storeageItem: StorageModel) => ({
@@ -515,179 +563,48 @@ export default function StorageDetailForm(): ReactElement {
         <div className={css.container}>
             {saveError && (
                 <Alert style={{ marginBottom: 16 }} message={saveError} type="error" showIcon />
-            )}            {/* Enhanced image preview and upload */}
-            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', marginBottom: 16 }}>
-                <Image.PreviewGroup>
-                    <Image
-                        width={150}
-                        alt={name || 'Storage Item'}
-                        src={icon ? ensureDataUrlPrefix(icon) : '/default.png'}
-                        placeholder={
-                            <div style={{
-                                width: 150,
-                                height: 150,
-                                display: 'flex',
-                                alignItems: 'center',
-                                justifyContent: 'center',
-                                backgroundColor: '#f5f5f5',
-                                border: '1px solid #d9d9d9',
-                                borderRadius: '6px'
-                            }}>
-                                Bildvorschau
-                            </div>
-                        }
-                        fallback="/default.png"
-                    />
-                </Image.PreviewGroup>
-                <Upload beforeUpload={handleBeforeUpload} showUploadList={false} accept="image/*">
-                    <Button icon={<UploadOutlined />}>Bild hochladen</Button>
-                </Upload>
-                {icon && (
-                    <Button
-                        type="link"
-                        size="small"
-                        onClick={() => setIcon('')}
-                        style={{ marginTop: 4 }}
-                    >
-                        Bild entfernen
-                    </Button>
-                )}
-            </div>
+            )}
 
-            <div className={css.itemFormCard}>
-                <div className={css.itemHeader}>
-                    <Input
-                        value={name}
-                        onChange={(e) => setName(e.target.value)}
-                        placeholder="Name des Items"
-                    />
-                    <span style={{ color: 'red' }}> *</span>
-                </div>
-                <div className={css.itemFields}>
-                    <div className={css.itemFieldRow}>
-                        <label>Amount<span style={{ color: 'red' }}> *</span></label>
-                        <Input
-                            type="number"
-                            value={amount}
-                            onChange={(e) => setAmount(e.target.value)}
-                            placeholder="Pflichtfeld"
-                        />
-                    </div>
-                    <div className={css.itemFieldRow}>
-                        <label>Categories</label>
-                        <Select
-                            mode="tags"
-                            style={{ width: '100%' }}
-                            value={categories}
-                            placeholder="Kategorie(n)"
-                            onChange={(value) => setCategories(value.slice(-1))}  // entweder auswählen oder eigenen Eintrag verwenden
-                        >
-                            {dbCategories.map((category) => (
-                                <Select.Option key={category.id} value={category.name}>
-                                    {category.name}
-                                </Select.Option>
-                            ))}
-                        </Select>
-                    </div>
-                    <div className={css.itemFieldRow}>
-                        <label>Minimal Warn</label>
-                        <Input
-                            type="number"
-                            value={lowestAmount}
-                            onChange={(e) => setLowestAmount(e.target.value)}
-                        />
-                    </div>
-                    <div className={css.itemFieldRow}>
-                        <label>Middel Warn</label>
-                        <Input
-                            type="number"
-                            value={midAmount}
-                            onChange={(e) => setMidAmount(e.target.value)}
-                        />
-                    </div>
-                    <div className={css.itemFieldRow}>
-                        <label>Unit<span style={{ color: 'red' }}> *</span></label>
-                        <Select
-                            style={{ width: '100%' }}
-                            value={unit ? unit : ''}
-                            placeholder="Pflichtfeld"
-                            onChange={(val: string) => setUnit(val || '')}
-                        >
-                            {dbItemUnits.map((itemUnit) => (
-                                <Select.Option key={itemUnit.id} value={itemUnit.name}>
-                                    {itemUnit.name}
-                                </Select.Option>
-                            ))}
-                        </Select>
-                    </div>
-                    <div className={css.itemFieldRow}>
-                        <label>Package Quantity</label>
-                        <Input
-                            type="number"
-                            value={packageQuantity}
-                            onChange={(e) => setPackageQuantity(e.target.value)}
-                        />
-                    </div>
-                    <div className={css.itemFieldRow}>
-                        <label>Package Unit</label>
-                        <Select
-                            style={{ width: '100%' }}
-                            value={packageUnit ? packageUnit : ''}
-                            placeholder="Package Unit"
-                            onChange={(val: string) => setPackageUnit(val || '')}
-                        >
-                            {dbPackageUnits.map((pkgUnit) => (
-                                <Select.Option key={pkgUnit.id} value={pkgUnit.name}>
-                                    {pkgUnit.name}
-                                </Select.Option>
-                            ))}
-                        </Select>
-                    </div>
-                    <div className={css.itemFieldRow}>
-                        <label>Storage Location</label>
-                        <Select
-                            style={{ width: '100%' }}
-                            value={storageLocation ? storageLocation : ''}
-                            placeholder="Pflichtfeld"
-                            onChange={(val: string) => setStorageLocation(val || '')}
-                        >
-                            {dbStorageLocations.map((location) => (
-                                <Select.Option key={location.id} value={location.name}>
-                                    {location.name}
-                                </Select.Option>
-                            ))}
-                        </Select>
-                    </div>
-                </div>
-            </div>
-            <Descriptions
-                bordered
-                style={{
-                    backgroundColor: '#f5f5f5',
-                    marginTop: 16,
-                    display: 'flex',
-                    justifyContent: 'center',
-                    flexDirection: 'column',
-                }}
-            >
-                <Descriptions.Item label={"Nährstoffangaben pro " + nutrientAmount + " " + nutrientUnit} style={{ fontWeight: 'bold', padding: '10px 10px', display: 'block', textAlign: 'center' }}>
-                    <div className={css.nutrientAmountUnit}>
-                        <div className={css.nutrientField}>
-                            <label>Amount</label>
+            <Card className={css.tabsCard} bordered>
+                <Steps
+                    current={currentStep}
+                    onChange={onStepChange}
+                    items={[
+                        { title: 'Basis' },
+                        { title: 'Details' },
+                        { title: 'Verpackung' },
+                        { title: 'Bild' },
+                        { title: 'Nährwerte' },
+                    ]}
+                />
+
+                {currentStep === 0 && (
+                    <div className={css.itemFields} style={{ marginTop: 16 }}>
+                        <div className={css.itemFieldRow}>
+                            <label>Name<span style={{ color: 'red' }}> *</span></label>
                             <Input
-                                type="number"
-                                value={nutrientAmount}
-                                onChange={(e) => setNutrientAmount(e.target.value)}
-                                placeholder="Amount"
+                                value={name}
+                                onChange={(e) => setName(e.target.value)}
+                                placeholder="Name"
                             />
                         </div>
-                        <div className={css.nutrientField}>
-                            <label>Unit</label>
+                        <div className={css.itemFieldRow}>
+                            <label>Menge<span style={{ color: 'red' }}> *</span></label>
+                            <Input
+                                type="number"
+                                value={amount}
+                                onChange={(e) => setAmount(e.target.value)}
+                                placeholder="Menge (Zahl)"
+                            />
+                        </div>
+                        <div className={css.itemFieldRow}>
+                            <label>Mengeneinheit (optional)</label>
                             <Select
+                                mode="tags"
                                 style={{ width: '100%' }}
-                                value={nutrientUnit || ''}
-                                placeholder="Unit"
-                                onChange={(val: string) => setNutrientUnit(val || '')}
+                                value={unit ? [unit] : []}
+                                placeholder="z. B. Stück, kg, l – oder eigenen Wert eingeben"
+                                onChange={(vals: string[]) => setUnit(vals.slice(-1)[0] || '')}
                             >
                                 {dbItemUnits.map((itemUnit) => (
                                     <Select.Option key={itemUnit.id} value={itemUnit.name}>
@@ -697,106 +614,280 @@ export default function StorageDetailForm(): ReactElement {
                             </Select>
                         </div>
                     </div>
-                    <div className={css.nutrientCardsContainer}>
-                        {nutrients
-                            .sort((a, b) => a.id - b.id)
-                            .map((nutrient, nutrientIndex) => (
-                                <div key={nutrient.id} className={css.nutrientCard}>
-                                    <div className={css.nutrientHeader}>
-                                        <div className={css.nutrientHeaderLeft}>
-                                            <div
-                                                className={css.nutrientColor}
-                                                style={{ backgroundColor: nutrient.color }}
-                                            ></div>
-                                            <Input
-                                                value={nutrient.color}
-                                                placeholder="Farbcode"
-                                                onChange={(e) =>
-                                                    onChangeNutrientColorCode(nutrientIndex, e.target.value)
-                                                }
-                                                className={css.nutrientColorInput}
-                                            />
-                                        </div>
+                )}
+
+                {currentStep === 1 && (
+                    <div className={css.itemFields} style={{ marginTop: 16 }}>
+                        <div className={css.itemFieldRow}>
+                            <label>Kategorien</label>
+                            <Select
+                                mode="tags"
+                                style={{ width: '100%' }}
+                                value={categories}
+                                placeholder="Kategorie eingeben oder auswählen"
+                                onChange={(value) => setCategories(value.slice(-1))}
+                            >
+                                {dbCategories.map((category) => (
+                                    <Select.Option key={category.id} value={category.name}>
+                                        {category.name}
+                                    </Select.Option>
+                                ))}
+                            </Select>
+                        </div>
+                        <div className={css.itemFieldRow}>
+                            <label>Aufbewahrungsort</label>
+                            <Select
+                                mode="tags"
+                                style={{ width: '100%' }}
+                                value={storageLocation ? [storageLocation] : []}
+                                placeholder="Aufbewahrungsort eingeben oder auswählen"
+                                onChange={(val: string[]) => setStorageLocation((val.slice(-1)[0] || ''))}
+                            >
+                                {dbStorageLocations.map((location) => (
+                                    <Select.Option key={location.id} value={location.name}>
+                                        {location.name}
+                                    </Select.Option>
+                                ))}
+                            </Select>
+                        </div>
+                        <div className={css.itemFieldRow}>
+                            <label>Warnschwelle (niedrig)</label>
+                            <Input
+                                type="number"
+                                value={lowestAmount}
+                                onChange={(e) => setLowestAmount(e.target.value)}
+                                placeholder="z. B. 2 – warnt bei Bestand ≤ 2"
+                            />
+                        </div>
+                        <div className={css.itemFieldRow}>
+                            <label>Warnschwelle (mittel)</label>
+                            <Input
+                                type="number"
+                                value={midAmount}
+                                onChange={(e) => setMidAmount(e.target.value)}
+                                placeholder="z. B. 5 – zusätzliche Warnstufe"
+                            />
+                        </div>
+                    </div>
+                )}
+
+                {currentStep === 2 && (
+                    <div className={css.itemFields} style={{ marginTop: 16 }}>
+                        <div className={css.itemFieldRow}>
+                            <label>Packungsgröße</label>
+                            <Input
+                                type="number"
+                                value={packageQuantity}
+                                onChange={(e) => setPackageQuantity(e.target.value)}
+                                placeholder="z. B. 6"
+                            />
+                        </div>
+                        <div className={css.itemFieldRow}>
+                            <label>Packungseinheit</label>
+                            <Select
+                                mode="tags"
+                                style={{ width: '100%' }}
+                                value={packageUnit ? [packageUnit] : []}
+                                placeholder="z. B. Stück, Packung – oder eigenen Wert eingeben"
+                                onChange={(val: string[]) => setPackageUnit((val.slice(-1)[0] || ''))}
+                            >
+                                {dbPackageUnits.map((pkgUnit) => (
+                                    <Select.Option key={pkgUnit.id} value={pkgUnit.name}>
+                                        {pkgUnit.name}
+                                    </Select.Option>
+                                ))}
+                            </Select>
+                        </div>
+                    </div>
+                )}
+
+                {currentStep === 3 && (
+                    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 8, marginTop: 16 }}>
+                        <Image.PreviewGroup>
+                            <Image
+                                width={150}
+                                alt={name || 'Storage Item'}
+                                src={icon ? ensureDataUrlPrefix(icon) : '/default.png'}
+                                placeholder={
+                                    <div style={{
+                                        width: 150,
+                                        height: 150,
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        justifyContent: 'center',
+                                        backgroundColor: '#f5f5f5',
+                                        border: '1px solid #d9d9d9',
+                                        borderRadius: '6px'
+                                    }}>
+                                        Bildvorschau
                                     </div>
-                                    <div className={css.nutrientHeader}>
-                                        <Input
-                                            value={nutrient.name}
-                                            placeholder="Nährstoff"
-                                            onChange={(e) =>
-                                                onChangeNutrient(nutrientIndex, 'name', e.target.value)
-                                            }
-                                            className={css.nutrientNameInput}
-                                        />
-                                    </div>
-                                    <div className={css.nutrientValues}>
-                                        {nutrient.values.map((nutrientType, typeIndex) => (
-                                            <div key={typeIndex} className={css.nutrientValueRow}>
-                                                <Input
-                                                    type="number"
-                                                    value={nutrientType.value}
-                                                    placeholder="Wert"
-                                                    onChange={(e) =>
-                                                        onChangeNutrientType(nutrientIndex, typeIndex, 'value', e.target.value)
-                                                    }
-                                                    className={css.nutrientValueInput}
-                                                />
-                                                <Select
-                                                    value={nutrientType.typ ? nutrientType.typ : ''}
-                                                    placeholder="Einheit"
-                                                    onChange={(val: string) =>
-                                                        onChangeNutrientType(nutrientIndex, typeIndex, 'typ', val || '')
-                                                    }
-                                                    className={css.nutrientTypeSelect}
-                                                    style={{ fontWeight: 'normal' }}
-                                                >
-                                                    {dbNutrientUnits.map((option) => (
-                                                        <Select.Option key={option.id} value={option.name}>
-                                                            {option.name}
-                                                        </Select.Option>
-                                                    ))}
-                                                </Select>
-                                                <div className={css.nutrientValueActions}>
-                                                    <MinusOutlined
-                                                        onClick={() => removeNutrientType(nutrientIndex, typeIndex)}
-                                                        className={css.removeNutrientTypeIcon}
+                                }
+                                fallback="/default.png"
+                            />
+                        </Image.PreviewGroup>
+                        <Upload beforeUpload={handleBeforeUpload} showUploadList={false} accept="image/*">
+                            <Button icon={<UploadOutlined />}>Bild hochladen</Button>
+                        </Upload>
+                        {icon && (
+                            <Button
+                                type="link"
+                                size="small"
+                                onClick={() => setIcon('')}
+                                style={{ marginTop: 4 }}
+                            >
+                                Bild entfernen
+                            </Button>
+                        )}
+                    </div>
+                )}
+
+                {currentStep === 4 && (
+                    <Descriptions
+                        bordered
+                        style={{
+                            backgroundColor: '#f5f5f5',
+                            display: 'flex',
+                            justifyContent: 'center',
+                            flexDirection: 'column',
+                            marginTop: 16,
+                        }}
+                    >
+                        <Descriptions.Item label={"Nährwertangaben pro " + nutrientAmount + " " + nutrientUnit} style={{ fontWeight: 'bold', padding: '10px 10px', display: 'block', textAlign: 'center' }}>
+                            <div className={css.nutrientAmountUnit}>
+                                <div className={css.nutrientField}>
+                                    <label>Menge</label>
+                                    <Input
+                                        type="number"
+                                        value={nutrientAmount}
+                                        onChange={(e) => setNutrientAmount(e.target.value)}
+                                        placeholder="z. B. 100"
+                                    />
+                                </div>
+                                <div className={css.nutrientField}>
+                                    <label>Einheit</label>
+                                    <Select
+                                        style={{ width: '100%' }}
+                                        value={nutrientUnit || ''}
+                                        placeholder="Einheit"
+                                        onChange={(val: string) => setNutrientUnit(val || '')}
+                                    >
+                                        {dbItemUnits.map((itemUnit) => (
+                                            <Select.Option key={itemUnit.id} value={itemUnit.name}>
+                                                {itemUnit.name}
+                                            </Select.Option>
+                                        ))}
+                                    </Select>
+                                </div>
+                            </div>
+                            <div className={css.nutrientCardsContainer}>
+                                {nutrients
+                                    .sort((a, b) => a.id - b.id)
+                                    .map((nutrient, nutrientIndex) => (
+                                        <div key={nutrient.id} className={css.nutrientCard}>
+                                            <div className={css.nutrientHeader}>
+                                                <div className={css.nutrientHeaderLeft}>
+                                                    <div
+                                                        className={css.nutrientColor}
+                                                        style={{ backgroundColor: nutrient.color }}
+                                                    ></div>
+                                                    <Input
+                                                        value={nutrient.color}
+                                                        placeholder="Farbcode"
+                                                        onChange={(e) =>
+                                                            onChangeNutrientColorCode(nutrientIndex, e.target.value)
+                                                        }
+                                                        className={css.nutrientColorInput}
                                                     />
-                                                    {typeIndex === nutrient.values.length - 1 && (
-                                                        <PlusOutlined
-                                                            onClick={() => addNutrientType(nutrientIndex)}
-                                                            className={css.addNutrientTypeButton}
-                                                        />
-                                                    )}
                                                 </div>
                                             </div>
-                                        ))}
-                                    </div>
-                                    <div className={css.nutrientCardFooter}>
-                                        <Button onClick={() => removeNutrient(nutrientIndex)} danger>
-                                            Gesamten Nährstoff entfernen
-                                        </Button>
-                                    </div>
-                                </div>
-                            ))}
-                        <Button
-                            icon={<PlusOutlined />}
-                            onClick={addNutrient}
-                            className={css.addNutrientButton}
-                        >
-                            Nährstoff hinzufügen
-                        </Button>
-                    </div>
-                </Descriptions.Item>
-            </Descriptions>
-            <div className={css.buttonContainer}>
-                <Button className={css.formButton} onClick={onCancel} type="default">
-                    Go Back
-                </Button>
-                <Button className={css.formButton} onClick={onSave} type="primary" loading={saving}>
-                    Save
-                </Button>
-                <Button className={css.formButton} onClick={(e) => onDelete(e)} danger>
-                    Delete
-                </Button>
+                                            <div className={css.nutrientHeader}>
+                                                <Input
+                                                    value={nutrient.name}
+                                                    placeholder="Nährstoff"
+                                                    onChange={(e) =>
+                                                        onChangeNutrient(nutrientIndex, 'name', e.target.value)
+                                                    }
+                                                    className={css.nutrientNameInput}
+                                                />
+                                            </div>
+                                            <div className={css.nutrientValues}>
+                                                {nutrient.values.map((nutrientType, typeIndex) => (
+                                                    <div key={typeIndex} className={css.nutrientValueRow}>
+                                                        <Input
+                                                            type="number"
+                                                            value={nutrientType.value}
+                                                                placeholder="Wert (Zahl)"
+                                                            onChange={(e) =>
+                                                                onChangeNutrientType(nutrientIndex, typeIndex, 'value', e.target.value)
+                                                            }
+                                                            className={css.nutrientValueInput}
+                                                        />
+                                                        <Select
+                                                            value={nutrientType.typ ? nutrientType.typ : ''}
+                                                            placeholder="Einheit"
+                                                            onChange={(val: string) =>
+                                                                onChangeNutrientType(nutrientIndex, typeIndex, 'typ', val || '')
+                                                            }
+                                                            className={css.nutrientTypeSelect}
+                                                            style={{ fontWeight: 'normal' }}
+                                                        >
+                                                            {dbNutrientUnits.map((option) => (
+                                                                <Select.Option key={option.id} value={option.name}>
+                                                                    {option.name}
+                                                                </Select.Option>
+                                                            ))}
+                                                        </Select>
+                                                        <div className={css.nutrientValueActions}>
+                                                            <MinusOutlined
+                                                                onClick={() => removeNutrientType(nutrientIndex, typeIndex)}
+                                                                className={css.removeNutrientTypeIcon}
+                                                            />
+                                                            {typeIndex === nutrient.values.length - 1 && (
+                                                                <PlusOutlined
+                                                                    onClick={() => addNutrientType(nutrientIndex)}
+                                                                    className={css.addNutrientTypeButton}
+                                                                />
+                                                            )}
+                                                        </div>
+                                                    </div>
+                                                ))}
+                                            </div>
+                                            <div className={css.nutrientCardFooter}>
+                                                <Button onClick={() => removeNutrient(nutrientIndex)} danger>
+                                                    Gesamten Nährstoff entfernen
+                                                </Button>
+                                            </div>
+                                        </div>
+                                    ))}
+                                <Button
+                                    icon={<PlusOutlined />}
+                                    onClick={addNutrient}
+                                    className={css.addNutrientButton}
+                                >
+                                    Nährstoff hinzufügen
+                                </Button>
+                            </div>
+                        </Descriptions.Item>
+                    </Descriptions>
+                )}
+            </Card>
+
+            <div className={css.actionBar}>
+                {!isNew && (
+                    <Button className={css.formButton} onClick={onCancel} type="default">Go Back</Button>
+                )}
+                <Button className={css.formButton} onClick={prev} disabled={currentStep === 0}>Zurück</Button>
+                {currentStep < 4 && (
+                    <Button className={css.formButton} type="primary" onClick={next}>Weiter</Button>
+                )}
+                {currentStep === 4 && (
+                    <Button className={css.formButton} onClick={onSave} type="primary" loading={saving}>Save</Button>
+                )}
+                {isNew ? (
+                    <Button className={css.formButton} onClick={onCancel}>Cancel</Button>
+                ) : (
+                    <Button className={css.formButton} onClick={(e) => onDelete(e)} danger>Delete</Button>
+                )}
             </div>
         </div>
     );
