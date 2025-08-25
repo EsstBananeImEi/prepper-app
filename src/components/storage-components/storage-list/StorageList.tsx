@@ -131,7 +131,7 @@ export default function StorageList(): ReactElement {
                     <div className={styles.filterColumn}>
                         <Select
                             className={`${styles.dropdown} ${styles.mySelect}`}
-                            placeholder="Filter by Category"
+                            placeholder="Nach Kategorie filtern"
                             value={selectedCategory || null}
                             onChange={(value: string) => {
                                 setSelectedCategory(value || null);
@@ -150,7 +150,7 @@ export default function StorageList(): ReactElement {
 
                         <Select
                             className={`${styles.dropdown} ${styles.mySelect}`}
-                            placeholder="Filter by Storage Location"
+                            placeholder="Nach Lagerort filtern"
                             value={selectedLocation || null}
                             onChange={(value: string) => {
                                 setSelectedLocation(value || null);
@@ -172,7 +172,7 @@ export default function StorageList(): ReactElement {
                     <div className={styles.sortColumn}>
                         <Select
                             className={styles.dropdown}
-                            placeholder="Sort by"
+                            placeholder="Sortieren nach"
                             value={sortField}
                             onChange={(value: string) => {
                                 setSortField(value);
@@ -185,10 +185,10 @@ export default function StorageList(): ReactElement {
                                 Name
                             </Select.Option>
                             <Select.Option key="storageLocation" value="storageLocation">
-                                Storage Location
+                                Lagerort
                             </Select.Option>
                             <Select.Option key="amount" value="amount">
-                                Amount
+                                Menge
                             </Select.Option>
                         </Select>
                     </div>
@@ -199,10 +199,10 @@ export default function StorageList(): ReactElement {
                 <Empty
                     image="https://gw.alipayobjects.com/zos/antfincdn/ZHrcdLPrvN/empty.svg"
                     imageStyle={{ height: 200 }}
-                    description={<span style={{ color: 'red' }}>No items in stock</span>}
+                    description={<span style={{ color: 'red' }}>Keine Artikel vorhanden</span>}
                 >
                     <Button onClick={onGoToNew} type="primary">
-                        Store item
+                        Artikel anlegen
                     </Button>
                 </Empty>
             ) : (

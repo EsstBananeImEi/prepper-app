@@ -207,15 +207,9 @@ export default function StorageDetail(): ReactElement {
 
             {/* Aktions-Buttons (sticky, wie im Formular) */}
             <div className={css.actionBar}>
-                <Button onClick={onGoBack} type="default">
-                    Zurück
-                </Button>
-                <Button onClick={onGoToEdit} type="primary">
-                    Bearbeiten
-                </Button>
-                <Button onClick={onDelete} danger loading={saving}>
-                    Löschen
-                </Button>
+                <Button onClick={onGoBack} type="default">Zur Übersicht</Button>
+                <Button onClick={onGoToEdit} type="primary">Bearbeiten</Button>
+                <Button onClick={onDelete} danger loading={saving}>Löschen</Button>
             </div>
         </div>
     );

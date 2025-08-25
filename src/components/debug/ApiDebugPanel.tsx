@@ -230,8 +230,8 @@ export default function ApiDebugPanel({ visible, onClose }: Props) {
                 {/* Action Buttons */}
                 <div className={styles.actionButtons}>
                     <Space size="small">
-                        <Button size="small" onClick={clearLogs}>Clear</Button>
-                        <Button size="small" onClick={exportLogs}>Export</Button>
+                        <Button size="small" onClick={clearLogs}>Leeren</Button>
+                        <Button size="small" onClick={exportLogs}>Exportieren</Button>
                     </Space>
                 </div>
 

@@ -988,7 +988,7 @@ export default function StorageDetailForm(): ReactElement {
                 <div className={css.actionLeft}></div>
                 <div className={css.actionCenter}>
                     {!isNew && (
-                        <Button className={css.formButton} onClick={onCancel} type="default">Go Back</Button>
+                        <Button className={css.formButton} onClick={onCancel} type="default">Zur Übersicht</Button>
                     )}
                     <Button className={css.formButton} onClick={prev} disabled={currentStep === 0}>Zurück</Button>
                     {currentStep < 4 && (
@@ -998,7 +998,7 @@ export default function StorageDetailForm(): ReactElement {
                 <div className={css.actionRight}>
                     <Button className={css.formButton} onClick={onSave} type="primary" loading={saving}>Speichern</Button>
                     {isNew && (
-                        <Button className={css.formButton} onClick={onCancel}>Cancel</Button>
+                        <Button className={css.formButton} onClick={onCancel}>Abbrechen</Button>
                     )}
                 </div>
             </div>
