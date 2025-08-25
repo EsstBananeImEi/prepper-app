@@ -71,7 +71,7 @@ export default function StorageCardItem(props: Props): ReactElement {
 
     const onDecrease = (e: React.FormEvent) => {
         e.preventDefault();
-        setAmount(currentAmount => (currentAmount > 0 ? currentAmount - 1 : currentAmount));
+        setAmount(currentAmount => Math.max(0, currentAmount - 1));
     };
 
     const getBasketModel = (storeageItem: StorageModel) => {
@@ -109,13 +109,18 @@ export default function StorageCardItem(props: Props): ReactElement {
 
         // Only make API call when amount actually changes due to user interaction
         if (amount !== storageItem.amount) {
+            // If server and local are both 0, no need to send a PUT
+            if (amount === 0 && storageItem.amount === 0) {
+                return;
+            }
             console.log(`🔧 StorageCardItem: Amount changed for item ${storageItem.id} from ${storageItem.amount} to ${amount}, updating via API`);
             const onGoToList = () => {
                 console.log(`📍 StorageCardItem: API update complete, but NOT navigating to avoid unwanted redirects`);
                 // Remove automatic navigation - this was causing unwanted redirects
                 // history(itemsApi);
             };
-            storageApi('PUT', itemIdApi(storageItem.id), onGoToList, { ...storageItem, amount: amount });
+            const safeAmount = Math.max(0, amount);
+            storageApi('PUT', itemIdApi(storageItem.id), onGoToList, { ...storageItem, amount: safeAmount });
         }
     }, [amount]); // Only depend on amount
 

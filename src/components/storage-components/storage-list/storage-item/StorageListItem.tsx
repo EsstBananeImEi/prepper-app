@@ -84,7 +84,10 @@ export default function StorageListItem(props: Props): ReactElement {
         e.stopPropagation();
         console.log(`🔧 Manual decrease triggered for item ${storageItem.id} (${storageItem.name})`);
         console.trace('Decrease action call stack');
-        actionHandler({ type: 'DECREASE_STORAGE_ITEM', storageItem: { ...storageItem, amount: storageItem.amount - 1 } }, dispatch);
+        const next = Math.max(0, storageItem.amount - 1);
+        // If it's already 0, avoid dispatching and thus avoid a redundant PUT
+        if (next === storageItem.amount) return;
+        actionHandler({ type: 'DECREASE_STORAGE_ITEM', storageItem: { ...storageItem, amount: next } }, dispatch);
     };
     const getBasketModel = (item: StorageModel) => ({
         id: item.id,

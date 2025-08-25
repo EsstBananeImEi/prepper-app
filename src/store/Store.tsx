@@ -214,18 +214,13 @@ export function reducer(store: Store, action: Action): Store {
         case 'DECREASE_STORAGE_ITEM':
             return {
                 ...store,
-                storeItems: store.storeItems
-                    .map(item => {
-                        if (item.id === action.storageItem.id) {
-                            if (item.amount > 1) {
-                                return { ...item, amount: action.storageItem.amount };
-                            } else {
-                                return null;
-                            }
-                        }
-                        return item;
-                    })
-                    .filter(item => item !== null) as StorageModel[],
+                storeItems: store.storeItems.map(item => {
+                    if (item.id === action.storageItem.id) {
+                        const next = Math.max(0, action.storageItem.amount);
+                        return { ...item, amount: next };
+                    }
+                    return item;
+                }),
             };
         case 'DELETE_STORAGE_ITEM':
             return { ...store, storeItems: store.storeItems.filter(item => item.id !== action.storageItem.id) };
