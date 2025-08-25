@@ -144,22 +144,22 @@ export default function NavBar(): ReactElement {
                         <Menu theme="dark" mode="horizontal" selectedKeys={getSelectedKeysDesktop()} className={style.menu}>
                             <Menu.Item key="storage">
                                 <NavLink to={itemsRoute}>
-                                    <span className="nav-text">Storage</span>
+                                    <span className="nav-text">Vorräte</span>
                                 </NavLink>
                             </Menu.Item>
                             <Menu.Item key="newItem">
                                 <NavLink to={newItemRoute}>
-                                    <span className="nav-text">Add Item</span>
+                                    <span className="nav-text">Neu anlegen</span>
                                 </NavLink>
                             </Menu.Item>
                             <Menu.Item key="checklist">
                                 <NavLink to={checklistRoute}>
-                                    <span className="nav-text">Checklist</span>
+                                    <span className="nav-text">Checkliste</span>
                                 </NavLink>
                             </Menu.Item>
                             <Menu.Item key="shopping">
                                 <NavLink to={basketRoute}>
-                                    <span className="nav-text">Basket</span>
+                                    <span className="nav-text">Einkauf</span>
                                     <Badge offset={[5, -5]} size="small" count={countItems()}>
                                     </Badge>
                                 </NavLink>
@@ -239,7 +239,7 @@ export default function NavBar(): ReactElement {
                         <div className={style.mobileNav}>
                             <Menu theme="dark" mode="horizontal" selectedKeys={getSelectedKeysDesktop()} className={style.menu}>
                                 {/* Home Item */}
-                                <Menu.Item key="home" data-menu-id="home" data-label="Home">
+                                <Menu.Item key="home" data-menu-id="home" data-label="Start">
                                     <NavLink to={homeRoute}>
                                         <HomeOutlined className={style.icon} />
                                     </NavLink>
@@ -248,22 +248,22 @@ export default function NavBar(): ReactElement {
                                 {/* Show all navigation items in bottom nav when logged in */}
                                 {isLoggedIn && (
                                     <>
-                                        <Menu.Item key="checklist" data-label="Checklist">
+                                        <Menu.Item key="checklist" data-label="Checkliste">
                                             <NavLink to={checklistRoute}>
                                                 <CheckSquareOutlined className={style.icon} />
                                             </NavLink>
                                         </Menu.Item>
-                                        <Menu.Item key="items" data-label="Storage">
+                                        <Menu.Item key="items" data-label="Vorräte">
                                             <NavLink to={itemsRoute}>
                                                 <UnorderedListOutlined className={style.icon} />
                                             </NavLink>
                                         </Menu.Item>
-                                        <Menu.Item key="newItem" data-label="Add">
+                                        <Menu.Item key="newItem" data-label="Neu">
                                             <NavLink to={newItemRoute}>
                                                 <PlusOutlined className={style.icon} />
                                             </NavLink>
                                         </Menu.Item>
-                                        <Menu.Item key="shopping" data-label="Basket">
+                                        <Menu.Item key="shopping" data-label="Einkauf">
                                             <NavLink to={basketRoute}>
                                                 <Badge offset={[0, 0]} size="small" count={countItems()}>
                                                     <ShoppingCartOutlined className={style.icon} />

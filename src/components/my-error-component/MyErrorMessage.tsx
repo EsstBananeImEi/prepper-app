@@ -18,13 +18,13 @@ export default function MyErrorMessage(): ReactElement {
     }
 
     return (
-    <Result
-        status="error"
-        title='Es ist ein Fehler aufgetreten. Bitte später erneut versuchen.'
+        <Result
+            status="error"
+            title='Es ist ein Fehler aufgetreten. Bitte später erneut versuchen.'
             subTitle={`${message}`}
             extra={[
                 <Button onClick={onGoToHome} ghost key="home">
-            Zur Startseite
+                    Zur Startseite
                 </Button>,
 
             ]}
