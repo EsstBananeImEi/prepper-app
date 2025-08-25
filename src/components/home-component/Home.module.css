@@ -8,16 +8,16 @@
 @media (max-width: 600px) {
     .mycontainer {
         padding: 16px;
-        padding-top: 24px;
-        /* Extra top padding on mobile */
+        padding-top: 8px;
+        /* Reduced top padding on mobile to avoid large gap below navbar */
     }
 }
 
 @media (max-width: 480px) {
     .mycontainer {
         padding: 12px;
-        padding-top: 50px;
-        /* Extra top padding on smaller mobile */
+        padding-top: 8px;
+        /* Reduced top padding on smaller mobile to avoid large gap */
     }
 }
 

@@ -39,6 +39,14 @@
     }
 }
 
+/* Portrait: avoid double spacing with body padding-top from fixed navbar */
+@media (orientation: portrait) and (max-width: 600px) {
+    .layoutContent {
+        margin-top: 0;
+        /* navbar height already offset on <body> */
+    }
+}
+
 /* Layout Container */
 .layout {
     height: auto;
