@@ -660,7 +660,7 @@ export default function StorageDetailForm(): ReactElement {
                                         ))}
                                     </Select.OptGroup>
                                 )}
-                                {dbItemUnits.map((itemUnit) => (
+                                {dbItemUnitsFiltered.map((itemUnit) => (
                                     <Select.Option key={itemUnit.id} value={itemUnit.name}>
                                         {itemUnit.name}
                                     </Select.Option>
@@ -706,7 +706,7 @@ export default function StorageDetailForm(): ReactElement {
                                         ))}
                                     </Select.OptGroup>
                                 )}
-                                {dbStorageLocations.map((location) => (
+                                {dbStorageLocationsFiltered.map((location) => (
                                     <Select.Option key={location.id} value={location.name}>
                                         {location.name}
                                     </Select.Option>
@@ -763,7 +763,7 @@ export default function StorageDetailForm(): ReactElement {
                                         ))}
                                     </Select.OptGroup>
                                 )}
-                                {dbPackageUnits.map((pkgUnit) => (
+                                {dbPackageUnitsFiltered.map((pkgUnit) => (
                                     <Select.Option key={pkgUnit.id} value={pkgUnit.name}>
                                         {pkgUnit.name}
                                     </Select.Option>
@@ -950,11 +950,9 @@ export default function StorageDetailForm(): ReactElement {
                 )}
                 <Button className={css.formButton} onClick={prev} disabled={currentStep === 0}>Zurück</Button>
                 {currentStep < 4 && (
-                    <Button className={css.formButton} type="primary" onClick={next}>Weiter</Button>
+                    <Button className={css.formButton} type="default" onClick={next}>Weiter</Button>
                 )}
-                {currentStep === 4 && (
-                    <Button className={css.formButton} onClick={onSave} type="primary" loading={saving}>Save</Button>
-                )}
+                <Button className={css.formButton} onClick={onSave} type="primary" loading={saving}>Speichern</Button>
                 {isNew ? (
                     <Button className={css.formButton} onClick={onCancel}>Cancel</Button>
                 ) : (
