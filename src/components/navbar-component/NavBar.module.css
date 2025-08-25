@@ -79,9 +79,11 @@
         left: 0;
         right: 0;
         z-index: 999;
-        min-height: 56px;
+        min-height: 52px;
+        /* slimmer header */
         justify-content: center;
-        padding: 8px 16px;
+        padding: 6px 12px;
+        /* tighter padding */
     }
 }
 
@@ -535,21 +537,24 @@
         display: flex;
         align-items: center;
         justify-content: space-between;
-        padding: 8px 16px;
+        padding: 0 10px;
+        /* no vertical padding to keep total height tight */
         background-color: #001529;
         position: fixed;
         top: 0;
         left: 0;
         right: 0;
         z-index: 999;
-        min-height: 56px;
-        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
-        gap: 12px;
+        height: 44px;
+        /* fixed height */
+        min-height: 0;
+        /* override previous min-heights */
+        gap: 8px;
     }
 
     .mobileTopHeader .logo {
-        height: 32px;
+        height: 38px;
+        /* larger logo on mobile */
         margin: 0;
         flex-shrink: 0;
     }
@@ -563,7 +568,8 @@
     /* Optimize for very small screens */
     @media (max-width: 430px) {
         .mobileTopHeader {
-            padding: 6px 12px;
+            padding: 5px 10px;
+            /* a bit tighter on very small screens */
             gap: 8px;
         }
 
@@ -573,7 +579,8 @@
         }
 
         .mobileTopHeader .logo {
-            height: 28px;
+            height: 34px;
+            /* larger logo on very small screens too */
         }
     }
 
@@ -593,15 +600,20 @@
 
     /* Add space for fixed headers */
     body {
-        padding-top: 56px !important;
+        padding-top: 44px !important;
+        /* updated to match new header height */
+        /* match slimmer header */
         padding-bottom: 76px !important;
     }
 
     /* Main content area */
     .mainContent {
-        margin-top: 56px;
+        margin-top: 44px;
+        /* updated to match new header height */
+        /* match slimmer header */
         margin-bottom: 76px;
-        min-height: calc(100vh - 132px);
+        min-height: calc(100vh - 128px);
+        /* 52(top) + 76(bottom) */
     }
 }
 
@@ -699,4 +711,108 @@
     width: 100%;
     height: 100%;
     padding: var(--spacing-sm, 8px);
+}
+
+/* Landscape orientation: make navbar slimmer and logo a bit larger on small-height devices */
+@media (orientation: landscape) and (max-height: 480px) {
+
+    /* Desktop branch header (used when width > 600) */
+    .header {
+        min-height: 48px;
+        padding: 4px 12px;
+    }
+
+    .logo {
+        height: 44px;
+        /* slightly larger logo in landscape */
+    }
+
+    /* Compact menu paddings to fit reduced height */
+    .menu .ant-menu-item {
+        padding: 6px 10px !important;
+    }
+}
+
+/* Landscape + mobile width: apply to the mobile top header variant too */
+@media (orientation: landscape) and (max-height: 480px) and (max-width: 600px) {
+    .mobileTopHeader {
+        min-height: 46px;
+        padding: 4px 10px;
+    }
+
+    .mobileTopHeader .logo {
+        height: 40px;
+    }
+
+    /* Adjust body/content offsets to match slimmer landscape header */
+    body {
+        padding-top: 46px !important;
+    }
+
+    .mainContent {
+        margin-top: 46px;
+        min-height: calc(100vh - 122px);
+        /* 46(top) + 76(bottom) */
+    }
+}
+
+/* Portrait + mobile width: make the mobile top header slimmer and logo larger */
+@media (orientation: portrait) and (max-width: 600px) {
+
+    /* Applies to both desktop-header layout on small screens and explicit mobile top header */
+    .header {
+        height: 48px;
+        min-height: 0;
+        padding: 0 10px;
+    }
+
+    .mobileTopHeader {
+        height: 48px;
+        min-height: 0;
+        padding: 0 10px;
+        gap: 8px;
+    }
+
+    /* Keep logo size consistent with mobile while fitting into 44px header */
+    .mobileTopHeader .logo,
+    .logo {
+        height: 38px;
+    }
+
+    /* Adjust body/content offsets to match slimmer portrait header */
+    body {
+        padding-top: 48px !important;
+    }
+
+    .mainContent {
+        margin-top: 48px;
+        min-height: calc(100vh - 124px);
+        /* 48(top) + 76(bottom) */
+    }
+
+    /* Ensure the search fits vertically within the header */
+    .mobileSearchContainer {
+        height: 100%;
+        display: flex;
+        align-items: center;
+        margin: 0 8px;
+    }
+
+    .mobileSearchContainer :global(.ant-input-affix-wrapper),
+    .mobileSearchContainer :global(.ant-input-affix-wrapper-lg) {
+        height: 38px !important;
+        padding: 0 10px !important;
+        box-sizing: border-box;
+    }
+
+    .mobileSearchContainer :global(.ant-input-search .ant-input),
+    .mobileSearchContainer :global(.ant-input) {
+        height: 36px !important;
+        line-height: 36px !important;
+        margin: 0 !important;
+    }
+
+    .mobileSearchContainer :global(.ant-input-search-button) {
+        height: 36px !important;
+    }
 }

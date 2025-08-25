@@ -58,6 +58,22 @@
     }
 }
 
+/* Portrait: bring breadcrumb closer to the fixed navbar on small devices */
+@media (orientation: portrait) and (max-width: 600px) {
+    .breadcrumbContainer {
+        margin-top: -6px;
+        /* reduce gap below navbar */
+    }
+}
+
+/* Portrait + very small: override previous 25px margin to keep it tight */
+@media (orientation: portrait) and (max-width: 480px) {
+    .breadcrumbContainer {
+        margin-top: -16px;
+        /* override larger top margin */
+    }
+}
+
 /* Breadcrumb Items Styling */
 .breadcrumbContainer :global(.ant-breadcrumb-link) {
     color: #1890ff;
