@@ -169,7 +169,7 @@ export default function NavBar(): ReactElement {
 
                     {/* Globale Suche für Desktop */}
                     {isLoggedIn && (
-                        <div style={{ marginRight: 'var(--spacing-md)', flex: '0 0 300px' }}>
+                        <div className={style.desktopSearch}>
                             <GlobalSearch />
                         </div>
                     )}

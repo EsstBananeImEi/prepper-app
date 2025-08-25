@@ -93,6 +93,14 @@
     margin-right: 20px;
 }
 
+/* Desktop search container (used when width > 600px) */
+.desktopSearch {
+    margin-right: var(--spacing-md, 12px);
+    flex: 0 0 300px;
+    /* default desktop width */
+    max-width: 300px;
+}
+
 /* Menü-Styling */
 .menu {
     flex: 1;
@@ -723,13 +731,19 @@
     }
 
     .logo {
-        height: 44px;
-        /* slightly larger logo in landscape */
+        height: 40px;
+        /* keep compact to save vertical & horizontal space */
+        margin-right: 12px;
     }
 
     /* Compact menu paddings to fit reduced height */
     .menu .ant-menu-item {
-        padding: 6px 10px !important;
+        padding: 4px 8px !important;
+    }
+
+    /* Slightly smaller nav text to fit more items */
+    :global(.nav-text) {
+        font-size: 13px;
     }
 }
 
@@ -814,5 +828,18 @@
 
     .mobileSearchContainer :global(.ant-input-search-button) {
         height: 36px !important;
+    }
+}
+
+/* Landscape small-height but desktop width (>600px): shrink desktop search to keep avatar visible */
+@media (orientation: landscape) and (max-height: 480px) and (min-width: 601px) {
+    .desktopSearch {
+        flex: 0 0 220px;
+        max-width: 220px;
+    }
+
+    /* Ensure user avatar remains visible */
+    .userMenuMobile {
+        margin-left: 6px;
     }
 }
