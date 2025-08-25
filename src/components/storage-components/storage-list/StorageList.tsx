@@ -1,6 +1,6 @@
-import { Button, Divider, Empty, Pagination, Select, Space, Tag, Checkbox, Tooltip } from 'antd';
+import { Button, Divider, Empty, Pagination, Select, Space, Tag, Checkbox, Tooltip, Input } from 'antd';
 import React, { ReactElement, useState, useEffect, useMemo, useRef, useCallback } from 'react';
-import { CloseCircleOutlined, DownOutlined, UpOutlined } from '@ant-design/icons';
+import { CloseCircleOutlined, DownOutlined, UpOutlined, SearchOutlined } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
 import { useDemensions } from '../../../hooks/StorageApi';
 import { itemsApi, errorRoute, newItemRoute } from '../../../shared/Constants';
@@ -28,6 +28,9 @@ export default function StorageList(): ReactElement {
     const [selectedLocations, setSelectedLocations] = useState<string[]>([]);
     const [onlyZero, setOnlyZero] = useState<boolean>(false);
     const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc');
+    const [selectedUnits, setSelectedUnits] = useState<string[]>([]);
+    const [stockStatus, setStockStatus] = useState<string[]>([]); // 'low'|'mid'|'high'
+    const [searchText, setSearchText] = useState<string>('');
 
     // Toggle-Status für den Filtercontainer
     const [showFilters, setShowFilters] = useState<boolean>(false);
@@ -77,9 +80,22 @@ export default function StorageList(): ReactElement {
         () => Array.from(new Set(safeStorageItems.map((item) => item.storageLocation))),
         [safeStorageItems]
     );
+    const unitOptions = useMemo(
+        () => Array.from(new Set(safeStorageItems.map((item) => item.unit).filter(Boolean))),
+        [safeStorageItems]
+    );
+
+    const getStockStatus = (item: StorageModel): 'zero' | 'low' | 'mid' | 'high' => {
+        if (item.amount === 0) return 'zero';
+        if (item.amount <= item.lowestAmount) return 'low';
+        if (item.amount <= item.midAmount) return 'mid';
+        return 'high';
+    };
 
     const filteredItems = useMemo(() => {
+        const text = searchText.trim().toLowerCase();
         return safeStorageItems.filter((item) => {
+            if (text && !item.name.toLowerCase().includes(text)) return false;
             if (selectedCategories.length > 0) {
                 const hasAny = (item.categories || []).some(c => selectedCategories.includes(c));
                 if (!hasAny) return false;
@@ -87,12 +103,19 @@ export default function StorageList(): ReactElement {
             if (selectedLocations.length > 0 && !selectedLocations.includes(item.storageLocation)) {
                 return false;
             }
+            if (selectedUnits.length > 0 && !selectedUnits.includes(item.unit)) {
+                return false;
+            }
             if (onlyZero && item.amount !== 0) {
                 return false;
             }
+            if (!onlyZero && stockStatus.length > 0) {
+                const status = getStockStatus(item);
+                if (!stockStatus.includes(status)) return false;
+            }
             return true;
         });
-    }, [safeStorageItems, selectedCategories, selectedLocations, onlyZero]);
+    }, [safeStorageItems, searchText, selectedCategories, selectedLocations, selectedUnits, onlyZero, stockStatus]);
 
     const sortedItems = useMemo(() => {
         const factor = sortOrder === 'asc' ? 1 : -1;
@@ -123,12 +146,15 @@ export default function StorageList(): ReactElement {
 
     const onGoToNew = () => history(newItemRoute);
 
-    const activeFilterCount = selectedCategories.length + selectedLocations.length + (onlyZero ? 1 : 0);
+    const activeFilterCount = selectedCategories.length + selectedLocations.length + selectedUnits.length + (onlyZero ? 1 : 0) + (stockStatus.length > 0 ? 1 : 0) + (searchText.trim() ? 1 : 0);
 
     const clearFilters = () => {
         setSelectedCategories([]);
         setSelectedLocations([]);
         setOnlyZero(false);
+        setSelectedUnits([]);
+        setStockStatus([]);
+        setSearchText('');
         setCurrentPage(1);
     };
 
@@ -139,6 +165,11 @@ export default function StorageList(): ReactElement {
 
     const removeLocation = (l: string) => {
         setSelectedLocations(prev => prev.filter(x => x !== l));
+        setCurrentPage(1);
+    };
+
+    const removeUnit = (u: string) => {
+        setSelectedUnits(prev => prev.filter(x => x !== u));
         setCurrentPage(1);
     };
 
@@ -158,6 +189,15 @@ export default function StorageList(): ReactElement {
             {showFilters && (
                 <div className={styles.filterBar}>
                     <div className={styles.filtersGrid}>
+                        <div>
+                            <div className={styles.label}>Suchen</div>
+                            <Input
+                                placeholder="Name suchen"
+                                value={searchText}
+                                onChange={(e) => { setSearchText(e.target.value); setCurrentPage(1); }}
+                                prefix={<SearchOutlined />}
+                            />
+                        </div>
                         <div>
                             <div className={styles.label}>Kategorien</div>
                             <Select
@@ -198,6 +238,26 @@ export default function StorageList(): ReactElement {
                                 ))}
                             </Select>
                         </div>
+                        <div>
+                            <div className={styles.label}>Einheiten</div>
+                            <Select
+                                mode="multiple"
+                                className={`${styles.dropdown} ${styles.mySelect}`}
+                                placeholder="Einheiten wählen"
+                                value={selectedUnits}
+                                onChange={(vals: string[]) => { setSelectedUnits(vals); setCurrentPage(1); }}
+                                allowClear
+                                maxTagCount="responsive"
+                                suffixIcon={<DownOutlined />}
+                                clearIcon={<CloseCircleOutlined />}
+                            >
+                                {unitOptions.map((u) => (
+                                    <Select.Option key={u} value={u}>
+                                        {u}
+                                    </Select.Option>
+                                ))}
+                            </Select>
+                        </div>
                         <div className={styles.sortControls}>
                             <div className={styles.label}>Sortieren</div>
                             <div className={styles.sortRow}>
@@ -224,22 +284,40 @@ export default function StorageList(): ReactElement {
                             </div>
                         </div>
                         <div className={styles.moreFilters}>
-                            <div className={styles.label}>Weitere Filter</div>
-                            <Checkbox checked={onlyZero} onChange={(e) => { setOnlyZero(e.target.checked); setCurrentPage(1); }}>
-                                Nur Bestand 0
-                            </Checkbox>
+                            <div className={styles.label}>Bestand</div>
+                            <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+                                <Checkbox checked={onlyZero} onChange={(e) => { setOnlyZero(e.target.checked); setCurrentPage(1); }}>
+                                    Nur Bestand 0
+                                </Checkbox>
+                                <Checkbox.Group
+                                    options={[
+                                        { label: 'Kritisch', value: 'low' },
+                                        { label: 'Wenig', value: 'mid' },
+                                        { label: 'Ausreichend', value: 'high' },
+                                    ]}
+                                    value={stockStatus}
+                                    onChange={(vals) => { setStockStatus(vals as string[]); setCurrentPage(1); }}
+                                />
+                            </div>
                         </div>
                     </div>
 
-                    {(selectedCategories.length > 0 || selectedLocations.length > 0 || onlyZero) && (
+                    {(selectedCategories.length > 0 || selectedLocations.length > 0 || selectedUnits.length > 0 || onlyZero || stockStatus.length > 0 || searchText.trim()) && (
                         <div className={styles.chipsRow}>
+                            {searchText.trim() && <Tag color="blue">Suche: {searchText.trim()}</Tag>}
                             {selectedCategories.map(c => (
                                 <Tag key={`cat-${c}`} closable onClose={() => removeCategory(c)}>{c}</Tag>
                             ))}
                             {selectedLocations.map(l => (
                                 <Tag key={`loc-${l}`} closable onClose={() => removeLocation(l)}>{l}</Tag>
                             ))}
+                            {selectedUnits.map(u => (
+                                <Tag key={`unit-${u}`} closable onClose={() => removeUnit(u)}>{u}</Tag>
+                            ))}
                             {onlyZero && <Tag color="default">Bestand 0</Tag>}
+                            {stockStatus.includes('low') && <Tag color="red">Kritisch</Tag>}
+                            {stockStatus.includes('mid') && <Tag color="orange">Wenig</Tag>}
+                            {stockStatus.includes('high') && <Tag color="green">Ausreichend</Tag>}
                             <Button size="small" onClick={clearFilters} className={styles.clearBtn}>Filter zurücksetzen</Button>
                         </div>
                     )}
