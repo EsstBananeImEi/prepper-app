@@ -1,4 +1,4 @@
-import React, { ReactElement, SyntheticEvent, useState, useEffect, useMemo } from 'react';
+import React, { ReactElement, SyntheticEvent, useState, useEffect, useMemo, useRef } from 'react';
 import { Descriptions, Image, Input, Select, Button, Alert, Upload, message, Card, Steps } from 'antd';
 import { PlusOutlined, MinusOutlined, UploadOutlined } from '@ant-design/icons';
 import { useNavigate, useParams } from 'react-router-dom';
@@ -98,6 +98,25 @@ export default function StorageDetailForm(): ReactElement {
 
     // Wizard state
     const [currentStep, setCurrentStep] = useState<number>(0);
+    const stepsDef = useMemo(() => ['Basis', 'Details', 'Verpackung', 'Bild', 'Nährwerte'], []);
+
+    // Auto-center active step in scroller (AntD Steps)
+    const stepsScrollerRef = useRef<HTMLDivElement | null>(null);
+    useEffect(() => {
+        const container = stepsScrollerRef.current;
+        if (!container) return;
+        const active = container.querySelector('.ant-steps-item-active') as HTMLElement | null;
+        if (!active) return;
+        const contRect = container.getBoundingClientRect();
+        const actRect = active.getBoundingClientRect();
+        const actWidth = active.offsetWidth || actRect.width;
+        const relativeLeft = actRect.left - contRect.left + container.scrollLeft;
+        const target = Math.min(
+            Math.max(0, relativeLeft - (container.clientWidth - actWidth) / 2),
+            container.scrollWidth - container.clientWidth
+        );
+        container.scrollTo({ left: target, behavior: 'smooth' });
+    }, [currentStep]);
 
     // Popular (Top-3) suggestions from existing items
     const popularUnits = useMemo(() => {
@@ -611,17 +630,16 @@ export default function StorageDetailForm(): ReactElement {
             )}
 
             <Card className={css.tabsCard} bordered>
-                <Steps
-                    current={currentStep}
-                    onChange={onStepChange}
-                    items={[
-                        { title: 'Basis' },
-                        { title: 'Details' },
-                        { title: 'Verpackung' },
-                        { title: 'Bild' },
-                        { title: 'Nährwerte' },
-                    ]}
-                />
+                <div className={css.stepsScroller} ref={stepsScrollerRef}>
+                    <Steps
+                        current={currentStep}
+                        onChange={onStepChange}
+                        direction="horizontal"
+                        responsive={false}
+                        size="small"
+                        items={stepsDef.map((title) => ({ title }))}
+                    />
+                </div>
 
                 {currentStep === 0 && (
                     <div className={css.itemFields} style={{ marginTop: 16 }}>

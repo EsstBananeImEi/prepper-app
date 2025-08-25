@@ -23,6 +23,49 @@
     box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06);
 }
 
+/* Steps scroller (AntD Steps) */
+.stepsScroller {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    /* Firefox */
+    -ms-overflow-style: none;
+    /* IE/Edge */
+    -webkit-touch-callout: none;
+    user-select: none;
+    -webkit-user-select: none;
+    -ms-user-select: none;
+}
+
+.stepsScroller::-webkit-scrollbar {
+    display: none;
+    width: 0;
+    height: 0;
+}
+
+.stepsScroller :global(.ant-steps) {
+    min-width: 520px;
+    white-space: nowrap;
+}
+
+.stepsScroller :global(.ant-steps-item) {
+    display: inline-flex;
+}
+
+.stepsScroller :global(.ant-steps-item-container) {
+    white-space: nowrap;
+}
+
+.stepsScroller ::selection {
+    background: transparent;
+    color: inherit;
+}
+
+.stepsScroller ::-moz-selection {
+    background: transparent;
+    color: inherit;
+}
+
 .actionBar {
     position: sticky;
     bottom: 0;
@@ -121,16 +164,21 @@ tr {
 @media (min-width: 1024px) {
     .container {
         max-width: 1200px;
-        padding: 24px;
+        min-width: initial;
+        /* Keep initial min-width */
     }
 
     .buttonContainer {
-        justify-content: flex-end;
-        gap: 12px;
+        flex: 0 0 136px;
+        /* Set fixed width for equal connectors */
     }
 
     .formButton {
         padding: 8px 16px;
+        white-space: normal;
+        /* Allow titles to wrap */
+        line-height: 1.1;
+        /* Adjust line height for better readability */
         font-size: 16px;
         display: flex;
         align-items: center;
@@ -193,34 +241,25 @@ tr {
 }
 
 /* ----------------- Nutrient Card Layout ----------------- */
-/* Dieser Bereich regelt, wie die Nutrients gruppiert und angezeigt werden – sowohl auf Mobile als auch Desktop. */
-
-/* Container für alle Nutrient-Cards */
 .nutrientCardsContainer {
-    /* Im Desktop als Grid, in Mobile als vertikale Liste */
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
     gap: 16px;
 }
 
-/* Jede einzelne Nutrient-Karte */
 .nutrientCard {
     display: flex;
     flex-direction: column;
     justify-content: space-between;
-    /* Stellt sicher, dass der Footer unten bleibt */
     min-height: 180px;
-    /* Mindesgröße der Karte, damit der Button nicht verschoben wird */
     padding: 16px;
     border: 1px solid #ddd;
     border-radius: 8px;
     background-color: #fff;
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
     position: relative;
-    /* Falls nötig für absolute Positionierung */
 }
 
-/* Header der Nutrient-Karte – oberste Zeile: Farbe, Nährstoffname und optional Farbcode */
 .nutrientHeader {
     display: flex;
     align-items: center;
@@ -255,14 +294,12 @@ tr {
     color: #666;
 }
 
-/* Bereich für die einzelnen Nutrient-Werte */
 .nutrientValues {
     display: flex;
     flex-direction: column;
     gap: 8px;
 }
 
-/* Jede Zeile für einen Nutrient-Wert */
 .nutrientValueRow {
     display: flex;
     align-items: center;
@@ -277,7 +314,6 @@ tr {
     flex: 1;
 }
 
-/* In Zeilen, in denen beide Aktionen (Minus und Plus) erscheinen sollen */
 .nutrientValueActions {
     display: flex;
     align-items: center;
@@ -285,13 +321,10 @@ tr {
     justify-content: flex-end;
 }
 
-/* Footer der Nutrient-Karte – z. B. ein Minus-Button zum Entfernen der gesamten Karte */
 .nutrientCardFooter {
     display: flex;
     justify-content: flex-end;
-    /* Button nach rechts */
     margin-top: auto;
-    /* Drückt den Footer nach unten */
 }
 
 .nutrientCardFooter button {
@@ -311,7 +344,6 @@ tr {
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 }
 
-/* Einzelnes Feld (Amount oder Unit) */
 .nutrientField {
     display: flex;
     flex-direction: column;
@@ -324,6 +356,26 @@ tr {
 
 /* ----------------- Mobile-spezifische Anpassungen ----------------- */
 @media (max-width: 768px) {
+
+    /* Make steps adapt better on mobile */
+    .stepsScroller :global(.ant-steps) {
+        min-width: initial;
+    }
+
+    .stepsScroller :global(.ant-steps-item) {
+        min-width: 124px;
+        flex: 0 0 auto;
+    }
+
+    .stepsScroller :global(.ant-steps-item-title) {
+        font-size: 13px;
+    }
+
+    .stepsScroller :global(.ant-steps-item-container) {
+        padding-left: 8px;
+        padding-right: 8px;
+    }
+
     .nutrientCardsContainer {
         display: flex;
         flex-direction: column;
@@ -340,7 +392,6 @@ tr {
         justify-content: space-between;
     }
 
-    /* Hier wurde zuvor flex-direction: column gesetzt – jetzt wieder auf row setzen: */
     .nutrientValueRow {
         flex-direction: row !important;
         align-items: center;
@@ -348,7 +399,6 @@ tr {
     }
 
     .nutrientValueActions {
-        /* Falls hier nur ein Icon enthalten ist, soll es rechts stehen */
         margin-left: auto;
     }
 
@@ -360,11 +410,9 @@ tr {
     .nutrientValueInput,
     .nutrientTypeSelect {
         width: auto;
-        /* Damit Inputs nicht 100% einnehmen, sondern Platz für das Icon bleibt */
         flex: 1;
     }
 }
-
 
 /* Globale Styles für Input, Select und Textarea innerhalb des Containers */
 .container input,
@@ -372,6 +420,5 @@ tr {
 .container textarea {
     font-size: 16px !important;
 }
-
 
 /* ----------------- Ende Nutrient Card Layout ----------------- */
