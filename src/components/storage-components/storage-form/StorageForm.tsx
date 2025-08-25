@@ -1,4 +1,4 @@
-import React, { ReactElement, SyntheticEvent, useState, useEffect } from 'react';
+import React, { ReactElement, SyntheticEvent, useState, useEffect, useMemo } from 'react';
 import { Descriptions, Image, Input, Select, Button, Alert, Upload, message, Card, Steps } from 'antd';
 import { PlusOutlined, MinusOutlined, UploadOutlined } from '@ant-design/icons';
 import { useNavigate, useParams } from 'react-router-dom';
@@ -98,6 +98,51 @@ export default function StorageDetailForm(): ReactElement {
 
     // Wizard state
     const [currentStep, setCurrentStep] = useState<number>(0);
+
+    // Popular (Top-3) suggestions from existing items
+    const popularUnits = useMemo(() => {
+        const counts = new Map<string, number>();
+        store.storeItems.forEach(i => {
+            const v = (i.unit || '').trim();
+            if (!v) return;
+            counts.set(v, (counts.get(v) || 0) + 1);
+        });
+        return Array.from(counts.entries())
+            .sort((a, b) => b[1] - a[1])
+            .slice(0, 3)
+            .map(([k]) => k);
+    }, [store.storeItems]);
+
+    const popularLocations = useMemo(() => {
+        const counts = new Map<string, number>();
+        store.storeItems.forEach(i => {
+            const v = (i.storageLocation || '').trim();
+            if (!v) return;
+            counts.set(v, (counts.get(v) || 0) + 1);
+        });
+        return Array.from(counts.entries())
+            .sort((a, b) => b[1] - a[1])
+            .slice(0, 3)
+            .map(([k]) => k);
+    }, [store.storeItems]);
+
+    const popularPackageUnits = useMemo(() => {
+        const counts = new Map<string, number>();
+        store.storeItems.forEach(i => {
+            const v = (i.packageUnit || '').trim();
+            if (!v) return;
+            counts.set(v, (counts.get(v) || 0) + 1);
+        });
+        return Array.from(counts.entries())
+            .sort((a, b) => b[1] - a[1])
+            .slice(0, 3)
+            .map(([k]) => k);
+    }, [store.storeItems]);
+
+    // Filter DB lists to avoid duplicating popular values in the main options
+    const dbItemUnitsFiltered = useMemo(() => dbItemUnits.filter(u => !popularUnits.includes(u.name)), [dbItemUnits, popularUnits]);
+    const dbStorageLocationsFiltered = useMemo(() => dbStorageLocations.filter(l => !popularLocations.includes(l.name)), [dbStorageLocations, popularLocations]);
+    const dbPackageUnitsFiltered = useMemo(() => dbPackageUnits.filter(p => !popularPackageUnits.includes(p.name)), [dbPackageUnits, popularPackageUnits]);
 
     // Für Speichern & Fehleranzeige
     const [saving, setSaving] = useState(false);
@@ -606,6 +651,15 @@ export default function StorageDetailForm(): ReactElement {
                                 placeholder="z. B. Stück, kg, l – oder eigenen Wert eingeben"
                                 onChange={(vals: string[]) => setUnit(vals.slice(-1)[0] || '')}
                             >
+                                {popularUnits.length > 0 && (
+                                    <Select.OptGroup label="Beliebt">
+                                        {popularUnits.map((u) => (
+                                            <Select.Option key={`pop-u-${u}`} value={u}>
+                                                {u}
+                                            </Select.Option>
+                                        ))}
+                                    </Select.OptGroup>
+                                )}
                                 {dbItemUnits.map((itemUnit) => (
                                     <Select.Option key={itemUnit.id} value={itemUnit.name}>
                                         {itemUnit.name}
@@ -643,6 +697,15 @@ export default function StorageDetailForm(): ReactElement {
                                 placeholder="Aufbewahrungsort eingeben oder auswählen"
                                 onChange={(val: string[]) => setStorageLocation((val.slice(-1)[0] || ''))}
                             >
+                                {popularLocations.length > 0 && (
+                                    <Select.OptGroup label="Beliebt">
+                                        {popularLocations.map((loc) => (
+                                            <Select.Option key={`pop-l-${loc}`} value={loc}>
+                                                {loc}
+                                            </Select.Option>
+                                        ))}
+                                    </Select.OptGroup>
+                                )}
                                 {dbStorageLocations.map((location) => (
                                     <Select.Option key={location.id} value={location.name}>
                                         {location.name}
@@ -691,6 +754,15 @@ export default function StorageDetailForm(): ReactElement {
                                 placeholder="z. B. Stück, Packung – oder eigenen Wert eingeben"
                                 onChange={(val: string[]) => setPackageUnit((val.slice(-1)[0] || ''))}
                             >
+                                {popularPackageUnits.length > 0 && (
+                                    <Select.OptGroup label="Beliebt">
+                                        {popularPackageUnits.map((pu) => (
+                                            <Select.Option key={`pop-pu-${pu}`} value={pu}>
+                                                {pu}
+                                            </Select.Option>
+                                        ))}
+                                    </Select.OptGroup>
+                                )}
                                 {dbPackageUnits.map((pkgUnit) => (
                                     <Select.Option key={pkgUnit.id} value={pkgUnit.name}>
                                         {pkgUnit.name}
@@ -816,7 +888,7 @@ export default function StorageDetailForm(): ReactElement {
                                                         <Input
                                                             type="number"
                                                             value={nutrientType.value}
-                                                                placeholder="Wert (Zahl)"
+                                                            placeholder="Wert (Zahl)"
                                                             onChange={(e) =>
                                                                 onChangeNutrientType(nutrientIndex, typeIndex, 'value', e.target.value)
                                                             }
