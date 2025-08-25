@@ -1,4 +1,4 @@
-import { Button, Divider, Empty, Pagination, Select, Space } from 'antd';
+import { Button, Divider, Empty, Pagination, Select, Space, Tag, Checkbox, Tooltip } from 'antd';
 import React, { ReactElement, useState, useEffect, useMemo, useRef, useCallback } from 'react';
 import { CloseCircleOutlined, DownOutlined, UpOutlined } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
@@ -24,8 +24,10 @@ export default function StorageList(): ReactElement {
     const [maxValue, setMaxValue] = useState(pageSize);
 
     // State für die Dropdown-Filter
-    const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
-    const [selectedLocation, setSelectedLocation] = useState<string | null>(null);
+    const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
+    const [selectedLocations, setSelectedLocations] = useState<string[]>([]);
+    const [onlyZero, setOnlyZero] = useState<boolean>(false);
+    const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc');
 
     // Toggle-Status für den Filtercontainer
     const [showFilters, setShowFilters] = useState<boolean>(false);
@@ -78,31 +80,40 @@ export default function StorageList(): ReactElement {
 
     const filteredItems = useMemo(() => {
         return safeStorageItems.filter((item) => {
-            let match = true;
-            if (selectedCategory) {
-                match = match && (item.categories ? item.categories.includes(selectedCategory) : false);
+            if (selectedCategories.length > 0) {
+                const hasAny = (item.categories || []).some(c => selectedCategories.includes(c));
+                if (!hasAny) return false;
             }
-            if (selectedLocation) {
-                match = match && item.storageLocation === selectedLocation;
+            if (selectedLocations.length > 0 && !selectedLocations.includes(item.storageLocation)) {
+                return false;
             }
-            return match;
+            if (onlyZero && item.amount !== 0) {
+                return false;
+            }
+            return true;
         });
-    }, [safeStorageItems, selectedCategory, selectedLocation]);
+    }, [safeStorageItems, selectedCategories, selectedLocations, onlyZero]);
 
     const sortedItems = useMemo(() => {
+        const factor = sortOrder === 'asc' ? 1 : -1;
         return [...filteredItems].sort((a, b) => {
+            let cmp = 0;
             switch (sortField) {
                 case 'name':
-                    return a.name.localeCompare(b.name);
+                    cmp = a.name.localeCompare(b.name);
+                    break;
                 case 'storageLocation':
-                    return a.storageLocation.localeCompare(b.storageLocation);
+                    cmp = a.storageLocation.localeCompare(b.storageLocation);
+                    break;
                 case 'amount':
-                    return a.amount - b.amount;
+                    cmp = a.amount - b.amount;
+                    break;
                 default:
-                    return 0;
+                    cmp = 0;
             }
+            return cmp * factor;
         });
-    }, [filteredItems, sortField]);
+    }, [filteredItems, sortField, sortOrder]);
 
     const paginatedItems = useMemo(() => {
         return sortedItems.slice(minValue, maxValue);
@@ -112,12 +123,31 @@ export default function StorageList(): ReactElement {
 
     const onGoToNew = () => history(newItemRoute);
 
+    const activeFilterCount = selectedCategories.length + selectedLocations.length + (onlyZero ? 1 : 0);
+
+    const clearFilters = () => {
+        setSelectedCategories([]);
+        setSelectedLocations([]);
+        setOnlyZero(false);
+        setCurrentPage(1);
+    };
+
+    const removeCategory = (c: string) => {
+        setSelectedCategories(prev => prev.filter(x => x !== c));
+        setCurrentPage(1);
+    };
+
+    const removeLocation = (l: string) => {
+        setSelectedLocations(prev => prev.filter(x => x !== l));
+        setCurrentPage(1);
+    };
+
     return (
         <>
 
             {/* Balken zum Öffnen/Schließen der Filter */}
             <div className={styles.filterToggle} onClick={() => setShowFilters(!showFilters)}>
-                <span>Filter & Sortierung</span>
+                <span>Filter & Sortierung{activeFilterCount > 0 ? ` (${activeFilterCount} aktiv)` : ''}</span>
                 {showFilters ? (
                     <UpOutlined style={{ fontSize: 18, color: "#666" }} />
                 ) : (
@@ -126,72 +156,93 @@ export default function StorageList(): ReactElement {
             </div>
 
             {showFilters && (
-                <div className={styles.filterSortContainer}>
-
-                    <div className={styles.filterColumn}>
-                        <Select
-                            className={`${styles.dropdown} ${styles.mySelect}`}
-                            placeholder="Nach Kategorie filtern"
-                            value={selectedCategory || null}
-                            onChange={(value: string) => {
-                                setSelectedCategory(value || null);
-                                setCurrentPage(1);
-                            }}
-                            allowClear
-                            suffixIcon={<DownOutlined />}
-                            clearIcon={<CloseCircleOutlined />}
-                        >
-                            {categoryOptions.map((category) => (
-                                <Select.Option key={category} value={category}>
-                                    {category}
-                                </Select.Option>
-                            ))}
-                        </Select>
-
-                        <Select
-                            className={`${styles.dropdown} ${styles.mySelect}`}
-                            placeholder="Nach Lagerort filtern"
-                            value={selectedLocation || null}
-                            onChange={(value: string) => {
-                                setSelectedLocation(value || null);
-                                setCurrentPage(1);
-                            }}
-                            allowClear
-                            suffixIcon={<DownOutlined />}
-                            clearIcon={<CloseCircleOutlined />}
-                        >
-                            {locationOptions.map((location) => (
-                                <Select.Option key={location} value={location}>
-                                    {location}
-                                </Select.Option>
-                            ))}
-                        </Select>
+                <div className={styles.filterBar}>
+                    <div className={styles.filtersGrid}>
+                        <div>
+                            <div className={styles.label}>Kategorien</div>
+                            <Select
+                                mode="multiple"
+                                className={`${styles.dropdown} ${styles.mySelect}`}
+                                placeholder="Kategorien wählen"
+                                value={selectedCategories}
+                                onChange={(vals: string[]) => { setSelectedCategories(vals); setCurrentPage(1); }}
+                                allowClear
+                                maxTagCount="responsive"
+                                suffixIcon={<DownOutlined />}
+                                clearIcon={<CloseCircleOutlined />}
+                            >
+                                {categoryOptions.map((category) => (
+                                    <Select.Option key={category} value={category}>
+                                        {category}
+                                    </Select.Option>
+                                ))}
+                            </Select>
+                        </div>
+                        <div>
+                            <div className={styles.label}>Lagerorte</div>
+                            <Select
+                                mode="multiple"
+                                className={`${styles.dropdown} ${styles.mySelect}`}
+                                placeholder="Lagerorte wählen"
+                                value={selectedLocations}
+                                onChange={(vals: string[]) => { setSelectedLocations(vals); setCurrentPage(1); }}
+                                allowClear
+                                maxTagCount="responsive"
+                                suffixIcon={<DownOutlined />}
+                                clearIcon={<CloseCircleOutlined />}
+                            >
+                                {locationOptions.map((location) => (
+                                    <Select.Option key={location} value={location}>
+                                        {location}
+                                    </Select.Option>
+                                ))}
+                            </Select>
+                        </div>
+                        <div className={styles.sortControls}>
+                            <div className={styles.label}>Sortieren</div>
+                            <div className={styles.sortRow}>
+                                <Select
+                                    className={styles.dropdown}
+                                    placeholder="Feld wählen"
+                                    value={sortField}
+                                    onChange={(value: string) => { setSortField(value); setCurrentPage(1); }}
+                                    suffixIcon={<DownOutlined style={{ fontSize: 18, color: "#666" }} />}
+                                >
+                                    <Select.Option key="name" value="name">Name</Select.Option>
+                                    <Select.Option key="storageLocation" value="storageLocation">Lagerort</Select.Option>
+                                    <Select.Option key="amount" value="amount">Menge</Select.Option>
+                                </Select>
+                                <Tooltip title={sortOrder === 'asc' ? 'Aufsteigend' : 'Absteigend'}>
+                                    <Button
+                                        aria-label="Sortierreihenfolge wechseln"
+                                        onClick={() => setSortOrder(prev => prev === 'asc' ? 'desc' : 'asc')}
+                                        className={styles.orderButton}
+                                    >
+                                        {sortOrder === 'asc' ? <UpOutlined /> : <DownOutlined />}
+                                    </Button>
+                                </Tooltip>
+                            </div>
+                        </div>
+                        <div className={styles.moreFilters}>
+                            <div className={styles.label}>Weitere Filter</div>
+                            <Checkbox checked={onlyZero} onChange={(e) => { setOnlyZero(e.target.checked); setCurrentPage(1); }}>
+                                Nur Bestand 0
+                            </Checkbox>
+                        </div>
                     </div>
 
-                    {/* Sort-Dropdown */}
-                    <div className={styles.sortColumn}>
-                        <Select
-                            className={styles.dropdown}
-                            placeholder="Sortieren nach"
-                            value={sortField}
-                            onChange={(value: string) => {
-                                setSortField(value);
-                                setCurrentPage(1);
-                            }}
-                            allowClear
-                            suffixIcon={<DownOutlined style={{ fontSize: 18, color: "#666" }} />}
-                        >
-                            <Select.Option key="name" value="name">
-                                Name
-                            </Select.Option>
-                            <Select.Option key="storageLocation" value="storageLocation">
-                                Lagerort
-                            </Select.Option>
-                            <Select.Option key="amount" value="amount">
-                                Menge
-                            </Select.Option>
-                        </Select>
-                    </div>
+                    {(selectedCategories.length > 0 || selectedLocations.length > 0 || onlyZero) && (
+                        <div className={styles.chipsRow}>
+                            {selectedCategories.map(c => (
+                                <Tag key={`cat-${c}`} closable onClose={() => removeCategory(c)}>{c}</Tag>
+                            ))}
+                            {selectedLocations.map(l => (
+                                <Tag key={`loc-${l}`} closable onClose={() => removeLocation(l)}>{l}</Tag>
+                            ))}
+                            {onlyZero && <Tag color="default">Bestand 0</Tag>}
+                            <Button size="small" onClick={clearFilters} className={styles.clearBtn}>Filter zurücksetzen</Button>
+                        </div>
+                    )}
                 </div>
             )}
 

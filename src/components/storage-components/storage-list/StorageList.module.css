@@ -35,10 +35,55 @@
 }
 
 /* Container für Filter und Sortierung */
-.filterSortContainer {
+.filterBar {
+    display: grid;
+    gap: 12px;
+    padding: 12px;
+    background: #fff;
+    border: 1px solid #eee;
+    border-radius: 10px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.04);
+}
+
+.filtersGrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 12px;
+    align-items: start;
+}
+
+.label {
+    font-size: 12px;
+    color: #666;
+    margin-bottom: 6px;
+}
+
+.sortControls {
+    display: flex;
+    flex-direction: column;
+}
+
+.sortRow {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+}
+
+.orderButton {
+    min-width: 40px;
+}
+
+.moreFilters {}
+
+.chipsRow {
     display: flex;
     flex-wrap: wrap;
-    align-items: flex-start;
+    gap: 8px;
+    align-items: center;
+}
+
+.clearBtn {
+    margin-left: auto;
 }
 
 /* Dropdowns für Filter */
