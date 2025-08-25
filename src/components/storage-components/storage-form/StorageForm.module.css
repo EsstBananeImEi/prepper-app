@@ -451,3 +451,39 @@ tr {
 }
 
 /* ----------------- Ende Nutrient Card Layout ----------------- */
+
+/* Ultra-compact layout for very small portrait screens (e.g., 390px width) */
+@media (max-width: 420px) {
+    .actionBar {
+        grid-template-columns: 1fr 1fr;
+        /* two columns on first row */
+        gap: 8px;
+        /* slightly tighter */
+        padding: 12px;
+        /* reduce padding to reclaim space */
+    }
+
+    /* Place left and right on first row, center group spans full width below */
+    .actionCenter {
+        grid-column: 1 / -1;
+        /* span both columns */
+        justify-content: center;
+    }
+
+    /* Ensure groups can shrink and not force overflow */
+    .actionLeft,
+    .actionCenter,
+    .actionRight {
+        min-width: 0;
+        flex-wrap: wrap;
+        gap: 6px;
+    }
+
+    /* Prevent buttons from exceeding available width */
+    .actionLeft :global(.ant-btn),
+    .actionCenter :global(.ant-btn),
+    .actionRight :global(.ant-btn) {
+        max-width: 100%;
+        white-space: nowrap;
+    }
+}
