@@ -51,8 +51,8 @@
 /* Sehr kleine Bildschirme */
 @media (max-width: 480px) {
     .breadcrumbContainer {
-        margin: 25px 0 4px 0;
-        padding: 6px 6px;
+        margin: 25px 0 0 0;
+        padding: 15px 6px;
         /* Noch weniger Padding für sehr kleine Bildschirme */
         font-size: 12px;
     }

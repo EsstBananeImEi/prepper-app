@@ -775,13 +775,13 @@
 
     /* Applies to both desktop-header layout on small screens and explicit mobile top header */
     .header {
-        height: 48px;
+        height: 60px;
         min-height: 0;
         padding: 0 10px;
     }
 
     .mobileTopHeader {
-        height: 48px;
+        height: 60px;
         min-height: 0;
         padding: 0 10px;
         gap: 8px;
