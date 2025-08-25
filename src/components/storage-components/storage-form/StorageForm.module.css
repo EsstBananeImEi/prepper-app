@@ -13,7 +13,7 @@
 }
 
 .formButton {
-    margin-left: 5px;
+    margin-left: 0;
 }
 
 /* Modern layout additions */
@@ -69,18 +69,21 @@
 .actionBar {
     position: sticky;
     bottom: 0;
-    left: 0;
-    right: 0;
     display: grid;
     grid-template-columns: 1fr auto 1fr;
     align-items: center;
     gap: 8px 12px;
-    padding: 12px 8px;
+    padding: 16px;
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
     background: rgba(255, 255, 255, 0.85);
     backdrop-filter: blur(6px);
     border-top: 1px solid #eee;
     margin-top: 16px;
     z-index: 2;
+    overflow-x: hidden;
+    /* prevent sub-pixel overflow visuals */
 }
 
 .actionLeft {
@@ -99,6 +102,13 @@
     display: flex;
     justify-content: flex-end;
     gap: 8px;
+}
+
+/* Remove any default margins from AntD buttons inside the action bar groups */
+.actionLeft :global(.ant-btn),
+.actionCenter :global(.ant-btn),
+.actionRight :global(.ant-btn) {
+    margin: 0;
 }
 
 .naehrwert_table .bg_orange {
