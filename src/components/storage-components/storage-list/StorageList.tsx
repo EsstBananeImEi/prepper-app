@@ -1,10 +1,9 @@
-import { Button, Divider, Empty, Pagination, Select, Space, Tag, Checkbox, Tooltip, Input } from 'antd';
-import React, { ReactElement, useState, useEffect, useMemo, useRef, useCallback } from 'react';
+import { Button, Divider, Empty, Pagination, Select, Space, Tag, Checkbox, Tooltip, Input, Drawer } from 'antd';
+import React, { ReactElement, useState, useEffect, useMemo, useRef } from 'react';
 import { CloseCircleOutlined, DownOutlined, UpOutlined, SearchOutlined } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
 import { useDemensions } from '../../../hooks/StorageApi';
-import { itemsApi, errorRoute, newItemRoute } from '../../../shared/Constants';
-import LoadingSpinner from '../../loading-spinner/LoadingSpinner';
+import { newItemRoute } from '../../../shared/Constants';
 import { StorageModel } from '../StorageModel';
 import StorageCardItem from './storage-item/StorageCardItem';
 import StorageListItem from './storage-item/StorageListItem';
@@ -12,192 +11,289 @@ import styles from './StorageList.module.css';
 import { useStore } from '../../../store/Store';
 
 export default function StorageList(): ReactElement {
-    // Statt useStorageApi holen wir die Items direkt aus dem Store:
-    const { store, dispatch } = useStore();
+    const { store } = useStore();
     const history = useNavigate();
-    const [sortField, setSortField] = useState<string>('name');
 
-    // State für Pagination
+    // Pagination
     const [currentPage, setCurrentPage] = useState(1);
-    const [pageSize, setPageSize] = useState(10); // Standard Page Size
-    const [minValue, setMinValue] = useState(0);
-    const [maxValue, setMaxValue] = useState(pageSize);
-
-    // State für die Dropdown-Filter
-    const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
-    const [selectedLocations, setSelectedLocations] = useState<string[]>([]);
-    const [onlyZero, setOnlyZero] = useState<boolean>(false);
-    const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc');
-    const [selectedUnits, setSelectedUnits] = useState<string[]>([]);
-    const [stockStatus, setStockStatus] = useState<string[]>([]); // 'low'|'mid'|'high'
-    const [searchText, setSearchText] = useState<string>('');
-
-    // Toggle-Status für den Filtercontainer
-    const [showFilters, setShowFilters] = useState<boolean>(false);
-
-    const handleChange = (page: number) => {
-        setCurrentPage(page);
-    };
+    const pageSize = 10;
+    const handleChange = (page: number) => setCurrentPage(page);
     const [dimensions] = useDemensions(handleChange, currentPage);
 
-    // Stabiler Callback für StorageSearchItem um Re-Render Probleme zu vermeiden
-    const dispatchRef = useRef(dispatch);
-    dispatchRef.current = dispatch;
+    // Filters & sorting
+    const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
+    const [selectedLocations, setSelectedLocations] = useState<string[]>([]);
+    const [selectedUnits, setSelectedUnits] = useState<string[]>([]);
+    const [onlyZero, setOnlyZero] = useState<boolean>(false);
+    const [stockStatus, setStockStatus] = useState<string[]>([]); // 'low'|'mid'|'high'
+    const [searchText, setSearchText] = useState<string>('');
+    const [sortField, setSortField] = useState<'name' | 'storageLocation' | 'amount' | 'lastChanged'>('name');
+    const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc');
 
-    const handleSearchCallback = useCallback((items: StorageModel[]) => {
-        dispatchRef.current({ type: 'INITIAL_STORAGE', storageItems: items });
-    }, []); // Leere Dependencies da wir Ref verwenden
+    // Drawer state
+    const [showFilters, setShowFilters] = useState<boolean>(false);
+    const [drawerHeight, setDrawerHeight] = useState<number>(380);
+    const drawerContentRef = useRef<HTMLDivElement | null>(null);
 
-
-    // Aktualisiere pageSize basierend auf der Bildschirmbreite
+    // Load filters from session
     useEffect(() => {
-        if (dimensions.width > 1200) {
-            setPageSize(30);
-        } else if (dimensions.width > 800) {
-            setPageSize(15);
-        } else {
-            setPageSize(20);
+        try {
+            const raw = sessionStorage.getItem('storageFilters');
+            if (raw) {
+                const f = JSON.parse(raw);
+                setSelectedCategories(Array.isArray(f.selectedCategories) ? f.selectedCategories : []);
+                setSelectedLocations(Array.isArray(f.selectedLocations) ? f.selectedLocations : []);
+                setSelectedUnits(Array.isArray(f.selectedUnits) ? f.selectedUnits : []);
+                setOnlyZero(!!f.onlyZero);
+                setStockStatus(Array.isArray(f.stockStatus) ? f.stockStatus : []);
+                setSearchText(typeof f.searchText === 'string' ? f.searchText : '');
+                if (['name', 'storageLocation', 'amount', 'lastChanged'].includes(f.sortField)) {
+                    setSortField(f.sortField);
+                }
+                if (['asc', 'desc'].includes(f.sortOrder)) {
+                    setSortOrder(f.sortOrder);
+                }
+            }
+        } catch {
+            // ignore
         }
-        // Bei Änderung der Bildschirmbreite wieder auf Seite 1 springen
-        setCurrentPage(1);
-    }, [dimensions.width]);
+    }, []);
 
-    // Aktualisiere minValue und maxValue, wenn currentPage oder pageSize sich ändern
+    // Save filters to session
     useEffect(() => {
-        setMaxValue(currentPage * pageSize);
-        setMinValue((currentPage - 1) * pageSize);
-    }, [currentPage, pageSize]);
+        const payload = {
+            selectedCategories,
+            selectedLocations,
+            selectedUnits,
+            onlyZero,
+            stockStatus,
+            searchText,
+            sortField,
+            sortOrder,
+        } as const;
+        sessionStorage.setItem('storageFilters', JSON.stringify(payload));
+        // compute active count and broadcast to other components (e.g., breadcrumb)
+        const isDefaultSortLocal = sortField === 'name' && sortOrder === 'asc';
+        const activeCount =
+            selectedCategories.length +
+            selectedLocations.length +
+            selectedUnits.length +
+            (onlyZero ? 1 : 0) +
+            stockStatus.length +
+            (searchText.trim() ? 1 : 0) +
+            (isDefaultSortLocal ? 0 : 1);
+        try {
+            window.dispatchEvent(new CustomEvent('storageFiltersChanged', { detail: { count: activeCount } }));
+        } catch { /* noop */ }
+    }, [selectedCategories, selectedLocations, selectedUnits, onlyZero, stockStatus, searchText, sortField, sortOrder]);
 
-    // Da die Items jetzt im Store verwaltet werden, verwenden wir diese mit useMemo:
-    const safeStorageItems = useMemo(() => store.storeItems ?? [], [store.storeItems]);
+    // Open Drawer via breadcrumb button custom event
+    useEffect(() => {
+        const onOpen = () => setShowFilters(true);
+        window.addEventListener('openStorageFilters', onOpen as EventListener);
+        return () => window.removeEventListener('openStorageFilters', onOpen as EventListener);
+    }, []);
 
-    // Erzeuge Filteroptionen basierend auf den im Store vorhandenen Items
-    const categoryOptions = useMemo(
-        () => Array.from(new Set(safeStorageItems.flatMap((item) => item.categories || []))),
-        [safeStorageItems]
-    );
-    const locationOptions = useMemo(
-        () => Array.from(new Set(safeStorageItems.map((item) => item.storageLocation))),
-        [safeStorageItems]
-    );
-    const unitOptions = useMemo(
-        () => Array.from(new Set(safeStorageItems.map((item) => item.unit).filter(Boolean))),
-        [safeStorageItems]
-    );
+    const items = store.storeItems || [];
 
-    const getStockStatus = (item: StorageModel): 'zero' | 'low' | 'mid' | 'high' => {
-        if (item.amount === 0) return 'zero';
-        if (item.amount <= item.lowestAmount) return 'low';
-        if (item.amount <= item.midAmount) return 'mid';
+    // Recalculate drawer height so the overlay floats and contains content safely
+    useEffect(() => {
+        if (!showFilters) return;
+        const measure = () => {
+            const contentEl = drawerContentRef.current;
+            // find the corresponding elements in this drawer
+            const contentRoot = contentEl?.closest('.ant-drawer-content') as HTMLElement | null;
+            const headerEl = contentRoot?.querySelector('.ant-drawer-header') as HTMLElement | null;
+            const drawerBodyEl = contentRoot?.querySelector('.ant-drawer-body') as HTMLElement | null;
+            const headerH = headerEl ? headerEl.getBoundingClientRect().height : 56;
+            const contentH = contentEl ? contentEl.scrollHeight : 320;
+            const isPortrait = typeof window.matchMedia === 'function'
+                ? window.matchMedia('(orientation: portrait)').matches
+                : window.innerHeight >= window.innerWidth;
+            const topGap = isPortrait ? 24 : 32; // give more room on mobile
+            const bottomGap = isPortrait ? 16 : 24;
+            const buffer = isPortrait ? 24 : 12; // make overlay a bit higher than content to avoid scrollbar
+            const maxAllowed = Math.max(260, window.innerHeight - (topGap + bottomGap));
+            const desiredRaw = headerH + contentH + buffer;
+            // If content exceeds available height, we'll allow internal body scrolling (hidden scrollbar via CSS)
+            const desired = Math.min(maxAllowed, desiredRaw);
+            setDrawerHeight(desired);
+            // Constrain body height on the Drawer body (not the inner content) and allow internal scroll
+            if (drawerBodyEl) {
+                const bodyMax = Math.max(120, desired - headerH - 8);
+                drawerBodyEl.style.maxHeight = `${bodyMax}px`;
+                const fitsWithoutScroll = desiredRaw <= maxAllowed;
+                drawerBodyEl.style.overflowY = fitsWithoutScroll ? 'hidden' : 'auto';
+            }
+        };
+        // measure after paint
+        const id = window.setTimeout(measure, 0);
+        window.addEventListener('resize', measure);
+        return () => {
+            window.clearTimeout(id);
+            window.removeEventListener('resize', measure);
+        };
+    }, [showFilters, selectedCategories, selectedLocations, selectedUnits, onlyZero, stockStatus, searchText, sortField, sortOrder]);
+
+    // Option lists
+    const categoryOptions = useMemo(() => {
+        const set = new Set<string>();
+        items.forEach((i) => (i.categories || []).forEach((c) => c && set.add(c)));
+        return Array.from(set).sort((a, b) => a.localeCompare(b));
+    }, [items]);
+
+    const locationOptions = useMemo(() => {
+        const set = new Set<string>();
+        items.forEach((i) => i.storageLocation && set.add(i.storageLocation));
+        return Array.from(set).sort((a, b) => a.localeCompare(b));
+    }, [items]);
+
+    const unitOptions = useMemo(() => {
+        const set = new Set<string>();
+        items.forEach((i) => i.unit && set.add(i.unit));
+        return Array.from(set).sort((a, b) => a.localeCompare(b));
+    }, [items]);
+
+    // Helpers
+    const statusOf = (it: StorageModel): 'low' | 'mid' | 'high' => {
+        if (it.amount <= it.lowestAmount) return 'low';
+        if (it.amount <= it.midAmount) return 'mid';
         return 'high';
     };
 
     const filteredItems = useMemo(() => {
-        const text = searchText.trim().toLowerCase();
-        return safeStorageItems.filter((item) => {
-            if (text && !item.name.toLowerCase().includes(text)) return false;
-            if (selectedCategories.length > 0) {
-                const hasAny = (item.categories || []).some(c => selectedCategories.includes(c));
-                if (!hasAny) return false;
-            }
-            if (selectedLocations.length > 0 && !selectedLocations.includes(item.storageLocation)) {
-                return false;
-            }
-            if (selectedUnits.length > 0 && !selectedUnits.includes(item.unit)) {
-                return false;
-            }
-            if (onlyZero && item.amount !== 0) {
-                return false;
-            }
-            if (!onlyZero && stockStatus.length > 0) {
-                const status = getStockStatus(item);
-                if (!stockStatus.includes(status)) return false;
-            }
-            return true;
-        });
-    }, [safeStorageItems, searchText, selectedCategories, selectedLocations, selectedUnits, onlyZero, stockStatus]);
+        const term = searchText.trim().toLowerCase();
+        let arr = items.slice();
 
-    const sortedItems = useMemo(() => {
-        const factor = sortOrder === 'asc' ? 1 : -1;
-        return [...filteredItems].sort((a, b) => {
-            let cmp = 0;
+        if (term) {
+            arr = arr.filter((i) => i.name.toLowerCase().includes(term));
+        }
+        if (selectedCategories.length > 0) {
+            arr = arr.filter((i) => {
+                const cs = i.categories || [];
+                return cs.some((c) => selectedCategories.includes(c));
+            });
+        }
+        if (selectedLocations.length > 0) {
+            arr = arr.filter((i) => selectedLocations.includes(i.storageLocation));
+        }
+        if (selectedUnits.length > 0) {
+            arr = arr.filter((i) => selectedUnits.includes(i.unit));
+        }
+        if (onlyZero) {
+            arr = arr.filter((i) => i.amount === 0);
+        }
+        if (stockStatus.length > 0) {
+            arr = arr.filter((i) => stockStatus.includes(statusOf(i)));
+        }
+
+        arr.sort((a, b) => {
+            let res = 0;
             switch (sortField) {
                 case 'name':
-                    cmp = a.name.localeCompare(b.name);
+                    res = a.name.localeCompare(b.name);
                     break;
                 case 'storageLocation':
-                    cmp = a.storageLocation.localeCompare(b.storageLocation);
+                    res = a.storageLocation.localeCompare(b.storageLocation);
                     break;
                 case 'amount':
-                    cmp = a.amount - b.amount;
+                    res = a.amount - b.amount;
                     break;
-                case 'lastChanged':
-                    cmp = new Date(a.lastChanged || 0).getTime() - new Date(b.lastChanged || 0).getTime();
+                case 'lastChanged': {
+                    const ta = a.lastChanged ? Date.parse(a.lastChanged) : 0;
+                    const tb = b.lastChanged ? Date.parse(b.lastChanged) : 0;
+                    res = ta - tb;
                     break;
+                }
                 default:
-                    cmp = 0;
+                    res = 0;
             }
-            return cmp * factor;
+            return sortOrder === 'asc' ? res : -res;
         });
-    }, [filteredItems, sortField, sortOrder]);
 
+        return arr;
+    }, [items, searchText, selectedCategories, selectedLocations, selectedUnits, onlyZero, stockStatus, sortField, sortOrder]);
+
+    // Pagination slice
     const paginatedItems = useMemo(() => {
-        return sortedItems.slice(minValue, maxValue);
-    }, [sortedItems, minValue, maxValue]);
+        const start = (currentPage - 1) * pageSize;
+        return filteredItems.slice(start, start + pageSize);
+    }, [filteredItems, currentPage]);
 
+    // Active filter count (include sort if not default)
+    const isDefaultSort = sortField === 'name' && sortOrder === 'asc';
+    const activeFilterCount =
+        selectedCategories.length +
+        selectedLocations.length +
+        selectedUnits.length +
+        (onlyZero ? 1 : 0) +
+        stockStatus.length +
+        (searchText.trim() ? 1 : 0) +
+        (isDefaultSort ? 0 : 1);
 
-
-    const onGoToNew = () => history(newItemRoute);
-
-    const activeFilterCount = selectedCategories.length + selectedLocations.length + selectedUnits.length + (onlyZero ? 1 : 0) + (stockStatus.length > 0 ? 1 : 0) + (searchText.trim() ? 1 : 0);
-
+    // Chip handlers
+    const removeCategory = (c: string) => setSelectedCategories((prev) => prev.filter((x) => x !== c));
+    const removeLocation = (l: string) => setSelectedLocations((prev) => prev.filter((x) => x !== l));
+    const removeUnit = (u: string) => setSelectedUnits((prev) => prev.filter((x) => x !== u));
     const clearFilters = () => {
         setSelectedCategories([]);
         setSelectedLocations([]);
-        setOnlyZero(false);
         setSelectedUnits([]);
+        setOnlyZero(false);
         setStockStatus([]);
         setSearchText('');
         setCurrentPage(1);
+        setSortField('name');
+        setSortOrder('asc');
     };
 
-    const removeCategory = (c: string) => {
-        setSelectedCategories(prev => prev.filter(x => x !== c));
+    const resetSort = () => {
+        setSortField('name');
+        setSortOrder('asc');
         setCurrentPage(1);
     };
 
-    const removeLocation = (l: string) => {
-        setSelectedLocations(prev => prev.filter(x => x !== l));
-        setCurrentPage(1);
+    const sortFieldLabel = (f: 'name' | 'storageLocation' | 'amount' | 'lastChanged') => {
+        switch (f) {
+            case 'name': return 'Name';
+            case 'storageLocation': return 'Lagerort';
+            case 'amount': return 'Menge';
+            case 'lastChanged': return 'Zuletzt geändert';
+            default: return String(f);
+        }
     };
 
-    const removeUnit = (u: string) => {
-        setSelectedUnits(prev => prev.filter(x => x !== u));
-        setCurrentPage(1);
-    };
+    const onGoToNew = () => history(newItemRoute);
 
     return (
         <>
-
-            {/* Balken zum Öffnen/Schließen der Filter */}
-            <div className={styles.filterToggle} onClick={() => setShowFilters(!showFilters)}>
-                <span>Filter & Sortierung{activeFilterCount > 0 ? ` (${activeFilterCount} aktiv)` : ''}</span>
-                {showFilters ? (
-                    <UpOutlined style={{ fontSize: 18, color: "#666" }} />
-                ) : (
-                    <DownOutlined style={{ fontSize: 18, color: "#666" }} />
-                )}
-            </div>
-
-            {showFilters && (
-                <div className={styles.filterBar}>
+            <Drawer
+                title={
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                        <span>Filter & Sortierung</span>
+                        {activeFilterCount > 0 && <Tag color="processing">{activeFilterCount} aktiv</Tag>}
+                    </div>
+                }
+                placement="top"
+                height={drawerHeight}
+                visible={showFilters}
+                onClose={() => setShowFilters(false)}
+                destroyOnClose={false}
+                closable
+                className={styles.filterDrawer}
+                bodyStyle={{ overflow: 'hidden' }}
+            >
+                <div ref={drawerContentRef} className={styles.filterBar}>
                     <div className={styles.filtersGrid}>
                         <div>
                             <div className={styles.label}>Suchen</div>
                             <Input
                                 placeholder="Name suchen"
                                 value={searchText}
-                                onChange={(e) => { setSearchText(e.target.value); setCurrentPage(1); }}
+                                onChange={(e) => {
+                                    setSearchText(e.target.value);
+                                    setCurrentPage(1);
+                                }}
                                 prefix={<SearchOutlined />}
                             />
                         </div>
@@ -208,7 +304,10 @@ export default function StorageList(): ReactElement {
                                 className={`${styles.dropdown} ${styles.mySelect}`}
                                 placeholder="Kategorien wählen"
                                 value={selectedCategories}
-                                onChange={(vals: string[]) => { setSelectedCategories(vals); setCurrentPage(1); }}
+                                onChange={(vals: string[]) => {
+                                    setSelectedCategories(vals);
+                                    setCurrentPage(1);
+                                }}
                                 allowClear
                                 maxTagCount="responsive"
                                 suffixIcon={<DownOutlined />}
@@ -228,7 +327,10 @@ export default function StorageList(): ReactElement {
                                 className={`${styles.dropdown} ${styles.mySelect}`}
                                 placeholder="Lagerorte wählen"
                                 value={selectedLocations}
-                                onChange={(vals: string[]) => { setSelectedLocations(vals); setCurrentPage(1); }}
+                                onChange={(vals: string[]) => {
+                                    setSelectedLocations(vals);
+                                    setCurrentPage(1);
+                                }}
                                 allowClear
                                 maxTagCount="responsive"
                                 suffixIcon={<DownOutlined />}
@@ -248,7 +350,10 @@ export default function StorageList(): ReactElement {
                                 className={`${styles.dropdown} ${styles.mySelect}`}
                                 placeholder="Einheiten wählen"
                                 value={selectedUnits}
-                                onChange={(vals: string[]) => { setSelectedUnits(vals); setCurrentPage(1); }}
+                                onChange={(vals: string[]) => {
+                                    setSelectedUnits(vals);
+                                    setCurrentPage(1);
+                                }}
                                 allowClear
                                 maxTagCount="responsive"
                                 suffixIcon={<DownOutlined />}
@@ -268,8 +373,11 @@ export default function StorageList(): ReactElement {
                                     className={styles.dropdown}
                                     placeholder="Feld wählen"
                                     value={sortField}
-                                    onChange={(value: string) => { setSortField(value); setCurrentPage(1); }}
-                                    suffixIcon={<DownOutlined style={{ fontSize: 18, color: "#666" }} />}
+                                    onChange={(value) => {
+                                        setSortField(value as 'name' | 'storageLocation' | 'amount' | 'lastChanged');
+                                        setCurrentPage(1);
+                                    }}
+                                    suffixIcon={<DownOutlined style={{ fontSize: 18, color: '#666' }} />}
                                 >
                                     <Select.Option key="name" value="name">Name</Select.Option>
                                     <Select.Option key="storageLocation" value="storageLocation">Lagerort</Select.Option>
@@ -279,7 +387,7 @@ export default function StorageList(): ReactElement {
                                 <Tooltip title={sortOrder === 'asc' ? 'Aufsteigend' : 'Absteigend'}>
                                     <Button
                                         aria-label="Sortierreihenfolge wechseln"
-                                        onClick={() => setSortOrder(prev => prev === 'asc' ? 'desc' : 'asc')}
+                                        onClick={() => setSortOrder((prev) => (prev === 'asc' ? 'desc' : 'asc'))}
                                         className={styles.orderButton}
                                     >
                                         {sortOrder === 'asc' ? <UpOutlined /> : <DownOutlined />}
@@ -290,7 +398,13 @@ export default function StorageList(): ReactElement {
                         <div className={styles.moreFilters}>
                             <div className={styles.label}>Bestand</div>
                             <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
-                                <Checkbox checked={onlyZero} onChange={(e) => { setOnlyZero(e.target.checked); setCurrentPage(1); }}>
+                                <Checkbox
+                                    checked={onlyZero}
+                                    onChange={(e) => {
+                                        setOnlyZero(e.target.checked);
+                                        setCurrentPage(1);
+                                    }}
+                                >
                                     Nur Bestand 0
                                 </Checkbox>
                                 <Checkbox.Group
@@ -300,33 +414,59 @@ export default function StorageList(): ReactElement {
                                         { label: 'Ausreichend', value: 'high' },
                                     ]}
                                     value={stockStatus}
-                                    onChange={(vals) => { setStockStatus(vals as string[]); setCurrentPage(1); }}
+                                    onChange={(vals) => {
+                                        setStockStatus(vals as string[]);
+                                        setCurrentPage(1);
+                                    }}
                                 />
                             </div>
                         </div>
                     </div>
 
-                    {(selectedCategories.length > 0 || selectedLocations.length > 0 || selectedUnits.length > 0 || onlyZero || stockStatus.length > 0 || searchText.trim()) && (
-                        <div className={styles.chipsRow}>
-                            {searchText.trim() && <Tag color="blue">Suche: {searchText.trim()}</Tag>}
-                            {selectedCategories.map(c => (
-                                <Tag key={`cat-${c}`} closable onClose={() => removeCategory(c)}>{c}</Tag>
-                            ))}
-                            {selectedLocations.map(l => (
-                                <Tag key={`loc-${l}`} closable onClose={() => removeLocation(l)}>{l}</Tag>
-                            ))}
-                            {selectedUnits.map(u => (
-                                <Tag key={`unit-${u}`} closable onClose={() => removeUnit(u)}>{u}</Tag>
-                            ))}
-                            {onlyZero && <Tag color="default">Bestand 0</Tag>}
-                            {stockStatus.includes('low') && <Tag color="red">Kritisch</Tag>}
-                            {stockStatus.includes('mid') && <Tag color="orange">Wenig</Tag>}
-                            {stockStatus.includes('high') && <Tag color="green">Ausreichend</Tag>}
-                            <Button size="small" onClick={clearFilters} className={styles.clearBtn}>Filter zurücksetzen</Button>
-                        </div>
-                    )}
+                    {(selectedCategories.length > 0 ||
+                        selectedLocations.length > 0 ||
+                        selectedUnits.length > 0 ||
+                        onlyZero ||
+                        stockStatus.length > 0 ||
+                        searchText.trim() ||
+                        !isDefaultSort) && (
+                            <div className={styles.chipsRow}>
+                                {searchText.trim() && <Tag color="blue">Suche: {searchText.trim()}</Tag>}
+                                {selectedCategories.map((c) => (
+                                    <Tag key={`cat-${c}`} closable onClose={() => removeCategory(c)}>
+                                        {c}
+                                    </Tag>
+                                ))}
+                                {selectedLocations.map((l) => (
+                                    <Tag key={`loc-${l}`} closable onClose={() => removeLocation(l)}>
+                                        {l}
+                                    </Tag>
+                                ))}
+                                {selectedUnits.map((u) => (
+                                    <Tag key={`unit-${u}`} closable onClose={() => removeUnit(u)}>
+                                        {u}
+                                    </Tag>
+                                ))}
+                                {onlyZero && <Tag color="default">Bestand 0</Tag>}
+                                {stockStatus.includes('low') && <Tag color="red">Kritisch</Tag>}
+                                {stockStatus.includes('mid') && <Tag color="orange">Wenig</Tag>}
+                                {stockStatus.includes('high') && <Tag color="green">Ausreichend</Tag>}
+                                {!isDefaultSort && (
+                                    <Tag
+                                        color="geekblue"
+                                        closable
+                                        onClose={resetSort}
+                                    >
+                                        {`Sortierung: ${sortFieldLabel(sortField)} ${sortOrder === 'asc' ? '↑' : '↓'}`}
+                                    </Tag>
+                                )}
+                                <Button size="small" onClick={clearFilters} className={styles.clearBtn}>
+                                    Filter zurücksetzen
+                                </Button>
+                            </div>
+                        )}
                 </div>
-            )}
+            </Drawer>
 
             {filteredItems.length <= 0 ? (
                 <Empty
@@ -344,7 +484,7 @@ export default function StorageList(): ReactElement {
                     style={{
                         justifyContent: 'center',
                         display: 'flex',
-                        flexWrap: 'wrap'
+                        flexWrap: 'wrap',
                     }}
                 >
                     {dimensions.width > 450 ? (
@@ -360,7 +500,7 @@ export default function StorageList(): ReactElement {
                                     </Space>
                                 </div>
                             ))}
-                            {filteredItems.length !== 0 && (
+                            {filteredItems.length > pageSize && (
                                 <Pagination
                                     responsive
                                     pageSize={pageSize}
@@ -371,7 +511,7 @@ export default function StorageList(): ReactElement {
                                         width: '100%',
                                         display: 'flex',
                                         justifyContent: 'center',
-                                        paddingTop: '10px'
+                                        paddingTop: '10px',
                                     }}
                                 />
                             )}
@@ -382,7 +522,7 @@ export default function StorageList(): ReactElement {
                                 <div key={`div-${storageItem.id}`} style={{ width: '100%' }}>
                                     {index >= 0 && <Divider />}
                                     <StorageListItem storageItem={storageItem} />
-                                    {index + 1 === filteredItems.length && <Divider />}
+                                    {index + 1 === paginatedItems.length && <Divider />}
                                 </div>
                             ))}
                             {filteredItems.length > pageSize && (
@@ -398,7 +538,7 @@ export default function StorageList(): ReactElement {
                                         justifyContent: 'center',
                                         paddingTop: '10px',
                                         marginTop: '30px',
-                                        fontSize: '1.5rem'
+                                        fontSize: '1.5rem',
                                     }}
                                 />
                             )}

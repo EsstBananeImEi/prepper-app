@@ -45,6 +45,55 @@
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.04);
 }
 
+/* Drawer Overlay für Filter (nahtloses, schwebendes Design) */
+.filterDrawer :global(.ant-drawer-content-wrapper) {
+    margin-top: 32px;
+    /* Abstand vom oberen Rand */
+    margin-bottom: 24px;
+}
+
+.filterDrawer :global(.ant-drawer-content) {
+    border-radius: 12px;
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.16);
+    max-width: 980px;
+    margin: 0 auto;
+    /* horizontal zentriert */
+}
+
+.filterDrawer :global(.ant-drawer-header) {
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.filterDrawer :global(.ant-drawer-title) {
+    font-weight: 600;
+}
+
+.filterDrawer :global(.ant-drawer-body) {
+    overflow: hidden;
+    /* default hidden; JS sets overflowY:auto when needed */
+    padding-top: 8px;
+    /* Hide scrollbars (Firefox/Edge/IE) */
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+}
+
+.filterDrawer :global(.ant-drawer-content) {
+    overflow: hidden;
+    /* clip content to the rounded container */
+}
+
+.filterDrawer :global(.ant-drawer-body)::-webkit-scrollbar,
+.filterDrawer :global(.ant-drawer-content)::-webkit-scrollbar,
+.filterDrawer :global(.ant-drawer-content-wrapper)::-webkit-scrollbar {
+    width: 0;
+    height: 0;
+}
+
+/* Allow smooth touch scrolling while keeping scrollbars hidden */
+.filterDrawer :global(.ant-drawer-body) {
+    -webkit-overflow-scrolling: touch;
+}
+
 .filtersGrid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));

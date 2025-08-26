@@ -1,4 +1,11 @@
 /* BreadcrumbNav.module.css */
+.breadcrumbBar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+}
+
 .breadcrumbContainer {
     margin: 5px 0 16px 0;
     padding: 0 16px;
@@ -91,6 +98,10 @@
     margin: 0 8px;
     display: inline-flex;
     align-items: center;
+}
+
+.filterButton {
+    margin-right: 16px;
 }
 
 /* Fix for breadcrumb item spacing and alignment */

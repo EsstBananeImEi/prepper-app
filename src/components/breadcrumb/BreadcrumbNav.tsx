@@ -1,11 +1,39 @@
-import React from 'react';
-import { Breadcrumb } from 'antd';
-import { HomeOutlined } from '@ant-design/icons';
+import React, { useEffect, useState } from 'react';
+import { Breadcrumb, Button } from 'antd';
+import { HomeOutlined, FilterOutlined } from '@ant-design/icons';
 import { useLocation, Link } from 'react-router-dom';
 import styles from './BreadcrumbNav.module.css';
 
 const BreadcrumbNav: React.FC = () => {
     const location = useLocation();
+    const [activeFilterCount, setActiveFilterCount] = useState<number>(0);
+
+    useEffect(() => {
+        const onFiltersChanged = (e: Event) => {
+            const custom = e as CustomEvent<{ count: number }>;
+            const next = typeof custom.detail?.count === 'number' ? custom.detail.count : 0;
+            setActiveFilterCount(next);
+        };
+        window.addEventListener('storageFiltersChanged', onFiltersChanged as EventListener);
+        // initialize from sessionStorage so the count appears even before the first change event
+        try {
+            const raw = sessionStorage.getItem('storageFilters');
+            if (raw) {
+                const f = JSON.parse(raw);
+                const isDefaultSort = (f.sortField ?? 'name') === 'name' && (f.sortOrder ?? 'asc') === 'asc';
+                const count =
+                    (Array.isArray(f.selectedCategories) ? f.selectedCategories.length : 0) +
+                    (Array.isArray(f.selectedLocations) ? f.selectedLocations.length : 0) +
+                    (Array.isArray(f.selectedUnits) ? f.selectedUnits.length : 0) +
+                    (f.onlyZero ? 1 : 0) +
+                    (Array.isArray(f.stockStatus) ? f.stockStatus.length : 0) +
+                    (typeof f.searchText === 'string' && f.searchText.trim() ? 1 : 0) +
+                    (isDefaultSort ? 0 : 1);
+                setActiveFilterCount(count);
+            }
+        } catch { /* noop */ }
+        return () => window.removeEventListener('storageFiltersChanged', onFiltersChanged as EventListener);
+    }, []);
 
     // Route-zu-Breadcrumb-Mapping
     const getBreadcrumbItems = (pathname: string) => {
@@ -88,15 +116,34 @@ const BreadcrumbNav: React.FC = () => {
 
     const breadcrumbItems = getBreadcrumbItems(location.pathname);
 
+    const isStorageList = location.pathname === '/items';
+
+    const openStorageFilters = () => {
+        window.dispatchEvent(new CustomEvent('openStorageFilters'));
+    };
+
     // Zeige Breadcrumb nur an, wenn mehr als nur Home vorhanden ist
     if (breadcrumbItems.length <= 1) {
         return null;
     } return (
-        <Breadcrumb className={styles.breadcrumbContainer}>
-            {breadcrumbItems.map(item => (
-                <Breadcrumb.Item key={item.key}>{item.title}</Breadcrumb.Item>
-            ))}
-        </Breadcrumb>
+        <div className={styles.breadcrumbBar}>
+            <Breadcrumb className={styles.breadcrumbContainer}>
+                {breadcrumbItems.map(item => (
+                    <Breadcrumb.Item key={item.key}>{item.title}</Breadcrumb.Item>
+                ))}
+            </Breadcrumb>
+            {isStorageList && (
+                <Button
+                    type="default"
+                    icon={<FilterOutlined />}
+                    onClick={openStorageFilters}
+                    aria-label={activeFilterCount > 0 ? `Filter öffnen – ${activeFilterCount} aktiv` : 'Filter öffnen'}
+                    className={styles.filterButton}
+                >
+                    {activeFilterCount > 0 ? `Filter (${activeFilterCount})` : 'Filter'}
+                </Button>
+            )}
+        </div>
     );
 };
 
