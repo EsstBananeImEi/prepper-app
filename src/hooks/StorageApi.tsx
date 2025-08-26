@@ -89,23 +89,34 @@ export function useStorageApi<T>(method: Method, path: string): [T | undefined, 
 export function useDemensions(func: (page: number) => void, currentPage: number): [Dimension, Setter<Dimension>] {
     const [state, setState] = useState({
         height: window.innerHeight,
-        width: window.innerWidth
-    })
+        width: window.innerWidth,
+    });
 
+    // Install listeners once; respond to both resize and orientationchange
     useEffect(() => {
-        function handleResize() {
+        const handleResize = () => {
             setState({
                 height: window.innerHeight,
-                width: window.innerWidth
-            })
-        }
+                width: window.innerWidth,
+            });
+        };
 
-        func(currentPage)
-        window.addEventListener('resize', handleResize)
+        // Initial measure
+        handleResize();
+
+        window.addEventListener('resize', handleResize);
+        window.addEventListener('orientationchange', handleResize as EventListener);
 
         return () => {
-            window.removeEventListener('resize', handleResize)
-        }
-    })
-    return [state, setState]
+            window.removeEventListener('resize', handleResize);
+            window.removeEventListener('orientationchange', handleResize as EventListener);
+        };
+    }, []);
+
+    // Allow caller to react to page changes explicitly, without causing re-renders on every render
+    useEffect(() => {
+        try { func(currentPage); } catch { /* noop */ }
+    }, [currentPage, func]);
+
+    return [state, setState];
 }

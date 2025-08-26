@@ -7,10 +7,11 @@
 
     .title {
         font-size: 15px;
-        padding: 2px 6px;
-        min-height: 10px;
-        max-height: 20px;
-        margin: -20px 0 10px 0;
+        padding: 8px 8px;
+        line-height: 1.2;
+        margin: 4px 0;
+        white-space: normal;
+        word-break: break-word;
     }
 
     .icon {
@@ -23,17 +24,17 @@
     }
 
     .iconAction {
-        font-size: 28px;
+        font-size: 26px;
         transform: translateY(2px);
         cursor: pointer;
         color: rgb(147, 146, 146);
-        padding: 8px;
-        min-width: 44px;
-        min-height: 44px;
-        display: flex;
+        padding: 6px;
+        min-width: 40px;
+        min-height: 40px;
+        display: inline-flex;
         align-items: center;
         justify-content: center;
-        border-radius: 4px;
+        border-radius: 6px;
         transition: background-color 0.2s ease;
     }
 
@@ -58,11 +59,12 @@
     }
 
     .metaTitleContainer {
-        display: flex;
-        justify-content: space-between;
+        display: grid;
+        grid-template-columns: 1fr auto;
         align-items: center;
+        gap: 8px;
         width: 100%;
-        margin-bottom: -2px;
+        margin: 2px 0;
     }
 
     /* Mehr Abstand für das letzte Element */

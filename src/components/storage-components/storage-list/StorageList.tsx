@@ -19,6 +19,8 @@ export default function StorageList(): ReactElement {
     const pageSize = 10;
     const handleChange = (page: number) => setCurrentPage(page);
     const [dimensions] = useDemensions(handleChange, currentPage);
+    // Compute portrait directly from current dimensions to react instantly on rotate
+    const isPortrait = dimensions.height >= dimensions.width;
 
     // Filters & sorting
     const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
@@ -479,15 +481,15 @@ export default function StorageList(): ReactElement {
                     </Button>
                 </Empty>
             ) : (
-                <div
-                    className="space-align-container"
+                        <div
+                            className={`space-align-container ${styles.itemsWrapper}`}
                     style={{
                         justifyContent: 'center',
                         display: 'flex',
                         flexWrap: 'wrap',
                     }}
                 >
-                    {dimensions.width > 450 ? (
+                      {(dimensions.width > 450 && !(isPortrait && dimensions.width <= 600)) ? (
                         <>
                             {paginatedItems.map((storageItem) => (
                                 <div
@@ -518,11 +520,11 @@ export default function StorageList(): ReactElement {
                         </>
                     ) : (
                         <>
-                            {paginatedItems.map((storageItem, index) => (
+                              {paginatedItems.map((storageItem, index) => (
                                 <div key={`div-${storageItem.id}`} style={{ width: '100%' }}>
-                                    {index >= 0 && <Divider />}
+                                  {index > 0 && <Divider style={{ margin: '8px 0' }} />}
                                     <StorageListItem storageItem={storageItem} />
-                                    {index + 1 === paginatedItems.length && <Divider />}
+                                  {index + 1 === paginatedItems.length && <Divider style={{ margin: '8px 0' }} />}
                                 </div>
                             ))}
                             {filteredItems.length > pageSize && (

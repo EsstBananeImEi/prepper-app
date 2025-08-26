@@ -3,14 +3,15 @@ import { Card, Badge } from 'antd';
 import { BiSolidFridge } from 'react-icons/bi';
 import { BsBookshelf } from 'react-icons/bs';
 import React, { ReactElement, SyntheticEvent, useEffect, useRef, useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { storageApi } from '../../../../hooks/StorageApi';
-import { itemIdRoute, itemsApi, itemIdApi } from '../../../../shared/Constants';
+import { itemIdRoute, itemIdApi } from '../../../../shared/Constants';
 import { pluralFormFactory } from '../../../../shared/Factories';
 import { Action, useStore } from '../../../../store/Store';
 import { StorageModel } from '../../StorageModel';
 import { actionHandler } from '../../../../store/Actions';
 import SafeAvatar from '../../../common/SafeAvatar';
+import listStyles from '../StorageList.module.css';
 
 interface Props {
     storageItem: StorageModel;
@@ -18,8 +19,7 @@ interface Props {
 
 export default function StorageCardItem(props: Props): ReactElement {
     const storageItem = props.storageItem;
-    const { Meta } = Card;
-    const history = useNavigate();
+    
     const { store, dispatch } = useStore();
     const [amount, setAmount] = useState(storageItem.amount);
     const [basketAmount, setBasketAmount] = useState(store.shoppingCard.find(item => item.name === storageItem.name)?.amount || 0);
@@ -45,7 +45,7 @@ export default function StorageCardItem(props: Props): ReactElement {
 
         return (
             <span style={color}>
-                Inventory: {amount} {pluralFormFactory(storageItem.unit, amount)}
+                Bestand: {amount} {pluralFormFactory(storageItem.unit, amount)}
             </span>
         );
     };
@@ -87,7 +87,7 @@ export default function StorageCardItem(props: Props): ReactElement {
     const onAddToBasket = (e: React.FormEvent) => {
         e.stopPropagation();
         onChangeCard(e, { type: 'ADD_TO_CARD', basketItems: getBasketModel(storageItem) });
-        setAmount(prevAmount => parseInt(prevAmount.toString()) + 1);
+        setBasketAmount(prev => (parseInt(String(prev)) + 1));
     };
 
     // Sync amount state when storageItem changes (e.g., in lists)
@@ -115,9 +115,7 @@ export default function StorageCardItem(props: Props): ReactElement {
             }
             console.log(`🔧 StorageCardItem: Amount changed for item ${storageItem.id} from ${storageItem.amount} to ${amount}, updating via API`);
             const onGoToList = () => {
-                console.log(`📍 StorageCardItem: API update complete, but NOT navigating to avoid unwanted redirects`);
-                // Remove automatic navigation - this was causing unwanted redirects
-                // history(itemsApi);
+                console.log(`📍 StorageCardItem: API update complete, stay on card`);
             };
             const safeAmount = Math.max(0, amount);
             storageApi('PUT', itemIdApi(storageItem.id), onGoToList, { ...storageItem, amount: safeAmount });
@@ -126,7 +124,7 @@ export default function StorageCardItem(props: Props): ReactElement {
 
     return (
         <Card
-            style={{ width: 300 }}
+            className={listStyles.storageCard}
             actions={[
                 <MinusCircleOutlined onClick={onDecrease} key="minus" />,
                 <Badge
@@ -137,7 +135,7 @@ export default function StorageCardItem(props: Props): ReactElement {
                     style={{ backgroundColor: '#52c41a' }}
                 >
                     <ShoppingCartOutlined
-                        style={{ fontSize: '30px', cursor: 'pointer' }}
+                        style={{ fontSize: '26px', cursor: 'pointer' }}
                         key={`shopping${storageItem.id}`}
                         onClick={(e) => {
                             e.stopPropagation();
@@ -150,17 +148,22 @@ export default function StorageCardItem(props: Props): ReactElement {
             ]}
         >
             <Link to={itemIdRoute(storageItem.id)}>
-                <Meta
-                    avatar={<SafeAvatar src={storageItem.icon} showWarnings={process.env.NODE_ENV === 'development'} />}
-                    title={
-                        <div style={{ display: 'flex', alignItems: 'center' }}>
-                            <span>{storageItem.name}</span>
-                            <span>{getLocationIcon(storageItem.storageLocation) || ""}</span>
-
+                <div className={listStyles.cardContent}>
+                    <div className={listStyles.cardHeader}>
+                        <div className={listStyles.cardImage}>
+                            <SafeAvatar className={listStyles.cardAvatar} src={storageItem.icon} showWarnings={process.env.NODE_ENV === 'development'} />
                         </div>
-                    }
-                    description={getAvailable()}
-                />
+                        <div className={listStyles.cardTitleWrap}>
+                            <div className={listStyles.cardTitle} title={storageItem.name}>
+                                {storageItem.name}
+                            </div>
+                            <div className={listStyles.cardSubtitle}>
+                                {getLocationIcon(storageItem.storageLocation) || ''}
+                            </div>
+                        </div>
+                    </div>
+                    <div className={listStyles.cardInventory}>{getAvailable()}</div>
+                </div>
             </Link>
         </Card>
     );
