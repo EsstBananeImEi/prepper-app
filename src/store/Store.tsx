@@ -210,14 +210,17 @@ export function reducer(store: Store, action: Action): Store {
         case 'INITIAL_STORAGE':
             return { ...store, storeItems: action.storageItems ? action.storageItems : [] };
         case 'INCREASE_STORAGE_ITEM':
-            return { ...store, storeItems: store.storeItems?.map(item => item.id === action.storageItem.id ? { ...item, amount: action.storageItem.amount } : item) };
+            return {
+                ...store,
+                storeItems: store.storeItems?.map(item => item.id === action.storageItem.id ? { ...item, ...action.storageItem } : item)
+            };
         case 'DECREASE_STORAGE_ITEM':
             return {
                 ...store,
                 storeItems: store.storeItems.map(item => {
                     if (item.id === action.storageItem.id) {
                         const next = Math.max(0, action.storageItem.amount);
-                        return { ...item, amount: next };
+                        return { ...item, ...action.storageItem, amount: next };
                     }
                     return item;
                 }),

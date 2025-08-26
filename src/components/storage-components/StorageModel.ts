@@ -9,6 +9,8 @@ export interface StorageModel {
     packageQuantity?: number,
     packageUnit?: string,
     storageLocation: string,
+    // ISO-8601 Zeitstempel, wird vom Backend verwaltet
+    lastChanged?: string,
     nutrients?: NutrientModel,
     icon?: string  // Base64 encoded string or null if no icon
 }

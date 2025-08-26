@@ -131,6 +131,9 @@ export default function StorageList(): ReactElement {
                 case 'amount':
                     cmp = a.amount - b.amount;
                     break;
+                case 'lastChanged':
+                    cmp = new Date(a.lastChanged || 0).getTime() - new Date(b.lastChanged || 0).getTime();
+                    break;
                 default:
                     cmp = 0;
             }
@@ -271,6 +274,7 @@ export default function StorageList(): ReactElement {
                                     <Select.Option key="name" value="name">Name</Select.Option>
                                     <Select.Option key="storageLocation" value="storageLocation">Lagerort</Select.Option>
                                     <Select.Option key="amount" value="amount">Menge</Select.Option>
+                                    <Select.Option key="lastChanged" value="lastChanged">Zuletzt geändert</Select.Option>
                                 </Select>
                                 <Tooltip title={sortOrder === 'asc' ? 'Aufsteigend' : 'Absteigend'}>
                                     <Button

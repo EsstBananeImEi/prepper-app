@@ -92,7 +92,9 @@ function sendStorageRequest(
 ): Promise<void> {
     const userData = localStorage.getItem("user");
     const token = userData ? JSON.parse(userData).access_token : null;    // Prepare data for API - ensure proper format
-    let requestData: Partial<typeof action.storageItem> = { ...action.storageItem };
+    // lastChanged wird vom Backend verwaltet, nicht mitsenden
+    const { lastChanged: _omitLastChanged, ...restWithoutLastChanged } = action.storageItem as typeof action.storageItem;
+    let requestData: Partial<typeof action.storageItem> = { ...restWithoutLastChanged };
 
     // For new items, remove ID from request
     if (method === 'POST') {
