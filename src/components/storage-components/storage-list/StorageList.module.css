@@ -146,20 +146,26 @@
 /* Modern storage card look */
 .storageCard {
     border-radius: 12px !important;
-    box-shadow: 0 6px 18px rgba(0,0,0,0.06);
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.06);
     border: 1px solid #f0f0f0 !important;
     transition: transform .12s ease, box-shadow .12s ease;
     overflow: hidden;
-    width: 300px; /* default card width */
-    height: 200px; /* uniform height for equal tiles */
+    width: 300px;
+    /* default card width */
+    height: 200px;
+    /* uniform height for equal tiles */
 }
+
 .storageCard :global(.ant-card-body) {
-    padding: 12px; /* reduce default 24px padding */
+    padding: 12px;
+    /* reduce default 24px padding */
 }
+
 .storageCard:hover {
     transform: translateY(-1px);
-    box-shadow: 0 10px 24px rgba(0,0,0,0.08);
+    box-shadow: 0 10px 24px rgba(0, 0, 0, 0.08);
 }
+
 .storageCard :global(.ant-card-actions) {
     margin-top: 0;
 }
@@ -197,7 +203,9 @@
     border-radius: 8px;
 }
 
-.cardInfo { width: 100%; }
+.cardInfo {
+    width: 100%;
+}
 
 .cardTitle {
     grid-area: title;
@@ -209,7 +217,9 @@
     overflow: hidden;
 }
 
-.cardTitleWrap { min-width: 0; }
+.cardTitleWrap {
+    min-width: 0;
+}
 
 .cardSubtitle {
     grid-area: subtitle;
@@ -218,12 +228,17 @@
 }
 
 .cardInventory {
-    margin-top: auto; /* push to bottom */
+    margin-top: auto;
+    /* push to bottom */
     font-size: 13px;
-    white-space: nowrap;      /* keep on one line */
-    overflow: hidden;         /* hide overflow */
-    text-overflow: ellipsis;  /* add ellipsis when too long */
-    min-height: 1.2em;        /* stable height */
+    white-space: nowrap;
+    /* keep on one line */
+    overflow: hidden;
+    /* hide overflow */
+    text-overflow: ellipsis;
+    /* add ellipsis when too long */
+    min-height: 1.2em;
+    /* stable height */
 }
 
 /* Card grid spacing */
@@ -245,29 +260,91 @@
 
 /* Smaller cards in landscape (phones/tablets) */
 @media (orientation: landscape) and (max-width: 900px) {
-    .storageCard { width: 150px; height: 160px; /* compact but consistent */ }
-    .itemsWrapper :global(.space-align-block) {
-        margin: 4px; /* slightly tighter gutters to fit more tiles */
+    .storageCard {
+        width: 150px;
+        height: 160px;
+        /* compact but consistent */
     }
+
+    .itemsWrapper :global(.space-align-block) {
+        margin: 4px;
+        /* slightly tighter gutters to fit more tiles */
+    }
+
     /* Layout: image left, title right, inventory full width below */
-    .cardContent { display: grid; grid-template-columns: auto 1fr; grid-template-rows: auto 1fr auto; grid-template-areas: "image title" "image subtitle" "inventory inventory"; align-items: start; gap: 4px 6px; text-align: left; }
-    .cardImage { grid-area: image; justify-content: flex-start; }
-    .cardTitle { grid-area: title; font-size: 12px; align-self: center; }
-    .cardSubtitle { grid-area: subtitle; font-size: 11px; }
-    .cardInventory { grid-area: inventory; font-size: 11px; }
+    .cardContent {
+        display: grid;
+        grid-template-columns: auto 1fr;
+        grid-template-rows: auto 1fr auto;
+        grid-template-areas: "image title" "image subtitle" "inventory inventory";
+        align-items: start;
+        gap: 4px 6px;
+        text-align: left;
+    }
+
+    .cardImage {
+        grid-area: image;
+        justify-content: flex-start;
+    }
+
+    .cardTitle {
+        grid-area: title;
+        font-size: 12px;
+        align-self: center;
+    }
+
+    .cardSubtitle {
+        grid-area: subtitle;
+        font-size: 11px;
+    }
+
+    .cardInventory {
+        grid-area: inventory;
+        font-size: 11px;
+    }
 }
 
 /* Also match tall-width phones in landscape like iPhone 14 Pro Max (932x430) */
 @media (orientation: landscape) and (max-height: 480px) {
-    .storageCard { width: 150px; height: 160px; }
+    .storageCard {
+        width: 150px;
+        height: 160px;
+    }
+
     .itemsWrapper :global(.space-align-block) {
         margin: 4px;
     }
-    .cardContent { display: grid; grid-template-columns: auto 1fr; grid-template-rows: auto 1fr auto; grid-template-areas: "image title" "image subtitle" "inventory inventory"; align-items: start; gap: 4px 6px; text-align: left; }
-    .cardImage { grid-area: image; justify-content: flex-start; }
-    .cardTitle { grid-area: title; font-size: 12px; align-self: center; }
-    .cardSubtitle { grid-area: subtitle; font-size: 11px; }
-    .cardInventory { grid-area: inventory; font-size: 11px; }
+
+    .cardContent {
+        display: grid;
+        grid-template-columns: auto 1fr;
+        grid-template-rows: auto 1fr auto;
+        grid-template-areas: "image title" "image subtitle" "inventory inventory";
+        align-items: start;
+        gap: 4px 6px;
+        text-align: left;
+    }
+
+    .cardImage {
+        grid-area: image;
+        justify-content: flex-start;
+    }
+
+    .cardTitle {
+        grid-area: title;
+        font-size: 12px;
+        align-self: center;
+    }
+
+    .cardSubtitle {
+        grid-area: subtitle;
+        font-size: 11px;
+    }
+
+    .cardInventory {
+        grid-area: inventory;
+        font-size: 11px;
+    }
 }
 
 /* Desktop layout: image left, info right */
@@ -278,15 +355,33 @@
         text-align: left;
         gap: 10px;
     }
-    .cardImage { width: auto; }
-    .cardInfo { flex: 1; display: flex; flex-direction: column; }
-    .cardTitle { font-size: 14px; }
-    .cardInventory { font-size: 12px; opacity: 0.9; }
+
+    .cardImage {
+        width: auto;
+    }
+
+    .cardInfo {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .cardTitle {
+        font-size: 14px;
+    }
+
+    .cardInventory {
+        font-size: 12px;
+        opacity: 0.9;
+    }
 }
 
 /* Slightly larger cards on very wide desktops */
 @media (min-width: 1400px) {
-    .storageCard { width: 320px; height: 220px; }
+    .storageCard {
+        width: 320px;
+        height: 220px;
+    }
 }
 
 /* Dropdowns für Filter */

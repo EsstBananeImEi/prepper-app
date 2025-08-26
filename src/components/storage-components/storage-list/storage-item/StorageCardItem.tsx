@@ -19,7 +19,7 @@ interface Props {
 
 export default function StorageCardItem(props: Props): ReactElement {
     const storageItem = props.storageItem;
-    
+
     const { store, dispatch } = useStore();
     const [amount, setAmount] = useState(storageItem.amount);
     const [basketAmount, setBasketAmount] = useState(store.shoppingCard.find(item => item.name === storageItem.name)?.amount || 0);
