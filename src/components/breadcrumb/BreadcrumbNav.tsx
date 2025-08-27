@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Breadcrumb, Button } from 'antd';
 import { HomeOutlined, FilterOutlined } from '@ant-design/icons';
 import { useLocation, Link } from 'react-router-dom';
+import { rootRoute, homeRoute, itemsRoute, newItemRoute, checklistRoute, basketRoute, userRoute, loginRoute, detailsRouteBase } from '../../shared/Constants';
 import styles from './BreadcrumbNav.module.css';
 
 const BreadcrumbNav: React.FC = () => {
@@ -64,20 +65,20 @@ const BreadcrumbNav: React.FC = () => {
     const getBreadcrumbItems = (pathname: string) => {
         const items = [
             {
-                title: <Link to="/"><HomeOutlined /> Home</Link>,
+                title: <Link to={rootRoute}><HomeOutlined /> Home</Link>,
                 key: 'home'
             }
         ];
 
-        if (pathname.startsWith('/items')) {
+        if (pathname.startsWith(itemsRoute)) {
             items.push({
-                title: <Link to="/items">Storage</Link>,
+                title: <Link to={itemsRoute}>Storage</Link>,
                 key: 'storage'
             });
 
             if (pathname.includes('/new')) {
                 items.push({
-                    title: <Link to="/items/new">Neues Item</Link>,
+                    title: <Link to={newItemRoute}>Neues Item</Link>,
                     key: 'new-item'
                 });
             } else if (pathname.includes('/edit')) {
@@ -85,13 +86,13 @@ const BreadcrumbNav: React.FC = () => {
                     title: <Link to="">Item bearbeiten</Link>,
                     key: 'edit-item'
                 });
-            } else if (pathname !== '/items') {
+            } else if (pathname !== itemsRoute) {
                 items.push({
                     title: <Link to="">Item Details</Link>,
                     key: 'item-details'
                 });
             }
-        } else if (pathname.startsWith('/details/')) {
+        } else if (pathname.startsWith(`${detailsRouteBase}/`)) {
             const category = pathname.split('/')[2];
             const categoryNames: Record<string, string> = {
                 'lebensmittel': 'Lebensmittelvorrat',
@@ -106,7 +107,7 @@ const BreadcrumbNav: React.FC = () => {
             };
 
             items.push({
-                title: <Link to="home">Notfallvorsorge</Link>,
+                title: <Link to={homeRoute}>Notfallvorsorge</Link>,
                 key: 'emergency'
             });
 
@@ -114,22 +115,22 @@ const BreadcrumbNav: React.FC = () => {
                 title: <Link to="">{categoryNames[category] || category}</Link>,
                 key: category
             });
-        } else if (pathname === '/checklist') {
+        } else if (pathname === checklistRoute) {
             items.push({
                 title: <Link to="">Checkliste</Link>,
                 key: 'checklist'
             });
-        } else if (pathname === '/basket') {
+        } else if (pathname === basketRoute) {
             items.push({
                 title: <Link to="">Einkaufsliste</Link>,
                 key: 'basket'
             });
-        } else if (pathname === '/user') {
+        } else if (pathname === userRoute) {
             items.push({
                 title: <Link to="">Benutzerprofil</Link>,
                 key: 'user'
             });
-        } else if (pathname === '/login') {
+        } else if (pathname === loginRoute) {
             items.push({
                 title: <Link to="">Anmeldung</Link>,
                 key: 'login'
@@ -141,8 +142,8 @@ const BreadcrumbNav: React.FC = () => {
 
     const breadcrumbItems = getBreadcrumbItems(location.pathname);
 
-    const isStorageList = location.pathname === '/items';
-    const isBasketList = location.pathname === '/basket';
+    const isStorageList = location.pathname === itemsRoute;
+    const isBasketList = location.pathname === basketRoute;
 
     const openStorageFilters = () => {
         window.dispatchEvent(new CustomEvent('openStorageFilters'));

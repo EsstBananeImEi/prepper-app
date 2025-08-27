@@ -57,11 +57,15 @@ export const groupRemoveUserApi = (id: number | string, userId: number | string)
 
 // ✅ Frontend Route Constants
 export const iconRoute = (icon: string): string => `/static/StorageItemsIcons/${icon}`;
+export const rootRoute = '/';
 export const homeRoute = '/home';
 export const itemsRoute = '/items';
 export const basketRoute = '/basket';
 export const checklistRoute = '/checklist';
 export const adminRoute = '/admin';
+export const userRoute = '/user';
+export const loginRoute = '/login';
+export const detailsRouteBase = '/details';
 export const itemIdRoute = (id: number | string): string => `${itemsRoute}/${String(id)}`;
 export const newItemRoute = `${itemsRoute}/new`;
 export const editItemRoute = (id: number | string): string => `${itemIdRoute(id)}/edit`;
