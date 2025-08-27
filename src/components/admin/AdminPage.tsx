@@ -84,7 +84,7 @@ export default function AdminPage() {
                         icon={<UserOutlined />}
                     />
                     <div style={{ marginTop: '16px', textAlign: 'center' }}>
-                        <Button type="primary" onClick={() => navigate(homeRoute) }>
+                        <Button type="primary" onClick={() => navigate(homeRoute)}>
                             {t('admin.backToHome')}
                         </Button>
                     </div>

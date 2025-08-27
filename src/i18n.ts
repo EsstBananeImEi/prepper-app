@@ -508,6 +508,51 @@ const resources = {
                     , content: 'Scheint als brauchst du derzeit nichts'
                 }
             },
+            utils: {
+                image: {
+                    emptyData: 'Leere Bilddaten',
+                    invalidBase64Format: 'Ungültiges Base64-Format',
+                    invalidMimeType: 'Ungültiger MIME-Type',
+                    unsupportedFormat: 'Nicht unterstütztes Bildformat: {{format}}. Unterstützt: {{supported}}',
+                    invalidBase64: 'Ungültige Base64-Kodierung',
+                    imageTooLarge: 'Bild ist zu groß ({{size}}MB, max. 5MB)',
+                    canvasContextUnavailable: 'Canvas context nicht verfügbar',
+                    loadError: 'Fehler beim Laden des Bildes',
+                    fileTypeOnlyImages: 'Nur Bilddateien sind erlaubt',
+                    fileTooLarge: 'Datei ist zu groß (max. 5MB)',
+                    fileReadError: 'Fehler beim Lesen der Datei',
+                    repairFailed: 'Reparatur der Base64-Daten fehlgeschlagen',
+                    repairError: 'Fehler bei der Reparatur: {{error}}',
+                    processingError: 'Fehler bei der Bildverarbeitung: {{error}}'
+                },
+                api: {
+                    category: {
+                        network: 'Netzwerkfehler',
+                        imageData: 'Bilddaten-Fehler',
+                        badRequest: 'Ungültige Anfrage',
+                        auth: 'Authentifizierung',
+                        permission: 'Berechtigung',
+                        notFound: 'Nicht gefunden',
+                        validation: 'Validierungsfehler',
+                        server: 'Server-Fehler',
+                        unknown: 'Unbekannter Fehler'
+                    },
+                    suggestion: {
+                        network: 'Überprüfen Sie Ihre Internetverbindung und ob der Server erreichbar ist.',
+                        imageData: 'Das Bildformat ist ungültig oder die Datei ist zu groß. Verwenden Sie JPG/PNG unter 5MB.',
+                        badRequest: 'Überprüfen Sie die gesendeten Daten auf Vollständigkeit und korrekte Formate.',
+                        auth: 'Sie sind nicht angemeldet oder Ihre Sitzung ist abgelaufen. Bitte loggen Sie sich erneut ein.',
+                        permission: 'Sie haben keine Berechtigung für diese Aktion.',
+                        notFound: 'Das angeforderte Element existiert nicht oder wurde gelöscht.',
+                        validation: 'Die Daten entsprechen nicht den Anforderungen. Überprüfen Sie alle Pflichtfelder.',
+                        server: 'Ein interner Serverfehler ist aufgetreten. Versuchen Sie es später erneut.',
+                        unknown: 'Ein unerwarteter Fehler ist aufgetreten. Kontaktieren Sie den Support falls das Problem weiterhin besteht.'
+                    },
+                    debug: {
+                        serverResponse: 'Server Response:'
+                    }
+                }
+            }
         },
     },
     en: {
@@ -1013,6 +1058,51 @@ const resources = {
                     content: 'Looks like you don\'t need anything right now'
                 }
             },
+            utils: {
+                image: {
+                    emptyData: 'Empty image data',
+                    invalidBase64Format: 'Invalid Base64 format',
+                    invalidMimeType: 'Invalid MIME type',
+                    unsupportedFormat: 'Unsupported image format: {{format}}. Supported: {{supported}}',
+                    invalidBase64: 'Invalid Base64 encoding',
+                    imageTooLarge: 'Image is too large ({{size}}MB, max 5MB)',
+                    canvasContextUnavailable: 'Canvas context unavailable',
+                    loadError: 'Error loading image',
+                    fileTypeOnlyImages: 'Only image files are allowed',
+                    fileTooLarge: 'File is too large (max 5MB)',
+                    fileReadError: 'Error reading file',
+                    repairFailed: 'Repair of Base64 data failed',
+                    repairError: 'Repair error: {{error}}',
+                    processingError: 'Image processing error: {{error}}'
+                },
+                api: {
+                    category: {
+                        network: 'Network error',
+                        imageData: 'Image data error',
+                        badRequest: 'Bad request',
+                        auth: 'Authentication',
+                        permission: 'Permission',
+                        notFound: 'Not found',
+                        validation: 'Validation error',
+                        server: 'Server error',
+                        unknown: 'Unknown error'
+                    },
+                    suggestion: {
+                        network: 'Check your internet connection and whether the server is reachable.',
+                        imageData: 'The image format is invalid or the file is too large. Use JPG/PNG under 5MB.',
+                        badRequest: 'Check the submitted data for completeness and correct formats.',
+                        auth: 'You are not logged in or your session has expired. Please log in again.',
+                        permission: 'You do not have permission for this action.',
+                        notFound: 'The requested item does not exist or has been deleted.',
+                        validation: 'The data does not meet requirements. Check all required fields.',
+                        server: 'An internal server error occurred. Please try again later.',
+                        unknown: 'An unexpected error occurred. Contact support if the problem persists.'
+                    },
+                    debug: {
+                        serverResponse: 'Server response:'
+                    }
+                }
+            }
         },
     },
 };

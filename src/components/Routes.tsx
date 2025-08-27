@@ -15,70 +15,71 @@ import AdminPage from './admin/AdminPage';
 import InvitePage from './invite/InvitePage';
 import DeveloperTestingPanel from './debug/DeveloperTestingPanel';
 import ProtectedRoute from './auth/ProtectedRoute';
+import { adminRoute, basketRoute, checklistRoute, devTestingRoute, detailsRouteBase, homeRoute, itemsRoute, loginRoute, newItemRoute, rootRoute, userRoute, resetSuccessRoute, inviteRoute, groupJoinRoute, registerRoute } from '../shared/Constants';
 
 export default function AppRoutes(): ReactElement {
     return (
         <Routes>
-            <Route path="/items/error/:message" element={<MyErrorMessage />} />
+            <Route path={`${itemsRoute}/error/:message`} element={<MyErrorMessage />} />
 
             {/* Protected Routes - Require Authentication */}
-            <Route path="/items/:id/edit" element={
+            <Route path={`${itemsRoute}/:id/edit`} element={
                 <ProtectedRoute requireAuth={true}>
                     <StorageForm key="edit" />
                 </ProtectedRoute>
             } />
-            <Route path="/items/new" element={
+            <Route path={newItemRoute} element={
                 <ProtectedRoute requireAuth={true}>
                     <StorageForm key="new" />
                 </ProtectedRoute>
             } />
-            <Route path="/items/:id" element={
+            <Route path={`${itemsRoute}/:id`} element={
                 <ProtectedRoute requireAuth={true}>
                     <StorageDetail />
                 </ProtectedRoute>
             } />
-            <Route path="/items" element={
+            <Route path={itemsRoute} element={
                 <ProtectedRoute requireAuth={true}>
                     <StorageList />
                 </ProtectedRoute>
             } />
-            <Route path="/checklist" element={
+            <Route path={checklistRoute} element={
                 <ProtectedRoute requireAuth={true}>
                     <ChecklistComponent />
                 </ProtectedRoute>
             } />
-            <Route path="/basket" element={
+            <Route path={basketRoute} element={
                 <ProtectedRoute requireAuth={true}>
                     <Shopping />
                 </ProtectedRoute>
             } />
-            <Route path="/user" element={
+            <Route path={userRoute} element={
                 <ProtectedRoute requireAuth={true}>
                     <User />
                 </ProtectedRoute>
             } />
 
             {/* Admin-Only Protected Routes */}
-            <Route path="/admin" element={
+            <Route path={adminRoute} element={
                 <ProtectedRoute requireAuth={true} requireAdmin={true}>
                     <AdminPage />
                 </ProtectedRoute>
             } />
-            <Route path="/dev-testing" element={
+            <Route path={devTestingRoute} element={
                 <ProtectedRoute requireAuth={true} requireAdmin={true}>
                     <DeveloperTestingPanel />
                 </ProtectedRoute>
             } />
 
             {/* Public Routes */}
-            <Route path="/resetSuccess" element={<LoginForm />} />
-            <Route path="/invite/:token" element={<InvitePage />} />
-            <Route path="/groups/join/:token" element={<InvitePage />} />
-            <Route path="/login" element={<LoginForm />} />
-            <Route path="/register" element={<LoginForm />} />
-            <Route path="/details/:category" element={<NotfallDetail />} />
-            <Route path="/home" element={<Home />} />
-            <Route path="/" element={<Navigate to="/home" replace />} />
+            <Route path={resetSuccessRoute} element={<LoginForm />} />
+            <Route path={`${inviteRoute}/:token`} element={<InvitePage />} />
+            <Route path={`${groupJoinRoute}/:token`} element={<InvitePage />} />
+            <Route path={loginRoute} element={<LoginForm />} />
+            <Route path={registerRoute} element={<LoginForm />} />
+            <Route path={`${detailsRouteBase}/:category`} element={<NotfallDetail />} />
+            <Route path={homeRoute} element={<Home />} />
+            <Route path={rootRoute} element={<Navigate to={homeRoute} replace />} />
         </Routes>
     );
 }

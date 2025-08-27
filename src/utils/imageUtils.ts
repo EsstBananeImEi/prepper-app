@@ -1,6 +1,7 @@
 /**
  * Utility functions for image processing and validation
  */
+import i18n from '../i18n';
 
 export interface ImageValidationResult {
     isValid: boolean;
@@ -49,8 +50,9 @@ function detectImageFormat(base64String: string): string {
  * Validates and processes Base64 image data
  */
 export function validateBase64Image(base64String: string): ImageValidationResult {
+    const t = (key: string, opts?: Record<string, unknown>) => i18n.t(key, opts);
     if (!base64String || base64String.trim() === '') {
-        return { isValid: false, error: 'Leere Bilddaten' };
+        return { isValid: false, error: t('utils.image.emptyData') };
     }
 
     try {
@@ -58,13 +60,13 @@ export function validateBase64Image(base64String: string): ImageValidationResult
         if (base64String.startsWith('data:image/')) {
             const parts = base64String.split(',');
             if (parts.length !== 2) {
-                return { isValid: false, error: 'Ungültiges Base64-Format' };
+                return { isValid: false, error: t('utils.image.invalidBase64Format') };
             }
 
             // Enhanced MIME type validation - support more formats
             const mimeMatch = parts[0].match(/data:image\/([a-zA-Z0-9+.-]*);base64/);
             if (!mimeMatch) {
-                return { isValid: false, error: 'Ungültiger MIME-Type' };
+                return { isValid: false, error: t('utils.image.invalidMimeType') };
             }
 
             const mimeType = mimeMatch[1].toLowerCase();
@@ -74,7 +76,7 @@ export function validateBase64Image(base64String: string): ImageValidationResult
                 console.warn(`Unsupported image format detected: ${mimeType}`);
                 return {
                     isValid: false,
-                    error: `Nicht unterstütztes Bildformat: ${mimeType}. Unterstützt: ${supportedFormats.join(', ')}`
+                    error: t('utils.image.unsupportedFormat', { format: mimeType, supported: supportedFormats.join(', ') })
                 };
             }
 
@@ -82,7 +84,7 @@ export function validateBase64Image(base64String: string): ImageValidationResult
 
             // Validate Base64 encoding
             if (!isValidBase64(base64Data)) {
-                return { isValid: false, error: 'Ungültige Base64-Kodierung' };
+                return { isValid: false, error: t('utils.image.invalidBase64') };
             }
 
             // Check file size (limit to 5MB)
@@ -90,7 +92,7 @@ export function validateBase64Image(base64String: string): ImageValidationResult
             if (sizeInBytes > 5 * 1024 * 1024) {
                 return {
                     isValid: false,
-                    error: `Bild ist zu groß (${Math.round(sizeInBytes / 1024 / 1024 * 100) / 100}MB, max. 5MB)`
+                    error: t('utils.image.imageTooLarge', { size: Math.round(sizeInBytes / 1024 / 1024 * 100) / 100 })
                 };
             }
 
@@ -105,13 +107,13 @@ export function validateBase64Image(base64String: string): ImageValidationResult
                     processedData: `data:image/${detectedFormat};base64,${base64String}`
                 };
             } else {
-                return { isValid: false, error: 'Ungültige Base64-Kodierung' };
+                return { isValid: false, error: t('utils.image.invalidBase64') };
             }
         }
     } catch (error) {
         return {
             isValid: false,
-            error: `Fehler bei der Bildverarbeitung: ${error instanceof Error ? error.message : 'Unbekannter Fehler'}`
+            error: t('utils.image.processingError', { error: error instanceof Error ? error.message : 'Unknown' })
         };
     }
 }
@@ -159,7 +161,7 @@ export function compressBase64Image(
             const ctx = canvas.getContext('2d');
 
             if (!ctx) {
-                reject(new Error('Canvas context nicht verfügbar'));
+                reject(new Error(i18n.t('utils.image.canvasContextUnavailable')));
                 return;
             }
 
@@ -181,7 +183,7 @@ export function compressBase64Image(
         };
 
         img.onerror = () => {
-            reject(new Error('Fehler beim Laden des Bildes'));
+            reject(new Error(i18n.t('utils.image.loadError')));
         };
 
         img.src = base64String;
@@ -193,15 +195,16 @@ export function compressBase64Image(
  */
 export function fileToBase64(file: File): Promise<ImageValidationResult> {
     return new Promise((resolve) => {
+        const t = (key: string, opts?: Record<string, unknown>) => i18n.t(key, opts);
         // Validate file type
         if (!file.type.startsWith('image/')) {
-            resolve({ isValid: false, error: 'Nur Bilddateien sind erlaubt' });
+            resolve({ isValid: false, error: t('utils.image.fileTypeOnlyImages') });
             return;
         }
 
         // Validate file size (5MB limit)
         if (file.size > 5 * 1024 * 1024) {
-            resolve({ isValid: false, error: 'Datei ist zu groß (max. 5MB)' });
+            resolve({ isValid: false, error: t('utils.image.fileTooLarge') });
             return;
         }
 
@@ -214,7 +217,7 @@ export function fileToBase64(file: File): Promise<ImageValidationResult> {
         };
 
         reader.onerror = () => {
-            resolve({ isValid: false, error: 'Fehler beim Lesen der Datei' });
+            resolve({ isValid: false, error: t('utils.image.fileReadError') });
         };
 
         reader.readAsDataURL(file);
@@ -302,8 +305,9 @@ export function validateAndCleanStorageItems<T extends { icon?: string; id?: num
  * Attempts to repair corrupted Base64 image data
  */
 export function repairBase64Image(base64String: string): ImageValidationResult {
+    const t = (key: string, opts?: Record<string, unknown>) => i18n.t(key, opts);
     if (!base64String || base64String.trim() === '') {
-        return { isValid: false, error: 'Leere Bilddaten' };
+        return { isValid: false, error: t('utils.image.emptyData') };
     }
 
     try {
@@ -333,12 +337,12 @@ export function repairBase64Image(base64String: string): ImageValidationResult {
                 processedData: `data:image/${detectedFormat};base64,${cleanedString}`
             };
         } else {
-            return { isValid: false, error: 'Reparatur der Base64-Daten fehlgeschlagen' };
+            return { isValid: false, error: t('utils.image.repairFailed') };
         }
     } catch (error) {
         return {
             isValid: false,
-            error: `Fehler bei der Reparatur: ${error instanceof Error ? error.message : 'Unbekannter Fehler'}`
+            error: t('utils.image.repairError', { error: error instanceof Error ? error.message : 'Unknown' })
         };
     }
 }

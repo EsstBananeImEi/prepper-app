@@ -2,6 +2,7 @@
 /**
  * API Debugging and Monitoring Utilities
  */
+import i18n from '../i18n';
 
 export interface ApiRequestLog {
     timestamp: string;
@@ -104,10 +105,11 @@ export function analyzeApiError(error: ApiError): {
     suggestion: string;
     severity: 'low' | 'medium' | 'high';
 } {
+    const t = (key: string) => i18n.t(key);
     if (!error.response) {
         return {
-            category: 'Netzwerkfehler',
-            suggestion: 'Überprüfen Sie Ihre Internetverbindung und ob der Server erreichbar ist.',
+            category: t('utils.api.category.network'),
+            suggestion: t('utils.api.suggestion.network'),
             severity: 'high'
         };
     }
@@ -119,56 +121,56 @@ export function analyzeApiError(error: ApiError): {
         case 400:
             if (data?.error?.includes('image') || data?.error?.includes('Base64')) {
                 return {
-                    category: 'Bilddaten-Fehler',
-                    suggestion: 'Das Bildformat ist ungültig oder die Datei ist zu groß. Verwenden Sie JPG/PNG unter 5MB.',
+                    category: t('utils.api.category.imageData'),
+                    suggestion: t('utils.api.suggestion.imageData'),
                     severity: 'medium'
                 };
             }
             return {
-                category: 'Ungültige Anfrage',
-                suggestion: 'Überprüfen Sie die gesendeten Daten auf Vollständigkeit und korrekte Formate.',
+                category: t('utils.api.category.badRequest'),
+                suggestion: t('utils.api.suggestion.badRequest'),
                 severity: 'medium'
             };
 
         case 401:
             return {
-                category: 'Authentifizierung',
-                suggestion: 'Sie sind nicht angemeldet oder Ihre Sitzung ist abgelaufen. Bitte loggen Sie sich erneut ein.',
+                category: t('utils.api.category.auth'),
+                suggestion: t('utils.api.suggestion.auth'),
                 severity: 'high'
             };
 
         case 403:
             return {
-                category: 'Berechtigung',
-                suggestion: 'Sie haben keine Berechtigung für diese Aktion.',
+                category: t('utils.api.category.permission'),
+                suggestion: t('utils.api.suggestion.permission'),
                 severity: 'medium'
             };
 
         case 404:
             return {
-                category: 'Nicht gefunden',
-                suggestion: 'Das angeforderte Element existiert nicht oder wurde gelöscht.',
+                category: t('utils.api.category.notFound'),
+                suggestion: t('utils.api.suggestion.notFound'),
                 severity: 'medium'
             };
 
         case 422:
             return {
-                category: 'Validierungsfehler',
-                suggestion: 'Die Daten entsprechen nicht den Anforderungen. Überprüfen Sie alle Pflichtfelder.',
+                category: t('utils.api.category.validation'),
+                suggestion: t('utils.api.suggestion.validation'),
                 severity: 'medium'
             };
 
         case 500:
             return {
-                category: 'Server-Fehler',
-                suggestion: 'Ein interner Serverfehler ist aufgetreten. Versuchen Sie es später erneut.',
+                category: t('utils.api.category.server'),
+                suggestion: t('utils.api.suggestion.server'),
                 severity: 'high'
             };
 
         default:
             return {
-                category: 'Unbekannter Fehler',
-                suggestion: 'Ein unerwarteter Fehler ist aufgetreten. Kontaktieren Sie den Support falls das Problem weiterhin besteht.',
+                category: t('utils.api.category.unknown'),
+                suggestion: t('utils.api.suggestion.unknown'),
                 severity: 'medium'
             };
     }
@@ -187,6 +189,7 @@ export function formatApiError(error: {
         method?: string;
     };
 }): string {
+    const t = (key: string) => i18n.t(key);
     // Convert to ApiError format for analysis
     const apiError: ApiError = {
         response: error.response?.status ? {
@@ -208,7 +211,7 @@ export function formatApiError(error: {
         message += `\n\n[Debug] ${method} ${url} → ${status}`;
 
         if (error.response?.data) {
-            message += `\nServer Response: ${JSON.stringify(error.response.data, null, 2)}`;
+            message += `\n${t('utils.api.debug.serverResponse')} ${JSON.stringify(error.response.data, null, 2)}`;
         }
     }
 

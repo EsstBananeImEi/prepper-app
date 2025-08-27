@@ -23,7 +23,7 @@ export default function CacheManagement(): React.ReactElement {
 
     const loadCacheInfo = () => {
         const stats = ImageCacheManager.getCacheStats();
-    const maxSize = 10 * 1024 * 1024; // 10MB
+        const maxSize = 10 * 1024 * 1024; // 10MB
 
         setCacheInfo({
             totalSize: stats.totalSize,
@@ -74,7 +74,7 @@ export default function CacheManagement(): React.ReactElement {
     }, []);
 
     if (!cacheInfo) {
-    return <div>{t('admin.cache.loading')}</div>;
+        return <div>{t('admin.cache.loading')}</div>;
     }
 
     const cacheItems = [
