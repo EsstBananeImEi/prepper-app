@@ -5,10 +5,11 @@ import { actionHandler } from "../../../store/Actions";
 import { Button, Card, Form, Input, Typography, Alert, Space } from "antd";
 import { LoadingOutlined } from "@ant-design/icons";
 import { UserModel } from "../../../shared/Models";
-import { itemsRoute } from "../../../shared/Constants";
+import { itemsRoute, loginRoute, registerRoute } from "../../../shared/Constants";
 import axios from "axios";
 import styles from "./LoginForm.module.css";
 import { useInviteRedirect } from "../../../hooks/useInviteProcessor";
+import { useTranslation } from 'react-i18next';
 
 const { Title, Text } = Typography;
 
@@ -21,6 +22,7 @@ interface AuthFormValues {
 type FormMode = 'login' | 'register' | 'forgotPassword' | 'resetSuccess';
 
 export default function AuthForm() {
+    const { t } = useTranslation();
     const [formMode, setFormMode] = useState<FormMode>('login');
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState("");
@@ -35,13 +37,13 @@ export default function AuthForm() {
         const searchParams = new URLSearchParams(location.search);
 
         // Prüfe ob wir auf der /register Route sind
-        if (location.pathname === '/register') {
+        if (location.pathname === registerRoute) {
             setFormMode('register');
         } else if (searchParams.get('resetSuccess')) {
             setFormMode('resetSuccess');
-            setInfo(searchParams.get('message') || 'Passwort erfolgreich zurückgesetzt.');
+            setInfo(searchParams.get('message') || t('auth.resetSuccess.defaultMessage'));
         }
-    }, [location.pathname]);
+    }, [location.pathname, t]);
 
     // Löscht error und info, wenn sich entweder die Route oder der Formularmodus ändert
     useEffect(() => {
@@ -58,7 +60,7 @@ export default function AuthForm() {
 
         // Bei Login und Registrierung prüfen wir das Passwort
         if (formMode !== 'forgotPassword' && values.password && values.password.length < 6) {
-            setError("Das Passwort muss mindestens 6 Zeichen lang sein.");
+            setError(t('user.form.validation.passwordMin'));
             setLoading(false);
             return;
         }
@@ -108,21 +110,21 @@ export default function AuthForm() {
                 sessionStorage.setItem('prevent_auto_calls', 'true');
 
                 if (isFromInvite()) {
-                    setInfo("Registrierung erfolgreich. Bitte aktivieren Sie Ihren Account über den in der E-Mail enthaltenen Link. Bei erneuter Anmeldung werden Sie automatisch der Gruppe hinzugefügt.");
+                    setInfo(t('auth.messages.registerInvite'));
                 } else {
-                    setInfo("Registrierung erfolgreich. Bitte aktivieren Sie Ihren Account über den in der E-Mail enthaltenen Link, bevor Sie sich einloggen.");
+                    setInfo(t('auth.messages.registerDefault'));
                 }
             } else if (formMode === 'forgotPassword') {
                 // Bei 'forgotPassword' senden wir lediglich die E-Mail-Adresse
                 await actionHandler({ type: "FORGOT_PASSWORD", email: values.email }, dispatch);
-                setInfo("Eine E-Mail zum Zurücksetzen des Passworts wurde gesendet.");
+                setInfo(t('auth.messages.forgotSent'));
             }
         } catch (err: unknown) {
             if (axios.isAxiosError(err) && err.response && err.response.data) {
                 const backendError = err.response.data as { error: string };
-                setError(backendError.error || "Ein unerwarteter Fehler ist aufgetreten.");
+                setError(backendError.error || t('auth.messages.unexpected'));
             } else {
-                setError("Ein unerwarteter Fehler ist aufgetreten.");
+                setError(t('auth.messages.unexpected'));
             }
         } finally {
             setLoading(false);
@@ -134,79 +136,79 @@ export default function AuthForm() {
             <Card className="w-full max-w-md p-6 shadow-lg bg-white rounded-lg">
                 {formMode === 'resetSuccess' ? (
                     <>
-                        <Title level={2} className="text-center">Passwort zurückgesetzt</Title>
+                        <Title level={2} className="text-center">{t('auth.resetSuccess.title')}</Title>
                         {info && <Alert message={info} type="success" showIcon className="mb-4" />}
                         <Button
                             type="primary"
                             block
                             onClick={() => {
                                 setFormMode('login');
-                                navigate('/login');
+                                navigate(loginRoute);
                             }}
                         >
-                            Zum Login
+                            {t('auth.resetSuccess.toLogin')}
                         </Button>
                     </>
                 ) : (
                     <>
                         <Title level={2} className="text-center">
-                            {formMode === 'login' && "Login"}
-                            {formMode === 'register' && "Registrieren"}
-                            {formMode === 'forgotPassword' && "Passwort zurücksetzen"}
+                            {formMode === 'login' && t('auth.titles.login')}
+                            {formMode === 'register' && t('auth.titles.register')}
+                            {formMode === 'forgotPassword' && t('auth.titles.forgotPassword')}
                         </Title>
                         {error && <Alert message={error} type="error" showIcon className="mb-4" />}
                         {info && <Alert message={info} type="info" showIcon className="mb-4" />}
                         <Form onFinish={handleSubmit} layout="vertical">
                             {formMode === 'register' && (
                                 <Form.Item
-                                    label="Benutzername"
+                                    label={t('user.form.labels.username')}
                                     name="username"
                                     rules={[
-                                        { required: true, message: "Bitte einen Benutzernamen eingeben!" },
-                                        { min: 3, message: "Der Benutzername muss mindestens 3 Zeichen lang sein." },
+                                        { required: true, message: t('user.form.validation.usernameRequired') },
+                                        { min: 3, message: t('user.form.validation.usernameMin') },
                                     ]}
                                 >
-                                    <Input placeholder="Benutzername" />
+                                    <Input placeholder={t('user.form.labels.username')} />
                                 </Form.Item>
                             )}
                             <Form.Item
-                                label="E-Mail-Adresse"
+                                label={t('user.form.labels.email')}
                                 name="email"
                                 rules={[
-                                    { required: true, message: "Bitte E-Mail eingeben!" },
-                                    { type: "email", message: "Ungültige E-Mail-Adresse!" },
+                                    { required: true, message: t('user.form.validation.emailRequired') },
+                                    { type: "email", message: t('user.form.validation.emailInvalid') },
                                 ]}
                             >
-                                <Input placeholder="E-Mail" />
+                                <Input placeholder={t('user.form.labels.email')} />
                             </Form.Item>
                             {formMode !== 'forgotPassword' && (
                                 <Form.Item
-                                    label="Passwort"
+                                    label={t('common.password') || 'Passwort'}
                                     name="password"
                                     rules={[
-                                        { required: true, message: "Bitte Passwort eingeben!" },
-                                        { min: 6, message: "Das Passwort muss mindestens 6 Zeichen lang sein." },
+                                        { required: true, message: t('auth.validation.passwordRequired') },
+                                        { min: 6, message: t('user.form.validation.passwordMin') },
                                     ]}
                                 >
-                                    <Input.Password placeholder="Passwort" />
+                                    <Input.Password placeholder={t('common.password') || 'Passwort'} />
                                 </Form.Item>
                             )}
                             <Button type="primary" htmlType="submit" block disabled={loading}>
-                                {loading ? <LoadingOutlined /> : formMode === 'login' ? "Login" : formMode === 'register' ? "Registrieren" : "Neues Passwort anfordern"}
+                                {loading ? <LoadingOutlined /> : formMode === 'login' ? t('auth.buttons.login') : formMode === 'register' ? t('auth.buttons.register') : t('auth.buttons.requestNewPassword')}
                             </Button>
                         </Form>
                         <div className="text-center mt-4">
                             {formMode === 'login' && (
                                 <Space direction="vertical" size="middle" style={{ display: 'flex', alignItems: 'center' }}>
                                     <div>
-                                        <Text>Noch kein Konto? </Text>
+                                        <Text>{t('auth.cta.noAccount')}</Text>
                                         <Button type="link" onClick={() => setFormMode('register')}>
-                                            Jetzt registrieren
+                                            {t('auth.buttons.registerNow')}
                                         </Button>
                                     </div>
                                     <div>
                                         <Button type="link" onClick={() => setFormMode('forgotPassword')}>
-                                            Passwort vergessen?
+                                            {t('auth.buttons.forgotPassword')}
                                         </Button>
                                     </div>
                                 </Space>
@@ -214,9 +216,9 @@ export default function AuthForm() {
                             {formMode === 'register' && (
                                 <Space direction="vertical" size="middle" style={{ display: 'flex', alignItems: 'center' }}>
                                     <div>
-                                        <Text>Schon ein Konto?</Text>
+                                        <Text>{t('auth.cta.haveAccount')}</Text>
                                         <Button type="link" onClick={() => setFormMode('login')}>
-                                            Hier einloggen
+                                            {t('auth.buttons.loginHere')}
                                         </Button>
                                     </div>
                                 </Space>
@@ -224,9 +226,9 @@ export default function AuthForm() {
                             {formMode === 'forgotPassword' && (
                                 <Space direction="vertical" size="middle" style={{ display: 'flex', alignItems: 'center' }}>
                                     <div>
-                                        <Text>Zurück zum</Text>
+                                        <Text>{t('auth.cta.backTo')}</Text>
                                         <Button type="link" onClick={() => setFormMode('login')}>
-                                            Login
+                                            {t('auth.titles.login')}
                                         </Button>
                                     </div>
                                 </Space>

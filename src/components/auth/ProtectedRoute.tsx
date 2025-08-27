@@ -3,7 +3,7 @@ import { Navigate, useLocation } from 'react-router-dom';
 import { Card, Alert, Spin } from 'antd';
 import { LockOutlined, UserOutlined } from '@ant-design/icons';
 import { useStore } from '../../store/Store';
-import { baseApiUrl, validateAdminApi } from '../../shared/Constants';
+import { baseApiUrl, validateAdminApi, loginRoute } from '../../shared/Constants';
 import { useTranslation } from 'react-i18next';
 
 interface ProtectedRouteProps {
@@ -28,7 +28,7 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
     children,
     requireAuth = false,
     requireAdmin = false,
-    fallbackPath = '/login'
+    fallbackPath = loginRoute
 }) => {
     const { store } = useStore();
     const location = useLocation();
@@ -182,7 +182,7 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
                                     {t('auth.protected.accessDeniedBody1')}
                                 </p>
                                 <p style={{ marginTop: '12px', fontSize: '14px', color: '#666' }}>
-                                    <strong>Sicherheitshinweis:</strong> {t('auth.protected.securityNote')}
+                                    {t('auth.protected.securityNote')}
                                 </p>
                             </div>
                         }

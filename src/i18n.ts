@@ -15,6 +15,7 @@ const resources = {
                 basket: 'Einkaufsliste',
                 user: 'Benutzerprofil',
                 login: 'Anmeldung',
+                password: 'Passwort',
                 filter: 'Filter',
                 filter_with_count: 'Filter ({{count}})',
                 filter_open: 'Filter öffnen',
@@ -947,6 +948,33 @@ const resources = {
                     defaultMessage: 'Passwort erfolgreich zurückgesetzt.',
                     toLogin: 'Zum Login'
                 },
+                titles: {
+                    login: 'Login',
+                    register: 'Registrieren',
+                    forgotPassword: 'Passwort zurücksetzen'
+                },
+                buttons: {
+                    login: 'Login',
+                    register: 'Registrieren',
+                    registerNow: 'Jetzt registrieren',
+                    loginHere: 'Hier einloggen',
+                    forgotPassword: 'Passwort vergessen?',
+                    requestNewPassword: 'Neues Passwort anfordern'
+                },
+                cta: {
+                    noAccount: 'Noch kein Konto?',
+                    haveAccount: 'Schon ein Konto?',
+                    backTo: 'Zurück zum'
+                },
+                validation: {
+                    passwordRequired: 'Bitte Passwort eingeben!'
+                },
+                messages: {
+                    registerInvite: 'Registrierung erfolgreich. Bitte aktivieren Sie Ihren Account über den in der E-Mail enthaltenen Link. Bei erneuter Anmeldung werden Sie automatisch der Gruppe hinzugefügt.',
+                    registerDefault: 'Registrierung erfolgreich. Bitte aktivieren Sie Ihren Account über den in der E-Mail enthaltenen Link, bevor Sie sich einloggen.',
+                    forgotSent: 'Eine E-Mail zum Zurücksetzen des Passworts wurde gesendet.',
+                    unexpected: 'Ein unerwarteter Fehler ist aufgetreten.'
+                },
                 protected: {
                     accessDeniedTitle: 'Zugriff verweigert',
                     accessDeniedBody1: 'Sie haben keine Administrator-Berechtigung für diesen Bereich.',
@@ -1322,6 +1350,7 @@ const resources = {
                 basket: 'Shopping List',
                 user: 'User Profile',
                 login: 'Login',
+                password: 'Password',
                 filter: 'Filter',
                 filter_with_count: 'Filter ({{count}})',
                 filter_open: 'Open filter',
@@ -2233,6 +2262,33 @@ const resources = {
                     title: 'Password reset',
                     defaultMessage: 'Password has been reset successfully.',
                     toLogin: 'Go to login'
+                },
+                titles: {
+                    login: 'Login',
+                    register: 'Register',
+                    forgotPassword: 'Reset password'
+                },
+                buttons: {
+                    login: 'Login',
+                    register: 'Register',
+                    registerNow: 'Register now',
+                    loginHere: 'Login here',
+                    forgotPassword: 'Forgot password?',
+                    requestNewPassword: 'Request new password'
+                },
+                cta: {
+                    noAccount: 'No account yet?',
+                    haveAccount: 'Already have an account?',
+                    backTo: 'Back to'
+                },
+                validation: {
+                    passwordRequired: 'Please enter a password!'
+                },
+                messages: {
+                    registerInvite: 'Registration successful. Please activate your account via the link in the email. Upon next login, you will be added to the group automatically.',
+                    registerDefault: 'Registration successful. Please activate your account via the link in the email before logging in.',
+                    forgotSent: 'An email to reset your password has been sent.',
+                    unexpected: 'An unexpected error occurred.'
                 },
                 protected: {
                     accessDeniedTitle: 'Access denied',
