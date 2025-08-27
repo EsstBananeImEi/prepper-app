@@ -1,6 +1,5 @@
 import { DeleteOutlined, MinusCircleOutlined, PlusCircleOutlined } from '@ant-design/icons'
 import { Badge, Card, Space } from 'antd'
-import Meta from 'antd/lib/card/Meta'
 import React, { ReactElement, SyntheticEvent, useEffect, useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { useDemensions } from '../../../hooks/StorageApi'
@@ -10,6 +9,7 @@ import { Dimension } from '../../../types/Types'
 import { BasketModel, StorageModel } from '../StorageModel'
 import { actionHandler } from '../../../store/Actions'
 import SafeAvatar from '../../common/SafeAvatar'
+import listStyles from '../storage-list/StorageList.module.css'
 
 interface Props {
     storedItems: BasketModel[]
@@ -24,6 +24,8 @@ export default function ShoppingCard(props: Props): ReactElement {
     }
 
     const dimensions = props.dimensions
+    const isPortrait = dimensions.height >= dimensions.width
+    const isDesktop = !isPortrait && dimensions.width >= 1000
     const [descWidth, setDescWidth] = useState(900)
     const trimText = (text: string) => {
         const maxTextChars = (descWidth / 8) - 3
@@ -46,6 +48,9 @@ export default function ShoppingCard(props: Props): ReactElement {
             .filter(storageItem => storageItem.name === name)
             .reduce((acc, item) => acc + parseInt(item.amount), 0)
     }
+
+    const resolveStorageByName = (name: string): StorageModel | undefined =>
+        store.storeItems.find(i => i.name === name)
     const onDecreaseAmount = (event: SyntheticEvent, basketItems: BasketModel) => {
         const action: Action = {
             type: 'DECREASE_AMOUNT', basketItems:
@@ -69,38 +74,89 @@ export default function ShoppingCard(props: Props): ReactElement {
     }
     return (<>
 
-        {props.storedItems.map(storeageItem =>
-            <div style={{ padding: '5px' }} key={storeageItem.id} className="space-align-block">
-                <Space >
-                    <Badge count={countItemsByName(storeageItem.name)} offset={[-20, 20]} style={{ backgroundColor: '#52c41a' }}>
+        {props.storedItems.map(basketItem => {
+            const storageItem = resolveStorageByName(basketItem.name)
+            const idForLink = storageItem?.id ?? basketItem.id
+            const basketCount = countItemsByName(basketItem.name)
+            const subtitle = basketItem.categories && trimText(basketItem.categories.join(', '))
 
-                        <Card
-                            style={{ width: 300, minHeight: '145px' }}
-                            actions={
-                                [
-                                    <MinusCircleOutlined onClick={(e) => onDecreaseAmount(e, storeageItem)} key='minus' />,
-                                    <DeleteOutlined onClick={(e) => onChangeCard(e, { type: 'CLEAR_ITEM_CARD', basketItems: storeageItem })} disabled key="shopping" />,
-                                    <PlusCircleOutlined onClick={(e) => onIncreaseAmount(e, storeageItem)} key="plus" />
+            // Desktop look: image banner above title, inventory row at bottom
+            if (isDesktop) {
+                return (
+                    <div style={{ padding: '5px' }} key={`desk-${basketItem.id}`} className="space-align-block">
+                        <Space>
+                            <Badge count={basketCount} offset={[-20, 20]} style={{ backgroundColor: '#52c41a' }}>
+                                <Card className={listStyles.desktopCard}
+                                    actions={[
+                                        <MinusCircleOutlined onClick={(e) => onDecreaseAmount(e, basketItem)} key='minus' />,
+                                        <DeleteOutlined onClick={(e) => onChangeCard(e, { type: 'CLEAR_ITEM_CARD', basketItems: basketItem })} key="delete" />,
+                                        <PlusCircleOutlined onClick={(e) => onIncreaseAmount(e, basketItem)} key="plus" />
+                                    ]}
+                                >
+                                    <Link to={itemIdRoute(idForLink)}>
+                                        <div className={listStyles.desktopContent}>
+                                            <div className={listStyles.desktopHeader}>
+                                                <SafeAvatar className={listStyles.desktopImage} src={basketItem.icon} showWarnings={process.env.NODE_ENV === 'development'} />
+                                            </div>
+                                            <div className={listStyles.desktopTitle} title={basketItem.name}>{basketItem.name}</div>
+                                            <div className={listStyles.desktopInventoryRow}>
+                                                {storageItem ? (
+                                                    <span className={listStyles.desktopInventory}>
+                                                        Bestand: {storageItem.amount} {storageItem.unit}
+                                                    </span>
+                                                ) : (
+                                                    <span className={listStyles.desktopInventory}>&nbsp;</span>
+                                                )}
+                                            </div>
+                                        </div>
+                                    </Link>
+                                </Card>
+                            </Badge>
+                        </Space>
+                    </div>
+                )
+            }
+
+            // Landscape/mobile cards: image left, title right, subtitle below, bottom info row
+            return (
+                <div style={{ padding: '5px' }} key={`land-${basketItem.id}`} className="space-align-block">
+                    <Space>
+                        <Badge count={basketCount} offset={[-20, 20]} style={{ backgroundColor: '#52c41a' }}>
+                            <Card className={listStyles.storageCard}
+                                actions={[
+                                    <MinusCircleOutlined onClick={(e) => onDecreaseAmount(e, basketItem)} key='minus' />,
+                                    <DeleteOutlined onClick={(e) => onChangeCard(e, { type: 'CLEAR_ITEM_CARD', basketItems: basketItem })} key="delete" />,
+                                    <PlusCircleOutlined onClick={(e) => onIncreaseAmount(e, basketItem)} key="plus" />
                                 ]}
-                        >
-                            {/** Resolve the current storage item id by name to avoid wrong detail navigation if basket IDs drift */}
-                            <Link to={itemIdRoute(
-                                (store.storeItems.find(i => i.name === storeageItem.name)?.id) ?? storeageItem.id
-                            )}>
-                                <Meta
-                                    avatar={<SafeAvatar src={storeageItem.icon} showWarnings={process.env.NODE_ENV === 'development'} />}
-                                    title={storeageItem.name}
-                                    description={(storeageItem.categories && trimText(storeageItem.categories.join(', '))) || <div style={{ minHeight: '22px' }} />}
-                                />
-                                {!storeageItem.categories && <span style={{ height: '1020px' }} />}
-                            </Link>
-                        </Card>
-                    </Badge>
-                </Space>
-            </div>
-        )
-
-        }
+                            >
+                                <Link to={itemIdRoute(idForLink)}>
+                                    <div className={listStyles.cardContent}>
+                                        <div className={listStyles.cardHeader}>
+                                            <div className={listStyles.cardImage}>
+                                                <SafeAvatar className={listStyles.cardAvatar} src={basketItem.icon} showWarnings={process.env.NODE_ENV === 'development'} />
+                                            </div>
+                                            <div className={listStyles.cardInfo}>
+                                                <div className={listStyles.cardTitleWrap}>
+                                                    <div className={listStyles.cardTitle} title={basketItem.name}>{basketItem.name}</div>
+                                                </div>
+                                                <div className={listStyles.cardSubtitle} title={subtitle || ''}>{subtitle}</div>
+                                            </div>
+                                        </div>
+                                        <div className={listStyles.cardInventory}>
+                                            {storageItem ? (
+                                                <span>Bestand: {storageItem.amount} {storageItem.unit}</span>
+                                            ) : (
+                                                <span>&nbsp;</span>
+                                            )}
+                                        </div>
+                                    </div>
+                                </Link>
+                            </Card>
+                        </Badge>
+                    </Space>
+                </div>
+            )
+        })}
 
 
     </>
