@@ -77,6 +77,7 @@ export default function ShoppingCard(props: Props): ReactElement {
         {props.storedItems.map(basketItem => {
             const storageItem = resolveStorageByName(basketItem.name)
             const idForLink = storageItem?.id ?? basketItem.id
+            const canLink = !!storageItem
             const basketCount = countItemsByName(basketItem.name)
             const subtitle = basketItem.categories && trimText(basketItem.categories.join(', '))
             const mainCategory = (basketItem.categories && basketItem.categories.length > 0
@@ -96,7 +97,19 @@ export default function ShoppingCard(props: Props): ReactElement {
                                         <PlusCircleOutlined onClick={(e) => onIncreaseAmount(e, basketItem)} key="plus" />
                                     ]}
                                 >
-                                    <Link to={itemIdRoute(idForLink)}>
+                                    {canLink ? (
+                                        <Link to={itemIdRoute(idForLink)}>
+                                            <div className={listStyles.desktopContent}>
+                                                <div className={listStyles.desktopHeader}>
+                                                    <SafeAvatar className={listStyles.desktopImage} src={basketItem.icon} showWarnings={process.env.NODE_ENV === 'development'} />
+                                                </div>
+                                                <div className={listStyles.desktopTitle} title={basketItem.name}>{basketItem.name}</div>
+                                                <div className={listStyles.desktopInventoryRow}>
+                                                    <span className={listStyles.desktopInventory}>{subtitle || '\u00A0'}</span>
+                                                </div>
+                                            </div>
+                                        </Link>
+                                    ) : (
                                         <div className={listStyles.desktopContent}>
                                             <div className={listStyles.desktopHeader}>
                                                 <SafeAvatar className={listStyles.desktopImage} src={basketItem.icon} showWarnings={process.env.NODE_ENV === 'development'} />
@@ -106,7 +119,7 @@ export default function ShoppingCard(props: Props): ReactElement {
                                                 <span className={listStyles.desktopInventory}>{subtitle || '\u00A0'}</span>
                                             </div>
                                         </div>
-                                    </Link>
+                                    )}
                                 </Card>
                             </Badge>
                         </Space>
@@ -125,7 +138,26 @@ export default function ShoppingCard(props: Props): ReactElement {
                                 <PlusCircleOutlined onClick={(e) => onIncreaseAmount(e, basketItem)} key="plus" />
                             ]}
                         >
-                            <Link to={itemIdRoute(idForLink)}>
+                            {canLink ? (
+                                <Link to={itemIdRoute(idForLink)}>
+                                    <div className={listStyles.cardContent}>
+                                        <div className={listStyles.cardHeader}>
+                                            <div className={listStyles.cardImage}>
+                                                <Badge count={basketCount} style={{ backgroundColor: '#52c41a' }} offset={[-6, 6]}>
+                                                    <SafeAvatar className={listStyles.cardAvatar} src={basketItem.icon} showWarnings={process.env.NODE_ENV === 'development'} />
+                                                </Badge>
+                                            </div>
+                                            <div className={listStyles.cardInfo}>
+                                                <div className={listStyles.cardTitleWrap}>
+                                                    <div className={listStyles.cardTitle} title={basketItem.name}>{basketItem.name}</div>
+                                                </div>
+                                                <div className={listStyles.cardSubtitle} title="">&nbsp;</div>
+                                            </div>
+                                        </div>
+                                        <div className={listStyles.cardInventory}><span>{subtitle || '\u00A0'}</span></div>
+                                    </div>
+                                </Link>
+                            ) : (
                                 <div className={listStyles.cardContent}>
                                     <div className={listStyles.cardHeader}>
                                         <div className={listStyles.cardImage}>
@@ -142,7 +174,7 @@ export default function ShoppingCard(props: Props): ReactElement {
                                     </div>
                                     <div className={listStyles.cardInventory}><span>{subtitle || '\u00A0'}</span></div>
                                 </div>
-                            </Link>
+                            )}
                         </Card>
                     </Space>
                 </div>

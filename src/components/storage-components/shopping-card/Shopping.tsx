@@ -1,4 +1,4 @@
-import { Button, Drawer, Input, Pagination, Select, Tag, Tooltip, Divider } from 'antd'
+import { Button, Drawer, Input, Pagination, Select, Tag, Tooltip, Divider, Modal, Form, InputNumber } from 'antd'
 import React, { ReactElement, useMemo, useRef, useState, useEffect } from 'react'
 import { Message } from 'semantic-ui-react'
 import { useDemensions } from '../../../hooks/StorageApi'
@@ -7,12 +7,13 @@ import { BasketModel, StorageModel } from '../StorageModel'
 import ShoppingCard from './ShoppingCard'
 import ShoppingList from './ShoppingList'
 import styles from '../storage-list/StorageList.module.css'
-import { CloseCircleOutlined, DownOutlined, UpOutlined } from '@ant-design/icons';
+import { CloseCircleOutlined, DownOutlined, UpOutlined, PlusOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next'
+import { actionHandler } from '../../../store/Actions'
 
 export default function Shopping(): ReactElement {
     const { t } = useTranslation()
-    const { store } = useStore()
+    const { store, dispatch } = useStore()
     const [currentPage, setCurrentPage] = useState(1)
     const handleChange = (page: number) => setCurrentPage(page)
     const [dimensions] = useDemensions(handleChange, currentPage)
@@ -34,6 +35,9 @@ export default function Shopping(): ReactElement {
     const [showFilters, setShowFilters] = useState<boolean>(false)
     const [drawerHeight, setDrawerHeight] = useState<number>(360)
     const drawerContentRef = useRef<HTMLDivElement | null>(null)
+    // Manual add modal
+    const [showAddModal, setShowAddModal] = useState<boolean>(false)
+    const [addForm] = Form.useForm<{ name: string; amount: number }>()
 
     // Load filters from session
     useEffect(() => {
@@ -160,9 +164,83 @@ export default function Shopping(): ReactElement {
         if (currentPage > maxPage) setCurrentPage(maxPage)
     }, [pageSize, sortedItems.length])
 
+    // Fuzzy match storage item by name to reuse icon/categories automatically
+    const findBestStorageMatch = (name: string): StorageModel | undefined => {
+        const norm = (s: string) => s.toLowerCase().replace(/[^a-z0-9äöüß\s]/gi, ' ').replace(/\s+/g, ' ').trim()
+        const a = norm(name)
+        if (!a) return undefined
+        const aTokens = new Set(a.split(' '))
+        let bestScore = 0
+        let bestItem: StorageModel | undefined
+        for (const it of store.storeItems) {
+            const b = norm(it.name)
+            if (!b) continue
+            let score = 0
+            if (a === b) score = 1
+            else if (a.includes(b) || b.includes(a)) score = 0.85
+            else {
+                const bTokens = new Set(b.split(' '))
+                let common = 0
+                aTokens.forEach(t => { if (bTokens.has(t)) common++ })
+                const denom = Math.max(aTokens.size, bTokens.size)
+                score = denom > 0 ? common / denom : 0
+            }
+            if (score > bestScore) { bestScore = score; bestItem = it }
+        }
+        return bestScore >= 0.6 ? bestItem : bestItem && bestScore >= 0.45 ? bestItem : undefined
+    }
+
+    const onAddManualItem = async (): Promise<void> => {
+        try {
+            const values = await addForm.validateFields()
+            const name = (values.name || '').trim()
+            if (!name) return
+            const amountNum = Math.max(1, Number(values.amount || 1))
+            const match = findBestStorageMatch(name)
+            // Merge if identical name already exists in basket
+            const existing = store.shoppingCard.find(i => i.name.toLowerCase() === name.toLowerCase())
+            if (existing) {
+                const nextAmount = String(Math.max(0, Number(existing.amount || 0) + amountNum))
+                await actionHandler({ type: 'UPDATE_CARD_ITEM', basketItems: { ...existing, amount: nextAmount } }, dispatch)
+            } else {
+                const basketItem: BasketModel = {
+                    id: 0 as unknown as number,
+                    name,
+                    amount: String(amountNum),
+                    categories: match?.categories || [],
+                    icon: match?.icon || ''
+                }
+                await actionHandler({ type: 'ADD_TO_CARD', basketItems: basketItem }, dispatch)
+            }
+            setShowAddModal(false)
+            addForm.resetFields()
+        } catch {
+            // ignore validation errors
+        }
+    }
+
 
     return (
         <>
+            {/* Add manual item modal */}
+            <Modal
+                title={t('shopping.add.modalTitle')}
+                visible={showAddModal}
+                onCancel={() => setShowAddModal(false)}
+                onOk={onAddManualItem}
+                okText={t('shopping.add.addBtn')}
+                cancelText={t('shopping.add.cancelBtn')}
+                destroyOnClose
+            >
+                <Form form={addForm} layout="vertical" initialValues={{ amount: 1 }}>
+                    <Form.Item name="name" label={t('shopping.add.fields.name')} rules={[{ required: true, message: t('shopping.add.validation.nameRequired') }]}>
+                        <Input placeholder={t('shopping.add.placeholders.name')} maxLength={120} />
+                    </Form.Item>
+                    <Form.Item name="amount" label={t('shopping.add.fields.amount')} rules={[{ type: 'number', min: 1, message: t('shopping.add.validation.amountMin') }]}>
+                        <InputNumber min={1} style={{ width: '100%' }} />
+                    </Form.Item>
+                </Form>
+            </Modal>
             <Drawer
                 title={
                     <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
@@ -309,6 +387,26 @@ export default function Shopping(): ReactElement {
                     />
                 )}
             </div>
+
+            {/* Floating add button */}
+            <Button
+                type="primary"
+                shape="circle"
+                size="large"
+                aria-label={t('shopping.add.fabAria')}
+                style={{
+                    position: 'fixed',
+                    right: 24,
+                    // Place above bottom navbar on mobile (<= 600px width)
+                    bottom: (isPortrait && dimensions.width <= 600)
+                        ? `calc(96px + env(safe-area-inset-bottom))`
+                        : 24,
+                    zIndex: 1100,
+                    boxShadow: '0 6px 16px rgba(0,0,0,0.2)'
+                }}
+                icon={<PlusOutlined />}
+                onClick={() => { addForm.resetFields(); setShowAddModal(true) }}
+            />
         </>
     )
 }

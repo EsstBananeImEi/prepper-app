@@ -1268,6 +1268,23 @@ const resources = {
                     categories: 'Kategorien',
                     sort: 'Sortieren',
                 },
+                add: {
+                    modalTitle: 'Artikel hinzufügen',
+                    addBtn: 'Hinzufügen',
+                    cancelBtn: 'Abbrechen',
+                    fabAria: 'Neuen Artikel zum Einkaufswagen hinzufügen',
+                    fields: {
+                        name: 'Name',
+                        amount: 'Menge'
+                    },
+                    placeholders: {
+                        name: 'Artikelname (z.B. Milch)'
+                    },
+                    validation: {
+                        nameRequired: 'Bitte einen Artikelnamen eingeben',
+                        amountMin: 'Menge muss mindestens 1 sein'
+                    }
+                },
                 placeholders: {
                     searchName: 'Name suchen',
                     selectCategories: 'Kategorien wählen',
@@ -2578,6 +2595,23 @@ const resources = {
                     search: 'Search',
                     categories: 'Categories',
                     sort: 'Sort',
+                },
+                add: {
+                    modalTitle: 'Add item',
+                    addBtn: 'Add',
+                    cancelBtn: 'Cancel',
+                    fabAria: 'Add a new item to the shopping cart',
+                    fields: {
+                        name: 'Name',
+                        amount: 'Amount'
+                    },
+                    placeholders: {
+                        name: 'Item name (e.g., milk)'
+                    },
+                    validation: {
+                        nameRequired: 'Please enter an item name',
+                        amountMin: 'Amount must be at least 1'
+                    }
                 },
                 placeholders: {
                     searchName: 'Search name',
