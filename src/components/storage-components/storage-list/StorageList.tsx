@@ -571,7 +571,7 @@ export default function StorageList(): ReactElement {
                 <div
                     className={`space-align-container ${styles.itemsWrapper}`}
                     style={{
-                        justifyContent: 'center',
+                        justifyContent: 'flex-start',
                         display: 'flex',
                         flexWrap: 'wrap',
                     }}
