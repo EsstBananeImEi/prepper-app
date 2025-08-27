@@ -65,3 +65,10 @@
         font-size: 14px;
     }
 }
+
+/* Ensure inline links inside paragraphs don't break oddly on mobile */
+.inlineLink {
+    display: inline !important;
+    white-space: normal;
+    vertical-align: baseline;
+}

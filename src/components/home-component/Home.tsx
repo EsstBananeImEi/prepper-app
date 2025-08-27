@@ -3,146 +3,138 @@ import React, { ReactElement } from 'react';
 import style from './Home.module.css';
 import LazyAvatar from './LazyAvatar';
 import { Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 
 const { Title, Paragraph } = Typography;
 const { Panel } = Collapse;
 
 const recommendations = [
     {
-        title: "Lebensmittelvorrat",
-        description:
-            "Die Bundesregierung empfiehlt, einen Vorrat an lang haltbaren Lebensmitteln für mindestens 10 Tage anzulegen. Dies umfasst Konserven, Trockenprodukte, Reis, Nudeln sowie zusätzliche Artikel für spezielle Ernährungsbedürfnisse. Achten Sie darauf, dass der Vorrat abwechslungsreich und ausgewogen ist.",
+        key: 'lebensmittel',
         avatar: "/lebensmittel.png",
         placeholder: "/lebensmittel-small.png",
         link: "/details/lebensmittel"
     },
     {
-        title: "Trinkwasser",
-        description:
-            "Pro Person sollten mindestens 2 Liter Trinkwasser pro Tag für 10 Tage bereitgestellt werden. Dabei ist es wichtig, das Wasser in geeigneten Behältnissen hygienisch zu lagern. Überprüfen Sie regelmäßig das Haltbarkeitsdatum und den Zustand der Lagerbehälter.",
+        key: 'wasser',
         avatar: "/wasser.png",
         placeholder: "/wasser-small.png",
         link: "/details/wasser"
     },
     {
-        title: "Medikamente & Erste-Hilfe-Material",
-        description:
-            "Ein gut ausgestatteter Erste-Hilfe-Kasten sowie ein Vorrat an wichtigen Medikamenten sind unverzichtbar. Neben Standardmaterialien sollten Sie auch persönliche Medikamente (z. B. für chronische Erkrankungen) und eventuell spezielle Hilfsmittel bereithalten.",
+        key: 'medikamente',
         avatar: "/medikamente.png",
         placeholder: "/medikamente-small.png",
         link: "/details/medikamente"
     },
     {
-        title: "Hygieneartikel & Desinfektionsmittel",
-        description:
-            "Um Infektionen vorzubeugen, sollten Sie einen Vorrat an Seife, Desinfektionsmitteln, Hygienetüchern und weiteren Pflegeartikeln anlegen. Diese Artikel sind nicht nur im medizinischen Notfall wichtig, sondern auch für den alltäglichen Schutz in Krisenzeiten.",
+        key: 'hygiene',
         avatar: "/hygiene.png",
         placeholder: "/hygiene-small.png",
         link: "/details/hygiene"
     },
     {
-        title: "Notfallausrüstung & Kommunikation",
-        description:
-            "Neben dem Grundbedarf sollten auch Geräte wie ein Kurbel oder Batteriebetriebenes Radio, Taschenlampen, Ersatzbatterien, Powerbanks und ein Notfallkit für wichtige Dokumente und Bargeld vorhanden sein. Diese Ausrüstung unterstützt Sie dabei, auch im Krisenfall informiert und handlungsfähig zu bleiben.",
+        key: 'informieren',
         avatar: "/informieren.png",
         placeholder: "/informieren-small.png",
         link: "/details/informieren"
     },
     {
-        title: "Spezielle Bedürfnisse",
-        description:
-            "Planen Sie zusätzlich für Kinder, ältere Menschen oder Haustiere. Dies umfasst beispielsweise Babynahrung, altersgerechte Medikamente oder Tierfutter. Berücksichtigen Sie dabei auch eventuelle besondere Ernährungsbedürfnisse.",
+        key: 'beduerfnisse',
         avatar: "/beduerfnisse.png",
         placeholder: "/beduerfnisse-small.png",
         link: "/details/beduerfnisse"
     },
     {
-        title: "Wichtige Dokumente sichern",
-        description:
-            "Sorgen Sie dafür, dass alle wichtigen Dokumente wie Personalausweis, Reisepass, Versicherungsunterlagen und Bankinformationen an einem sicheren Ort aufbewahrt werden – idealerweise in einem feuerfesten Safe oder digital gesichert.",
+        key: 'dokumente',
         avatar: "/dokumente.png",
         placeholder: "/dokumente-small.png",
         link: "/details/dokumente"
     },
     {
-        title: "Notgepäck",
-        description:
-            "Ein Notgepäck sollte schnell griffbereit sein und alle essentiellen Dinge enthalten, wie Bargeld, wichtige Dokumente, ein Mobiltelefon samt Ladegerät, ein Erste-Hilfe-Set, Wasser, Snacks und Wechselkleidung. Packen Sie es so, dass Sie im Notfall zügig das Haus verlassen können.",
+        key: 'gepaeck',
         avatar: "/gepaeck.png",
         placeholder: "/gepaeck-small.png",
         link: "/details/gepaeck"
     },
     {
-        title: "Sicherheit im Haus",
-        description:
-            "Überprüfen Sie, ob Ihr Zuhause im Krisenfall sicher ist. Dazu gehören funktionierende Alarmanlagen, stabile Sicherheitsschlösser, frei zugängliche Notausgänge und ein klar definierter Evakuierungsplan. Achten Sie auch darauf, dass potenzielle Gefahrenquellen minimiert werden.",
+        key: 'sicherheit',
         avatar: "/sicherheit.png",
-        placeholder: "/sicherheit-small",
+        placeholder: "/sicherheit-small.png",
         link: "/details/sicherheit"
     }
 ];
 
 export default function Home(): ReactElement {
+    const { t } = useTranslation();
     return (
         <div className={style.mycontainer}>
-            <Title level={2}>Empfehlungen der Bundesregierung zur Lagerhaltung</Title>
+            <Title level={2}>{t('home.title')}</Title>
             <Paragraph>
-                Im Rahmen der Notfallvorsorge rät die Bundesregierung, einen umfassenden Vorrat an lebenswichtigen Gütern anzulegen.
+                {t('home.intro')}
             </Paragraph>
             <Collapse defaultActiveKey={[]} accordion>
                 {recommendations.map((item, index) => (
                     <Panel
                         header={
                             <div className={style.panelHeader}>
-                                <LazyAvatar src={item.avatar} placeholderSrc={item.placeholder} size={64} className={style.avatar} />
-                                <span className={style.paneltitle}>{item.title}</span>
+                                <LazyAvatar
+                                    src={item.avatar}
+                                    placeholderSrc={item.placeholder}
+                                    size={64}
+                                    className={style.avatar}
+                                    alt={t(`home.recommendations.${item.key}.title`)}
+                                />
+                                <span className={style.paneltitle}>{t(`home.recommendations.${item.key}.title`)}</span>
                             </div>
                         }
                         key={index}
                     >
-                        <Paragraph>{item.description}</Paragraph>
-                        <Link to={item.link} className={style.moreInfoLink}>Mehr erfahren</Link>
+                        <Paragraph>{t(`home.recommendations.${item.key}.description`)}</Paragraph>
+                        <Link to={item.link} className={style.moreInfoLink}>{t('home.moreInfo')}</Link>
                     </Panel>
                 ))}
             </Collapse>
             <div className={style.infosection}>
-                <Title level={4}>Weitere Informationen</Title>
+                <Title level={4}>{t('home.info.title')}</Title>
                 <Paragraph>
-                    Laden Sie den{' '}
-                    <a
+                    {t('home.info.guide.pre')}{' '}<a
                         href="https://www.bbk.bund.de/SharedDocs/Downloads/DE/Mediathek/Publikationen/Buergerinformationen/Ratgeber/ratgeber-notfallvorsorge.pdf?__blob=publicationFile&v=32"
                         target="_blank"
                         rel="noopener noreferrer"
+                        className={style.inlineLink}
                     >
-                        Ratgeber Notfallvorsorge
+                        {t('home.info.guide.link')}
                     </a>{' '}
-                    herunter, um detaillierte Hinweise und weiterführende Informationen zu erhalten.
+                    {t('home.info.guide.post')}
                 </Paragraph>
                 <Paragraph>
-                    Die{' '}
+                    {t('home.info.checklist.pre')}{' '}
                     <a
                         href="https://www.bbk.bund.de/SharedDocs/Downloads/DE/Mediathek/Publikationen/Buergerinformationen/Ratgeber/ratgeber-notfallvosorge-checkliste.pdf?__blob=publicationFile&v=10"
                         target="_blank"
                         rel="noopener noreferrer"
+                        className={style.inlineLink}
                     >
-                        Checkliste Notfallvorsorge
+                        {t('home.info.checklist.link')}
                     </a>{' '}
-                    wird zukünftig durch eine interaktive Komponente ersetzt, die automatisch Ihren Lagerbestand überprüft und die Liste abhakt.
+                    {t('home.info.checklist.post')}
                 </Paragraph>
                 <Paragraph>
-                    Weitere Informationen und konkrete Handlungsempfehlungen finden Sie auch auf der offiziellen Seite des BBK:{' '}
+                    {t('home.info.bbk.pre')}{' '}
                     <a
                         href="https://www.bbk.bund.de/DE/Warnung-Vorsorge/Vorsorge/vorsorge_node.html#:~:text=Wir%20empfehlen%20mindestens%20einen%20Vorrat,eine%20Woche%20bis%20zehn%20Tage."
                         target="_blank"
                         rel="noopener noreferrer"
+                        className={style.inlineLink}
                     >
-                        BBK - Vorsorge im Krisenfall
+                        {t('home.info.bbk.link')}
                     </a>
                 </Paragraph>
             </div>
             <Alert
-                message="Hinweis"
-                description="Diese Empfehlungen dienen als Orientierung und sollten an Ihre individuellen Bedürfnisse angepasst werden. Prüfen Sie regelmäßig Ihren Vorrat und aktualisieren Sie diesen bei Bedarf."
+                message={t('home.notice.title')}
+                description={t('home.notice.desc')}
                 type="info"
                 showIcon
                 className={style.alert}

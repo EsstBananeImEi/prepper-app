@@ -3,6 +3,8 @@ import { Typography, Button, Collapse, Alert } from 'antd';
 import { ArrowLeftOutlined } from '@ant-design/icons';
 import React, { useEffect } from 'react';
 import style from './NotfallDetail.module.css';
+import { useTranslation } from 'react-i18next';
+import { homeRoute } from '../../../shared/Constants';
 
 const { Title, Paragraph } = Typography;
 const { Panel } = Collapse;
@@ -13,907 +15,765 @@ type DetailContent = {
     content: React.ReactNode;
 };
 
-const detailsContent: Record<string, DetailContent> = {
-    lebensmittel: {
-        title: "Lebensmittelvorrat",
-        image: "/lebensmittel.png",
-        content: (
-            <>
-                {/* Inhaltsverzeichnis */}
-                <div>
-                    <h3>Inhaltsverzeichnis</h3>
-                    <ul>
-                        <li><a href="#warum">Warum bevorraten?</a></li>
-                        <li><a href="#vorratstyp">Welcher Vorratstyp sind Sie?</a></li>
-                        <li><a href="#tipps">Tipps für die Zusammenstellung eines Vorrats</a></li>
-                    </ul>
-                </div>
+// Allow i18n options like returnObjects via TFunction type
+import type { TFunction } from 'i18next';
 
-                {/* Abschnitt: Warum bevorraten? */}
-                <div id="warum">
-                    <h4>Warum bevorraten?</h4>
-                    <p>
-                        Ein Vorrat an Lebensmitteln und Getränken kann in vielen Situationen hilfreich sein:
-                    </p>
-                    <ul>
-                        <li>
-                            Wenn Sie das Haus nicht zum Einkaufen verlassen können, weil Hochwasser oder starke Schneefälle Supermärkte unerreichbar machen.
-                        </li>
-                        <li>
-                            Wenn Sie sich aufgrund einer akuten Erkrankung schonen und im Bett bleiben sollten.
-                        </li>
-                        <li>
-                            Wenn ein schwerer Sturm oder ein Unwetter tobt und Sie im Freien verletzt werden könnten.
-                        </li>
-                        <li>
-                            Wenn es eingeschränkte Möglichkeiten gibt, an Nahrung oder Trinkwasser zu gelangen – z. B. bei großflächigen Stromausfällen oder Lieferengpässen durch Pandemien, Cyberangriffe oder Dürre.
-                        </li>
-                    </ul>
-                    <p>
-                        Wir möchten Sie mit unseren Tipps dabei unterstützen, einen Vorrat anzulegen, der gut zu Ihrem Bedarf passt.
-                    </p>
-                </div>
-
-                {/* Abschnitt: Welcher Vorratstyp sind Sie? */}
-                <div id="vorratstyp">
-                    <h4>Welcher Vorratstyp sind Sie?</h4>
-                    <p>
-                        Es gibt verschiedene Ansätze, einen Lebensmittel- und Getränkevorrat anzulegen:
-                    </p>
-                    <p>
-                        <b>Einmaliger Vorrat:</b>
-                    </p>
-                    <ul>
-                        <li><b>Kaufen:</b> Legen Sie einmalig einen größeren Vorrat für 10 Tage an.</li>
-                        <li><b>Prüfen:</b> Kontrollieren Sie regelmäßig die Haltbarkeit, z. B. einmal jährlich, und verbrauchen Sie bald ablaufende Produkte zuerst.</li>
-                        <li><b>Erneuern:</b> Ersetzen Sie abgelaufene oder verbrauchte Produkte zeitnah.</li>
-                    </ul>
-                    <p>
-                        <b>Lebender Vorrat:</b>
-                    </p>
-                    <ul>
-                        <li><b>Kaufen:</b> Nehmen Sie bei jedem Einkauf etwas zusätzlich mit, um allmählich einen Vorrat aufzubauen.</li>
-                        <li><b>Verbrauchen:</b> Nutzen Sie den Vorrat regelmäßig und erneuern Sie ihn kontinuierlich.</li>
-                        <li><b>Erneuern:</b> Kaufen Sie Verbrauchtes bei Ihren nächsten Einkäufen nach, sodass Ihr Vorrat immer aktuell bleibt.</li>
-                    </ul>
-                </div>
-
-                {/* Abschnitt: Tipps für die Zusammenstellung eines Vorrats */}
-                <div id="tipps">
-                    <h4>Tipps für die Zusammenstellung eines Vorrats</h4>
-                    <p>
-                        Ein Vorrat ist sehr individuell – hier einige allgemeine Empfehlungen:
-                    </p>
-                    <ul>
-                        <li>
-                            <strong>Wie viele Lebensmittel?</strong> Wir empfehlen einen Vorrat für 10 Tage. Wer noch sicherer gehen möchte, kann den Vorrat auf bis zu 10 Tage erweitern.
-                        </li>
-                        <li>
-                            <strong>Wie viel Flüssigkeit?</strong> Ein Erwachsener benötigt mindestens 1,5 Liter pro Tag plus ca. 0,5 Liter fürs Kochen.
-                        </li>
-                        <li>
-                            <strong>Welches Essen?</strong> Orientieren Sie sich an Ihrem täglichen Verbrauch – ob einfache Grundversorgung oder abwechslungsreiche Kost.
-                        </li>
-                        <li>
-                            <strong>Haltbarkeit:</strong> Bevorzugen Sie Lebensmittel, die ohne Kühlung lange haltbar sind.
-                        </li>
-                        <li>
-                            <strong>Fertigprodukte:</strong> Produkte, die nicht gekocht werden müssen, sind ideal, wenn Herd und Kochmöglichkeiten ausfallen.
-                        </li>
-                        <li>
-                            <strong>Kurze Kochzeit:</strong> Lebensmittel, die mit wenig Energie zubereitet werden, schonen Ressourcen.
-                        </li>
-                        <li>
-                            <strong>Besondere Bedürfnisse:</strong> Berücksichtigen Sie Allergien, Essgewohnheiten oder Vorräte für Kinder und Haustiere.
-                        </li>
-                    </ul>
-                    <p>
-                        Geeignete Lebensmittel umfassen unter anderem Reis, Nudeln, Trockenfrüchte, Konserven, Nüsse, Zwieback und Müsliriegel.
-                    </p>
-                </div>
-            </>
-        ),
-    },
-    wasser: {
-        title: "Trinkwasservorrat",
-        image: "/wasser.png",
-        content: (
-            <>
-                {/* Inhaltsverzeichnis */}
-                <div>
-                    <h3>Inhaltsverzeichnis</h3>
-                    <ul>
-                        <li><a href="#warumWasser">Warum bevorraten?</a></li>
-                        <li><a href="#lagerungWasser">Lagerung & Aufbereitung</a></li>
-                        <li><a href="#tippsWasser">Tipps zur Trinkwasservorrat</a></li>
-                    </ul>
-                </div>
-
-                {/* Abschnitt: Warum bevorraten? */}
-                <div id="warumWasser">
-                    <h4>Warum bevorraten?</h4>
-                    <p>
-                        Wasser ist lebenswichtig – ein Erwachsener kann nur wenige Tage ohne Flüssigkeit auskommen. Bei Naturkatastrophen, Stromausfällen oder anderen Krisensituationen kann die öffentliche Wasserversorgung schnell zusammenbrechen.
-                    </p>
-                    <p>
-                        Daher ist es unerlässlich, einen ausreichenden Trinkwasservorrat anzulegen, um im Notfall autark zu bleiben.
-                    </p>
-                </div>
-
-                {/* Abschnitt: Lagerung & Aufbereitung */}
-                <div id="lagerungWasser">
-                    <h4>Lagerung & Aufbereitung</h4>
-                    <p>
-                        Lagern Sie Wasser in lebensmittelechten Kanistern oder Flaschen und überprüfen Sie regelmäßig den Zustand der Behälter. Achten Sie darauf, dass diese an einem kühlen, dunklen Ort aufbewahrt werden, um eine längere Haltbarkeit zu gewährleisten.
-                    </p>
-                    <p>
-                        Im Falle einer Kontamination können Wasserfilter und Aufbereitungstabletten helfen, die Qualität wiederherzustellen.
-                    </p>
-                </div>
-
-                {/* Abschnitt: Tipps zur Trinkwasservorrat */}
-                <div id="tippsWasser">
-                    <h4>Tipps zur Trinkwasservorrat</h4>
-                    <ul>
-                        <li>Planen Sie mindestens 2 Liter pro Person und Tag ein.</li>
-                        <li>Erwägen Sie einen zusätzlichen Puffer, falls die Versorgung länger ausfällt.</li>
-                        <li>Testen Sie regelmäßig Ihre Wasseraufbereitungsmethoden und -geräte.</li>
-                        <li>Nutzen Sie alternative Quellen wie Regenwasser – nur, wenn eine fachgerechte Aufbereitung möglich ist.</li>
-                    </ul>
-                </div>
-            </>
-        ),
-    },
-    medikamente: {
-        title: "Medikamente & Erste-Hilfe",
-        image: "/medikamente.png",
-        content: (
-            <>
-                {/* Inhaltsverzeichnis */}
-                <div>
-                    <h3>Inhaltsverzeichnis</h3>
-                    <ul>
-                        <li><a href="#gut-vorbereitet">So sind Sie gut vorbereitet</a></li>
-                        <li><a href="#aufbewahrung">Hinweise zur richtigen Aufbewahrung</a></li>
-                        <li><a href="#inhalte">Das gehört in eine Hausapotheke</a></li>
-                        <li><a href="#aktuell">Immer auf dem aktuellen Stand</a></li>
-                    </ul>
-                </div>
-
-                {/* Abschnitt: So sind Sie gut vorbereitet */}
-                <div id="gut-vorbereitet">
-                    <h4>So sind Sie gut vorbereitet</h4>
-                    <p>
-                        Planen Sie vorausschauend und machen Sie sich Gedanken bei der Zusammenstellung Ihrer Hausapotheke. Sie ist besonders wichtig, wenn Sie in einer Notsituation Ihr Zuhause nicht verlassen sollten – etwa bei starkem Unwetter. In solchen Fällen ist es hilfreich, einige Medikamente und Verbandsmaterialien vorrätig zu haben, um Verletzungen oder leichtere Erkrankungen behandeln zu können.
-                    </p>
-                    <p>
-                        Füllen Sie Ihren Vorrat rechtzeitig auf, bevor er verbraucht ist, und achten Sie dabei auf eine sinnvolle Mischung aus Standard- und persönlichen Medikamenten.
-                    </p>
-                </div>
-
-                {/* Abschnitt: Hinweise zur richtigen Aufbewahrung */}
-                <div id="aufbewahrung">
-                    <h4>Hinweise zur richtigen Aufbewahrung</h4>
-                    <p>
-                        Bewahren Sie Ihre Hausapotheke in einem abschließbaren Schrank oder Fach auf. Achten Sie darauf, dass sie für Kinder nicht zugänglich ist – idealerweise in einem hoch hängenden oder abschließbaren Fach mit separatem Verbandsbereich.
-                    </p>
-                    <p>
-                        Wählen Sie einen kühlen, trockenen Raum – das Badezimmer ist aufgrund der Feuchtigkeit ungeeignet.
-                    </p>
-                </div>
-
-                {/* Abschnitt: Das gehört in eine Hausapotheke */}
-                <div id="inhalte">
-                    <h4>Das gehört in eine Hausapotheke</h4>
-                    <p>Empfohlen werden unter anderem:</p>
-                    <ul>
-                        <li>Persönliche, vom Arzt verschriebene Medikamente</li>
-                        <li>Schmerz- und fiebersenkende Mittel</li>
-                        <li>Mittel gegen Erkältungskrankheiten</li>
-                        <li>Mittel gegen Durchfall, Übelkeit, Erbrechen</li>
-                        <li>Mittel gegen Insektenstiche und Sonnenbrand</li>
-                        <li>Elektrolyte zum Ausgleich bei Durchfallerkrankungen</li>
-                        <li>Fieberthermometer</li>
-                        <li>Splitterpinzette</li>
-                        <li>Hautdesinfektionsmittel</li>
-                        <li>Wunddesinfektionsmittel</li>
-                        <li>Einweghandschuhe</li>
-                        <li>Atemschutzmaske</li>
-                        <li>Verbandsmaterial (z.B. Mull-Kompresse, Verbandschere, Pflaster, Binden, Dreiecktuch)</li>
-                    </ul>
-                </div>
-
-                {/* Abschnitt: Immer auf dem aktuellen Stand */}
-                <div id="aktuell">
-                    <h4>Immer auf dem aktuellen Stand</h4>
-                    <p>
-                        Achten Sie darauf, dass Ihre Hausapotheke keine Medikamente enthält, deren Haltbarkeitsdatum überschritten ist! Viele Haushalte sammeln abgelaufene Medikamente, was gefährlich werden kann, da deren Wirksamkeit verloren geht oder sie sogar schädlich sein können.
-                    </p>
-                    <p>
-                        Kontrollieren Sie Ihre Hausapotheke regelmäßig, sortieren Sie abgelaufene Produkte aus und füllen Sie verbrauchte Bestandteile zeitnah auf. Entsorgen Sie abgelaufene Medikamente im Hausmüll.
-                    </p>
-                </div>
-            </>
-        ),
-    },
-    dokumente: {
-        title: "Wichtige Dokumente",
-        image: "/dokumente.png",
-        content: (
-            <>
-                {/* Inhaltsverzeichnis */}
-                <div>
-                    <h3>Inhaltsverzeichnis</h3>
-                    <ul>
-                        <li><a href="#alles">Alles Wichtige an einem Platz</a></li>
-                        <li><a href="#mappe">Das gehört in die Dokumentenmappe</a></li>
-                        <li><a href="#tipps">Tipps zur Aktualisierung & Sicherung</a></li>
-                    </ul>
-                </div>
-
-                {/* Abschnitt: Alles Wichtige an einem Platz */}
-                <div id="alles">
-                    <h4>Alles Wichtige an einem Platz</h4>
-                    <p>
-                        Wichtige Dokumente wiederzubeschaffen kann schwierig – in manchen Fällen sogar unmöglich sein. Arbeitszeugnisse und andere Qualifizierungsnachweise unterliegen oft kürzeren Aufbewahrungsfristen als Abschlusszeugnisse.
-                    </p>
-                    <p>
-                        Denken Sie rechtzeitig darüber nach, was für Sie essenziell ist. Stellen Sie alle wichtigen Dokumente in einer Dokumentenmappe zusammen und bewahren Sie diese an einem Ort griffbereit auf. Für den Notfall sollten alle Familienmitglieder den Standort der Mappe kennen. Zudem ist es sinnvoll, Kopien wichtiger Dokumente digital zu sichern oder an einem alternativen Ort zu hinterlegen – beispielsweise bei Verwandten, Freunden, einem Notar oder in einem Bankschließfach.
-                    </p>
-                </div>
-
-                {/* Abschnitt: Das gehört in die Dokumentenmappe */}
-                <div id="mappe">
-                    <h4>Das gehört in die Dokumentenmappe</h4>
-                    <p>
-                        Eine Dokumentenmappe ist sehr individuell – es hängt von Ihren persönlichen Lebensumständen ab, welche Unterlagen für Sie wichtig sind. Hier einige Beispiele:
-                    </p>
-                    <p><strong>Im Original:</strong></p>
-                    <ul>
-                        <li>Familienurkunden (Geburts-, Heirats-, Sterbeurkunden) bzw. das Stammbuch</li>
-                    </ul>
-                    <p><strong>Im Original oder als beglaubigte Kopie:</strong></p>
-                    <ul>
-                        <li>Sparbücher, Kontoverträge, Aktien, Wertpapiere, Versicherungspolicen</li>
-                        <li>Renten-, Pensions- und Einkommensbescheinigungen, Einkommenssteuerbescheide</li>
-                        <li>Qualifizierungsnachweise: Zeugnisse (Schulzeugnisse, Hochschulzeugnisse, Nachweise über Zusatzqualifikationen)</li>
-                        <li>Verträge und Änderungsverträge (z.B. Mietverträge, Leasingverträge)</li>
-                        <li>Testament, Patientenverfügung und Vollmacht</li>
-                    </ul>
-                    <p><strong>Als einfache Kopie:</strong></p>
-                    <ul>
-                        <li>Personalausweis, Reisepass</li>
-                        <li>Führerschein und Fahrzeugpapiere</li>
-                        <li>Impfpass</li>
-                        <li>Grundbuchauszüge</li>
-                        <li>Änderungsbescheide für empfangene Leistungen</li>
-                        <li>Zahlungsbelege für Versicherungsprämien (insbesondere Rentenversicherung)</li>
-                        <li>Meldenachweise der Arbeitsämter, Bescheide der Agentur für Arbeit</li>
-                        <li>Rechnungen, die offene Zahlungsansprüche belegen</li>
-                        <li>Mitglieds- oder Beitragsbücher von Verbänden, Vereinen oder sonstigen Organisationen</li>
-                    </ul>
-                </div>
-
-                {/* Abschnitt: Tipps zur Aktualisierung & Sicherung */}
-                <div id="tipps">
-                    <h4>Tipps zur Aktualisierung & Sicherung</h4>
-                    <ul>
-                        <li>Erstellen Sie Duplikate und digitale Kopien Ihrer wichtigsten Dokumente.</li>
-                        <li>Lagern Sie Ihre Dokumente in einer wasserdichten und feuerfesten Mappe oder in einem Safe.</li>
-                        <li>Informieren Sie alle Familienmitglieder über den Aufbewahrungsort.</li>
-                        <li>Überprüfen Sie regelmäßig die Vollständigkeit und Aktualität Ihrer Unterlagen.</li>
-                    </ul>
-                </div>
-            </>
-        ),
-    },
-    hygiene: {
-        title: "Hygiene & Desinfektion",
-        image: "/hygiene.png",
-        content: (
-            <>
-                {/* Inhaltsverzeichnis */}
-                <div>
-                    <h3>Inhaltsverzeichnis</h3>
-                    <ul>
-                        <li><a href="#vorsorgen">Vorsorgen für Notsituationen</a></li>
-                        <li><a href="#tun">Das können Sie tun</a></li>
-                        <li><a href="#vorratHygiene">Das sollten Sie vorrätig haben</a></li>
-                    </ul>
-                </div>
-
-                {/* Abschnitt: Vorsorgen für Notsituationen */}
-                <div id="vorsorgen">
-                    <h4>Vorsorgen für Notsituationen</h4>
-                    <p>
-                        Bei Katastrophen oder länger andauernden Notfällen – etwa einem großflächigen Stromausfall – kann es passieren, dass kein Leitungswasser mehr verfügbar ist. Um den Zeitraum zu überbrücken, bis staatliche Hilfe eintrifft, können Sie durch gezielte Vorsorgemaßnahmen dafür sorgen, dass auch in solchen Situationen für ausreichend Hygiene gesorgt ist.
-                    </p>
-                </div>
-
-                {/* Abschnitt: Das können Sie tun */}
-                <div id="tun">
-                    <h4>Das können Sie tun</h4>
-                    <p>
-                        Wenn sich eine längere Wasserversorgungsausfall abzeichnet – beispielsweise durch Bauarbeiten oder einen Stromausfall, bei dem noch restliches Wasser in den Leitungen ist – sollten Sie folgendes beachten:
-                    </p>
-                    <ul>
-                        <li>Sammeln Sie Wasser in allen verfügbaren größeren Gefäßen (Badewanne, Waschbecken, Eimer, Töpfe, Wasserkanister) und nutzen Sie es als Brauchwasser, auch für die Toilettenspülung.</li>
-                        <li>Gehen Sie sparsam mit dem Wasser um: Verwenden Sie bei länger andauernder Knappheit Einweggeschirr und -besteck, um Wasser für das Spülen zu sparen.</li>
-                        <li>Nutzen Sie alternative Reinigungsmittel, die wenig oder gar kein Wasser benötigen – zum Beispiel Trockenshampoo oder spezielle Handwaschpasten.</li>
-                        <li>Verwenden Sie Feucht- und Desinfektionstücher zur Handreinigung.</li>
-                        <li>Setzen Sie Haushaltspapier oder feuchte Putztücher zur Reinigung ein.</li>
-                        <li>Benutzen Sie Haushaltshandschuhe, um den direkten Kontakt mit Schmutz zu vermeiden.</li>
-                        <li>Setzen Sie, falls möglich, eine Campingtoilette mit Ersatzflüssigkeit ein.</li>
-                        <li>Machen Sie das gesammelte Brauchwasser länger haltbar, indem Sie geeignete Entkeimungsmittel hinzufügen – lassen Sie sich hierzu im Camping- oder Outdoorhandel beraten.</li>
-                    </ul>
-                </div>
-
-                {/* Abschnitt: Das sollten Sie vorrätig haben */}
-                <div id="vorratHygiene">
-                    <h4>Das sollten Sie vorrätig haben</h4>
-                    <p>
-                        Um auch in Notsituationen die Hygiene aufrechtzuerhalten, empfiehlt sich die Vorratshaltung folgender Produkte:
-                    </p>
-                    <ul>
-                        <li>Seife</li>
-                        <li>Waschmittel</li>
-                        <li>Zahnpasta und Zahnbürste</li>
-                        <li>Feuchttücher</li>
-                        <li>Desinfektionstücher</li>
-                        <li>Weitere Hygieneartikel (z.B. für Monatshygiene, Windeln)</li>
-                        <li>Toilettenpapier</li>
-                        <li>Haushaltspapier</li>
-                        <li>Müllbeutel</li>
-                        <li>Haushaltshandschuhe</li>
-                        <li>Desinfektionsmittel</li>
-                        <li>Campingtoilette samt Ersatzbeutel und Ersatzflüssigkeit</li>
-                    </ul>
-                    <p>
-                        Eine Checkliste zur Hygiene in Notzeiten finden Sie im Ratgeber für Notfallvorsorge und richtiges Handeln in Notsituationen.
-                    </p>
-                </div>
-
-            </>
-        ),
-    },
-    informieren: {
-        title: "Notfallausrüstung & Kommunikation",
-        image: "/informieren.png",
-        content: (
-            <>
-                {/* Inhaltsverzeichnis */}
-                <div>
-                    <h3>Inhaltsverzeichnis</h3>
-                    <ul>
-                        <li><a href="#warumInfo">Warum Notfallausrüstung?</a></li>
-                        <li><a href="#geraeteInfo">Notfallgeräte</a></li>
-                        <li><a href="#kommunikation">Kommunikationsmittel</a></li>
-                        <li><a href="#funkRadio">Funk & Radio Frequenzen</a></li>
-                        <li><a href="#tippsInfo">Tipps und Tricks</a></li>
-                    </ul>
-                </div>
-
-                {/* Abschnitt: Warum Notfallausrüstung? */}
-                <div id="warumInfo">
-                    <h4>Warum Notfallausrüstung?</h4>
-                    <p>
-                        In Krisensituationen können Stromausfälle und Kommunikationsstörungen den Alltag stark beeinträchtigen. Notfallausrüstung stellt sicher, dass Sie auch ohne reguläre Infrastruktur informiert und handlungsfähig bleiben – sei es zur Notfallkommunikation oder zur Stromversorgung wichtiger Geräte.
-                    </p>
-                </div>
-
-                {/* Abschnitt: Notfallgeräte */}
-                <div id="geraeteInfo">
-                    <h4>Notfallgeräte</h4>
-                    <p>
-                        Für den Fall, dass herkömmliche Strom- und Kommunikationssysteme ausfallen, sollten Sie folgende Geräte bereithalten:
-                    </p>
-                    <ul>
-                        <li>Batteriebetriebene Radios</li>
-                        <li>Kurbel- oder Solarladegeräte</li>
-                        <li>Ersatzbatterien und Powerbanks</li>
-                        <li>Taschenlampen</li>
-                        <li>Gegebenenfalls Funkgeräte für den direkten Informationsaustausch</li>
-                    </ul>
-                </div>
-
-                {/* Abschnitt: Kommunikationsmittel */}
-                <div id="kommunikation">
-                    <h4>Kommunikationsmittel</h4>
-                    <p>
-                        Auch wenn die regulären Netzwerke ausfallen, sollten Sie sicherstellen, dass Sie erreichbar bleiben und Informationen austauschen können:
-                    </p>
-                    <ul>
-                        <li>
-                            Nutzen Sie ein Notfallhandy mit langer Akkulaufzeit oder ein Zweitgerät, falls Ihr Hauptgerät ausfällt.
-                        </li>
-                        <li>
-                            Halten Sie wichtige Telefonnummern und Kontaktdaten in Papierform bereit.
-                        </li>
-                        <li>
-                            Informieren Sie sich über lokale Warnsysteme und Notfallmeldungen.
-                        </li>
-                        <li>
-                            Verwenden Sie soziale Medien und Messenger-Dienste (z.B. WhatsApp, Telegram, Signal, Facebook) für den Informationsaustausch.
-                        </li>
-                        <li>
-                            Installieren Sie Apps von Behörden und Organisationen wie WarnWetter, NINA oder KATWARN, die Sie über Unwetter, Brände, Hochwasser und andere Gefahren informieren.
-                        </li>
-                    </ul>
-                </div>
-
-                {/* Neuer Abschnitt: Funk & Radio Frequenzen */}
-                <div id="funkRadio">
-                    <h4>Funk & Radio Frequenzen</h4>
-                    <p>
-                        In Deutschland gibt es bewährte Funk- und Radiofrequenzen, die im Notfall genutzt werden können, um Hilfe zu rufen oder aktuelle Informationen zu erhalten.
-                    </p>
-                    <p>
-                        Der Notruf <strong>112</strong> ist europaweit gültig und erreicht Feuerwehr sowie Rettungsdienste. Für die Polizei steht in Deutschland der Notruf <strong>110</strong> zur Verfügung.
-                    </p>
-                    <p>
-                        Zudem spielt der Amateurfunk eine wichtige Rolle in der Notfallkommunikation. Funkamateure nutzen Frequenzen im VHF-Bereich (ca. 144 MHz) und im UHF-Bereich (ca. 430 MHz), um in Krisenzeiten unabhängige Kommunikationsnetze aufzubauen.
-                    </p>
-                    <p>
-                        Auch lokale und regionale Radiosender, insbesondere jene des Deutschen Wetterdienstes (DWD) oder öffentlich-rechtliche Rundfunkanstalten, informieren kontinuierlich über Notfälle und aktuelle Entwicklungen.
-                    </p>
-                    <ul>
-                        <li><strong>Notrufnummern:</strong> 112 (Feuerwehr & Rettungsdienst), 110 (Polizei)</li>
-                        <li><strong>Amateurfunk:</strong> VHF (ca. 144 MHz), UHF (ca. 430 MHz)</li>
-                        <li><strong>Weitere Informationsquellen:</strong> Lokale Radiosender sowie Notfall-Apps wie NINA, WarnWetter, KATWARN</li>
-                    </ul>
-                </div>
-
-                {/* Abschnitt: Tipps und Tricks */}
-                <div id="tippsInfo">
-                    <h4>Tipps und Tricks</h4>
-                    <ul>
-                        <li>Testen Sie regelmäßig alle Geräte auf ihre Funktionstüchtigkeit.</li>
-                        <li>Bewahren Sie Ihre Notfallausrüstung an einem zentralen und gut zugänglichen Ort auf.</li>
-                        <li>Führen Sie eine Checkliste, um die Vollständigkeit und Funktionsfähigkeit der Geräte zu überwachen.</li>
-                    </ul>
-                </div>
-            </>
-        ),
-    },
-    gepaeck: {
-        title: "Notfallgepäck & Fluchtrucksack",
-        image: "/gepaeck.png",
-        content: (
-            <>
-                {/* Inhaltsverzeichnis */}
-                <div>
-                    <h3>Inhaltsverzeichnis</h3>
-                    <ul>
-                        <li><a href="#warumGepaeck">Warum ein Fluchtrucksack?</a></li>
-                        <li><a href="#wannGepaeck">Wann braucht man einen Fluchtrucksack?</a></li>
-                        <li><a href="#rucksackwahl">Die Wahl des richtigen Rucksacks</a></li>
-                        <li><a href="#inhaltGepaeck">Was gehört in den Fluchtrucksack?</a></li>
-                        <li><a href="#system">Notfallrucksack System</a></li>
-                        <li><a href="#packlisten">Packlisten</a></li>
-                        <li><a href="#tippsGepaeck">Tipps zur Vorbereitung</a></li>
-                        <li><a href="#lagerung">Wo lagere ich den Notfallrucksack?</a></li>
-                        <li><a href="#fertige">Gibt es fertige Notfallrucksäcke zu kaufen?</a></li>
-                    </ul>
-                </div>
-
-                {/* Statisch angezeigte Abschnitte */}
-                <div id="warumGepaeck">
-                    <h4>Warum ein Fluchtrucksack?</h4>
-                    <p>
-                        Ein Fluchtrucksack – oft auch als Bug-Out-Bag (BOB) bezeichnet – dient dazu, im Notfall schnell alles Wichtige griffbereit zu haben. Naturkatastrophen, Brände, Chemieunfälle oder Evakuierungen machen es oft notwendig, das Zuhause kurzfristig zu verlassen.
-                    </p>
-                    <p>
-                        Das Bundesamt für Bevölkerungsschutz und Katastrophenhilfe (BBK) empfiehlt jedem Haushalt, einen gepackten Notfallrucksack bereitzuhalten, um für verschiedene Krisenszenarien vorbereitet zu sein.
-                    </p>
-                </div>
-
-                <div id="wannGepaeck">
-                    <h4>Wann braucht man einen Fluchtrucksack?</h4>
-                    <p>Die Notwendigkeit eines Fluchtrucksacks hängt vom Szenario ab. Mögliche Situationen sind:</p>
-                    <ul>
-                        <li>Evakuierung wegen Gasleck, Chemieunfall oder Bombenentschärfung</li>
-                        <li>Flucht aufgrund von Naturkatastrophen wie Hochwasser, Waldbränden oder Stürmen</li>
-                        <li>Stromausfälle oder Versorgungsengpässe</li>
-                        <li>Extremfälle: Überleben in der freien Natur für mehrere Tage oder Wochen</li>
-                    </ul>
-                </div>
-
-                <div id="rucksackwahl">
-                    <h4>Die Wahl des richtigen Rucksacks</h4>
-                    <p>
-                        Der ideale Notfallrucksack sollte robust, wasserfest und ergonomisch sein. Modelle mit einem MOLLE-System bieten den Vorteil, dass sie modular erweiterbar sind – so kann der Rucksack an individuelle Bedürfnisse angepasst werden. Auch das Gewicht spielt eine entscheidende Rolle, da im Ernstfall schnelle Mobilität gefragt ist.
-                    </p>
-                    <p>Es gibt verschiedene Arten von Rucksäcken:</p>
-                    <ul>
-                        <li><b>MOLLE-Rucksäcke:</b> Sehr robust, modular erweiterbar, aber schwer</li>
-                        <li><b>Trekkingrucksäcke:</b> Optimiert für lange Strecken, leichter als MOLLE-Rucksäcke</li>
-                        <li><b>Ultraleichte Rucksäcke:</b> Minimalistisch, sehr leicht, aber weniger strapazierfähig</li>
-                    </ul>
-                </div>
-
-                <div id="inhaltGepaeck">
-                    <h4>Was gehört in den Fluchtrucksack?</h4>
-                    <p>
-                        Neben der Grundausstattung sollten auch spezielle Bedürfnisse berücksichtigt werden:
-                    </p>
-                    <h5>Notfallrucksack für Erwachsene</h5>
-                    <ul>
-                        <li>Dokumente & Wertsachen</li>
-                        <li>Wasser & Verpflegung</li>
-                        <li>Wärmende Kleidung</li>
-                        <li>Hygieneartikel & Erste-Hilfe-Set</li>
-                        <li>Notfallkommunikation (Radio, Powerbank, Taschenlampe)</li>
-                        <li>Survival-Equipment (Messer, Feuerstarter, Wasserfilter)</li>
-                    </ul>
-                    <h5>Notfallrucksack für Kinder</h5>
-                    <ul>
-                        <li>Kindgerechte Kleidung und Wechselkleidung</li>
-                        <li>Beruhigungsmittel oder Lieblingsspielzeug</li>
-                        <li>Snack- und Getränkevorrat</li>
-                        <li>Wichtige persönliche Dokumente</li>
-                    </ul>
-                    <p><strong>Wichtig:</strong> Achten Sie bei Rucksäcken für Kinder auf das Gewicht des gepackten Rucksacks.</p>
-                    <table className={style.fullWidthTable}>
-                        <thead>
-                            <tr>
-                                <th>Alter</th>
-                                <th>Rucksackvolumen</th>
-                                <th>Max. Gewicht</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td>3 – 4</td>
-                                <td>6 – 9 Liter</td>
-                                <td>1,5 kg</td>
-                            </tr>
-                            <tr>
-                                <td>5 – 6</td>
-                                <td>10 – 12 Liter</td>
-                                <td>2 kg</td>
-                            </tr>
-                            <tr>
-                                <td>6 – 8</td>
-                                <td>15 – 18 Liter</td>
-                                <td>3 kg</td>
-                            </tr>
-                            <tr>
-                                <td>8 – 10</td>
-                                <td>16 – 20 Liter</td>
-                                <td>5 kg</td>
-                            </tr>
-                        </tbody>
-                    </table>
-                    <h5>Notfallrucksack für Babys</h5>
-                    <ul>
-                        <li>Windeln, Feuchttücher und Babynahrung</li>
-                        <li>Fläschchen, Ersatzkleidung und Decken</li>
-                        <li>Beruhigungsmittel wie Schnuller</li>
-                        <li>Notwendige Medikamente und Pflegeartikel</li>
-                    </ul>
-                    <h5>Notfallrucksack für Haustiere</h5>
-                    <ul>
-                        <li>Futter und Wasser für mehrere Tage</li>
-                        <li>Leine, Transportbox oder Maulkorb</li>
-                        <li>Medikamente und tierärztliche Unterlagen</li>
-                        <li>Bekanntes Zubehör (z. B. eine vertraute Decke)</li>
-                    </ul>
-                </div>
-
-                <div id="system">
-                    <h4>Notfallrucksack System</h4>
-                    <p>
-                        Es gibt ein abgestuftes System, um den Notfallrucksack an unterschiedliche Szenarien anzupassen:
-                    </p>
-                    <ul>
-                        <li>
-                            <b>Stufe 1 – Notgepäck:</b> Minimalistische Ausstattung – wichtige Dokumente, Bargeld, Mobiltelefon und grundlegende Hygieneartikel.
-                        </li>
-                        <li>
-                            <b>Stufe 2 – Bug out Bag:</b> Erweiterte Version für längere Evakuierungen – zusätzlich Nahrung, Wasser, Überlebensausrüstung und ein umfangreicheres Erste-Hilfe-Set.
-                        </li>
-                        <li>
-                            <b>Stufe 3 – INCH Bag:</b> Umfassendste Ausstattung für extreme Notfallsituationen – deckt den Bedarf für mehrere Tage ab und beinhaltet erweiterte Survival-Tools, zusätzliche Bekleidung und weiterführende Ausrüstung.
-                        </li>
-                    </ul>
-                </div>
-
-                {/* Packlisten in einem Collapse – hier sind die Abschnitte zusammenklappbar */}
-                <div id="packlisten">
-                    <h4>Packlisten</h4>
-                    <Collapse accordion>
-                        <Panel header="Packliste: Notgepäck" key="notgepaeck">
-                            <h5>Wärmendes Equipment & Kleidung:</h5>
-                            <ul>
-                                <li>Leichter Schlafsack oder Decke</li>
-                                <li>Wärmende Jacke & wasserdichte Jacke</li>
-                                <li>1–2 Paar Wechselsocken, lange Funktionsunterwäsche</li>
-                            </ul>
-                            <h5>Verpflegung:</h5>
-                            <ul>
-                                <li>2–3 Liter Wasser</li>
-                                <li>Nahrung für 1 bis 2 Tage (Trekkingnahrung, Notnahrung wie NRG5)</li>
-                                <li>Snacks & Energieriegel</li>
-                                <li>Ess- und Kochgeschirr, ggf. Campingkocher sowie Brennstoffvorrat</li>
-                                <li>ggf. Kaffee oder Tee</li>
-                            </ul>
-                            <h5>Hygiene & Erste-Hilfe:</h5>
-                            <ul>
-                                <li>Kleines Erste-Hilfe-Set mit persönlichen Medikamenten</li>
-                                <li>Zahnbürste, Zahnpasta, Damenhygieneartikel</li>
-                                <li>Feuchttücher & Seifenkonzentrat</li>
-                                <li>Leichtes Reisehandtuch oder schnell trocknendes Trekking-/Outdoorhandtuch</li>
-                                <li>Toilettenpapier</li>
-                            </ul>
-                            <h5>Sonstiges Equipment:</h5>
-                            <ul>
-                                <li>SOS-Kapsel für Kinder mit Anschrift und Kontaktdaten</li>
-                                <li>Regenhülle für den Rucksack</li>
-                                <li>Taschenmesser, Taschenlampe und/oder Stirnlampe</li>
-                                <li>Powerbank & Ladegeräte</li>
-                            </ul>
-                        </Panel>
-                        <Panel header="Packliste: Bug out Bag" key="bugout">
-                            <h5>Schlafen & Unterkunft:</h5>
-                            <ul>
-                                <li>3-Season Schlafsack & Isomatte</li>
-                                <li>Tarp oder leichtes Zelt</li>
-                            </ul>
-                            <h5>Verpflegung:</h5>
-                            <ul>
-                                <li>Wasserfilter & Trinkwasserbehälter</li>
-                                <li>Verpflegung für 3 bis 5 Tage (gefriergetrocknete Trekkingnahrung oder Notfallrationen)</li>
-                                <li>Trinkwasser je nach Umgebung für 1 bis 5 Tage</li>
-                                <li>Leichtes Ess- und Kochgeschirr</li>
-                                <li>Campingkocher sowie Brennstoffvorrat</li>
-                                <li>Zündstahl, Sturmstreichhölzer oder Feuerzeuge</li>
-                                <li>Equipment zur Kaffee- oder Teezubereitung (bei Bedarf)</li>
-                            </ul>
-                            <h5>Bekleidung:</h5>
-                            <ul>
-                                <li>Funktionelle (lange) Unterwäsche</li>
-                                <li>Kopfbedeckung und Handschuhe</li>
-                                <li>2-3 Paar Socken</li>
-                                <li>Hemd/Bluse oder T-Shirt</li>
-                                <li>Wärmender Midlayer (z.b. Wolle, Daune oder wattiert)</li>
-                                <li>Wasserfeste, robuste Schuhe</li>
-                                <li>Robuste Outdoorhose</li>
-                                <li>Wasserdichte Jacke & Handschuhe</li>
-                            </ul>
-                            <h5>Hygiene & Erste-Hilfe:</h5>
-                            <ul>
-                                <li>Erste-Hilfe-Set mit persönlichen Medikamenten</li>
-                                <li>Hygieneartikel wie Zahnbürste, Zahnpasta, Damenhygieneartikel und Seifenkonzentrat</li>
-                                <li>Leichtes Reisehandtuch oder schnell trocknendes Trekking-/Outdoorhandtuch</li>
-                                <li>Feuchttücher & Toilettenpapier</li>
-                            </ul>
-                            <h5>Sonstiges Equipment:</h5>
-                            <ul>
-                                <li>Regenhülle oder Packliner zum Schutz der Ausrüstung</li>
-                                <li>Taschen- und/oder Stirnlampe</li>
-                                <li>Taschenmesser und/oder Multitool</li>
-                                <li>Notfallradio (Kurbel- oder batteriebetrieben)</li>
-                                <li>Powerbank und Ladekabel (bei Bedarf)</li>
-                            </ul>
-                        </Panel>
-                        <Panel header="Packliste: INCH Bag" key="inchBag">
-                            <h5>Schlafen & Unterkunft:</h5>
-                            <ul>
-                                <li>4-Season Schlafsack & Isomatte</li>
-                                <li>Tarp und/oder leichtes Zelt</li>
-                            </ul>
-                            <h5>Verpflegung:</h5>
-                            <ul>
-                                <li>Wasserfilter & Trinkwasserbehälter</li>
-                                <li>Verpflegung für mindestens 7 Tage (gefriergetrocknete Trekkingnahrung oder Notfallrationen)</li>
-                                <li>Trinkwasser je nach Umgebung für 1 bis 5 Tage</li>
-                                <li>Leichtes Ess- und Kochgeschirr</li>
-                                <li>Esbitkocher bzw. Bushbox sowie Brennstoffvorrat</li>
-                                <li>Zündstahl, Sturmstreichhölzer oder Feuerzeuge</li>
-                                <li>Equipment zur Kaffee- oder Teezubereitung (bei Bedarf)</li>
-                            </ul>
-                            <h5>Bekleidung:</h5>
-                            <ul>
-                                <li>Funktionelle (lange) Unterwäsche</li>
-                                <li>Kopfbedeckung und Handschuhe</li>
-                                <li>Schal sowie warme Mütze</li>
-                                <li>2-3 Paar Socken</li>
-                                <li>Hemd/Bluse, T-Shirt</li>
-                                <li>Wärmender Pullover (z.b. Wolle, Daune oder wattiert)</li>
-                                <li>Wasserfeste, robuste Schuhe</li>
-                                <li>Robuste Outdoorhose</li>
-                                <li>Wasserdichte, winddichte Jacke</li>
-                                <li>Poncho</li>
-                            </ul>
-                            <h5>Hygiene & Erste-Hilfe:</h5>
-                            <ul>
-                                <li>Erste-Hilfe-Set mit persönlichen Medikamenten</li>
-                                <li>Hygieneartikel (Zahnbürste, Zahnpasta, ggf. Damenhygieneartikel, Kernseife)</li>
-                                <li>Schnelltrocknendes Trekking-/Outdoorhandtuch</li>
-                                <li>Feuchttücher & Toilettenpapier</li>
-                                <li>Mund-Nasen-Bedeckung</li>
-                                <li>Jod- oder Kohletabletten</li>
-                            </ul>
-                            <h5>Werkzeuge:</h5>
-                            <ul>
-                                <li>Taschenmesser und/oder Multitool</li>
-                                <li>Outdoor-Messer (z.b. Esse 4 / Esse 6)</li>
-                            </ul>
-                            <h5>Sonstiges Equipment:</h5>
-                            <ul>
-                                <li>Regenhülle oder Packliner zum Schutz der Ausrüstung</li>
-                                <li>Taschen- und/oder Stirnlampe</li>
-                                <li>Notfallradio (Kurbel- oder batteriebetrieben)</li>
-                                <li>Powerbank und Ladekabel</li>
-                                <li>Knicklichter</li>
-                                <li>Stift/Zettel</li>
-                                <li>Klebeband (bevorzugt Panzertape/Gewebeband)</li>
-                                <li>ggf. Atemschutzmaske</li>
-                                <li>Ersatzbatterien</li>
-                                <li>Walkie-Talkie</li>
-                                <li>Bargeld</li>
-                                <li>Wichtige Dokumente</li>
-                            </ul>
-                        </Panel>
-                    </Collapse>
-                </div>
-
-                <div id="tippsGepaeck">
-                    <h4>Tipps zur Vorbereitung</h4>
-                    <ul>
-                        <li>Regelmäßig überprüfen, ob alles einsatzbereit ist</li>
-                        <li>Gewicht auf das Nötigste reduzieren</li>
-                        <li>Dokumentenmappe griffbereit aufbewahren</li>
-                        <li>Wichtige Medikamente & Tierbedarf nicht vergessen</li>
-                    </ul>
-                </div>
-
-                <div id="lagerung">
-                    <h4>Wo lagere ich den Notfallrucksack?</h4>
-                    <p>
-                        Der Notfallrucksack sollte an einem gut zugänglichen Ort aufbewahrt werden – idealerweise in der Nähe des Wohnbereichs. Achte darauf, dass der Lagerplatz trocken, vor Feuchtigkeit geschützt und im Notfall schnell erreichbar ist.
-                    </p>
-                </div>
-
-                <div id="fertige">
-                    <h4>Gibt es fertige Notfallrucksäcke zu kaufen?</h4>
-                    <p>
-                        Ja, es gibt zahlreiche Anbieter, die fertige Notfallrucksäcke oder individuell zusammenstellbare Sets anbieten. Diese Lösungen sind häufig bereits optimal auf verschiedene Krisenszenarien abgestimmt und können eine gute Alternative darstellen, wenn Du nicht selbst alle Komponenten zusammenstellen möchtest.
-                    </p>
-                </div>
-            </>
-        ),
-    },
-
-
-    sicherheit: {
-        title: "Sicherheit im Haus",
-        image: "/sicherheit.png",
-        content: (
-            <>
-                {/* Inhaltsverzeichnis */}
-                <div>
-                    <h3>Inhaltsverzeichnis</h3>
-                    <ul>
-                        <li><a href="#warumSicherheit">Warum Sicherheit im Haus?</a></li>
-                        <li><a href="#bauTechnik">Bauliche & technische Maßnahmen</a></li>
-                        <li><a href="#tippsSicherheit">Tipps zur Wartung & Evakuierungsplanung</a></li>
-                    </ul>
-                </div>
-
-                {/* Abschnitt: Warum Sicherheit im Haus? */}
-                <div id="warumSicherheit">
-                    <h4>Warum Sicherheit im Haus?</h4>
-                    <p>
-                        Ein sicheres Zuhause bietet nicht nur Schutz vor Einbrüchen, sondern auch vor den Folgen von Naturkatastrophen wie Unwetter, Bränden oder Überschwemmungen. Durch geeignete Maßnahmen können Schäden reduziert und eine schnelle Evakuierung im Notfall gewährleistet werden.
-                    </p>
-                </div>
-
-                {/* Abschnitt: Bauliche & technische Maßnahmen */}
-                <div id="bauTechnik">
-                    <h4>Bauliche & technische Maßnahmen</h4>
-                    <p>
-                        Als Eigentümer oder Mieter sollten Sie sich darüber informieren, welche Maßnahmen bereits getroffen wurden und welche Sie selbst veranlassen können. Hier einige Beispiele:
-                    </p>
-
-                    <h5>Das Dach</h5>
-                    <ul>
-                        <li>Sichern Sie die Dachdeckung mit Sturmhaken und ausreichender Vernagelung.</li>
-                        <li>Beugen Sie Dachlawinen durch den Einbau von Schneefanggittern vor – besonders bei Flachdächern und weit gespannten Decken.</li>
-                        <li>Sichern Sie den Dachstuhl und die Dachhaut durch zusätzliche Befestigungen, um ein Abheben bei Orkanböen zu verhindern.</li>
-                        <li>Bei geneigten Dächern kann der Einsatz von Windrispen in kreuzweiser Anordnung sinnvoll sein.</li>
-                    </ul>
-
-                    <h5>Der Garten und die Außenanlage</h5>
-                    <ul>
-                        <li>Überprüfen Sie Bäume in Hausnähe – umsturzgefährdete Bäume oder herunterfallende Äste können erheblichen Schaden anrichten.</li>
-                        <li>Sichern Sie Markisen, Überdachungen und andere bewegliche Gegenstände (z.b. Gartenmöbel, Sonnenschirme, Fahrräder) gegen Stürme.</li>
-                    </ul>
-
-                    <h5>Das Abwasser</h5>
-                    <ul>
-                        <li>Installieren Sie Rückstauverschlüsse bzw. -klappen in Abwasserleitungen und kontrollieren Sie deren Funktion regelmäßig.</li>
-                        <li>Setzen Sie Hebeanlagen ein, um Abwasser aus tiefer gelegenen Geschossen sicher zu entsorgen, und planen Sie Pumpensümpfe in überflutungsgefährdeten Bereichen ein.</li>
-                        <li>Wasserfeste Fliesenbeläge und Dämmmaterialien in Untergeschossen unterstützen eine effektive Entsorgung von Wasser und Schlamm.</li>
-                    </ul>
-
-                    <h5>Die Elektroversorgung</h5>
-                    <ul>
-                        <li>Lassen Sie Ihre Elektroanlage hinsichtlich Überspannungsschutz und Fehlerstrom-Schutzeinrichtungen (RCD/FI) überprüfen.</li>
-                        <li>Stellen Sie sicher, dass der Blitzschutz ausreichend ausgelegt ist – in gefährdeten Geschossen können separate Stromkreise sinnvoll sein.</li>
-                        <li>Sichern Sie Zählerkästen und den Hausanschluss gegen Überschwemmungen und überlegen Sie den Einsatz eines kleinen Notstromaggregats für kritische Geräte.</li>
-                    </ul>
-
-                    <h5>Die Heizung</h5>
-                    <ul>
-                        <li>Sichern Sie Tankanlagen und Heizungsanlagen im und außerhalb des Hauses gegen Aufschwimmen.</li>
-                        <li>Planen Sie die Möglichkeit ein, die Heizungsanlage im Notfall über Notstrom zu betreiben.</li>
-                    </ul>
-
-                    <div className={style.alert}>
-                        <Alert
-                            message="Wohnlage und Risikobewertung"
-                            description={
-                                <p>
-                                    Informieren Sie sich, ob Ihre Wohnlage hochwasser- oder starkregengefährdet ist – etwa über die Hochwassergefahren- und Risikokarten der Bundesländer (z.b. unter&nbsp;
-                                    <a href="https://geoportal.bafg.de" target="_blank" rel="noopener noreferrer">
-                                        geoportal.bafg.de
-                                    </a>
-                                    ). Diese Karten helfen Ihnen, das Risiko einzuschätzen und entsprechende Vorsorgemaßnahmen zu treffen.
-                                </p>
-                            }
-                            type="warning"
-                            showIcon
-                        />
+function getDetailsContent(t: TFunction): Record<string, DetailContent> {
+    return {
+        lebensmittel: {
+            title: t('emergency.titles.lebensmittel'),
+            image: "/lebensmittel.png",
+            content: (
+                <>
+                    {/* Inhaltsverzeichnis */}
+                    <div>
+                        <h3>{t('emergency.toc')}</h3>
+                        <ul>
+                            <li><a href="#warum">{t('emergency.sections.why')}</a></li>
+                            <li><a href="#vorratstyp">{t('emergency.sections.storageType')}</a></li>
+                            <li><a href="#tipps">{t('emergency.sections.tips')}</a></li>
+                        </ul>
                     </div>
-                </div>
 
-                {/* Abschnitt: Tipps zur Wartung & Evakuierungsplanung */}
-                <div id="tippsSicherheit">
-                    <h4>Tipps zur Wartung & Evakuierungsplanung</h4>
-                    <ul>
-                        <li>Führen Sie regelmäßige Wartungen an elektrischen Anlagen und Sicherheitsvorrichtungen durch.</li>
-                        <li>Überprüfen Sie bauliche Maßnahmen wie Dachbefestigungen, Rückstauklappen und Notstromaggregate.</li>
-                        <li>Üben Sie Evakuierungswege mit allen Familienmitgliedern und erstellen Sie einen Notfallplan.</li>
-                        <li>Installieren Sie Sicherheitsausrüstung an strategischen Stellen und kontrollieren Sie diese regelmäßig.</li>
-                    </ul>
-                </div>
-            </>
-        ),
-    },
-    beduerfnisse: {
-        title: "Spezielle Bedürfnisse",
-        image: "/beduerfnisse.png",
-        content: (
-            <>
-                <p>
-                    Nicht jeder Mensch hat die gleichen Bedürfnisse im Notfall. Kinder, ältere Menschen, Menschen mit Behinderungen und auch Haustiere benötigen oft spezielle Vorkehrungen. Passe deinen Notfallplan individuell an, um alle optimal zu versorgen.
-                </p>
-                <p>
-                    <strong>Tipps & Tricks:</strong>
-                    <ul>
-                        <li>Stelle spezielle Nahrung und Medikamente für betroffene Personen bereit.</li>
-                        <li>Ergänze den Vorrat mit zusätzlichen Hygieneartikeln und Hilfsmitteln.</li>
-                        <li>Erarbeite einen individuellen Evakuierungsplan für Kinder und Senioren.</li>
-                        <li>Denke auch an tiergerechte Notfallpakete für Haustiere.</li>
-                    </ul>
-                </p>
-                <p>
-                    Eine umfassende Planung, die alle individuellen Anforderungen berücksichtigt, stellt sicher, dass niemand im Notfall zu kurz kommt.
-                </p>
-            </>
-        ),
-    },
-};
+                    {/* Abschnitt: Warum bevorraten? */}
+                    <div id="warum">
+                        <h4>{t('emergency.sections.why')}</h4>
+                        <p>{t('emergency.content.lebensmittel.why.intro')}</p>
+                        <ul>
+                            <li>{t('emergency.content.lebensmittel.why.b1')}</li>
+                            <li>{t('emergency.content.lebensmittel.why.b2')}</li>
+                            <li>{t('emergency.content.lebensmittel.why.b3')}</li>
+                            <li>{t('emergency.content.lebensmittel.why.b4')}</li>
+                        </ul>
+                        <p>{t('emergency.content.lebensmittel.why.outro')}</p>
+                    </div>
+
+                    {/* Abschnitt: Welcher Vorratstyp sind Sie? */}
+                    <div id="vorratstyp">
+                        <h4>{t('emergency.sections.storageType')}</h4>
+                        <p>{t('emergency.content.lebensmittel.storageType.intro')}</p>
+                        <p>
+                            <b>{t('emergency.content.lebensmittel.storageType.once.title')}</b>
+                        </p>
+                        <ul>
+                            <li>{t('emergency.content.lebensmittel.storageType.once.i1')}</li>
+                            <li>{t('emergency.content.lebensmittel.storageType.once.i2')}</li>
+                            <li>{t('emergency.content.lebensmittel.storageType.once.i3')}</li>
+                        </ul>
+                        <p>
+                            <b>{t('emergency.content.lebensmittel.storageType.live.title')}</b>
+                        </p>
+                        <ul>
+                            <li>{t('emergency.content.lebensmittel.storageType.live.i1')}</li>
+                            <li>{t('emergency.content.lebensmittel.storageType.live.i2')}</li>
+                            <li>{t('emergency.content.lebensmittel.storageType.live.i3')}</li>
+                        </ul>
+                    </div>
+
+                    {/* Abschnitt: Tipps für die Zusammenstellung eines Vorrats */}
+                    <div id="tipps">
+                        <h4>{t('emergency.sections.tips')}</h4>
+                        <p>{t('emergency.content.lebensmittel.tips.intro')}</p>
+                        <ul>
+                            <li>{t('emergency.content.lebensmittel.tips.b1')}</li>
+                            <li>{t('emergency.content.lebensmittel.tips.b2')}</li>
+                            <li>{t('emergency.content.lebensmittel.tips.b3')}</li>
+                            <li>{t('emergency.content.lebensmittel.tips.b4')}</li>
+                            <li>{t('emergency.content.lebensmittel.tips.b5')}</li>
+                            <li>{t('emergency.content.lebensmittel.tips.b6')}</li>
+                            <li>{t('emergency.content.lebensmittel.tips.b7')}</li>
+                        </ul>
+                        <p>{t('emergency.content.lebensmittel.tips.outro')}</p>
+                    </div>
+                </>
+            ),
+        },
+        wasser: {
+            title: t('emergency.titles.wasser'),
+            image: "/wasser.png",
+            content: (
+                <>
+                    {/* Inhaltsverzeichnis */}
+                    <div>
+                        <h3>{t('emergency.toc')}</h3>
+                        <ul>
+                            <li><a href="#warumWasser">{t('emergency.sections.why')}</a></li>
+                            <li><a href="#lagerungWasser">{t('emergency.sections.storageAndTreatment')}</a></li>
+                            <li><a href="#tippsWasser">{t('emergency.sections.waterTips')}</a></li>
+                        </ul>
+                    </div>
+
+                    {/* Abschnitt: Warum bevorraten? */}
+                    <div id="warumWasser">
+                        <h4>{t('emergency.sections.why')}</h4>
+                        <p>{t('emergency.content.wasser.why.p1')}</p>
+                        <p>{t('emergency.content.wasser.why.p2')}</p>
+                    </div>
+
+                    {/* Abschnitt: Lagerung & Aufbereitung */}
+                    <div id="lagerungWasser">
+                        <h4>{t('emergency.sections.storageAndTreatment')}</h4>
+                        <p>{t('emergency.content.wasser.storageAndTreatment.p1')}</p>
+                        <p>{t('emergency.content.wasser.storageAndTreatment.p2')}</p>
+                    </div>
+
+                    {/* Abschnitt: Tipps zur Trinkwasservorrat */}
+                    <div id="tippsWasser">
+                        <h4>{t('emergency.sections.waterTips')}</h4>
+                        <ul>
+                            <li>{t('emergency.content.wasser.tips.b1')}</li>
+                            <li>{t('emergency.content.wasser.tips.b2')}</li>
+                            <li>{t('emergency.content.wasser.tips.b3')}</li>
+                            <li>{t('emergency.content.wasser.tips.b4')}</li>
+                        </ul>
+                    </div>
+                </>
+            ),
+        },
+        medikamente: {
+            title: t('emergency.titles.medikamente'),
+            image: "/medikamente.png",
+            content: (
+                <>
+                    {/* Inhaltsverzeichnis */}
+                    <div>
+                        <h3>{t('emergency.toc')}</h3>
+                        <ul>
+                            <li><a href="#gut-vorbereitet">{t('emergency.sections.wellPrepared')}</a></li>
+                            <li><a href="#aufbewahrung">{t('emergency.sections.storageHints')}</a></li>
+                            <li><a href="#inhalte">{t('emergency.sections.homePharmacyContents')}</a></li>
+                            <li><a href="#aktuell">{t('emergency.sections.upToDate')}</a></li>
+                        </ul>
+                    </div>
+
+                    {/* Abschnitt: So sind Sie gut vorbereitet */}
+                    <div id="gut-vorbereitet">
+                        <h4>{t('emergency.sections.wellPrepared')}</h4>
+                        <p>{t('emergency.content.medikamente.wellPrepared.p1')}</p>
+                        <p>{t('emergency.content.medikamente.wellPrepared.p2')}</p>
+                    </div>
+
+                    {/* Abschnitt: Hinweise zur richtigen Aufbewahrung */}
+                    <div id="aufbewahrung">
+                        <h4>{t('emergency.sections.storageHints')}</h4>
+                        <p>{t('emergency.content.medikamente.storageHints.p1')}</p>
+                        <p>{t('emergency.content.medikamente.storageHints.p2')}</p>
+                    </div>
+
+                    {/* Abschnitt: Das gehört in eine Hausapotheke */}
+                    <div id="inhalte">
+                        <h4>{t('emergency.sections.homePharmacyContents')}</h4>
+                        <p>{t('emergency.content.medikamente.homePharmacyContents.intro')}</p>
+                        <ul>
+                            <li>{t('emergency.content.medikamente.homePharmacyContents.b1')}</li>
+                            <li>{t('emergency.content.medikamente.homePharmacyContents.b2')}</li>
+                            <li>{t('emergency.content.medikamente.homePharmacyContents.b3')}</li>
+                            <li>{t('emergency.content.medikamente.homePharmacyContents.b4')}</li>
+                            <li>{t('emergency.content.medikamente.homePharmacyContents.b5')}</li>
+                            <li>{t('emergency.content.medikamente.homePharmacyContents.b6')}</li>
+                            <li>{t('emergency.content.medikamente.homePharmacyContents.b7')}</li>
+                            <li>{t('emergency.content.medikamente.homePharmacyContents.b8')}</li>
+                            <li>{t('emergency.content.medikamente.homePharmacyContents.b9')}</li>
+                            <li>{t('emergency.content.medikamente.homePharmacyContents.b10')}</li>
+                            <li>{t('emergency.content.medikamente.homePharmacyContents.b11')}</li>
+                            <li>{t('emergency.content.medikamente.homePharmacyContents.b12')}</li>
+                            <li>{t('emergency.content.medikamente.homePharmacyContents.b13')}</li>
+                        </ul>
+                    </div>
+
+                    {/* Abschnitt: Immer auf dem aktuellen Stand */}
+                    <div id="aktuell">
+                        <h4>{t('emergency.sections.upToDate')}</h4>
+                        <p>{t('emergency.content.medikamente.upToDate.p1')}</p>
+                        <p>{t('emergency.content.medikamente.upToDate.p2')}</p>
+                    </div>
+                </>
+            ),
+        },
+        dokumente: {
+            title: t('emergency.titles.dokumente'),
+            image: "/dokumente.png",
+            content: (
+                <>
+                    {/* Inhaltsverzeichnis */}
+                    <div>
+                        <h3>{t('emergency.toc')}</h3>
+                        <ul>
+                            <li><a href="#alles">{t('emergency.sections.allInOnePlace')}</a></li>
+                            <li><a href="#mappe">{t('emergency.sections.documentFolderContents')}</a></li>
+                            <li><a href="#tipps">{t('emergency.sections.updateAndSecure')}</a></li>
+                        </ul>
+                    </div>
+
+                    {/* Abschnitt: Alles Wichtige an einem Platz */}
+                    <div id="alles">
+                        <h4>{t('emergency.sections.allInOnePlace')}</h4>
+                        <p>{t('emergency.content.dokumente.allInOnePlace.p1')}</p>
+                        <p>{t('emergency.content.dokumente.allInOnePlace.p2')}</p>
+                    </div>
+
+                    {/* Abschnitt: Das gehört in die Dokumentenmappe */}
+                    <div id="mappe">
+                        <h4>{t('emergency.sections.documentFolderContents')}</h4>
+                        <p>{t('emergency.content.dokumente.documentFolderContents.intro')}</p>
+                        <p><strong>{t('emergency.content.dokumente.documentFolderContents.titles.original')}</strong></p>
+                        <ul>
+                            <li>{t('emergency.content.dokumente.documentFolderContents.original.b1')}</li>
+                        </ul>
+                        <p><strong>{t('emergency.content.dokumente.documentFolderContents.titles.originalOrCertified')}</strong></p>
+                        <ul>
+                            <li>{t('emergency.content.dokumente.documentFolderContents.originalOrCertified.b1')}</li>
+                            <li>{t('emergency.content.dokumente.documentFolderContents.originalOrCertified.b2')}</li>
+                            <li>{t('emergency.content.dokumente.documentFolderContents.originalOrCertified.b3')}</li>
+                            <li>{t('emergency.content.dokumente.documentFolderContents.originalOrCertified.b4')}</li>
+                            <li>{t('emergency.content.dokumente.documentFolderContents.originalOrCertified.b5')}</li>
+                        </ul>
+                        <p><strong>{t('emergency.content.dokumente.documentFolderContents.titles.copies')}</strong></p>
+                        <ul>
+                            <li>{t('emergency.content.dokumente.documentFolderContents.copies.b1')}</li>
+                            <li>{t('emergency.content.dokumente.documentFolderContents.copies.b2')}</li>
+                            <li>{t('emergency.content.dokumente.documentFolderContents.copies.b3')}</li>
+                            <li>{t('emergency.content.dokumente.documentFolderContents.copies.b4')}</li>
+                            <li>{t('emergency.content.dokumente.documentFolderContents.copies.b5')}</li>
+                            <li>{t('emergency.content.dokumente.documentFolderContents.copies.b6')}</li>
+                            <li>{t('emergency.content.dokumente.documentFolderContents.copies.b7')}</li>
+                            <li>{t('emergency.content.dokumente.documentFolderContents.copies.b8')}</li>
+                            <li>{t('emergency.content.dokumente.documentFolderContents.copies.b9')}</li>
+                        </ul>
+                    </div>
+
+                    {/* Abschnitt: Tipps zur Aktualisierung & Sicherung */}
+                    <div id="tipps">
+                        <h4>{t('emergency.sections.updateAndSecure')}</h4>
+                        <ul>
+                            <li>{t('emergency.content.dokumente.updateAndSecure.b1')}</li>
+                            <li>{t('emergency.content.dokumente.updateAndSecure.b2')}</li>
+                            <li>{t('emergency.content.dokumente.updateAndSecure.b3')}</li>
+                            <li>{t('emergency.content.dokumente.updateAndSecure.b4')}</li>
+                        </ul>
+                    </div>
+                </>
+            ),
+        },
+        hygiene: {
+            title: t('emergency.titles.hygiene'),
+            image: "/hygiene.png",
+            content: (
+                <>
+                    {/* Inhaltsverzeichnis */}
+                    <div>
+                        <h3>{t('emergency.toc')}</h3>
+                        <ul>
+                            <li><a href="#vorsorgen">{t('emergency.sections.hygienePrepare')}</a></li>
+                            <li><a href="#tun">{t('emergency.sections.hygieneActions')}</a></li>
+                            <li><a href="#vorratHygiene">{t('emergency.sections.hygieneStock')}</a></li>
+                        </ul>
+                    </div>
+
+                    {/* Abschnitt: Vorsorgen für Notsituationen */}
+                    <div id="vorsorgen">
+                        <h4>{t('emergency.sections.hygienePrepare')}</h4>
+                        <p>{t('emergency.content.hygiene.prepare.p1')}</p>
+                    </div>
+
+                    {/* Abschnitt: Das können Sie tun */}
+                    <div id="tun">
+                        <h4>{t('emergency.sections.hygieneActions')}</h4>
+                        <p>{t('emergency.content.hygiene.actions.intro')}</p>
+                        <ul>
+                            <li>{t('emergency.content.hygiene.actions.b1')}</li>
+                            <li>{t('emergency.content.hygiene.actions.b2')}</li>
+                            <li>{t('emergency.content.hygiene.actions.b3')}</li>
+                            <li>{t('emergency.content.hygiene.actions.b4')}</li>
+                            <li>{t('emergency.content.hygiene.actions.b5')}</li>
+                            <li>{t('emergency.content.hygiene.actions.b6')}</li>
+                            <li>{t('emergency.content.hygiene.actions.b7')}</li>
+                            <li>{t('emergency.content.hygiene.actions.b8')}</li>
+                        </ul>
+                    </div>
+
+                    {/* Abschnitt: Das sollten Sie vorrätig haben */}
+                    <div id="vorratHygiene">
+                        <h4>{t('emergency.sections.hygieneStock')}</h4>
+                        <p>{t('emergency.content.hygiene.stock.intro')}</p>
+                        <ul>
+                            <li>{t('emergency.content.hygiene.stock.b1')}</li>
+                            <li>{t('emergency.content.hygiene.stock.b2')}</li>
+                            <li>{t('emergency.content.hygiene.stock.b3')}</li>
+                            <li>{t('emergency.content.hygiene.stock.b4')}</li>
+                            <li>{t('emergency.content.hygiene.stock.b5')}</li>
+                            <li>{t('emergency.content.hygiene.stock.b6')}</li>
+                            <li>{t('emergency.content.hygiene.stock.b7')}</li>
+                            <li>{t('emergency.content.hygiene.stock.b8')}</li>
+                            <li>{t('emergency.content.hygiene.stock.b9')}</li>
+                            <li>{t('emergency.content.hygiene.stock.b10')}</li>
+                            <li>{t('emergency.content.hygiene.stock.b11')}</li>
+                            <li>{t('emergency.content.hygiene.stock.b12')}</li>
+                        </ul>
+                        <p>{t('emergency.content.hygiene.stock.outro')}</p>
+                    </div>
+
+                </>
+            ),
+        },
+        informieren: {
+            title: t('emergency.titles.informieren'),
+            image: "/informieren.png",
+            content: (
+                <>
+                    {/* Inhaltsverzeichnis */}
+                    <div>
+                        <h3>{t('emergency.toc')}</h3>
+                        <ul>
+                            <li><a href="#warumInfo">{t('emergency.sections.whyEquipment')}</a></li>
+                            <li><a href="#geraeteInfo">{t('emergency.sections.emergencyDevices')}</a></li>
+                            <li><a href="#kommunikation">{t('emergency.sections.communication')}</a></li>
+                            <li><a href="#funkRadio">{t('emergency.sections.radioFrequencies')}</a></li>
+                            <li><a href="#tippsInfo">{t('emergency.sections.tipsTricks')}</a></li>
+                        </ul>
+                    </div>
+
+                    {/* Abschnitt: Warum Notfallausrüstung? */}
+                    <div id="warumInfo">
+                        <h4>{t('emergency.sections.whyEquipment')}</h4>
+                        <p>{t('emergency.content.informieren.whyEquipment.p1')}</p>
+                    </div>
+
+                    {/* Abschnitt: Notfallgeräte */}
+                    <div id="geraeteInfo">
+                        <h4>{t('emergency.sections.emergencyDevices')}</h4>
+                        <p>{t('emergency.content.informieren.emergencyDevices.intro')}</p>
+                        <ul>
+                            <li>{t('emergency.content.informieren.emergencyDevices.b1')}</li>
+                            <li>{t('emergency.content.informieren.emergencyDevices.b2')}</li>
+                            <li>{t('emergency.content.informieren.emergencyDevices.b3')}</li>
+                            <li>{t('emergency.content.informieren.emergencyDevices.b4')}</li>
+                            <li>{t('emergency.content.informieren.emergencyDevices.b5')}</li>
+                        </ul>
+                    </div>
+
+                    {/* Abschnitt: Kommunikationsmittel */}
+                    <div id="kommunikation">
+                        <h4>{t('emergency.sections.communication')}</h4>
+                        <p>{t('emergency.content.informieren.communication.p1')}</p>
+                        <ul>
+                            <li>{t('emergency.content.informieren.communication.b1')}</li>
+                            <li>{t('emergency.content.informieren.communication.b2')}</li>
+                            <li>{t('emergency.content.informieren.communication.b3')}</li>
+                            <li>{t('emergency.content.informieren.communication.b4')}</li>
+                            <li>{t('emergency.content.informieren.communication.b5')}</li>
+                        </ul>
+                    </div>
+
+                    {/* Neuer Abschnitt: Funk & Radio Frequenzen */}
+                    <div id="funkRadio">
+                        <h4>{t('emergency.sections.radioFrequencies')}</h4>
+                        <p>{t('emergency.content.informieren.radioFrequencies.p1')}</p>
+                        <p>{t('emergency.content.informieren.radioFrequencies.p2')}</p>
+                        <p>{t('emergency.content.informieren.radioFrequencies.p3')}</p>
+                        <p>{t('emergency.content.informieren.radioFrequencies.p4')}</p>
+                        <ul>
+                            <li>{t('emergency.content.informieren.radioFrequencies.b1')}</li>
+                            <li>{t('emergency.content.informieren.radioFrequencies.b2')}</li>
+                            <li>{t('emergency.content.informieren.radioFrequencies.b3')}</li>
+                        </ul>
+                    </div>
+
+                    {/* Abschnitt: Tipps und Tricks */}
+                    <div id="tippsInfo">
+                        <h4>{t('emergency.sections.tipsTricks')}</h4>
+                        <ul>
+                            <li>{t('emergency.content.informieren.tipsTricks.b1')}</li>
+                            <li>{t('emergency.content.informieren.tipsTricks.b2')}</li>
+                            <li>{t('emergency.content.informieren.tipsTricks.b3')}</li>
+                        </ul>
+                    </div>
+                </>
+            ),
+        },
+        gepaeck: {
+            title: t('emergency.titles.gepaeck'),
+            image: "/gepaeck.png",
+            content: (
+                <>
+                    {/* Inhaltsverzeichnis */}
+                    <div>
+                        <h3>{t('emergency.toc')}</h3>
+                        <ul>
+                            <li><a href="#warumGepaeck">{t('emergency.sections.whyBackpack')}</a></li>
+                            <li><a href="#wannGepaeck">{t('emergency.sections.whenBackpack')}</a></li>
+                            <li><a href="#rucksackwahl">{t('emergency.sections.backpackChoice')}</a></li>
+                            <li><a href="#inhaltGepaeck">{t('emergency.sections.backpackContents')}</a></li>
+                            <li><a href="#system">{t('emergency.sections.backpackSystem')}</a></li>
+                            <li><a href="#packlisten">{t('emergency.sections.packingLists')}</a></li>
+                            <li><a href="#tippsGepaeck">{t('emergency.sections.prepTips')}</a></li>
+                            <li><a href="#lagerung">{t('emergency.sections.storagePlace')}</a></li>
+                            <li><a href="#fertige">{t('emergency.sections.readyKitsAvailable')}</a></li>
+                        </ul>
+                    </div>
+
+                    {/* Warum Fluchtrucksack? */}
+                    <div id="warumGepaeck">
+                        <h4>{t('emergency.sections.whyBackpack')}</h4>
+                        <p>{t('emergency.content.gepaeck.whyBackpack.p1')}</p>
+                        <p>{t('emergency.content.gepaeck.whyBackpack.p2')}</p>
+                    </div>
+
+                    <div id="wannGepaeck">
+                        <h4>{t('emergency.sections.whenBackpack')}</h4>
+                        <p>{t('emergency.content.gepaeck.whenBackpack.intro')}</p>
+                        <ul>
+                            <li>{t('emergency.content.gepaeck.whenBackpack.b1')}</li>
+                            <li>{t('emergency.content.gepaeck.whenBackpack.b2')}</li>
+                            <li>{t('emergency.content.gepaeck.whenBackpack.b3')}</li>
+                            <li>{t('emergency.content.gepaeck.whenBackpack.b4')}</li>
+                        </ul>
+                    </div>
+
+                    <div id="rucksackwahl">
+                        <h4>{t('emergency.sections.backpackChoice')}</h4>
+                        <p>{t('emergency.content.gepaeck.backpackChoice.p1')}</p>
+                        <p>{t('emergency.content.gepaeck.backpackChoice.p2Intro')}</p>
+                        <ul>
+                            <li><b>{t('emergency.content.gepaeck.backpackChoice.types.molle.title')}</b> {t('emergency.content.gepaeck.backpackChoice.types.molle.desc')}</li>
+                            <li><b>{t('emergency.content.gepaeck.backpackChoice.types.trekking.title')}</b> {t('emergency.content.gepaeck.backpackChoice.types.trekking.desc')}</li>
+                            <li><b>{t('emergency.content.gepaeck.backpackChoice.types.ultra.title')}</b> {t('emergency.content.gepaeck.backpackChoice.types.ultra.desc')}</li>
+                        </ul>
+                    </div>
+
+                    <div id="inhaltGepaeck">
+                        <h4>{t('emergency.sections.backpackContents')}</h4>
+                        <p>{t('emergency.content.gepaeck.backpackContents.intro')}</p>
+                        <h5>{t('emergency.content.gepaeck.backpackContents.adult.title')}</h5>
+                        <ul>
+                            <li>{t('emergency.content.gepaeck.backpackContents.adult.items.b1')}</li>
+                            <li>{t('emergency.content.gepaeck.backpackContents.adult.items.b2')}</li>
+                            <li>{t('emergency.content.gepaeck.backpackContents.adult.items.b3')}</li>
+                            <li>{t('emergency.content.gepaeck.backpackContents.adult.items.b4')}</li>
+                            <li>{t('emergency.content.gepaeck.backpackContents.adult.items.b5')}</li>
+                            <li>{t('emergency.content.gepaeck.backpackContents.adult.items.b6')}</li>
+                        </ul>
+                        <h5>{t('emergency.content.gepaeck.backpackContents.child.title')}</h5>
+                        <ul>
+                            <li>{t('emergency.content.gepaeck.backpackContents.child.items.b1')}</li>
+                            <li>{t('emergency.content.gepaeck.backpackContents.child.items.b2')}</li>
+                            <li>{t('emergency.content.gepaeck.backpackContents.child.items.b3')}</li>
+                            <li>{t('emergency.content.gepaeck.backpackContents.child.items.b4')}</li>
+                        </ul>
+                        <p>{t('emergency.content.gepaeck.backpackContents.child.weightWarning')}</p>
+                        <table className={style.fullWidthTable}>
+                            <thead>
+                                <tr>
+                                    <th>{t('emergency.content.gepaeck.backpackContents.table.headings.age')}</th>
+                                    <th>{t('emergency.content.gepaeck.backpackContents.table.headings.volume')}</th>
+                                    <th>{t('emergency.content.gepaeck.backpackContents.table.headings.maxWeight')}</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>{t('emergency.content.gepaeck.backpackContents.table.rows.r1.age')}</td>
+                                    <td>{t('emergency.content.gepaeck.backpackContents.table.rows.r1.volume')}</td>
+                                    <td>{t('emergency.content.gepaeck.backpackContents.table.rows.r1.weight')}</td>
+                                </tr>
+                                <tr>
+                                    <td>{t('emergency.content.gepaeck.backpackContents.table.rows.r2.age')}</td>
+                                    <td>{t('emergency.content.gepaeck.backpackContents.table.rows.r2.volume')}</td>
+                                    <td>{t('emergency.content.gepaeck.backpackContents.table.rows.r2.weight')}</td>
+                                </tr>
+                                <tr>
+                                    <td>{t('emergency.content.gepaeck.backpackContents.table.rows.r3.age')}</td>
+                                    <td>{t('emergency.content.gepaeck.backpackContents.table.rows.r3.volume')}</td>
+                                    <td>{t('emergency.content.gepaeck.backpackContents.table.rows.r3.weight')}</td>
+                                </tr>
+                                <tr>
+                                    <td>{t('emergency.content.gepaeck.backpackContents.table.rows.r4.age')}</td>
+                                    <td>{t('emergency.content.gepaeck.backpackContents.table.rows.r4.volume')}</td>
+                                    <td>{t('emergency.content.gepaeck.backpackContents.table.rows.r4.weight')}</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        <h5>{t('emergency.content.gepaeck.backpackContents.baby.title')}</h5>
+                        <ul>
+                            <li>{t('emergency.content.gepaeck.backpackContents.baby.items.b1')}</li>
+                            <li>{t('emergency.content.gepaeck.backpackContents.baby.items.b2')}</li>
+                            <li>{t('emergency.content.gepaeck.backpackContents.baby.items.b3')}</li>
+                            <li>{t('emergency.content.gepaeck.backpackContents.baby.items.b4')}</li>
+                        </ul>
+                        <h5>{t('emergency.content.gepaeck.backpackContents.pet.title')}</h5>
+                        <ul>
+                            <li>{t('emergency.content.gepaeck.backpackContents.pet.items.b1')}</li>
+                            <li>{t('emergency.content.gepaeck.backpackContents.pet.items.b2')}</li>
+                            <li>{t('emergency.content.gepaeck.backpackContents.pet.items.b3')}</li>
+                            <li>{t('emergency.content.gepaeck.backpackContents.pet.items.b4')}</li>
+                        </ul>
+                    </div>
+
+                    <div id="system">
+                        <h4>{t('emergency.sections.backpackSystem')}</h4>
+                        <p>{t('emergency.content.gepaeck.system.intro')}</p>
+                        <ul>
+                            <li>
+                                <b>{t('emergency.content.gepaeck.system.lvl1.title')}:</b> {t('emergency.content.gepaeck.system.lvl1.desc')}
+                            </li>
+                            <li>
+                                <b>{t('emergency.content.gepaeck.system.lvl2.title')}:</b> {t('emergency.content.gepaeck.system.lvl2.desc')}
+                            </li>
+                            <li>
+                                <b>{t('emergency.content.gepaeck.system.lvl3.title')}:</b> {t('emergency.content.gepaeck.system.lvl3.desc')}
+                            </li>
+                        </ul>
+                    </div>
+
+                    {/* Packlisten in einem Collapse – hier sind die Abschnitte zusammenklappbar */}
+                    <div id="packlisten">
+                        <h4>{t('emergency.sections.packingLists')}</h4>
+                        <Collapse accordion>
+                            <Panel header={t('emergency.content.gepaeck.packlists.panelHeaders.notgepaeck')} key="notgepaeck">
+                                <h5>{t('emergency.content.gepaeck.packlists.groups.warmClothes')}:</h5>
+                                <ul>
+                                    {(t('emergency.content.gepaeck.packlists.notgepaeck.warmClothes', { returnObjects: true }) as string[]).map((item, idx) => (
+                                        <li key={idx}>{item}</li>
+                                    ))}
+                                </ul>
+                                <h5>{t('emergency.content.gepaeck.packlists.groups.food')}:</h5>
+                                <ul>
+                                    {(t('emergency.content.gepaeck.packlists.notgepaeck.food', { returnObjects: true }) as string[]).map((item, idx) => (
+                                        <li key={idx}>{item}</li>
+                                    ))}
+                                </ul>
+                                <h5>{t('emergency.content.gepaeck.packlists.groups.hygieneFirstAid')}:</h5>
+                                <ul>
+                                    {(t('emergency.content.gepaeck.packlists.notgepaeck.hygieneFirstAid', { returnObjects: true }) as string[]).map((item, idx) => (
+                                        <li key={idx}>{item}</li>
+                                    ))}
+                                </ul>
+                                <h5>{t('emergency.content.gepaeck.packlists.groups.otherEquipment')}:</h5>
+                                <ul>
+                                    {(t('emergency.content.gepaeck.packlists.notgepaeck.otherEquipment', { returnObjects: true }) as string[]).map((item, idx) => (
+                                        <li key={idx}>{item}</li>
+                                    ))}
+                                </ul>
+                            </Panel>
+                            <Panel header={t('emergency.content.gepaeck.packlists.panelHeaders.bugout')} key="bugout">
+                                <h5>{t('emergency.content.gepaeck.packlists.groups.sleepShelter')}:</h5>
+                                <ul>
+                                    {(t('emergency.content.gepaeck.packlists.bugout.sleepShelter', { returnObjects: true }) as string[]).map((item, idx) => (
+                                        <li key={idx}>{item}</li>
+                                    ))}
+                                </ul>
+                                <h5>{t('emergency.content.gepaeck.packlists.groups.food')}:</h5>
+                                <ul>
+                                    {(t('emergency.content.gepaeck.packlists.bugout.food', { returnObjects: true }) as string[]).map((item, idx) => (
+                                        <li key={idx}>{item}</li>
+                                    ))}
+                                </ul>
+                                <h5>{t('emergency.content.gepaeck.packlists.groups.clothing')}:</h5>
+                                <ul>
+                                    {(t('emergency.content.gepaeck.packlists.bugout.clothing', { returnObjects: true }) as string[]).map((item, idx) => (
+                                        <li key={idx}>{item}</li>
+                                    ))}
+                                </ul>
+                                <h5>{t('emergency.content.gepaeck.packlists.groups.hygieneFirstAid')}:</h5>
+                                <ul>
+                                    {(t('emergency.content.gepaeck.packlists.bugout.hygieneFirstAid', { returnObjects: true }) as string[]).map((item, idx) => (
+                                        <li key={idx}>{item}</li>
+                                    ))}
+                                </ul>
+                                <h5>{t('emergency.content.gepaeck.packlists.groups.otherEquipment')}:</h5>
+                                <ul>
+                                    {(t('emergency.content.gepaeck.packlists.bugout.otherEquipment', { returnObjects: true }) as string[]).map((item, idx) => (
+                                        <li key={idx}>{item}</li>
+                                    ))}
+                                </ul>
+                            </Panel>
+                            <Panel header={t('emergency.content.gepaeck.packlists.panelHeaders.inchBag')} key="inchBag">
+                                <h5>{t('emergency.content.gepaeck.packlists.groups.sleepShelter')}:</h5>
+                                <ul>
+                                    {(t('emergency.content.gepaeck.packlists.inchBag.sleepShelter', { returnObjects: true }) as string[]).map((item, idx) => (
+                                        <li key={idx}>{item}</li>
+                                    ))}
+                                </ul>
+                                <h5>{t('emergency.content.gepaeck.packlists.groups.food')}:</h5>
+                                <ul>
+                                    {(t('emergency.content.gepaeck.packlists.inchBag.food', { returnObjects: true }) as string[]).map((item, idx) => (
+                                        <li key={idx}>{item}</li>
+                                    ))}
+                                </ul>
+                                <h5>{t('emergency.content.gepaeck.packlists.groups.clothing')}:</h5>
+                                <ul>
+                                    {(t('emergency.content.gepaeck.packlists.inchBag.clothing', { returnObjects: true }) as string[]).map((item, idx) => (
+                                        <li key={idx}>{item}</li>
+                                    ))}
+                                </ul>
+                                <h5>{t('emergency.content.gepaeck.packlists.groups.hygieneFirstAid')}:</h5>
+                                <ul>
+                                    {(t('emergency.content.gepaeck.packlists.inchBag.hygieneFirstAid', { returnObjects: true }) as string[]).map((item, idx) => (
+                                        <li key={idx}>{item}</li>
+                                    ))}
+                                </ul>
+                                <h5>{t('emergency.content.gepaeck.packlists.groups.tools')}:</h5>
+                                <ul>
+                                    {(t('emergency.content.gepaeck.packlists.inchBag.tools', { returnObjects: true }) as string[]).map((item, idx) => (
+                                        <li key={idx}>{item}</li>
+                                    ))}
+                                </ul>
+                                <h5>{t('emergency.content.gepaeck.packlists.groups.otherEquipment')}:</h5>
+                                <ul>
+                                    {(t('emergency.content.gepaeck.packlists.inchBag.otherEquipment', { returnObjects: true }) as string[]).map((item, idx) => (
+                                        <li key={idx}>{item}</li>
+                                    ))}
+                                </ul>
+                            </Panel>
+                        </Collapse>
+                    </div>
+
+                    <div id="tippsGepaeck">
+                        <h4>{t('emergency.sections.prepTips')}</h4>
+                        <ul>
+                            <li>{t('emergency.content.gepaeck.tips.b1')}</li>
+                            <li>{t('emergency.content.gepaeck.tips.b2')}</li>
+                            <li>{t('emergency.content.gepaeck.tips.b3')}</li>
+                            <li>{t('emergency.content.gepaeck.tips.b4')}</li>
+                        </ul>
+                    </div>
+
+                    <div id="lagerung">
+                        <h4>{t('emergency.sections.storagePlace')}</h4>
+                        <p>{t('emergency.content.gepaeck.storagePlace.p1')}</p>
+                    </div>
+
+                    <div id="fertige">
+                        <h4>{t('emergency.sections.readyKitsAvailable')}</h4>
+                        <p>{t('emergency.content.gepaeck.readyKitsAvailable.p1')}</p>
+                    </div>
+                </>
+            ),
+        },
+
+
+        sicherheit: {
+            title: t('emergency.titles.sicherheit'),
+            image: "/sicherheit.png",
+            content: (
+                <>
+                    {/* Inhaltsverzeichnis */}
+                    <div>
+                        <h3>{t('emergency.toc')}</h3>
+                        <ul>
+                            <li><a href="#warumSicherheit">{t('emergency.sections.safetyWhyHome')}</a></li>
+                            <li><a href="#bauTechnik">{t('emergency.sections.safetyMeasures')}</a></li>
+                            <li><a href="#tippsSicherheit">{t('emergency.sections.safetyMaintenanceEvac')}</a></li>
+                        </ul>
+                    </div>
+
+                    {/* Abschnitt: Warum Sicherheit im Haus? */}
+                    <div id="warumSicherheit">
+                        <h4>{t('emergency.sections.safetyWhyHome')}</h4>
+                        <p>{t('emergency.content.sicherheit.why.p1')}</p>
+                    </div>
+
+                    {/* Abschnitt: Bauliche & technische Maßnahmen */}
+                    <div id="bauTechnik">
+                        <h4>{t('emergency.sections.safetyMeasures')}</h4>
+                        <p>{t('emergency.content.sicherheit.measures.intro')}</p>
+
+                        <h5>{t('emergency.content.sicherheit.measures.roof.title')}</h5>
+                        <ul>
+                            <li>{t('emergency.content.sicherheit.measures.roof.items.b1')}</li>
+                            <li>{t('emergency.content.sicherheit.measures.roof.items.b2')}</li>
+                            <li>{t('emergency.content.sicherheit.measures.roof.items.b3')}</li>
+                            <li>{t('emergency.content.sicherheit.measures.roof.items.b4')}</li>
+                        </ul>
+
+                        <h5>{t('emergency.content.sicherheit.measures.garden.title')}</h5>
+                        <ul>
+                            <li>{t('emergency.content.sicherheit.measures.garden.items.b1')}</li>
+                            <li>{t('emergency.content.sicherheit.measures.garden.items.b2')}</li>
+                        </ul>
+
+                        <h5>{t('emergency.content.sicherheit.measures.wastewater.title')}</h5>
+                        <ul>
+                            <li>{t('emergency.content.sicherheit.measures.wastewater.items.b1')}</li>
+                            <li>{t('emergency.content.sicherheit.measures.wastewater.items.b2')}</li>
+                            <li>{t('emergency.content.sicherheit.measures.wastewater.items.b3')}</li>
+                        </ul>
+
+                        <h5>{t('emergency.content.sicherheit.measures.electrical.title')}</h5>
+                        <ul>
+                            <li>{t('emergency.content.sicherheit.measures.electrical.items.b1')}</li>
+                            <li>{t('emergency.content.sicherheit.measures.electrical.items.b2')}</li>
+                            <li>{t('emergency.content.sicherheit.measures.electrical.items.b3')}</li>
+                        </ul>
+
+                        <h5>{t('emergency.content.sicherheit.measures.heating.title')}</h5>
+                        <ul>
+                            <li>{t('emergency.content.sicherheit.measures.heating.items.b1')}</li>
+                            <li>{t('emergency.content.sicherheit.measures.heating.items.b2')}</li>
+                        </ul>
+
+                        <div className={style.alert}>
+                            <Alert
+                                message={t('emergency.content.sicherheit.alert.title')}
+                                description={
+                                    <p>
+                                        {t('emergency.content.sicherheit.alert.descPre')}
+                                        <a href="https://geoportal.bafg.de" target="_blank" rel="noopener noreferrer">
+                                            {t('emergency.content.sicherheit.alert.linkLabel')}
+                                        </a>
+                                        {t('emergency.content.sicherheit.alert.descPost')}
+                                    </p>
+                                }
+                                type="warning"
+                                showIcon
+                            />
+                        </div>
+                    </div>
+
+                    {/* Abschnitt: Tipps zur Wartung & Evakuierungsplanung */}
+                    <div id="tippsSicherheit">
+                        <h4>{t('emergency.sections.safetyMaintenanceEvac')}</h4>
+                        <ul>
+                            <li>{t('emergency.content.sicherheit.tips.b1')}</li>
+                            <li>{t('emergency.content.sicherheit.tips.b2')}</li>
+                            <li>{t('emergency.content.sicherheit.tips.b3')}</li>
+                            <li>{t('emergency.content.sicherheit.tips.b4')}</li>
+                        </ul>
+                    </div>
+                </>
+            ),
+        },
+        beduerfnisse: {
+            title: t('emergency.titles.beduerfnisse'),
+            image: "/beduerfnisse.png",
+            content: (
+                <>
+                    <p>{t('emergency.content.beduerfnisse.intro.p1')}</p>
+                    <p>
+                        <strong>{t('emergency.content.beduerfnisse.tips.title')}</strong>
+                        <ul>
+                            <li>{t('emergency.content.beduerfnisse.tips.b1')}</li>
+                            <li>{t('emergency.content.beduerfnisse.tips.b2')}</li>
+                            <li>{t('emergency.content.beduerfnisse.tips.b3')}</li>
+                            <li>{t('emergency.content.beduerfnisse.tips.b4')}</li>
+                        </ul>
+                    </p>
+                    <p>{t('emergency.content.beduerfnisse.outro.p1')}</p>
+                </>
+            ),
+        },
+    };
+}
 
 export default function NotfallDetail() {
+    const { t } = useTranslation();
     const { category } = useParams<{ category: string }>();
     const navigate = useNavigate();
     const location = useLocation();
-    const detail = detailsContent[category || "lebensmittel"] || {
-        title: "Nicht gefunden",
+    const contentMap = getDetailsContent(t);
+    const detail = contentMap[category || "lebensmittel"] || {
+        title: t('breadcrumb.emergency'),
         image: "",
-        content: "Für diese Kategorie liegen derzeit keine Informationen vor.",
+        content: t('detail.noIdError'),
     };
 
     // Behandelt das Scrollen zu Anchor-Links innerhalb der Komponente
@@ -934,10 +794,10 @@ export default function NotfallDetail() {
             <Button
                 type="default"
                 icon={<ArrowLeftOutlined />}
-                onClick={() => navigate("/")}
+                onClick={() => navigate(homeRoute)}
                 style={{ marginBottom: "16px" }}
             >
-                Zurück
+                {t('detail.buttons.back')}
             </Button>
             <Title level={2}>{detail.title}</Title>
             {detail.image && (

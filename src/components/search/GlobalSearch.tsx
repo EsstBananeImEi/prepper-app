@@ -4,6 +4,8 @@ import { SearchOutlined } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
 import { useStore } from '../../store/Store';
 import { BasketModel, StorageModel } from '../storage-components/StorageModel';
+import { useTranslation } from 'react-i18next';
+import { basketRoute, checklistRoute, detailsRouteBase, itemIdRoute, itemsRoute, newItemRoute } from '../../shared/Constants';
 
 const { Text } = Typography;
 
@@ -38,30 +40,36 @@ interface SearchResult {
 }
 
 const GlobalSearch: React.FC = () => {
+    const { t } = useTranslation();
     const [searchValue, setSearchValue] = useState('');
     const [options, setOptions] = useState<SearchResult[]>([]);
     const { store } = useStore();
     const navigate = useNavigate();
 
-    // Emergency/Notfall-Kategorien für die Suche
-    const emergencyCategories = [
-        { key: 'lebensmittel', title: 'Lebensmittelvorrat', path: '/details/lebensmittel' },
-        { key: 'wasser', title: 'Trinkwasservorrat', path: '/details/wasser' },
-        { key: 'medikamente', title: 'Medikamente & Erste-Hilfe', path: '/details/medikamente' },
-        { key: 'hygiene', title: 'Hygiene & Desinfektion', path: '/details/hygiene' },
-        { key: 'informieren', title: 'Notfallausrüstung & Kommunikation', path: '/details/informieren' },
-        { key: 'dokumente', title: 'Wichtige Dokumente', path: '/details/dokumente' },
-        { key: 'gepaeck', title: 'Notfallgepäck & Fluchtrucksack', path: '/details/gepaeck' },
-        { key: 'sicherheit', title: 'Sicherheit im Haus', path: '/details/sicherheit' },
-        { key: 'beduerfnisse', title: 'Spezielle Bedürfnisse', path: '/details/beduerfnisse' }
+    // Emergency/Notfall-Kategorien für die Suche (Titel via i18n, Pfade via Routen-Konstanten)
+    const emergencyCategoryKeys: string[] = [
+        'lebensmittel',
+        'wasser',
+        'medikamente',
+        'hygiene',
+        'informieren',
+        'dokumente',
+        'gepaeck',
+        'sicherheit',
+        'beduerfnisse'
     ];
+    const emergencyCategories = emergencyCategoryKeys.map((key) => ({
+        key,
+        title: t(`emergency.titles.${key}`),
+        path: `${detailsRouteBase}/${key}`
+    }));
 
     // Seiten für die Suche
     const pages = [
-        { key: 'storage', title: 'Lagerbestand', path: '/items' },
-        { key: 'checklist', title: 'Checkliste', path: '/checklist' },
-        { key: 'basket', title: 'Einkaufsliste', path: '/basket' },
-        { key: 'add-item', title: 'Neues Item hinzufügen', path: '/items/new' }
+        { key: 'storage', title: t('search.pages.storage'), path: itemsRoute },
+        { key: 'checklist', title: t('search.pages.checklist'), path: checklistRoute },
+        { key: 'basket', title: t('search.pages.basket'), path: basketRoute },
+        { key: 'add-item', title: t('search.pages.addItem'), path: newItemRoute }
     ];
 
     // Checklist-Daten für die Suche (aus CheckListItem.tsx)
@@ -135,7 +143,7 @@ const GlobalSearch: React.FC = () => {
                                 <Text strong>{item.name}</Text>
                                 <br />
                                 <Text type="secondary" style={{ fontSize: 12 }}>
-                                    {item.amount || 0} {item.unit || ''} • Lagerbestand
+                                    {item.amount || 0} {item.unit || ''} • {t('search.labels.storageStock')}
                                 </Text>
                             </div>
                         </div>
@@ -169,7 +177,7 @@ const GlobalSearch: React.FC = () => {
                                 <Text strong>{item.name}</Text>
                                 <br />
                                 <Text type="secondary" style={{ fontSize: 12 }}>
-                                    Einkaufswagen
+                                    {t('search.labels.cart')}
                                 </Text>
                             </div>
                         </div>
@@ -193,7 +201,7 @@ const GlobalSearch: React.FC = () => {
                     <div>
                         <Text strong>{category.title}</Text>
                         <br />
-                        <Text type="secondary" style={{ fontSize: 12 }}>Notfallvorsorge</Text>
+                        <Text type="secondary" style={{ fontSize: 12 }}>{t('search.labels.emergency')}</Text>
                     </div>
                 ),
                 type: 'emergency' as const,
@@ -215,7 +223,7 @@ const GlobalSearch: React.FC = () => {
                     <div>
                         <Text strong>{page.title}</Text>
                         <br />
-                        <Text type="secondary" style={{ fontSize: 12 }}>Seite</Text>
+                        <Text type="secondary" style={{ fontSize: 12 }}>{t('search.labels.page')}</Text>
                     </div>
                 ),
                 type: 'page' as const,
@@ -239,7 +247,7 @@ const GlobalSearch: React.FC = () => {
                         <Text strong>{item.name}</Text>
                         <br />
                         <Text type="secondary" style={{ fontSize: 12 }}>
-                            {item.groupName} • Checkliste
+                            {item.groupName} • {t('search.labels.checklist')}
                         </Text>
                     </div>
                 ),
@@ -292,10 +300,10 @@ const GlobalSearch: React.FC = () => {
                     const storageItem = selected.data as StorageModel;
                     console.log('Navigating to storage item:', storageItem);
                     if (storageItem && storageItem.id) {
-                        navigate(`/items/${storageItem.id}`);
+                        navigate(itemIdRoute(storageItem.id));
                     } else {
                         console.warn('GlobalSearch: StorageModel hat keine ID:', storageItem);
-                        navigate('/items'); // Fallback zur Items-Liste
+                        navigate(itemsRoute); // Fallback zur Items-Liste
                     }
                     break;
                 }
@@ -324,14 +332,14 @@ const GlobalSearch: React.FC = () => {
                     const basketItem = selected.data as BasketModel;
                     console.log('Navigating to basket for item:', basketItem);
                     // Für Einkaufswagen navigieren wir immer zur basket-Seite
-                    navigate('/basket');
+                    navigate(basketRoute);
                     break;
                 }
                 case 'checklist': {
                     const checklistItem = selected.data as ChecklistItem;
                     console.log('Navigating to checklist for item:', checklistItem);
                     // Für Checklist-Items navigieren wir zur Checklist-Seite
-                    navigate('/checklist');
+                    navigate(checklistRoute);
                     break;
                 }
                 default: {
@@ -356,10 +364,10 @@ const GlobalSearch: React.FC = () => {
             onSearch={handleSearch}
             onSelect={handleSelect}
             value={searchValue}
-            notFoundContent={searchValue ? <Empty description="Keine Ergebnisse gefunden" /> : null}
+            notFoundContent={searchValue ? <Empty description={t('search.no_results')} /> : null}
         >
             <Input
-                placeholder="Suche nach Items, Checkliste, Kategorien oder Seiten..."
+                placeholder={t('search.placeholder')}
                 prefix={<SearchOutlined />}
                 allowClear
                 style={{ borderRadius: 'var(--border-radius-md)' }}

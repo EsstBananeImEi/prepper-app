@@ -3,6 +3,7 @@ import React, { ReactElement } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { Alert, Button } from 'antd';
 import { useTranslation } from 'react-i18next';
+import { loginRoute } from '../../../shared/Constants';
 
 export default function ResetSuccessForm(): ReactElement {
     const location = useLocation();
@@ -30,7 +31,7 @@ export default function ResetSuccessForm(): ReactElement {
                 showIcon
                 style={{ margin: '20px 0', width: '100%', maxWidth: '400px' }}
             />
-            <Button type="primary" onClick={() => navigate('/login')}>
+            <Button type="primary" onClick={() => navigate(loginRoute)}>
                 {t('auth.resetSuccess.toLogin')}
             </Button>
         </div>

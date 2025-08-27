@@ -96,25 +96,15 @@ const BreadcrumbNav: React.FC = () => {
             }
         } else if (pathname.startsWith(`${detailsRouteBase}/`)) {
             const category = pathname.split('/')[2];
-            const categoryNames: Record<string, string> = {
-                'lebensmittel': 'Lebensmittelvorrat',
-                'wasser': 'Trinkwasservorrat',
-                'medikamente': 'Medikamente & Erste-Hilfe',
-                'hygiene': 'Hygiene & Desinfektion',
-                'informieren': 'Notfallausrüstung & Kommunikation',
-                'dokumente': 'Wichtige Dokumente',
-                'gepaeck': 'Notfallgepäck & Fluchtrucksack',
-                'sicherheit': 'Sicherheit im Haus',
-                'beduerfnisse': 'Spezielle Bedürfnisse'
-            };
-
             items.push({
                 title: <Link to={homeRoute}>{t('breadcrumb.emergency')}</Link>,
                 key: 'emergency'
             });
 
+            const i18nTitleKey = `emergency.titles.${category}`;
+            const title = t(i18nTitleKey);
             items.push({
-                title: <Link to="">{categoryNames[category] || category}</Link>,
+                title: <Link to="">{title !== i18nTitleKey ? title : category}</Link>,
                 key: category
             });
         } else if (pathname === checklistRoute) {
@@ -169,7 +159,7 @@ const BreadcrumbNav: React.FC = () => {
                     type="default"
                     icon={<FilterOutlined />}
                     onClick={openStorageFilters}
-                    aria-label={activeFilterCount > 0 ? `${t('common.filter')} öffnen – ${activeFilterCount} aktiv` : `${t('common.filter')} öffnen`}
+                    aria-label={activeFilterCount > 0 ? t('common.filter_open_active', { count: activeFilterCount }) : t('common.filter_open')}
                     className={styles.filterButton}
                 >
                     {activeFilterCount > 0 ? t('common.filter_with_count', { count: activeFilterCount }) : t('common.filter')}
@@ -180,7 +170,7 @@ const BreadcrumbNav: React.FC = () => {
                     type="default"
                     icon={<FilterOutlined />}
                     onClick={openShoppingFilters}
-                    aria-label={activeShoppingFilterCount > 0 ? `${t('common.filter')} öffnen – ${activeShoppingFilterCount} aktiv` : `${t('common.filter')} öffnen`}
+                    aria-label={activeShoppingFilterCount > 0 ? t('common.filter_open_active', { count: activeShoppingFilterCount }) : t('common.filter_open')}
                     className={styles.filterButton}
                 >
                     {activeShoppingFilterCount > 0 ? t('common.filter_with_count', { count: activeShoppingFilterCount }) : t('common.filter')}
