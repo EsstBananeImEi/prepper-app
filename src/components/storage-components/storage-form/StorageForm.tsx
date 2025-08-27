@@ -1,7 +1,8 @@
 import React, { ReactElement, SyntheticEvent, useState, useEffect, useMemo, useRef } from 'react';
 import { Descriptions, Image, Input, Select, Button, Alert, Upload, message, Card, Steps } from 'antd';
 import { PlusOutlined, MinusOutlined, UploadOutlined } from '@ant-design/icons';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useLocation, useNavigate, useParams } from 'react-router-dom';
+import type { Location } from 'react-router-dom';
 import axios from 'axios';
 import { storageApi, useDemensions, useStorageApi } from '../../../hooks/StorageApi';
 import {
@@ -38,9 +39,12 @@ const noop = () => {
     // intentionally left blank
 };
 
+type PrefillState = { prefill?: { categories?: string[]; icon?: string; amount?: number } } | null;
+
 export default function StorageDetailForm(): ReactElement {
     const { t } = useTranslation();
     const { id } = useParams<{ id?: string }>();
+    const location = useLocation() as Location<PrefillState>;
     const isNew = !id;
     const history = useNavigate();
     const { store, dispatch } = useStore();
@@ -91,6 +95,124 @@ export default function StorageDetailForm(): ReactElement {
     const [nutrients, setNutrients] = useState<NutrientValueModel[]>(
         initialItem.nutrients?.values || []
     );
+
+    // Run-once guard for suggestion-based prefill
+    const suggestionsAppliedRef = useRef<boolean>(false);
+
+    // Prefill name when navigating from basket create intent via query param
+    useEffect(() => {
+        if (!id) {
+            try {
+                const searchParams = new URLSearchParams(location.search);
+                const prefillName = (searchParams.get('name') || '').trim();
+                if (prefillName) {
+                    setName((prev) => prev && prev.trim().length > 0 ? prev : prefillName);
+                }
+            } catch { /* ignore */ }
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [location.search, id]);
+
+    // Prefill other fields (categories, icon, amount) via navigation state when creating new
+    useEffect(() => {
+        if (!id && location && location.state && location.state.prefill) {
+            try {
+                const prefill = location.state.prefill;
+                if (prefill) {
+                    let applied = false;
+                    if (Array.isArray(prefill.categories) && prefill.categories.length > 0) {
+                        const cats: string[] = prefill.categories.filter((c): c is string => Boolean(c));
+                        if (cats.length > 0) {
+                            setCategories((prev) => (prev && prev.length > 0) ? prev : cats);
+                            applied = true;
+                        }
+                    }
+                    if (typeof prefill.icon === 'string') {
+                        const iconStr = prefill.icon.trim();
+                        if (iconStr.length > 0) {
+                            setIcon((prev) => (prev && prev.trim().length > 0) ? prev : iconStr);
+                            applied = true;
+                        }
+                    }
+                    if (typeof prefill.amount !== 'undefined') {
+                        const amt = Number(prefill.amount);
+                        if (!isNaN(amt) && amt >= 0) {
+                            setAmount((prev) => (prev && prev.trim().length > 0) ? prev : String(amt));
+                            applied = true;
+                        }
+                    }
+                    if (applied) {
+                        try { message.info(i18n.t('form.notifications.prefilledFromBasket')); } catch { /* noop */ }
+                    }
+                }
+            } catch { /* ignore */ }
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [id, location]);
+
+    // Fuzzy suggestion-based prefill from existing storage items
+    useEffect(() => {
+        if (id) return; // only for new item
+        if (suggestionsAppliedRef.current) return; // only once
+        const nm = (name || '').trim();
+        if (!nm) return;
+        // If user already filled key fields, don't prefill
+        const alreadyHas = {
+            categories: (categories && categories.length > 0),
+            unit: (unit && unit.trim().length > 0),
+            storageLocation: (storageLocation && storageLocation.trim().length > 0),
+            icon: (icon && icon.trim().length > 0)
+        } as const;
+        const needsAny = !alreadyHas.categories || !alreadyHas.unit || !alreadyHas.storageLocation || !alreadyHas.icon;
+        if (!needsAny) return;
+
+        const normalize = (s: string) => s.toLowerCase().replace(/[^a-z0-9äöüß\s]/gi, ' ').replace(/\s+/g, ' ').trim();
+        const tokens = (s: string) => normalize(s).split(' ').filter(Boolean);
+        const uniq = <T,>(arr: T[]) => Array.from(new Set(arr));
+
+        const nmTokens = uniq(tokens(nm));
+        if (nmTokens.length === 0) return;
+
+        let best: { item: StorageModel; score: number } | null = null;
+        for (const it of store.storeItems) {
+            const itTokens = uniq(tokens(it.name));
+            let overlap = 0;
+            for (const t of nmTokens) if (itTokens.includes(t)) overlap++;
+            const overlapRatio = overlap / Math.max(1, nmTokens.length);
+            const substr = normalize(it.name).includes(normalize(nm)) || normalize(nm).includes(normalize(it.name)) ? 0.15 : 0;
+            const score = overlapRatio + substr;
+            if (!best || score > best.score) best = { item: it, score };
+        }
+
+        const strong = 0.6;
+        const fallback = 0.45;
+        if (best && (best.score >= strong || best.score >= fallback)) {
+            const cand = best.item;
+            let applied = false;
+            if (!alreadyHas.categories && Array.isArray(cand.categories) && cand.categories.length > 0) {
+                setCategories((prev) => (prev && prev.length > 0) ? prev : cand.categories!.filter(Boolean));
+                applied = true;
+            }
+            if (!alreadyHas.unit && typeof cand.unit === 'string' && cand.unit.trim().length > 0) {
+                setUnit((prev) => (prev && prev.trim().length > 0) ? prev : cand.unit);
+                applied = true;
+            }
+            if (!alreadyHas.storageLocation && typeof cand.storageLocation === 'string' && cand.storageLocation.trim().length > 0) {
+                setStorageLocation((prev) => (prev && prev.trim().length > 0) ? prev : cand.storageLocation);
+                applied = true;
+            }
+            if (!alreadyHas.icon && typeof cand.icon === 'string' && cand.icon.trim().length > 0) {
+                const iconStr2 = cand.icon.trim();
+                setIcon((prev) => (prev && prev.trim().length > 0) ? prev : iconStr2);
+                applied = true;
+            }
+            if (applied) {
+                suggestionsAppliedRef.current = true;
+                try { message.info(i18n.t('form.notifications.prefilledFromSuggestions')); } catch { /* noop */ }
+            }
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [id, name, store.storeItems]);
 
     // Optionen aus der DB
     const [dbCategories, setDbCategories] = useState<{ id: number; name: string }[]>([]);

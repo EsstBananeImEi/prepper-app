@@ -192,6 +192,7 @@ const resources = {
                     errorTester: {
                         cardTitle: '🧪 ErrorBoundary Tester',
                         infoAlertTitle: 'ℹ️ Test-Kategorien',
+                        prefilledFromSuggestions: 'Prefilled using suggestions from existing items',
                         infoAlertDesc1: '🟢 Wird von ErrorBoundary abgefangen: Render-Cycle Fehler',
                         infoAlertDesc2: '🔴 Wird NICHT abgefangen: Async-Fehler, Event-Handler, Network-Requests',
                         infoAlertDesc3: '📝 Alle Tests werden geloggt: Prüfen Sie die Browser-Konsole',
@@ -1154,6 +1155,8 @@ const resources = {
                     imageCompressedInfo: 'Bild wurde komprimiert für bessere Performance',
                     imageLoadedSuccess: 'Bild erfolgreich geladen',
                     imageProcessError: 'Fehler beim Verarbeiten des Bildes',
+                    prefilledFromBasket: 'Vorbefüllt aus Einkaufswagen',
+                    prefilledFromSuggestions: 'Mit Vorschlägen aus vorhandenen Artikeln vorbefüllt',
                     createdSuccess: 'Item erfolgreich erstellt',
                     updatedSuccess: 'Item erfolgreich aktualisiert'
                 },
@@ -1284,6 +1287,12 @@ const resources = {
                         nameRequired: 'Bitte einen Artikelnamen eingeben',
                         amountMin: 'Menge muss mindestens 1 sein'
                     }
+                },
+                addToStorage: {
+                    confirmTitle: 'Nicht im Lager',
+                    confirmDesc: '"{{name}}" ist noch nicht im Lager. Jetzt anlegen?',
+                    yes: 'Ja, anlegen',
+                    no: 'Abbrechen'
                 },
                 placeholders: {
                     searchName: 'Name suchen',
@@ -1541,7 +1550,8 @@ const resources = {
                     }
                     ,
                     errorTester: {
-                        cardTitle: '🧪 ErrorBoundary tester',
+                        imageProcessError: 'Image processing error',
+                        prefilledFromBasket: 'Prefilled from shopping cart',
                         infoAlertTitle: 'ℹ️ Test categories',
                         infoAlertDesc1: '🟢 Caught by ErrorBoundary: render-cycle errors',
                         infoAlertDesc2: '🔴 NOT caught: async errors, event handlers, network requests',
@@ -2612,6 +2622,12 @@ const resources = {
                         nameRequired: 'Please enter an item name',
                         amountMin: 'Amount must be at least 1'
                     }
+                },
+                addToStorage: {
+                    confirmTitle: 'Not in storage',
+                    confirmDesc: '"{{name}}" is not in storage yet. Create it now?',
+                    yes: 'Yes, create',
+                    no: 'Cancel'
                 },
                 placeholders: {
                     searchName: 'Search name',

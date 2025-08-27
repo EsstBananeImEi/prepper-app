@@ -1,15 +1,16 @@
 import { DeleteOutlined, MinusCircleOutlined, PlusCircleOutlined } from '@ant-design/icons'
-import { Badge, Card, Space } from 'antd'
+import { Badge, Card, Modal, Space } from 'antd'
 import React, { ReactElement, SyntheticEvent, useEffect, useMemo, useState } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { useDemensions } from '../../../hooks/StorageApi'
-import { itemIdRoute } from '../../../shared/Constants'
+import { itemIdRoute, newItemRoute } from '../../../shared/Constants'
 import { Action, useStore } from '../../../store/Store'
 import { Dimension } from '../../../types/Types'
 import { BasketModel, StorageModel } from '../StorageModel'
 import { actionHandler } from '../../../store/Actions'
 import SafeAvatar from '../../common/SafeAvatar'
 import listStyles from '../storage-list/StorageList.module.css'
+import { useTranslation } from 'react-i18next'
 
 interface Props {
     storedItems: BasketModel[]
@@ -17,7 +18,9 @@ interface Props {
 }
 
 export default function ShoppingCard(props: Props): ReactElement {
+    const { t } = useTranslation();
     const { store, dispatch } = useStore()
+    const navigate = useNavigate();
     const onChangeCard = (event: SyntheticEvent, action: Action): void => {
         event.preventDefault()
         actionHandler(action, dispatch)
@@ -49,8 +52,32 @@ export default function ShoppingCard(props: Props): ReactElement {
             .reduce((acc, item) => acc + parseInt(item.amount), 0)
     }
 
-    const resolveStorageByName = (name: string): StorageModel | undefined =>
-        store.storeItems.find(i => i.name === name)
+    const resolveStorageByName = (name: string): StorageModel | undefined => {
+        const target = (name || '').trim().toLowerCase();
+        return store.storeItems.find(i => (i.name || '').trim().toLowerCase() === target);
+    }
+
+    const confirmAddToStorage = (basketItem: BasketModel) => {
+        const name = basketItem.name;
+        const totalAmount = countItemsByName(name);
+        Modal.confirm({
+            title: t('shopping.addToStorage.confirmTitle'),
+            content: t('shopping.addToStorage.confirmDesc', { name }),
+            okText: t('shopping.addToStorage.yes'),
+            cancelText: t('shopping.addToStorage.no'),
+            onOk: () => {
+                navigate(`${newItemRoute}?name=${encodeURIComponent(name)}`, {
+                    state: {
+                        prefill: {
+                            categories: basketItem.categories || [],
+                            icon: basketItem.icon || '',
+                            amount: totalAmount
+                        }
+                    }
+                })
+            }
+        })
+    }
     const onDecreaseAmount = (event: SyntheticEvent, basketItems: BasketModel) => {
         const action: Action = {
             type: 'DECREASE_AMOUNT', basketItems:
@@ -79,10 +106,16 @@ export default function ShoppingCard(props: Props): ReactElement {
             const idForLink = storageItem?.id ?? basketItem.id
             const canLink = !!storageItem
             const basketCount = countItemsByName(basketItem.name)
-            const subtitle = basketItem.categories && trimText(basketItem.categories.join(', '))
+            const effectiveCategories: string[] = (basketItem.categories && basketItem.categories.length > 0)
+                ? basketItem.categories
+                : (storageItem?.categories || [])
+            const subtitle = effectiveCategories.length > 0 ? trimText(effectiveCategories.join(', ')) : undefined
             const mainCategory = (basketItem.categories && basketItem.categories.length > 0
                 ? basketItem.categories[0]
                 : (storageItem?.categories && storageItem.categories[0]) || '')
+            const iconSrc = (basketItem.icon && basketItem.icon.trim().length > 0)
+                ? basketItem.icon
+                : (storageItem?.icon || '')
 
             // Desktop look: image banner above title, inventory row at bottom (without label text)
             if (isDesktop) {
@@ -101,7 +134,7 @@ export default function ShoppingCard(props: Props): ReactElement {
                                         <Link to={itemIdRoute(idForLink)}>
                                             <div className={listStyles.desktopContent}>
                                                 <div className={listStyles.desktopHeader}>
-                                                    <SafeAvatar className={listStyles.desktopImage} src={basketItem.icon} showWarnings={process.env.NODE_ENV === 'development'} />
+                                                    <SafeAvatar className={listStyles.desktopImage} src={iconSrc} showWarnings={process.env.NODE_ENV === 'development'} />
                                                 </div>
                                                 <div className={listStyles.desktopTitle} title={basketItem.name}>{basketItem.name}</div>
                                                 <div className={listStyles.desktopInventoryRow}>
@@ -110,9 +143,15 @@ export default function ShoppingCard(props: Props): ReactElement {
                                             </div>
                                         </Link>
                                     ) : (
-                                        <div className={listStyles.desktopContent}>
+                                        <div
+                                            className={listStyles.desktopContent}
+                                            onClick={() => confirmAddToStorage(basketItem)}
+                                            role="button"
+                                            tabIndex={0}
+                                            onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); confirmAddToStorage(basketItem); } }}
+                                        >
                                             <div className={listStyles.desktopHeader}>
-                                                <SafeAvatar className={listStyles.desktopImage} src={basketItem.icon} showWarnings={process.env.NODE_ENV === 'development'} />
+                                                <SafeAvatar className={listStyles.desktopImage} src={iconSrc} showWarnings={process.env.NODE_ENV === 'development'} />
                                             </div>
                                             <div className={listStyles.desktopTitle} title={basketItem.name}>{basketItem.name}</div>
                                             <div className={listStyles.desktopInventoryRow}>
@@ -144,7 +183,7 @@ export default function ShoppingCard(props: Props): ReactElement {
                                         <div className={listStyles.cardHeader}>
                                             <div className={listStyles.cardImage}>
                                                 <Badge count={basketCount} style={{ backgroundColor: '#52c41a' }} offset={[-6, 6]}>
-                                                    <SafeAvatar className={listStyles.cardAvatar} src={basketItem.icon} showWarnings={process.env.NODE_ENV === 'development'} />
+                                                    <SafeAvatar className={listStyles.cardAvatar} src={iconSrc} showWarnings={process.env.NODE_ENV === 'development'} />
                                                 </Badge>
                                             </div>
                                             <div className={listStyles.cardInfo}>
@@ -158,11 +197,17 @@ export default function ShoppingCard(props: Props): ReactElement {
                                     </div>
                                 </Link>
                             ) : (
-                                <div className={listStyles.cardContent}>
+                                <div
+                                    className={listStyles.cardContent}
+                                    onClick={() => confirmAddToStorage(basketItem)}
+                                    role="button"
+                                    tabIndex={0}
+                                    onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); confirmAddToStorage(basketItem); } }}
+                                >
                                     <div className={listStyles.cardHeader}>
                                         <div className={listStyles.cardImage}>
                                             <Badge count={basketCount} style={{ backgroundColor: '#52c41a' }} offset={[-6, 6]}>
-                                                <SafeAvatar className={listStyles.cardAvatar} src={basketItem.icon} showWarnings={process.env.NODE_ENV === 'development'} />
+                                                <SafeAvatar className={listStyles.cardAvatar} src={iconSrc} showWarnings={process.env.NODE_ENV === 'development'} />
                                             </Badge>
                                         </div>
                                         <div className={listStyles.cardInfo}>
