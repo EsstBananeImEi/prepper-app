@@ -1,5 +1,5 @@
 import axios, { AxiosResponse, AxiosError, InternalAxiosRequestConfig } from 'axios';
-import { baseApiUrl } from '../shared/Constants';
+import { baseApiUrl, validateAdminApi, authRefreshApi } from '../shared/Constants';
 
 // Enhanced API interceptor with admin validation
 export const createSecureApiClient = () => {
@@ -71,7 +71,7 @@ export const createSecureApiClient = () => {
                             // Start refresh
                             isRefreshing = true;
                             refreshPromise = axios
-                                .post(`${baseApiUrl}/auth/refresh`, {}, {
+                                .post(`${baseApiUrl}${authRefreshApi}`, {}, {
                                     headers: { Authorization: `Bearer ${user.refresh_token}` }
                                 })
                                 .then((refreshResponse) => {
@@ -124,40 +124,8 @@ export const adminApi = {
     // Validate admin status (server-side)
     validateAdmin: async (): Promise<{ isAdmin: boolean; user?: unknown }> => {
         const api = createSecureApiClient();
-        const response = await api.get('/auth/validate-admin');
+        const response = await api.get(validateAdminApi);
         return response.data;
-    },
-
-    // Get admin dashboard data
-    getDashboardData: async (): Promise<unknown> => {
-        const api = createSecureApiClient();
-        const response = await api.get('/admin/dashboard');
-        return response.data;
-    },
-
-    // Admin-only user management
-    getUsers: async (): Promise<unknown[]> => {
-        const api = createSecureApiClient();
-        const response = await api.get('/admin/users');
-        return response.data;
-    },
-
-    // Admin-only system info
-    getSystemInfo: async (): Promise<unknown> => {
-        const api = createSecureApiClient();
-        const response = await api.get('/admin/system-info');
-        return response.data;
-    }
-};
-
-// Utility function to check if current request has admin privileges
-export const validateAdminRequest = async (): Promise<boolean> => {
-    try {
-        const result = await adminApi.validateAdmin();
-        return result.isAdmin;
-    } catch (error) {
-        console.error('Admin validation failed:', error);
-        return false;
     }
 };
 

@@ -1,5 +1,4 @@
 import { NutrientFactoryType } from "../types/Types"
-import { values } from "lodash"
 
 export function pluralFormFactory(word: string, length: number): string {
     const unit = (word || '').trim()

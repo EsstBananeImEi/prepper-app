@@ -1,4 +1,4 @@
-import { groupsApi, groupIdApi, groupMembersApi, groupInviteApi, groupGenerateInviteTokenApi, groupInvitationsApi, groupRevokeInvitationApi, groupJoinApi, groupJoinInvitationApi, groupLeaveApi, groupUpdateApi, groupDeleteApi, groupRemoveUserApi } from '../shared/Constants';
+import { groupsApi, groupMembersApi, groupInviteApi, groupGenerateInviteTokenApi, groupInvitationsApi, groupRevokeInvitationApi, groupJoinApi, groupJoinInvitationApi, groupLeaveApi, groupUpdateApi, groupDeleteApi, groupRemoveUserApi } from '../shared/Constants';
 import { GroupModel, GroupMemberModel, GroupInvitationModel, GroupPendingInvitationModel } from '../shared/Models';
 import { handleApiError } from './useApi';
 import { ImageCompressionUtils } from '../utils/imageCompressionUtils';

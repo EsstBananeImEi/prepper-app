@@ -15,6 +15,7 @@ export const loginApi = `/login`;
 export const registerApi = `/register`;
 export const forgotPasswordApi = `/forgot-password`;
 export const refreshTokenApi = `/refresh`;
+export const authRefreshApi = `/auth/refresh`;
 // Use relative path; axios client has baseURL
 export const validateAdminApi = `/auth/validate-admin`;
 export const activateAccountApi = (token: string): string => `/activate-account/${token}`;
@@ -76,4 +77,8 @@ export const itemIdRoute = (id: number | string): string => `${itemsRoute}/${Str
 export const newItemRoute = `${itemsRoute}/new`;
 export const editItemRoute = (id: number | string): string => `${itemIdRoute(id)}/edit`;
 export const errorRoute = (message: string): string => `${itemsRoute}/error/${message}`;
+
+// ✅ Error/Monitoring API Endpoints
+export const errorsApi = `/api/errors`;
+export const errorsNotifyApi = `/api/errors/notify`;
 

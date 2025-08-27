@@ -1,7 +1,7 @@
 import React, { Component, ErrorInfo, ReactNode } from 'react';
 import { Result, Button, Typography } from 'antd';
 import { BugOutlined, ReloadOutlined, MailOutlined } from '@ant-design/icons';
-import { baseApiUrl } from '../../shared/Constants';
+import { errorsApi, errorsNotifyApi } from '../../shared/Constants';
 import createSecureApiClient from '../../utils/secureApiClient';
 
 const { Paragraph, Text } = Typography;
@@ -127,7 +127,7 @@ class ErrorBoundary extends Component<Props, State> {
         try {
 
             const api = createSecureApiClient();
-            await api.post('/api/errors', errorReport);
+            await api.post(errorsApi, errorReport);
         } catch (e) {
             console.error('Failed to log to server:', e);
             // Fallback: Speichere in localStorage für späteren Upload
@@ -139,7 +139,7 @@ class ErrorBoundary extends Component<Props, State> {
         try {
 
             const api = createSecureApiClient();
-            await api.post('/api/errors/notify', {
+            await api.post(errorsNotifyApi, {
                 ...errorReport,
                 notificationType: 'email'
             });
@@ -185,7 +185,7 @@ class ErrorBoundary extends Component<Props, State> {
             for (const errorReport of failedUploads) {
                 try {
                     const api = createSecureApiClient();
-                    await api.post('/api/errors', {
+                    await api.post(errorsApi, {
                         ...errorReport,
                         retryAttempt: true,
                         retryTimestamp: new Date().toISOString()
