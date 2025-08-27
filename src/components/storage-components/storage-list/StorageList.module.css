@@ -412,3 +412,62 @@
     font-size: 18px !important;
     color: #666 !important;
 }
+
+/* Dedicated desktop card styles (separate from mobile cards) */
+.desktopCard {
+    border-radius: 12px !important;
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.06);
+    border: 1px solid #f0f0f0 !important;
+    overflow: hidden;
+    width: 200px;
+    height: 200px;
+}
+
+.desktopCard :global(.ant-card-body) {
+    padding: 12px;
+}
+
+.desktopCard :global(.ant-card-actions) {
+    margin-top: 0;
+}
+
+.desktopContent {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    gap: 8px;
+}
+
+.desktopHeader {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 8px;
+    align-items: center;
+}
+
+.desktopAvatar {
+    width: 40px !important;
+    height: 40px !important;
+    border-radius: 8px;
+}
+
+.desktopTitle {
+    font-weight: 600;
+    line-height: 1.2;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.desktopInventoryRow {
+    margin-top: auto;
+}
+
+.desktopInventory {
+    font-size: 12px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    min-height: 1.2em;
+}

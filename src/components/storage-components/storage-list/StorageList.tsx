@@ -6,6 +6,7 @@ import { useDemensions } from '../../../hooks/StorageApi';
 import { newItemRoute } from '../../../shared/Constants';
 import { StorageModel } from '../StorageModel';
 import StorageCardItem from './storage-item/StorageCardItem';
+import StorageDesktopCardItem from './storage-item/StorageDesktopCardItem';
 import StorageListItem from './storage-item/StorageListItem';
 import styles from './StorageList.module.css';
 import { useStore } from '../../../store/Store';
@@ -21,6 +22,7 @@ export default function StorageList(): ReactElement {
     const [dimensions] = useDemensions(handleChange, currentPage);
     // Compute portrait directly from current dimensions to react instantly on rotate
     const isPortrait = dimensions.height >= dimensions.width;
+    const isDesktop = !isPortrait && dimensions.width >= 1000;
 
     // Filters & sorting
     const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
@@ -498,7 +500,11 @@ export default function StorageList(): ReactElement {
                                     className="space-align-block"
                                 >
                                     <Space>
-                                        <StorageCardItem storageItem={storageItem} />
+                                        {isDesktop ? (
+                                            <StorageDesktopCardItem storageItem={storageItem} />
+                                        ) : (
+                                            <StorageCardItem storageItem={storageItem} />
+                                        )}
                                     </Space>
                                 </div>
                             ))}
