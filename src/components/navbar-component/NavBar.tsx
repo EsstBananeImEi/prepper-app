@@ -25,10 +25,12 @@ import GlobalSearch from '../search/GlobalSearch';
 import ApiDebugPanel from '../debug/ApiDebugPanel';
 import DraggableDebugButton from '../debug/DraggableDebugButton';
 import { useAdminValidation } from '../../hooks/useAdminValidation';
+import { useTranslation } from 'react-i18next';
 
 const { Text } = Typography;
 
 export default function NavBar(): ReactElement {
+    const { t } = useTranslation();
     const { Header } = Layout;
     const [dimensions] = useDemensions(() => 1, 0);
     const location = useLocation();
@@ -102,7 +104,7 @@ export default function NavBar(): ReactElement {
                             className={style.userAvatar}
                         />
                         <div>
-                            <Text strong>{store.user?.username || "Benutzer"}</Text>
+                            <Text strong>{store.user?.username || t('common.user')}</Text>
                             <br />
                             <Text type="secondary" style={{ fontSize: 12 }}>
                                 {store.user?.email}
@@ -111,22 +113,22 @@ export default function NavBar(): ReactElement {
                     </div>
                     <Menu className={style.menuList}>
                         <Menu.Item key="profile" icon={<ProfileOutlined />}>
-                            <NavLink to={userApi}>Profil</NavLink>
+                            <NavLink to={userApi}>{t('common.user')}</NavLink>
                         </Menu.Item>
                         {(isAdmin && !adminValidating) && (
                             <Menu.Item key="admin" icon={<SettingOutlined />}>
-                                <NavLink to={adminRoute}>Admin-Panel</NavLink>
+                                <NavLink to={adminRoute}>{t('navbar.adminPanel')}</NavLink>
                             </Menu.Item>
                         )}
                         <Menu.Item key="logout" icon={<LogoutOutlined />} onClick={handleLogout}>
-                            Logout
+                            {t('navbar.logout')}
                         </Menu.Item>
                     </Menu>
                 </>
             ) : (
                 <Menu className={style.menuList}>
                     <Menu.Item key="login">
-                        <NavLink to={loginApi}>Login</NavLink>
+                        <NavLink to={loginApi}>{t('common.login')}</NavLink>
                     </Menu.Item>
                 </Menu>
             )}
@@ -144,22 +146,22 @@ export default function NavBar(): ReactElement {
                         <Menu theme="dark" mode="horizontal" selectedKeys={getSelectedKeysDesktop()} className={style.menu}>
                             <Menu.Item key="storage">
                                 <NavLink to={itemsRoute}>
-                                    <span className="nav-text">Vorräte</span>
+                                    <span className="nav-text">{t('common.storage_plural')}</span>
                                 </NavLink>
                             </Menu.Item>
                             <Menu.Item key="newItem">
                                 <NavLink to={newItemRoute}>
-                                    <span className="nav-text">Neu anlegen</span>
+                                    <span className="nav-text">{t('navbar.newItem')}</span>
                                 </NavLink>
                             </Menu.Item>
                             <Menu.Item key="checklist">
                                 <NavLink to={checklistRoute}>
-                                    <span className="nav-text">Checkliste</span>
+                                    <span className="nav-text">{t('common.checklist')}</span>
                                 </NavLink>
                             </Menu.Item>
                             <Menu.Item key="shopping">
                                 <NavLink to={basketRoute}>
-                                    <span className="nav-text">Einkauf</span>
+                                    <span className="nav-text">{t('common.basket')}</span>
                                     <Badge offset={[5, -5]} size="small" count={countItems()}>
                                     </Badge>
                                 </NavLink>
@@ -239,7 +241,7 @@ export default function NavBar(): ReactElement {
                         <div className={style.mobileNav}>
                             <Menu theme="dark" mode="horizontal" selectedKeys={getSelectedKeysDesktop()} className={style.menu}>
                                 {/* Home Item */}
-                                <Menu.Item key="home" data-menu-id="home" data-label="Start">
+                                <Menu.Item key="home" data-menu-id="home" data-label={t('common.home')}>
                                     <NavLink to={homeRoute}>
                                         <HomeOutlined className={style.icon} />
                                     </NavLink>
@@ -248,22 +250,22 @@ export default function NavBar(): ReactElement {
                                 {/* Show all navigation items in bottom nav when logged in */}
                                 {isLoggedIn && (
                                     <>
-                                        <Menu.Item key="checklist" data-label="Checkliste">
+                                        <Menu.Item key="checklist" data-label={t('common.checklist')}>
                                             <NavLink to={checklistRoute}>
                                                 <CheckSquareOutlined className={style.icon} />
                                             </NavLink>
                                         </Menu.Item>
-                                        <Menu.Item key="items" data-label="Vorräte">
+                                        <Menu.Item key="items" data-label={t('common.storage_plural')}>
                                             <NavLink to={itemsRoute}>
                                                 <UnorderedListOutlined className={style.icon} />
                                             </NavLink>
                                         </Menu.Item>
-                                        <Menu.Item key="newItem" data-label="Neu">
+                                        <Menu.Item key="newItem" data-label={t('navbar.new')}>
                                             <NavLink to={newItemRoute}>
                                                 <PlusOutlined className={style.icon} />
                                             </NavLink>
                                         </Menu.Item>
-                                        <Menu.Item key="shopping" data-label="Einkauf">
+                                        <Menu.Item key="shopping" data-label={t('common.basket')}>
                                             <NavLink to={basketRoute}>
                                                 <Badge offset={[0, 0]} size="small" count={countItems()}>
                                                     <ShoppingCartOutlined className={style.icon} />

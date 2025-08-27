@@ -4,6 +4,7 @@ import { Card, Alert, Spin } from 'antd';
 import { LockOutlined, UserOutlined } from '@ant-design/icons';
 import { useStore } from '../../store/Store';
 import { baseApiUrl, validateAdminApi } from '../../shared/Constants';
+import { useTranslation } from 'react-i18next';
 
 interface ProtectedRouteProps {
     children: React.ReactNode;
@@ -31,6 +32,7 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
 }) => {
     const { store } = useStore();
     const location = useLocation();
+    const { t } = useTranslation();
     const [isValidating, setIsValidating] = useState(false);
     const [validationResult, setValidationResult] = useState<{
         isAuthenticated: boolean;
@@ -61,7 +63,7 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
                     isAuthenticated: false,
                     isAuthorized: false,
                     isAdmin: false,
-                    error: 'Nicht angemeldet'
+                    error: t('auth.protected.notLoggedIn')
                 });
                 return;
             }
@@ -89,7 +91,7 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
                         isAuthenticated,
                         isAuthorized,
                         isAdmin,
-                        error: !isAuthorized ? (requireAdmin ? 'Admin-Berechtigung erforderlich' : 'Nicht autorisiert') : undefined
+                        error: !isAuthorized ? (requireAdmin ? t('auth.protected.adminRequired') : t('auth.protected.unauthorized')) : undefined
                     });
                 } else if (response.status === 401) {
                     // Token is invalid or expired
@@ -97,7 +99,7 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
                         isAuthenticated: false,
                         isAuthorized: false,
                         isAdmin: false,
-                        error: 'Sitzung abgelaufen'
+                        error: t('auth.protected.sessionExpired')
                     });
 
                     // Clear invalid user data
@@ -114,7 +116,7 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
                         isAuthenticated: false,
                         isAuthorized: false,
                         isAdmin: false,
-                        error: 'Server-Validierung fehlgeschlagen'
+                        error: t('auth.protected.serverValidationFailed')
                     });
                 } else {
                     // For non-admin routes, allow client-side token check as fallback
@@ -122,7 +124,7 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
                         isAuthenticated: hasToken,
                         isAuthorized: hasToken,
                         isAdmin: false,
-                        error: hasToken ? undefined : 'Nicht angemeldet'
+                        error: hasToken ? undefined : t('auth.protected.notLoggedIn')
                     });
                 }
             } finally {
@@ -172,15 +174,15 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
             <div style={{ padding: '20px', maxWidth: '600px', margin: '0 auto' }}>
                 <Card>
                     <Alert
-                        message="Zugriff verweigert"
+                        message={t('auth.protected.accessDeniedTitle')}
                         description={
                             <div>
                                 <p>
                                     <LockOutlined style={{ marginRight: '8px', color: '#ff4d4f' }} />
-                                    Sie haben keine Administrator-Berechtigung für diesen Bereich.
+                                    {t('auth.protected.accessDeniedBody1')}
                                 </p>
                                 <p style={{ marginTop: '12px', fontSize: '14px', color: '#666' }}>
-                                    <strong>Sicherheitshinweis:</strong> Admin-Berechtigungen werden server-seitig validiert und können nicht durch Client-Manipulation umgangen werden.
+                                    <strong>Sicherheitshinweis:</strong> {t('auth.protected.securityNote')}
                                 </p>
                             </div>
                         }

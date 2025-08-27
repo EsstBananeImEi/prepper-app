@@ -65,6 +65,7 @@ export const checklistRoute = '/checklist';
 export const adminRoute = '/admin';
 export const userRoute = '/user';
 export const loginRoute = '/login';
+export const devTestingRoute = '/dev-testing';
 export const detailsRouteBase = '/details';
 export const itemIdRoute = (id: number | string): string => `${itemsRoute}/${String(id)}`;
 export const newItemRoute = `${itemsRoute}/new`;

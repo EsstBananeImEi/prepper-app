@@ -30,6 +30,8 @@ import {
     debugImageData
 } from '../../../utils/imageUtils';
 import { handleApiError } from '../../../hooks/useApi';
+import i18n from '../../../i18n';
+import { useTranslation } from 'react-i18next';
 
 // No‑Op Callback (anstatt leerer Funktionen)
 const noop = () => {
@@ -37,6 +39,7 @@ const noop = () => {
 };
 
 export default function StorageDetailForm(): ReactElement {
+    const { t } = useTranslation();
     const { id } = useParams<{ id?: string }>();
     const isNew = !id;
     const history = useNavigate();
@@ -98,7 +101,13 @@ export default function StorageDetailForm(): ReactElement {
 
     // Wizard state
     const [currentStep, setCurrentStep] = useState<number>(0);
-    const stepsDef = useMemo(() => ['Basis', 'Details', 'Verpackung', 'Bild', 'Nährwerte'], []);
+    const stepsDef = useMemo(() => [
+        t('form.steps.base'),
+        t('form.steps.details'),
+        t('form.steps.packaging'),
+        t('form.steps.image'),
+        t('form.steps.nutrients')
+    ], [t]);
 
     // Always open the form at the top when navigating here (from detail or elsewhere)
     useEffect(() => {
@@ -227,11 +236,11 @@ export default function StorageDetailForm(): ReactElement {
 
 
     if (!storageItem && !isNew) {
-        return <LoadingSpinner message="Loading storage item..." />;
+        return <LoadingSpinner message={t('detail.loadingItems')} />;
     }    // Enhanced Upload Handler with validation and compression
     const handleBeforeUpload = async (file: File) => {
         try {
-            message.loading('Bild wird verarbeitet...', 0);
+            message.loading(i18n.t('form.notifications.imageProcessing'), 0);
 
             console.group('🖼️ Image Upload Debug');
             console.log('File info:', {
@@ -250,7 +259,7 @@ export default function StorageDetailForm(): ReactElement {
                 console.error('Validation failed:', validationResult.error);
                 console.groupEnd();
                 message.destroy();
-                message.error(`${validationResult.error || 'Ungültige Bilddaten'} [File: ${file.name}, Type: ${file.type}]`);
+                message.error(`${validationResult.error || i18n.t('form.notifications.invalidImageData')} [File: ${file.name}, Type: ${file.type}]`);
                 return false;
             } let processedImage = validationResult.processedData!;
 
@@ -273,7 +282,7 @@ export default function StorageDetailForm(): ReactElement {
                     processedImage = await compressBase64Image(processedImage, 800, 600, 0.8);
                     const newSizeKB = (processedImage.length * 3) / 4 / 1024;
                     console.log('Compressed to:', Math.round(newSizeKB * 100) / 100, 'KB');
-                    message.info('Bild wurde komprimiert für bessere Performance');
+                    message.info(i18n.t('form.notifications.imageCompressedInfo'));
                 } catch (compressionError) {
                     console.warn('Compression failed, using original:', compressionError);
                 }
@@ -283,12 +292,12 @@ export default function StorageDetailForm(): ReactElement {
             console.log('Image set successfully');
             console.groupEnd();
             message.destroy();
-            message.success('Bild erfolgreich geladen');
+            message.success(i18n.t('form.notifications.imageLoadedSuccess'));
         } catch (error) {
             console.error('Image processing error:', error);
             console.groupEnd();
             message.destroy();
-            message.error('Fehler beim Verarbeiten des Bildes');
+            message.error(i18n.t('form.notifications.imageProcessError'));
         }
 
         return false; // Prevent automatic upload
@@ -543,7 +552,7 @@ export default function StorageDetailForm(): ReactElement {
         try {
             if (isNew) {
                 await actionHandler({ type: 'ADD_STORAGE_ITEM', storageItem: updatedItem }, dispatch);
-                message.success('Item erfolgreich erstellt');
+                message.success(i18n.t('form.notifications.createdSuccess'));
             } else if (id) {
                 await Promise.all([
                     actionHandler({ type: 'UPDATE_STORAGE_ITEM', storageItem: updatedItem }, dispatch),
@@ -561,7 +570,7 @@ export default function StorageDetailForm(): ReactElement {
                     }, dispatch);
                 }
 
-                message.success('Item erfolgreich aktualisiert');
+                message.success(i18n.t('form.notifications.updatedSuccess'));
             }
             history(itemsRoute);
         } catch (error: unknown) {
@@ -668,33 +677,33 @@ export default function StorageDetailForm(): ReactElement {
                 {currentStep === 0 && (
                     <div className={css.itemFields} style={{ marginTop: 16 }}>
                         <div className={css.itemFieldRow}>
-                            <label>Name<span style={{ color: 'red' }}> *</span></label>
+                            <label>{t('form.labels.name')}<span style={{ color: 'red' }}> *</span></label>
                             <Input
                                 value={name}
                                 onChange={(e) => setName(e.target.value)}
-                                placeholder="Name"
+                                placeholder={t('form.placeholders.name')}
                             />
                         </div>
                         <div className={css.itemFieldRow}>
-                            <label>Menge<span style={{ color: 'red' }}> *</span></label>
+                            <label>{t('form.labels.amount')}<span style={{ color: 'red' }}> *</span></label>
                             <Input
                                 type="number"
                                 value={amount}
                                 onChange={(e) => setAmount(e.target.value)}
-                                placeholder="Menge (Zahl)"
+                                placeholder={t('form.placeholders.amount')}
                             />
                         </div>
                         <div className={css.itemFieldRow}>
-                            <label>Mengeneinheit (optional)</label>
+                            <label>{t('form.labels.unitOptional')}</label>
                             <Select
                                 mode="tags"
                                 style={{ width: '100%' }}
                                 value={unit ? [unit] : []}
-                                placeholder="z. B. Stück, kg, l – oder eigenen Wert eingeben"
+                                placeholder={t('form.placeholders.unit')}
                                 onChange={(vals: string[]) => setUnit(vals.slice(-1)[0] || '')}
                             >
                                 {popularUnits.length > 0 && (
-                                    <Select.OptGroup label="Beliebt">
+                                    <Select.OptGroup label={t('form.common.popular')}>
                                         {popularUnits.map((u) => (
                                             <Select.Option key={`pop-u-${u}`} value={u}>
                                                 {u}
@@ -715,12 +724,12 @@ export default function StorageDetailForm(): ReactElement {
                 {currentStep === 1 && (
                     <div className={css.itemFields} style={{ marginTop: 16 }}>
                         <div className={css.itemFieldRow}>
-                            <label>Kategorien</label>
+                            <label>{t('form.labels.categories')}</label>
                             <Select
                                 mode="tags"
                                 style={{ width: '100%' }}
                                 value={categories}
-                                placeholder="Kategorie eingeben oder auswählen"
+                                placeholder={t('form.placeholders.categories')}
                                 onChange={(value) => setCategories(value.slice(-1))}
                             >
                                 {dbCategories.map((category) => (
@@ -731,16 +740,16 @@ export default function StorageDetailForm(): ReactElement {
                             </Select>
                         </div>
                         <div className={css.itemFieldRow}>
-                            <label>Aufbewahrungsort</label>
+                            <label>{t('form.labels.storageLocation')}</label>
                             <Select
                                 mode="tags"
                                 style={{ width: '100%' }}
                                 value={storageLocation ? [storageLocation] : []}
-                                placeholder="Aufbewahrungsort eingeben oder auswählen"
+                                placeholder={t('form.placeholders.storageLocation')}
                                 onChange={(val: string[]) => setStorageLocation((val.slice(-1)[0] || ''))}
                             >
                                 {popularLocations.length > 0 && (
-                                    <Select.OptGroup label="Beliebt">
+                                    <Select.OptGroup label={t('form.common.popular')}>
                                         {popularLocations.map((loc) => (
                                             <Select.Option key={`pop-l-${loc}`} value={loc}>
                                                 {loc}
@@ -756,21 +765,21 @@ export default function StorageDetailForm(): ReactElement {
                             </Select>
                         </div>
                         <div className={css.itemFieldRow}>
-                            <label>Warnschwelle (niedrig)</label>
+                            <label>{t('form.labels.lowThreshold')}</label>
                             <Input
                                 type="number"
                                 value={lowestAmount}
                                 onChange={(e) => setLowestAmount(e.target.value)}
-                                placeholder="z. B. 2 – warnt bei Bestand ≤ 2"
+                                placeholder={t('form.placeholders.lowThreshold')}
                             />
                         </div>
                         <div className={css.itemFieldRow}>
-                            <label>Warnschwelle (mittel)</label>
+                            <label>{t('form.labels.midThreshold')}</label>
                             <Input
                                 type="number"
                                 value={midAmount}
                                 onChange={(e) => setMidAmount(e.target.value)}
-                                placeholder="z. B. 5 – zusätzliche Warnstufe"
+                                placeholder={t('form.placeholders.midThreshold')}
                             />
                         </div>
                     </div>
@@ -779,25 +788,25 @@ export default function StorageDetailForm(): ReactElement {
                 {currentStep === 2 && (
                     <div className={css.itemFields} style={{ marginTop: 16 }}>
                         <div className={css.itemFieldRow}>
-                            <label>Packungsgröße</label>
+                            <label>{t('form.labels.packageSize')}</label>
                             <Input
                                 type="number"
                                 value={packageQuantity}
                                 onChange={(e) => setPackageQuantity(e.target.value)}
-                                placeholder="z. B. 6"
+                                placeholder={t('form.placeholders.packageSize')}
                             />
                         </div>
                         <div className={css.itemFieldRow}>
-                            <label>Packungseinheit</label>
+                            <label>{t('form.labels.packageUnit')}</label>
                             <Select
                                 mode="tags"
                                 style={{ width: '100%' }}
                                 value={packageUnit ? [packageUnit] : []}
-                                placeholder="z. B. Stück, Packung – oder eigenen Wert eingeben"
+                                placeholder={t('form.placeholders.packageUnit')}
                                 onChange={(val: string[]) => setPackageUnit((val.slice(-1)[0] || ''))}
                             >
                                 {popularPackageUnits.length > 0 && (
-                                    <Select.OptGroup label="Beliebt">
+                                    <Select.OptGroup label={t('form.common.popular')}>
                                         {popularPackageUnits.map((pu) => (
                                             <Select.Option key={`pop-pu-${pu}`} value={pu}>
                                                 {pu}
@@ -833,14 +842,14 @@ export default function StorageDetailForm(): ReactElement {
                                         border: '1px solid #d9d9d9',
                                         borderRadius: '6px'
                                     }}>
-                                        Bildvorschau
+                                        {t('form.labels.imagePreview')}
                                     </div>
                                 }
                                 fallback="/default.png"
                             />
                         </Image.PreviewGroup>
                         <Upload beforeUpload={handleBeforeUpload} showUploadList={false} accept="image/*">
-                            <Button icon={<UploadOutlined />}>Bild hochladen</Button>
+                            <Button icon={<UploadOutlined />}>{t('form.labels.uploadImage')}</Button>
                         </Upload>
                         {icon && (
                             <Button
@@ -849,7 +858,7 @@ export default function StorageDetailForm(): ReactElement {
                                 onClick={() => setIcon('')}
                                 style={{ marginTop: 4 }}
                             >
-                                Bild entfernen
+                                {t('form.labels.removeImage')}
                             </Button>
                         )}
                     </div>
@@ -866,23 +875,23 @@ export default function StorageDetailForm(): ReactElement {
                             marginTop: 16,
                         }}
                     >
-                        <Descriptions.Item label={"Nährwertangaben pro " + nutrientAmount + " " + nutrientUnit} style={{ fontWeight: 'bold', padding: '10px 10px', display: 'block', textAlign: 'center' }}>
+                        <Descriptions.Item label={t('form.nutrientsHeader', { amount: nutrientAmount || 100, unit: nutrientUnit })} style={{ fontWeight: 'bold', padding: '10px 10px', display: 'block', textAlign: 'center' }}>
                             <div className={css.nutrientAmountUnit}>
                                 <div className={css.nutrientField}>
-                                    <label>Menge</label>
+                                    <label>{t('form.labels.amount')}</label>
                                     <Input
                                         type="number"
                                         value={nutrientAmount}
                                         onChange={(e) => setNutrientAmount(e.target.value)}
-                                        placeholder="z. B. 100"
+                                        placeholder={t('form.placeholders.nutrientAmount')}
                                     />
                                 </div>
                                 <div className={css.nutrientField}>
-                                    <label>Einheit</label>
+                                    <label>{t('detail.table.unit')}</label>
                                     <Select
                                         style={{ width: '100%' }}
                                         value={nutrientUnit || ''}
-                                        placeholder="Einheit"
+                                        placeholder={t('form.placeholders.nutrientUnit')}
                                         onChange={(val: string) => setNutrientUnit(val || '')}
                                     >
                                         {dbItemUnits.map((itemUnit) => (
@@ -906,7 +915,7 @@ export default function StorageDetailForm(): ReactElement {
                                                     ></div>
                                                     <Input
                                                         value={nutrient.color}
-                                                        placeholder="Farbcode"
+                                                        placeholder={t('form.placeholders.colorCode')}
                                                         onChange={(e) =>
                                                             onChangeNutrientColorCode(nutrientIndex, e.target.value)
                                                         }
@@ -917,7 +926,7 @@ export default function StorageDetailForm(): ReactElement {
                                             <div className={css.nutrientHeader}>
                                                 <Input
                                                     value={nutrient.name}
-                                                    placeholder="Nährstoff"
+                                                    placeholder={t('form.placeholders.nutrientName')}
                                                     onChange={(e) =>
                                                         onChangeNutrient(nutrientIndex, 'name', e.target.value)
                                                     }
@@ -930,7 +939,7 @@ export default function StorageDetailForm(): ReactElement {
                                                         <Input
                                                             type="number"
                                                             value={nutrientType.value}
-                                                            placeholder="Wert (Zahl)"
+                                                            placeholder={t('form.placeholders.nutrientValue')}
                                                             onChange={(e) =>
                                                                 onChangeNutrientType(nutrientIndex, typeIndex, 'value', e.target.value)
                                                             }
@@ -938,7 +947,7 @@ export default function StorageDetailForm(): ReactElement {
                                                         />
                                                         <Select
                                                             value={nutrientType.typ ? nutrientType.typ : ''}
-                                                            placeholder="Einheit"
+                                                            placeholder={t('form.placeholders.nutrientUnit')}
                                                             onChange={(val: string) =>
                                                                 onChangeNutrientType(nutrientIndex, typeIndex, 'typ', val || '')
                                                             }
@@ -968,7 +977,7 @@ export default function StorageDetailForm(): ReactElement {
                                             </div>
                                             <div className={css.nutrientCardFooter}>
                                                 <Button onClick={() => removeNutrient(nutrientIndex)} danger>
-                                                    Gesamten Nährstoff entfernen
+                                                    {t('form.buttons.removeNutrient')}
                                                 </Button>
                                             </div>
                                         </div>
@@ -978,7 +987,7 @@ export default function StorageDetailForm(): ReactElement {
                                     onClick={addNutrient}
                                     className={css.addNutrientButton}
                                 >
-                                    Nährstoff hinzufügen
+                                    {t('form.buttons.addNutrient')}
                                 </Button>
                             </div>
                         </Descriptions.Item>
@@ -990,17 +999,17 @@ export default function StorageDetailForm(): ReactElement {
                 <div className={css.actionLeft}></div>
                 <div className={css.actionCenter}>
                     {!isNew && (
-                        <Button className={css.formButton} onClick={onCancel} type="default">Zur Übersicht</Button>
+                        <Button className={css.formButton} onClick={onCancel} type="default">{t('form.buttons.toOverview')}</Button>
                     )}
-                    <Button className={css.formButton} onClick={prev} disabled={currentStep === 0}>Zurück</Button>
+                    <Button className={css.formButton} onClick={prev} disabled={currentStep === 0}>{t('form.buttons.back')}</Button>
                     {currentStep < 4 && (
-                        <Button className={css.formButton} type="default" onClick={next}>Weiter</Button>
+                        <Button className={css.formButton} type="default" onClick={next}>{t('form.buttons.next')}</Button>
                     )}
                 </div>
                 <div className={css.actionRight}>
-                    <Button className={css.formButton} onClick={onSave} type="primary" loading={saving}>Speichern</Button>
+                    <Button className={css.formButton} onClick={onSave} type="primary" loading={saving}>{t('form.buttons.save')}</Button>
                     {isNew && (
-                        <Button className={css.formButton} onClick={onCancel}>Abbrechen</Button>
+                        <Button className={css.formButton} onClick={onCancel}>{t('form.buttons.cancel')}</Button>
                     )}
                 </div>
             </div>

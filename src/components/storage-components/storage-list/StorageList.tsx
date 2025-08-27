@@ -346,10 +346,10 @@ export default function StorageList(): ReactElement {
 
     const sortFieldLabel = (f: 'name' | 'storageLocation' | 'amount' | 'lastChanged') => {
         switch (f) {
-            case 'name': return 'Name';
-            case 'storageLocation': return 'Lagerort';
-            case 'amount': return 'Menge';
-            case 'lastChanged': return 'Zuletzt geändert';
+            case 'name': return t('storage.sortField.name');
+            case 'storageLocation': return t('storage.sortField.storageLocation');
+            case 'amount': return t('storage.sortField.amount');
+            case 'lastChanged': return t('storage.sortField.lastChanged');
             default: return String(f);
         }
     };
@@ -552,7 +552,7 @@ export default function StorageList(): ReactElement {
                                     </Tag>
                                 )}
                                 <Button size="small" onClick={clearFilters} className={styles.clearBtn}>
-                                    {t('common.filter')} zurücksetzen
+                                    {t('storage.clearFilters')}
                                 </Button>
                             </div>
                         )}

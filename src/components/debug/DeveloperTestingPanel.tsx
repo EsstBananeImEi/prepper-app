@@ -14,22 +14,25 @@ import ErrorTester from '../debug/ErrorTester';
 import { useStore } from '../../store/Store';
 import { useAdminValidation } from '../../hooks/useAdminValidation';
 import styles from './DeveloperTestingPanel.module.css';
+import { useTranslation } from 'react-i18next';
+import { adminRoute, homeRoute } from '../../shared/Constants';
 
 const { Title, Text, Paragraph } = Typography;
 
 const DeveloperTestingPanel: React.FC = () => {
     const navigate = useNavigate();
     const { store } = useStore();
+    const { t } = useTranslation();
 
     // Secure admin validation using server-side check
     const { isAdmin, isValidating, error } = useAdminValidation();
 
     const goToHome = () => {
-        navigate('/');
+        navigate(homeRoute);
     };
 
     const goToAdmin = () => {
-        navigate('/admin');
+        navigate(adminRoute);
     };
 
     // Show loading spinner while validating
@@ -45,7 +48,7 @@ const DeveloperTestingPanel: React.FC = () => {
                     <Space direction="vertical" align="center">
                         <Spin size="large" />
                         <Typography.Text type="secondary">
-                            Berechtigung wird überprüft...
+                            {t('admin.validating')}
                         </Typography.Text>
                     </Space>
                 </div>
@@ -60,18 +63,18 @@ const DeveloperTestingPanel: React.FC = () => {
                 <Card className={styles.accessDeniedCard}>
                     <Space direction="vertical" size="large">
                         <Alert
-                            message="Zugriff verweigert - Developer Testing Panel"
+                            message={t('admin.devPanel.accessDeniedTitle')}
                             description={
                                 <div>
                                     <p>
                                         <LockOutlined style={{ marginRight: '8px', color: '#ff4d4f' }} />
-                                        Sie haben keine Administrator-Berechtigung für diesen Entwicklerbereich.
+                                        {t('admin.accessDenied.body')}
                                     </p>
                                     <p style={{ marginTop: '12px', fontSize: '14px', color: '#666' }}>
-                                        <strong>Sicherheitsdetails:</strong><br />
-                                        • Admin-Status wird server-seitig validiert<br />
-                                        • Testing-Tools sind nur für autorisierte Entwickler<br />
-                                        • {error || 'Unbekannter Validierungsfehler'}
+                                        <strong>{t('admin.accessDenied.securityDetailsTitle')}</strong><br />
+                                        • {t('admin.accessDenied.serverValidated')}<br />
+                                        • {t('admin.devPanel.testingToolsOnly')}<br />
+                                        • {error || t('admin.accessDenied.unknownError')}
                                     </p>
                                 </div>
                             }
@@ -81,7 +84,7 @@ const DeveloperTestingPanel: React.FC = () => {
                         />
                         <Space>
                             <Button type="primary" icon={<HomeOutlined />} onClick={goToHome}>
-                                Zur Startseite
+                                {t('admin.backToHome')}
                             </Button>
                         </Space>
                     </Space>
@@ -99,11 +102,10 @@ const DeveloperTestingPanel: React.FC = () => {
                         <div>
                             <Title level={2} className={styles.title}>
                                 <ExperimentOutlined className={styles.titleIcon} />
-                                Developer Testing Panel
+                                {t('admin.devPanel.title')}
                             </Title>
                             <Paragraph type="secondary">
-                                Umfassende Test-Tools für Entwickler und System-Administratoren zur Überprüfung
-                                der Fehlerbehandlung, Logging-Systeme und Anwendungsstabilität.
+                                {t('admin.devPanel.subtitle')}
                             </Paragraph>
                         </div>
                         <Space className={styles.navigationButtons}>
@@ -112,7 +114,7 @@ const DeveloperTestingPanel: React.FC = () => {
                                 onClick={goToAdmin}
                                 className={styles.navigationButton}
                             >
-                                Admin Panel
+                                {t('navbar.adminPanel')}
                             </Button>
                             <Button
                                 type="primary"
@@ -120,7 +122,7 @@ const DeveloperTestingPanel: React.FC = () => {
                                 onClick={goToHome}
                                 className={styles.navigationButton}
                             >
-                                Startseite
+                                {t('common.home')}
                             </Button>
                         </Space>
                     </div>
@@ -129,17 +131,17 @@ const DeveloperTestingPanel: React.FC = () => {
 
             {/* Info Alert */}
             <Alert
-                message="🔬 Entwickler-Testbereich"
+                message={t('admin.devPanel.info.title')}
                 description={
                     <Space direction="vertical" size="small" style={{ width: '100%' }}>
                         <Text>
-                            Diese Tools sind speziell für das Testen und Validieren der Anwendungsstabilität entwickelt.
+                            {t('admin.devPanel.info.desc')}
                         </Text>
                         <ul style={{ marginBottom: 0, paddingLeft: 20 }}>
-                            <li><strong>ErrorBoundary Testing:</strong> Testen Sie React Error Boundaries und Fehlerprotokollierung</li>
-                            <li><strong>Error Logging:</strong> Überprüfen Sie localStorage und Server-Logging-Funktionen</li>
-                            <li><strong>Email Notifications:</strong> Validieren Sie kritische Fehler-Benachrichtigungen</li>
-                            <li><strong>Recovery Testing:</strong> Testen Sie Anwendungs-Recovery-Mechanismen</li>
+                            <li>{t('admin.devPanel.info.bullets.errorBoundary')}</li>
+                            <li>{t('admin.devPanel.info.bullets.errorLogging')}</li>
+                            <li>{t('admin.devPanel.info.bullets.emailNotifications')}</li>
+                            <li>{t('admin.devPanel.info.bullets.recovery')}</li>
                         </ul>
                     </Space>
                 }
@@ -153,28 +155,28 @@ const DeveloperTestingPanel: React.FC = () => {
                 title={
                     <div>
                         <CodeOutlined style={{ marginRight: 8 }} />
-                        Umgebungs-Information
+                        {t('admin.devPanel.env.title')}
                     </div>
                 }
                 className={styles.environmentCard}
             >
                 <Space direction="vertical" style={{ width: '100%' }}>
                     <div className={styles.environmentInfo}>
-                        <Text strong>Modus:</Text>
+                        <Text strong>{t('admin.devPanel.env.fields.mode')}</Text>
                         <Text code>{process.env.NODE_ENV || 'development'}</Text>
                     </div>
                     <div className={styles.environmentInfo}>
-                        <Text strong>API URL:</Text>
+                        <Text strong>{t('admin.devPanel.env.fields.apiUrl')}</Text>
                         <Text code>{process.env.REACT_APP_API_URL || 'http://localhost:4000'}</Text>
                     </div>
                     <div className={styles.environmentInfo}>
-                        <Text strong>Error Notifications:</Text>
+                        <Text strong>{t('admin.devPanel.env.fields.errorNotifications')}</Text>
                         <Text code>
-                            {process.env.NODE_ENV === 'production' ? 'Aktiviert' : 'Nur bei kritischen Fehlern'}
+                            {process.env.NODE_ENV === 'production' ? t('admin.devPanel.env.values.enabled') : t('admin.devPanel.env.values.criticalOnly')}
                         </Text>
                     </div>
                     <div className={styles.environmentInfo}>
-                        <Text strong>Benutzer:</Text>
+                        <Text strong>{t('admin.devPanel.env.fields.user')}</Text>
                         <Text>{store.user?.username} (Admin)</Text>
                     </div>
                 </Space>
@@ -185,15 +187,15 @@ const DeveloperTestingPanel: React.FC = () => {
                 title={
                     <div>
                         <BugOutlined style={{ marginRight: 8, color: '#ff4d4f' }} />
-                        ErrorBoundary & Fehler-Testing
+                        {t('admin.devPanel.testing.title')}
                     </div>
                 }
                 className={styles.testingCard}
             >
                 <Space direction="vertical" style={{ width: '100%' }}>
                     <Alert
-                        message="⚠️ Vorsicht beim Testen"
-                        description="Diese Tests lösen echte Fehler aus. In Development wird das React Error Overlay angezeigt - klicken Sie das 'X' weg, um die ErrorBoundary-UI zu sehen. In Production sehen Benutzer nur die freundliche Fehlerseite."
+                        message={t('admin.devPanel.testing.warningTitle')}
+                        description={t('admin.devPanel.testing.warningDesc')}
                         type="warning"
                         showIcon
                         style={{ marginBottom: 16 }}
@@ -205,12 +207,12 @@ const DeveloperTestingPanel: React.FC = () => {
                     {/* localStorage Inspector */}
                     <Card
                         size="small"
-                        title="🔍 Error Logs Inspector"
+                        title={t('admin.devPanel.logs.title')}
                         style={{ marginTop: 16 }}
                     >
                         <Space direction="vertical" style={{ width: '100%' }}>
                             <Text type="secondary" style={{ fontSize: '14px' }}>
-                                Führen Sie diese Befehle in der Browser-Konsole aus:
+                                {t('admin.devPanel.logs.instructions')}
                             </Text>
 
                             {/* ErrorBoundary Logs */}

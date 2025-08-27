@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Alert, Button, Space, Typography } from 'antd';
 import { WarningOutlined, BugOutlined } from '@ant-design/icons';
+import { useTranslation } from 'react-i18next';
 
 const { Text } = Typography;
 
@@ -10,6 +11,7 @@ interface SecurityWarningProps {
 
 const SecurityWarning: React.FC<SecurityWarningProps> = ({ onDismiss }) => {
     const [isVisible, setIsVisible] = useState(false);
+    const { t } = useTranslation();
 
     useEffect(() => {
         // Check if user has manipulated localStorage
@@ -40,21 +42,19 @@ const SecurityWarning: React.FC<SecurityWarningProps> = ({ onDismiss }) => {
 
     return (
         <Alert
-            message="⚠️ Sicherheitshinweis für Entwickler"
+            message={t('auth.securityWarning.title')}
             description={
                 <Space direction="vertical" style={{ width: '100%' }}>
                     <Text>
                         <WarningOutlined style={{ color: '#faad14', marginRight: 8 }} />
-                        <strong>Admin-Berechtigung wird jetzt server-seitig validiert!</strong>
+                        <strong>{t('auth.securityWarning.adminValidated')}</strong>
                     </Text>
                     <Text type="secondary" style={{ fontSize: '13px' }}>
-                        Das manuelle Setzen von <code>user.isAdmin = true</code> in localStorage
-                        funktioniert nicht mehr. Alle Admin-Bereiche werden durch JWT-Token
-                        und Backend-Validierung geschützt.
+                        {t('auth.securityWarning.note1')}
                     </Text>
                     <Text type="secondary" style={{ fontSize: '13px' }}>
                         <BugOutlined style={{ marginRight: 4 }} />
-                        Für Development-Zwecke: Verwenden Sie die Backend-API um Admin-Status zu setzen.
+                        {t('auth.securityWarning.note2')}
                     </Text>
                 </Space>
             }

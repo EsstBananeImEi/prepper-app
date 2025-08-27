@@ -9,8 +9,10 @@ import { useStore } from '../../../store/Store';
 import { actionHandler } from '../../../store/Actions';
 import { handleApiError } from '../../../hooks/useApi';
 import { ensureDataUrlPrefix } from '../../../utils/imageUtils';
+import { useTranslation } from 'react-i18next';
 
 export default function StorageDetail(): ReactElement {
+    const { t } = useTranslation();
     const { id } = useParams<{ id: string }>();
     const navigate = useNavigate();
     const [saving, setSaving] = useState(false);
@@ -20,11 +22,11 @@ export default function StorageDetail(): ReactElement {
     const storageItem = store.storeItems.find((item) => id ? item.id === parseInt(id) : false);
     // Falls id nicht vorhanden ist, sofort einen Fehler anzeigen oder eine alternative UI rendern
     if (!id) {
-        return <Alert style={{ marginBottom: 16 }} message="Keine ID gefunden" type="error" showIcon />;
+        return <Alert style={{ marginBottom: 16 }} message={t('detail.noIdError')} type="error" showIcon />;
     }
 
     if (!storageItem) {
-        return <LoadingSpinner message="Loading storage items ..." />;
+        return <LoadingSpinner message={t('detail.loadingItems')} />;
     }
 
     // Sortiere die Nutrient-Werte nach ID
@@ -88,7 +90,7 @@ export default function StorageDetail(): ReactElement {
                                 border: '1px solid #d9d9d9',
                                 borderRadius: '6px'
                             }}>
-                                Bild wird geladen...
+                                {t('detail.imageLoading')}
                             </div>
                         }
                         fallback="/default.png"
@@ -101,19 +103,19 @@ export default function StorageDetail(): ReactElement {
                 <div className={css.itemHeader}>{storageItem.name}</div>
                 <div className={css.itemFields}>
                     <div className={css.itemFieldRow}>
-                        <label>ID</label>
+                        <label>{t('detail.labels.id')}</label>
                         <div>{storageItem.id}</div>
                     </div>
                     <div className={css.itemFieldRow}>
-                        <label>Menge</label>
+                        <label>{t('detail.labels.amount')}</label>
                         <div>{storageItem.amount}</div>
                     </div>
                     <div className={css.itemFieldRow}>
-                        <label>Mengeneinheit</label>
+                        <label>{t('detail.labels.unit')}</label>
                         <div>{storageItem.unit && storageItem.unit.trim() !== '' ? storageItem.unit : '-'}</div>
                     </div>
                     <div className={css.itemFieldRow}>
-                        <label>Kategorien</label>
+                        <label>{t('detail.labels.categories')}</label>
                         <div>
                             {storageItem.categories && storageItem.categories.length > 0
                                 ? storageItem.categories.map((c, idx) => (
@@ -127,18 +129,18 @@ export default function StorageDetail(): ReactElement {
 
             {/* Details */}
             <div className={css.itemFormCard}>
-                <div className={css.itemHeader}>Details</div>
+                <div className={css.itemHeader}>{t('detail.sections.details')}</div>
                 <div className={css.itemFields}>
                     <div className={css.itemFieldRow}>
-                        <label>Warnschwelle (minimal)</label>
+                        <label>{t('detail.labels.lowThreshold')}</label>
                         <div>{storageItem.lowestAmount}</div>
                     </div>
                     <div className={css.itemFieldRow}>
-                        <label>Warnschwelle (mittel)</label>
+                        <label>{t('detail.labels.midThreshold')}</label>
                         <div>{storageItem.midAmount}</div>
                     </div>
                     <div className={css.itemFieldRow}>
-                        <label>Lagerort</label>
+                        <label>{t('detail.labels.storageLocation')}</label>
                         <div>{storageItem.storageLocation ? storageItem.storageLocation : '-'}</div>
                     </div>
                 </div>
@@ -146,14 +148,14 @@ export default function StorageDetail(): ReactElement {
 
             {/* Verpackung */}
             <div className={css.itemFormCard}>
-                <div className={css.itemHeader}>Verpackung</div>
+                <div className={css.itemHeader}>{t('detail.sections.packaging')}</div>
                 <div className={css.itemFields}>
                     <div className={css.itemFieldRow}>
-                        <label>Packungsmenge</label>
+                        <label>{t('detail.labels.packageQty')}</label>
                         <div>{storageItem.packageQuantity != null ? storageItem.packageQuantity : '-'}</div>
                     </div>
                     <div className={css.itemFieldRow}>
-                        <label>Packungseinheit</label>
+                        <label>{t('detail.labels.packageUnit')}</label>
                         <div>{storageItem.packageUnit ? storageItem.packageUnit : '-'}</div>
                     </div>
                 </div>
@@ -163,7 +165,7 @@ export default function StorageDetail(): ReactElement {
             {storageItem.nutrients && storageItem.nutrients.values.length > 0 && (
                 <div className={css.nutrientSection}>
                     <div className={css.nutrientSectionHeader}>
-                        {`Nährwertangaben pro ${storageItem.nutrients.amount} ${storageItem.nutrients.unit}`}
+                        {t('detail.nutrientsHeader', { amount: storageItem.nutrients.amount, unit: storageItem.nutrients.unit })}
                     </div>
                     {storageItem.nutrients.description && (
                         <div style={{ marginBottom: 12, textAlign: 'center' }}>
@@ -185,8 +187,8 @@ export default function StorageDetail(): ReactElement {
                                     <table>
                                         <thead>
                                             <tr>
-                                                <th style={{ textAlign: 'right' }}>Wert</th>
-                                                <th style={{ textAlign: 'right' }}>Einheit</th>
+                                                <th style={{ textAlign: 'right' }}>{t('detail.table.value')}</th>
+                                                <th style={{ textAlign: 'right' }}>{t('detail.table.unit')}</th>
                                             </tr>
                                         </thead>
                                         <tbody>
@@ -207,9 +209,9 @@ export default function StorageDetail(): ReactElement {
 
             {/* Aktions-Buttons (sticky, wie im Formular) */}
             <div className={css.actionBar}>
-                <Button onClick={onGoBack} type="default">Zur Übersicht</Button>
-                <Button onClick={onGoToEdit} type="primary">Bearbeiten</Button>
-                <Button onClick={onDelete} danger loading={saving}>Löschen</Button>
+                <Button onClick={onGoBack} type="default">{t('detail.buttons.back')}</Button>
+                <Button onClick={onGoToEdit} type="primary">{t('detail.buttons.edit')}</Button>
+                <Button onClick={onDelete} danger loading={saving}>{t('detail.buttons.delete')}</Button>
             </div>
         </div>
     );

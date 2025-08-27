@@ -39,6 +39,7 @@ import { ImageCompressionUtils } from '../../../utils/imageCompressionUtils';
 import InviteButton from '../../invite/InviteButton';
 import styles from './GroupManagement.module.css';
 import { useStore } from '~/store/Store';
+import { useTranslation } from 'react-i18next';
 
 const { Title, Text } = Typography;
 const { TextArea } = Input;
@@ -61,6 +62,7 @@ interface JoinGroupForm {
 }
 
 export default function GroupManagement(): React.ReactElement {
+    const { t } = useTranslation();
     const [createModalVisible, setCreateModalVisible] = useState(false);
     const [updateModalVisible, setUpdateModalVisible] = useState(false);
     const [joinModalVisible, setJoinModalVisible] = useState(false);
@@ -91,7 +93,7 @@ export default function GroupManagement(): React.ReactElement {
         }),
         {
             onSuccess: () => {
-                message.success('Gruppe erfolgreich erstellt');
+                message.success(t('groups.toasts.created'));
                 setCreateModalVisible(false);
                 createForm.resetFields();
                 setCreateImageFile(null);
@@ -108,7 +110,7 @@ export default function GroupManagement(): React.ReactElement {
         }),
         {
             onSuccess: () => {
-                message.success('Gruppe erfolgreich aktualisiert');
+                message.success(t('groups.toasts.updated'));
                 setUpdateModalVisible(false);
                 updateForm.resetFields();
                 setSelectedGroup(null);
@@ -123,7 +125,7 @@ export default function GroupManagement(): React.ReactElement {
         (groupId: number) => groupsApiService.deleteGroup(groupId),
         {
             onSuccess: () => {
-                message.success('Gruppe erfolgreich gelöscht');
+                message.success(t('groups.toasts.deleted'));
                 refetchGroups();
             }
         }
@@ -133,7 +135,7 @@ export default function GroupManagement(): React.ReactElement {
         ({ groupId, userId }: { groupId: number; userId: number }) => groupsApiService.removeUserFromGroup(groupId, userId),
         {
             onSuccess: () => {
-                message.success('Benutzer erfolgreich aus der Gruppe entfernt');
+                message.success(t('groups.toasts.removedUser'));
                 if (selectedGroup) {
                     handleShowMembers(selectedGroup);
                 }
@@ -148,7 +150,7 @@ export default function GroupManagement(): React.ReactElement {
             /* eslint-disable @typescript-eslint/no-explicit-any */
 
             onSuccess: (data: any) => {
-                message.success(`Erfolgreich der Gruppe "${data?.group.name}" beigetreten`);
+                message.success(t('groups.toasts.joinSuccess', { name: data?.group.name }));
                 setJoinModalVisible(false);
                 joinForm.resetFields();
                 refetchGroups();
@@ -160,7 +162,7 @@ export default function GroupManagement(): React.ReactElement {
         (groupId: number) => groupsApiService.leaveGroup(groupId),
         {
             onSuccess: () => {
-                message.success('Gruppe erfolgreich verlassen');
+                message.success(t('groups.toasts.left'));
                 refetchGroups();
             }
         }
@@ -173,7 +175,7 @@ export default function GroupManagement(): React.ReactElement {
             setGroupMembers(members);
             setMembersModalVisible(true);
         } catch (error) {
-            message.error('Fehler beim Laden der Gruppenmitglieder');
+            message.error(t('groups.toasts.loadMembersError'));
         }
     };
 
@@ -196,19 +198,19 @@ export default function GroupManagement(): React.ReactElement {
 
     const handleCopyInviteCode = (inviteCode: string) => {
         navigator.clipboard.writeText(inviteCode);
-        message.success('Einladungscode kopiert');
+        message.success(t('groups.toasts.inviteCopied'));
     };
 
     const handleCreateImageUpload = async (file: File) => {
         const isImage = file.type.startsWith('image/');
         if (!isImage) {
-            message.error('Bitte wählen Sie eine Bilddatei aus');
+            message.error(t('groups.toasts.imageSelectError'));
             return false;
         }
 
         const isLt5M = file.size / 1024 / 1024 < 5;
         if (!isLt5M) {
-            message.error('Das Bild darf nicht größer als 5MB sein');
+            message.error(t('groups.toasts.imageTooLarge'));
             return false;
         }
 
@@ -232,14 +234,14 @@ export default function GroupManagement(): React.ReactElement {
             const compressionRatio = ((originalSize - compressedSize) / originalSize * 100).toFixed(1);
 
             setCreateImageFile(compressedFile);
-            message.success(`Bild komprimiert (${compressionRatio}% kleiner)`);
+            message.success(t('groups.toasts.imageCompressed', { ratio: compressionRatio }));
 
             setTimeout(() => {
                 setIsCompressing(false);
                 setImageCompressionProgress(0);
             }, 1000);
         } catch (error) {
-            message.error('Fehler bei der Bildkomprimierung');
+            message.error(t('groups.toasts.imageCompressionError'));
             setIsCompressing(false);
             setImageCompressionProgress(0);
         }
@@ -250,13 +252,13 @@ export default function GroupManagement(): React.ReactElement {
     const handleUpdateImageUpload = async (file: File) => {
         const isImage = file.type.startsWith('image/');
         if (!isImage) {
-            message.error('Bitte wählen Sie eine Bilddatei aus');
+            message.error(t('groups.toasts.imageSelectError'));
             return false;
         }
 
         const isLt5M = file.size / 1024 / 1024 < 5;
         if (!isLt5M) {
-            message.error('Das Bild darf nicht größer als 5MB sein');
+            message.error(t('groups.toasts.imageTooLarge'));
             return false;
         }
 
@@ -280,14 +282,14 @@ export default function GroupManagement(): React.ReactElement {
             const compressionRatio = ((originalSize - compressedSize) / originalSize * 100).toFixed(1);
 
             setUpdateImageFile(compressedFile);
-            message.success(`Bild komprimiert (${compressionRatio}% kleiner)`);
+            message.success(t('groups.toasts.imageCompressed', { ratio: compressionRatio }));
 
             setTimeout(() => {
                 setIsCompressing(false);
                 setImageCompressionProgress(0);
             }, 1000);
         } catch (error) {
-            message.error('Fehler bei der Bildkomprimierung');
+            message.error(t('groups.toasts.imageCompressionError'));
             setIsCompressing(false);
             setImageCompressionProgress(0);
         }
@@ -323,7 +325,7 @@ export default function GroupManagement(): React.ReactElement {
                 title={
                     <div className={styles.header}>
                         <div>
-                            <Title level={4} style={{ margin: 0 }}>Gruppenverwaltung</Title>
+                            <Title level={4} style={{ margin: 0 }}>{t('groups.header')}</Title>
                         </div>
                         <div>
                             <Space size="small" wrap>
@@ -362,7 +364,7 @@ export default function GroupManagement(): React.ReactElement {
                                             onClick={() => handleShowMembers(group)}
                                             size="small"
                                         >
-                                            <span className={styles.desktopText}>Mitglieder</span> ({group.memberCount})
+                                            <span className={styles.desktopText}>{t('groups.buttons.members')}</span> ({group.memberCount})
                                         </Button>,
                                         <Button
                                             key="edit"
@@ -371,7 +373,7 @@ export default function GroupManagement(): React.ReactElement {
                                             disabled={group.role !== 'admin' && !group.isCreator}
                                             size="small"
                                         >
-                                            <span className={styles.desktopText}>Bearbeiten</span>
+                                            <span className={styles.desktopText}>{t('groups.buttons.edit')}</span>
                                         </Button>,
                                         <InviteButton
                                             key={`invite-${group.id}`}
@@ -384,11 +386,11 @@ export default function GroupManagement(): React.ReactElement {
                                         group.isCreator ? (
                                             <Popconfirm
                                                 key="delete"
-                                                title="Sind Sie sicher, dass Sie diese Gruppe löschen möchten?"
+                                                title={t('groups.confirms.deleteTitle')}
                                                 icon={<ExclamationCircleOutlined style={{ color: 'red' }} />}
                                                 onConfirm={() => deleteGroup(group.id)}
-                                                okText="Ja"
-                                                cancelText="Nein"
+                                                okText={t('groups.confirms.ok')}
+                                                cancelText={t('groups.confirms.cancel')}
                                             >
                                                 <Button
                                                     danger
@@ -396,24 +398,24 @@ export default function GroupManagement(): React.ReactElement {
                                                     loading={deleteLoading}
                                                     size="small"
                                                 >
-                                                    <span className={styles.mobileText}>Löschen</span>
+                                                    <span className={styles.mobileText}>{t('groups.buttons.delete')}</span>
                                                 </Button>
                                             </Popconfirm>
                                         ) : (
                                             <Popconfirm
                                                 key="leave"
-                                                title="Sind Sie sicher, dass Sie diese Gruppe verlassen möchten?"
+                                                title={t('groups.confirms.leaveTitle')}
                                                 icon={<ExclamationCircleOutlined style={{ color: 'orange' }} />}
                                                 onConfirm={() => leaveGroup(group.id)}
-                                                okText="Ja"
-                                                cancelText="Nein"
+                                                okText={t('groups.confirms.ok')}
+                                                cancelText={t('groups.confirms.cancel')}
                                             >
                                                 <Button
                                                     icon={<LogoutOutlined />}
                                                     loading={leaveLoading}
                                                     size="small"
                                                 >
-                                                    Verlassen
+                                                    {t('groups.buttons.leave')}
                                                 </Button>
                                             </Popconfirm>
                                         )
@@ -443,7 +445,7 @@ export default function GroupManagement(): React.ReactElement {
                                                 <Tag color={getRoleColor(group.role)}>
                                                     {getRoleText(group.role)}
                                                 </Tag>
-                                                {group.isCreator && <Tag color="gold">Ersteller</Tag>}
+                                                {group.isCreator && <Tag color="gold">{t('groups.labels.creator')}</Tag>}
                                             </Space>
                                         }
                                         description={
@@ -469,7 +471,7 @@ export default function GroupManagement(): React.ReactElement {
                                                     whiteSpace: 'nowrap',
                                                     display: 'block'
                                                 }}>
-                                                    Einladungscode: <Text code copyable>{group.inviteCode}</Text>
+                                                    {t('groups.labels.inviteCode')}: <Text code copyable>{group.inviteCode}</Text>
                                                 </Text>
                                             </div>
                                         }
@@ -481,17 +483,15 @@ export default function GroupManagement(): React.ReactElement {
                 ) : (
                     <div className={styles.emptyState}>
                         <UsergroupAddOutlined style={{ fontSize: 48, color: '#d9d9d9' }} />
-                        <Title level={4} type="secondary">Keine Gruppen gefunden</Title>
-                        <Text type="secondary">
-                            Erstellen Sie eine neue Gruppe oder treten Sie einer bestehenden bei.
-                        </Text>
+                        <Title level={4} type="secondary">{t('groups.empty.title')}</Title>
+                        <Text type="secondary">{t('groups.empty.subtitle')}</Text>
                     </div>
                 )}
             </Card>
 
             {/* Gruppe erstellen Modal */}
             <Modal
-                title="Neue Gruppe erstellen"
+                title={t('groups.modals.createTitle')}
                 open={createModalVisible}
                 onCancel={() => {
                     setCreateModalVisible(false);
@@ -506,27 +506,27 @@ export default function GroupManagement(): React.ReactElement {
                     onFinish={createGroup}
                 >
                     <Form.Item
-                        label="Gruppenname"
+                        label={t('groups.labels.groupName')}
                         name="name"
                         rules={[
-                            { required: true, message: 'Bitte geben Sie einen Gruppennamen ein' },
-                            { min: 3, message: 'Der Gruppenname muss mindestens 3 Zeichen lang sein' }
+                            { required: true, message: t('groups.placeholders.groupName') },
+                            { min: 3, message: '3+' }
                         ]}
                     >
-                        <Input placeholder="z.B. Familie Schmidt" />
+                        <Input placeholder={t('groups.placeholders.groupName')} />
                     </Form.Item>
 
                     <Form.Item
-                        label="Beschreibung (optional)"
+                        label={t('groups.labels.descriptionOptional')}
                         name="description"
                     >
                         <TextArea
-                            placeholder="Beschreibung der Gruppe..."
+                            placeholder={t('groups.placeholders.groupDescription')}
                             rows={3}
                         />
                     </Form.Item>
 
-                    <Form.Item label="Gruppenbild (optional)">
+                    <Form.Item label={t('groups.labels.groupImageOptional')}>
                         <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
                             <Avatar
                                 src={createImageFile ? URL.createObjectURL(createImageFile) : undefined}
@@ -541,7 +541,7 @@ export default function GroupManagement(): React.ReactElement {
                                     disabled={isCompressing}
                                 >
                                     <Button icon={<UploadOutlined />} loading={isCompressing}>
-                                        {isCompressing ? 'Komprimiere...' : 'Bild auswählen'}
+                                        {isCompressing ? t('groups.ui.compressing') : t('groups.ui.selectImage')}
                                     </Button>
                                 </Upload>
                                 {createImageFile && !isCompressing && (
@@ -551,7 +551,7 @@ export default function GroupManagement(): React.ReactElement {
                                         style={{ marginLeft: '8px' }}
                                         onClick={() => setCreateImageFile(null)}
                                     >
-                                        Entfernen
+                                        {t('groups.buttons.remove')}
                                     </Button>
                                 )}
                                 {isCompressing && (
@@ -563,13 +563,13 @@ export default function GroupManagement(): React.ReactElement {
                                             format={() => <CompressOutlined />}
                                         />
                                         <Text type="secondary" style={{ fontSize: '12px' }}>
-                                            Bild wird komprimiert...
+                                            {t('groups.ui.imageBeingCompressed')}
                                         </Text>
                                     </div>
                                 )}
                                 <div style={{ marginTop: '8px', color: '#666', fontSize: '12px' }}>
-                                    Unterstützte Formate: JPG, PNG, GIF (max. 5MB)<br />
-                                    Bilder werden automatisch optimiert
+                                    {t('groups.ui.supportedFormats')}<br />
+                                    {t('groups.ui.imagesOptimized')}
                                 </div>
                             </div>
                         </div>
@@ -581,14 +581,14 @@ export default function GroupManagement(): React.ReactElement {
                                 setCreateModalVisible(false);
                                 setCreateImageFile(null);
                             }}>
-                                Abbrechen
+                                {t('groups.modals.cancel')}
                             </Button>
                             <Button
                                 type="primary"
                                 htmlType="submit"
                                 loading={createLoading}
                             >
-                                Erstellen
+                                {t('groups.modals.create')}
                             </Button>
                         </Space>
                     </Form.Item>
@@ -597,7 +597,7 @@ export default function GroupManagement(): React.ReactElement {
 
             {/* Gruppe bearbeiten Modal */}
             <Modal
-                title="Gruppe bearbeiten"
+                title={t('groups.modals.editTitle')}
                 open={updateModalVisible}
                 onCancel={() => {
                     setUpdateModalVisible(false);
@@ -614,27 +614,27 @@ export default function GroupManagement(): React.ReactElement {
                     onFinish={(values) => selectedGroup && updateGroup({ groupId: selectedGroup.id, data: values })}
                 >
                     <Form.Item
-                        label="Gruppenname"
+                        label={t('groups.labels.groupName')}
                         name="name"
                         rules={[
-                            { required: true, message: 'Bitte geben Sie einen Gruppennamen ein' },
-                            { min: 3, message: 'Der Gruppenname muss mindestens 3 Zeichen lang sein' }
+                            { required: true, message: t('groups.placeholders.groupName') },
+                            { min: 3, message: '3+' }
                         ]}
                     >
-                        <Input placeholder="z.B. Familie Schmidt" />
+                        <Input placeholder={t('groups.placeholders.groupName')} />
                     </Form.Item>
 
                     <Form.Item
-                        label="Beschreibung (optional)"
+                        label={t('groups.labels.descriptionOptional')}
                         name="description"
                     >
                         <TextArea
-                            placeholder="Beschreibung der Gruppe..."
+                            placeholder={t('groups.placeholders.groupDescription')}
                             rows={3}
                         />
                     </Form.Item>
 
-                    <Form.Item label="Gruppenbild (optional)">
+                    <Form.Item label={t('groups.labels.groupImageOptional')}>
                         <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
                             <Avatar
                                 src={updateImageFile ? URL.createObjectURL(updateImageFile) : (removeCurrentImage ? undefined : selectedGroup?.image)}
@@ -649,7 +649,7 @@ export default function GroupManagement(): React.ReactElement {
                                     disabled={isCompressing}
                                 >
                                     <Button icon={<UploadOutlined />} loading={isCompressing}>
-                                        {isCompressing ? 'Komprimiere...' : updateImageFile ? 'Anderes Bild wählen' : (selectedGroup?.image && !removeCurrentImage ? 'Bild ändern' : 'Bild auswählen')}
+                                        {isCompressing ? t('groups.ui.compressing') : updateImageFile ? t('groups.ui.chooseAnotherImage') : (selectedGroup?.image && !removeCurrentImage ? t('groups.ui.changeImage') : t('groups.ui.selectImage'))}
                                     </Button>
                                 </Upload>
                                 {(updateImageFile || (selectedGroup?.image && !removeCurrentImage)) && !isCompressing && (
@@ -665,7 +665,7 @@ export default function GroupManagement(): React.ReactElement {
                                             }
                                         }}
                                     >
-                                        {updateImageFile ? 'Neue Auswahl entfernen' : 'Aktuelles Bild entfernen'}
+                                        {updateImageFile ? t('groups.ui.removeNewSelection') : t('groups.ui.removeCurrentImage')}
                                     </Button>
                                 )}
                                 {isCompressing && (
@@ -677,13 +677,13 @@ export default function GroupManagement(): React.ReactElement {
                                             format={() => <CompressOutlined />}
                                         />
                                         <Text type="secondary" style={{ fontSize: '12px' }}>
-                                            Bild wird komprimiert...
+                                            {t('groups.ui.imageBeingCompressed')}
                                         </Text>
                                     </div>
                                 )}
                                 <div style={{ marginTop: '8px', color: '#666', fontSize: '12px' }}>
-                                    Unterstützte Formate: JPG, PNG, GIF (max. 5MB)<br />
-                                    Bilder werden automatisch optimiert
+                                    {t('groups.ui.supportedFormats')}<br />
+                                    {t('groups.ui.imagesOptimized')}
                                 </div>
                             </div>
                         </div>
@@ -696,14 +696,14 @@ export default function GroupManagement(): React.ReactElement {
                                 setUpdateImageFile(null);
                                 setRemoveCurrentImage(false);
                             }}>
-                                Abbrechen
+                                {t('groups.modals.cancel')}
                             </Button>
                             <Button
                                 type="primary"
                                 htmlType="submit"
                                 loading={updateLoading}
                             >
-                                Speichern
+                                {t('groups.modals.save')}
                             </Button>
                         </Space>
                     </Form.Item>
@@ -712,7 +712,7 @@ export default function GroupManagement(): React.ReactElement {
 
             {/* Gruppe beitreten Modal */}
             <Modal
-                title="Gruppe beitreten"
+                title={t('groups.modals.joinTitle')}
                 open={joinModalVisible}
                 onCancel={() => {
                     setJoinModalVisible(false);
@@ -726,11 +726,11 @@ export default function GroupManagement(): React.ReactElement {
                     onFinish={(values) => joinGroup(values.inviteCode)}
                 >
                     <Form.Item
-                        label="Einladungscode"
+                        label={t('groups.labels.inviteCode')}
                         name="inviteCode"
                         rules={[
-                            { required: true, message: 'Bitte geben Sie einen Einladungscode ein' },
-                            { len: 8, message: 'Der Einladungscode muss 8 Zeichen lang sein' }
+                            { required: true, message: t('groups.labels.inviteCode') },
+                            { len: 8, message: '8' }
                         ]}
                     >
                         <Input
@@ -746,14 +746,14 @@ export default function GroupManagement(): React.ReactElement {
                     <Form.Item style={{ marginBottom: 0 }}>
                         <Space style={{ width: '100%', justifyContent: 'flex-end' }}>
                             <Button onClick={() => setJoinModalVisible(false)}>
-                                Abbrechen
+                                {t('groups.modals.cancel')}
                             </Button>
                             <Button
                                 type="primary"
                                 htmlType="submit"
                                 loading={joinLoading}
                             >
-                                Beitreten
+                                {t('groups.modals.join')}
                             </Button>
                         </Space>
                     </Form.Item>
@@ -762,7 +762,7 @@ export default function GroupManagement(): React.ReactElement {
 
             {/* Gruppenmitglieder Modal */}
             <Modal
-                title={`Mitglieder von "${selectedGroup?.name}"`}
+                title={t('groups.modals.membersTitle', { name: selectedGroup?.name })}
                 open={membersModalVisible}
                 onCancel={() => {
                     setMembersModalVisible(false);
@@ -771,7 +771,7 @@ export default function GroupManagement(): React.ReactElement {
                 }}
                 footer={[
                     <Button key="close" onClick={() => setMembersModalVisible(false)}>
-                        Schließen
+                        {t('groups.buttons.close')}
                     </Button>
                 ]}
                 width={600}
@@ -784,11 +784,11 @@ export default function GroupManagement(): React.ReactElement {
                                 selectedGroup?.role === 'admin' && member.role !== 'admin' ? [
                                     <Popconfirm
                                         key="remove"
-                                        title={`Sind Sie sicher, dass Sie ${member.username} aus der Gruppe entfernen möchten?`}
+                                        title={t('groups.confirms.removeUserTitle', { username: member.username })}
                                         icon={<ExclamationCircleOutlined style={{ color: 'orange' }} />}
                                         onConfirm={() => handleRemoveUser(member.id)}
-                                        okText="Ja"
-                                        cancelText="Nein"
+                                        okText={t('groups.confirms.ok')}
+                                        cancelText={t('groups.confirms.cancel')}
                                     >
                                         <Button
                                             danger
@@ -796,7 +796,7 @@ export default function GroupManagement(): React.ReactElement {
                                             icon={<DeleteOutlined />}
                                             loading={removeUserLoading}
                                         >
-                                            Entfernen
+                                            {t('groups.buttons.remove')}
                                         </Button>
                                     </Popconfirm>
                                 ] : undefined

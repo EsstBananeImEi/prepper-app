@@ -3,6 +3,7 @@ import { Card, Button, Space, Typography, Progress, List, message, Popconfirm } 
 import { DeleteOutlined, InfoCircleOutlined, ClearOutlined } from '@ant-design/icons';
 import { ImageCacheManager } from '../../../utils/imageCacheManager';
 import styles from './CacheManagement.module.css';
+import { useTranslation } from 'react-i18next';
 
 const { Title, Text } = Typography;
 
@@ -16,12 +17,13 @@ interface CacheInfo {
 }
 
 export default function CacheManagement(): React.ReactElement {
+    const { t, i18n } = useTranslation();
     const [cacheInfo, setCacheInfo] = useState<CacheInfo | null>(null);
     const [loading, setLoading] = useState(false);
 
     const loadCacheInfo = () => {
         const stats = ImageCacheManager.getCacheStats();
-        const maxSize = 10 * 1024 * 1024; // 10MB
+    const maxSize = 10 * 1024 * 1024; // 10MB
 
         setCacheInfo({
             totalSize: stats.totalSize,
@@ -29,7 +31,7 @@ export default function CacheManagement(): React.ReactElement {
             oldestTimestamp: stats.oldestTimestamp,
             sizeFormatted: formatBytes(stats.totalSize),
             cacheUsagePercent: Math.round((stats.totalSize / maxSize) * 100),
-            oldestDate: stats.imageCount > 0 ? new Date(stats.oldestTimestamp).toLocaleDateString('de-DE') : 'N/A'
+            oldestDate: stats.imageCount > 0 ? new Date(stats.oldestTimestamp).toLocaleDateString(i18n.language) : 'N/A'
         });
     };
 
@@ -46,9 +48,9 @@ export default function CacheManagement(): React.ReactElement {
         try {
             ImageCacheManager.cleanExpiredImages();
             loadCacheInfo();
-            message.success('Abgelaufene Bilder wurden entfernt');
+            message.success(t('admin.cache.toasts.cleanedExpired'));
         } catch (error) {
-            message.error('Fehler beim Bereinigen des Caches');
+            message.error(t('admin.cache.toasts.cleanError'));
         } finally {
             setLoading(false);
         }
@@ -59,9 +61,9 @@ export default function CacheManagement(): React.ReactElement {
         try {
             ImageCacheManager.clearAllCache();
             loadCacheInfo();
-            message.success('Cache wurde vollständig geleert');
+            message.success(t('admin.cache.toasts.clearedAll'));
         } catch (error) {
-            message.error('Fehler beim Leeren des Caches');
+            message.error(t('admin.cache.toasts.clearError'));
         } finally {
             setLoading(false);
         }
@@ -72,22 +74,22 @@ export default function CacheManagement(): React.ReactElement {
     }, []);
 
     if (!cacheInfo) {
-        return <div>Lade Cache-Informationen...</div>;
+    return <div>{t('admin.cache.loading')}</div>;
     }
 
     const cacheItems = [
         {
-            label: 'Gespeicherte Bilder',
+            label: t('admin.cache.labels.imagesStored'),
             value: cacheInfo.imageCount.toString(),
             icon: <InfoCircleOutlined />
         },
         {
-            label: 'Cache-Größe',
+            label: t('admin.cache.labels.cacheSize'),
             value: cacheInfo.sizeFormatted,
             icon: <InfoCircleOutlined />
         },
         {
-            label: 'Ältestes Bild',
+            label: t('admin.cache.labels.oldestImage'),
             value: cacheInfo.oldestDate,
             icon: <InfoCircleOutlined />
         }
@@ -100,7 +102,7 @@ export default function CacheManagement(): React.ReactElement {
                 title={
                     <div className={styles.header}>
                         <Title level={4} style={{ margin: 0 }}>
-                            Bild-Cache Verwaltung
+                            {t('admin.cache.title')}
                         </Title>
                         <Button
                             type="link"
@@ -108,7 +110,7 @@ export default function CacheManagement(): React.ReactElement {
                             onClick={loadCacheInfo}
                             size="small"
                         >
-                            Aktualisieren
+                            {t('admin.cache.refresh')}
                         </Button>
                     </div>
                 }
@@ -117,7 +119,7 @@ export default function CacheManagement(): React.ReactElement {
                     {/* Cache Usage Progress */}
                     <div>
                         <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 8 }}>
-                            <Text>Cache-Auslastung</Text>
+                            <Text>{t('admin.cache.usage')}</Text>
                             <Text>{cacheInfo.cacheUsagePercent}%</Text>
                         </div>
                         <Progress
@@ -132,7 +134,7 @@ export default function CacheManagement(): React.ReactElement {
                             }
                         />
                         <Text type="secondary" style={{ fontSize: '12px' }}>
-                            {cacheInfo.sizeFormatted} von 10 MB verwendet
+                            {t('admin.cache.usedOf', { size: cacheInfo.sizeFormatted, max: t('admin.cache.maxMB') })}
                         </Text>
                     </div>
 
@@ -159,14 +161,14 @@ export default function CacheManagement(): React.ReactElement {
                             loading={loading}
                             disabled={cacheInfo.imageCount === 0}
                         >
-                            Abgelaufene entfernen
+                            {t('admin.cache.buttons.cleanExpired')}
                         </Button>
 
                         <Popconfirm
-                            title="Sind Sie sicher, dass Sie den gesamten Cache löschen möchten?"
+                            title={t('admin.cache.confirm.clearTitle')}
                             onConfirm={handleClearAll}
-                            okText="Ja, löschen"
-                            cancelText="Abbrechen"
+                            okText={t('admin.cache.confirm.ok')}
+                            cancelText={t('admin.cache.confirm.cancel')}
                             okButtonProps={{ danger: true }}
                         >
                             <Button
@@ -175,19 +177,19 @@ export default function CacheManagement(): React.ReactElement {
                                 loading={loading}
                                 disabled={cacheInfo.imageCount === 0}
                             >
-                                Cache leeren
+                                {t('admin.cache.buttons.clearAll')}
                             </Button>
                         </Popconfirm>
                     </Space>
 
                     {/* Cache Information */}
                     <div className={styles.infoBox}>
-                        <Title level={5}>Cache-Informationen</Title>
+                        <Title level={5}>{t('admin.cache.info.title')}</Title>
                         <Text type="secondary">
-                            • Gruppenbilder werden automatisch komprimiert und lokal gespeichert<br />
-                            • Cache wird automatisch nach 7 Tagen bereinigt<br />
-                            • Maximum 10 MB Cache-Größe<br />
-                            • Reduziert Netzwerk-Traffic und verbessert Ladezeiten
+                            {t('admin.cache.info.line1')}<br />
+                            {t('admin.cache.info.line2')}<br />
+                            {t('admin.cache.info.line3')}<br />
+                            {t('admin.cache.info.line4')}
                         </Text>
                     </div>
                 </Space>

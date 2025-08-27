@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Card, Switch, Divider, Typography, Space, Alert } from 'antd';
 import { BugOutlined, SettingOutlined } from '@ant-design/icons';
 import styles from './AdminSettings.module.css';
+import { useTranslation } from 'react-i18next';
 
 const { Title, Text } = Typography;
 
@@ -12,6 +13,7 @@ interface Props {
 }
 
 export default function AdminSettings({ isAdmin, debugPanelEnabled, onDebugPanelToggle }: Props) {
+    const { t } = useTranslation();
     const [localDebugEnabled, setLocalDebugEnabled] = useState(debugPanelEnabled);
 
     useEffect(() => {
@@ -34,12 +36,12 @@ export default function AdminSettings({ isAdmin, debugPanelEnabled, onDebugPanel
         <Card title={
             <Space>
                 <SettingOutlined />
-                Admin-Einstellungen
+                {t('admin.settings.title')}
             </Space>
         } className={styles.adminCard}>
             <Alert
-                message="Administrator-Bereich"
-                description="Diese Einstellungen sind nur für Administratoren sichtbar."
+                message={t('admin.settings.adminAreaTitle')}
+                description={t('admin.settings.adminAreaDesc')}
                 type="info"
                 showIcon
                 style={{ marginBottom: 16 }}
@@ -49,37 +51,37 @@ export default function AdminSettings({ isAdmin, debugPanelEnabled, onDebugPanel
                 <div className={styles.settingInfo}>
                     <Text strong>
                         <BugOutlined style={{ marginRight: 8, color: '#722ed1' }} />
-                        API Debug Panel
+                        {t('admin.settings.apiDebugPanel')}
                     </Text>
                     <br />
                     <Text type="secondary" style={{ fontSize: 12 }}>
-                        Zeigt einen draggbaren Debug-Button für API-Überwachung an
+                        {t('admin.settings.apiDebugPanelDesc')}
                     </Text>
                 </div>
                 <Switch
                     checked={localDebugEnabled}
                     onChange={handleDebugToggle}
-                    checkedChildren="AN"
-                    unCheckedChildren="AUS"
+                    checkedChildren={t('admin.settings.switchOn')}
+                    unCheckedChildren={t('admin.settings.switchOff')}
                 />
             </div>
 
             <Divider />
 
             <div className={styles.debugInfo}>
-                <Title level={5}>Debug-Funktionen:</Title>
+                <Title level={5}>{t('admin.settings.debugFunctionsTitle')}</Title>
                 <ul className={styles.featureList}>
-                    <li>API-Request-Monitoring</li>
-                    <li>Error-Tracking und Analyse</li>
-                    <li>Performance-Metriken</li>
-                    <li>Draggbarer Button (über unterer Navigation auf Mobile)</li>
-                    <li>Exportierbare Logs</li>
+                    <li>{t('admin.settings.features.monitoring')}</li>
+                    <li>{t('admin.settings.features.errorTracking')}</li>
+                    <li>{t('admin.settings.features.performance')}</li>
+                    <li>{t('admin.settings.features.draggable')}</li>
+                    <li>{t('admin.settings.features.exportable')}</li>
                 </ul>
 
                 {localDebugEnabled && (
                     <Alert
-                        message="Debug Panel aktiv"
-                        description="Der draggbare Debug-Button ist jetzt verfügbar. Klicken Sie darauf, um das Debug Panel zu öffnen."
+                        message={t('admin.settings.panelActiveTitle')}
+                        description={t('admin.settings.panelActiveDesc')}
                         type="success"
                         showIcon
                         style={{ marginTop: 12 }}

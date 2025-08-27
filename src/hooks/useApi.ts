@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { notification } from 'antd';
+import i18n from '../i18n';
 import axios from 'axios';
 
 interface ApiState<T> {
@@ -18,7 +19,7 @@ interface UseApiOptions<T = unknown> {
  * Enhanced API error handler with better debugging
  */
 export function handleApiError(error: unknown, showNotification: boolean = true): string {
-    let errorMessage = 'Ein unbekannter Fehler ist aufgetreten';
+    let errorMessage = i18n.t('notifications.apiErrorTitle');
     let debugInfo = '';
 
     if (axios.isAxiosError(error)) {
@@ -41,10 +42,10 @@ export function handleApiError(error: unknown, showNotification: boolean = true)
                 debugInfo = `URL: ${error.config?.url}, Method: ${error.config?.method?.toUpperCase()}`;
                 break;
             case 401:
-                errorMessage = 'Nicht autorisiert. Bitte erneut anmelden.';
+                errorMessage = i18n.t('auth.protected.unauthorized');
                 break;
             case 403:
-                errorMessage = 'Zugriff verweigert.';
+                errorMessage = i18n.t('auth.protected.accessDeniedTitle');
                 break;
             case 404:
                 errorMessage = 'Ressource nicht gefunden.';
@@ -74,7 +75,7 @@ export function handleApiError(error: unknown, showNotification: boolean = true)
 
     if (showNotification) {
         notification.error({
-            message: 'API Fehler',
+            message: i18n.t('notifications.apiErrorTitle'),
             description: errorMessage,
             placement: 'topRight',
             duration: 6
@@ -108,8 +109,8 @@ export function useApi<T>(
 
             if (showNotification) {
                 notification.success({
-                    message: 'Erfolg',
-                    description: 'Daten wurden erfolgreich geladen.',
+                    message: i18n.t('notifications.apiLoadedTitle'),
+                    description: i18n.t('notifications.apiLoadedDesc'),
                     placement: 'topRight',
                     duration: 3
                 });
@@ -155,8 +156,8 @@ export function useMutation<T, P>(
 
             if (showNotification) {
                 notification.success({
-                    message: 'Erfolgreich gespeichert',
-                    description: 'Die Änderungen wurden erfolgreich gespeichert.',
+                    message: i18n.t('notifications.saveSuccessTitle'),
+                    description: i18n.t('notifications.saveSuccessDesc'),
                     placement: 'topRight',
                     duration: 3
                 });

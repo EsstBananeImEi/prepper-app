@@ -1,6 +1,7 @@
 import { useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { message } from 'antd';
+import i18n from '../i18n';
 import { InviteManager } from '../utils/inviteManager';
 import { useStore } from '../store/Store';
 
@@ -64,13 +65,13 @@ export const useInviteProcessor = () => {
                 // Zeige Benachrichtigung über ausstehende Invites
                 if (pendingInvites.length === 1) {
                     message.loading({
-                        content: `Trete Gruppe "${pendingInvites[0].groupName}" bei...`,
+                        content: i18n.t('invites.processingOne', { name: pendingInvites[0].groupName }),
                         key: 'invite-processing',
                         duration: 0
                     });
                 } else {
                     message.loading({
-                        content: `Trete ${pendingInvites.length} Gruppen bei...`,
+                        content: i18n.t('invites.processingMany', { count: pendingInvites.length }),
                         key: 'invite-processing',
                         duration: 0
                     });
@@ -97,12 +98,12 @@ export const useInviteProcessor = () => {
 
                 if (pendingInvites.length === 1) {
                     message.success({
-                        content: `✅ Erfolgreich der Gruppe "${pendingInvites[0].groupName}" beigetreten!`,
+                        content: i18n.t('invites.successOne', { name: pendingInvites[0].groupName }),
                         duration: 5
                     });
                 } else {
                     message.success({
-                        content: `✅ Erfolgreich ${pendingInvites.length} Gruppen beigetreten!`,
+                        content: i18n.t('invites.successMany', { count: pendingInvites.length }),
                         duration: 5
                     });
                 }
@@ -134,9 +135,9 @@ export const useInviteProcessor = () => {
 
                 const errorMessage = error instanceof Error ? error.message : String(error);
                 if (errorMessage.includes('Timeout')) {
-                    message.error('Gruppenbeitritt dauert zu lange. Bitte versuche es später erneut.');
+                    message.error(i18n.t('invites.timeout'));
                 } else {
-                    message.error('Fehler beim Beitritt zu einer Gruppe. Bitte versuche es erneut.');
+                    message.error(i18n.t('invites.error'));
                 }
 
                 // Bei Timeout oder schwerwiegenden Fehlern: Session-Flag trotzdem löschen

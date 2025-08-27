@@ -7,6 +7,7 @@ import { actionHandler } from "../../../store/Actions";
 import { UserModel } from "../../../shared/Models";
 import GroupManagement from "../group-management/GroupManagement";
 import styles from "./UserForm.module.css";
+import { useTranslation } from 'react-i18next';
 
 interface FormValues {
     username: string;
@@ -17,6 +18,7 @@ interface FormValues {
 
 export default function UserProfileForm(): JSX.Element {
     const { store, dispatch } = useStore();
+    const { t } = useTranslation();
     const [form] = Form.useForm<FormValues>();
     const [loading, setLoading] = useState<boolean>(false);
     const [error, setError] = useState<string>("");
@@ -24,7 +26,7 @@ export default function UserProfileForm(): JSX.Element {
 
     const customUpload = async ({ file, onSuccess, onError }: UploadRequestOption): Promise<void> => {
         if (!(file as File).type.startsWith("image/")) {
-            message.error("Nur Bilddateien erlaubt.");
+            message.error(t('user.form.upload.onlyImages'));
             return;
         }
         const reader = new FileReader();
@@ -33,11 +35,11 @@ export default function UserProfileForm(): JSX.Element {
             const base64String = reader.result as string;
             setImage(base64String);
             onSuccess && onSuccess("ok");
-            message.success("Bild erfolgreich hochgeladen");
+            message.success(t('user.form.upload.uploadSuccess'));
         };
         reader.onerror = () => {
-            message.error("Fehler beim Laden des Bildes.");
-            onError && onError(new Error("Fehler beim Lesen der Datei."));
+            message.error(t('user.form.upload.uploadError'));
+            onError && onError(new Error(t('user.form.upload.uploadError')));
         };
     };
 
@@ -59,10 +61,10 @@ export default function UserProfileForm(): JSX.Element {
             };
 
             await actionHandler({ type: "EDIT_USER", user: payload }, dispatch);
-            message.success("Profil aktualisiert");
+            message.success(t('user.form.buttons.updateProfile'));
         } catch (err: unknown) {
             console.error("Fehler beim Aktualisieren des Profils:", err);
-            setError("Fehler beim Aktualisieren des Profils");
+            setError(t('notifications.apiErrorTitle'));
         } finally {
             setLoading(false);
         }
@@ -83,52 +85,52 @@ export default function UserProfileForm(): JSX.Element {
             {error && <Alert message={error} type="error" className={styles.alert} />}
             <Form<FormValues> form={form} layout="vertical" onFinish={handleSubmit}>
                 <Form.Item
-                    label="Benutzername"
+                    label={t('user.form.labels.username')}
                     name="username"
                     rules={[
-                        { required: true, message: "Bitte Benutzername eingeben" },
-                        { min: 3, message: "Der Benutzername muss mindestens 3 Zeichen lang sein." },
-                        { pattern: /^\S.*\S$/, message: "Benutzername darf keine Leerzeichen am Anfang/Ende haben." }
+                        { required: true, message: t('user.form.validation.usernameRequired') },
+                        { min: 3, message: t('user.form.validation.usernameMin') },
+                        { pattern: /^\S.*\S$/, message: t('user.form.validation.usernameTrim') }
                     ]}
                 >
                     <Input />
                 </Form.Item>
                 <Form.Item
-                    label="E-Mail-Adresse"
+                    label={t('user.form.labels.email')}
                     name="email"
                     rules={[
-                        { required: true, message: "Bitte E-Mail eingeben" },
-                        { type: "email", message: "Ungültige E-Mail" },
+                        { required: true, message: t('user.form.validation.emailRequired') },
+                        { type: "email", message: t('user.form.validation.emailInvalid') },
                     ]}
                 >
                     <Input />
                 </Form.Item>
                 <Form.Item
-                    label="Neues Passwort (optional)"
+                    label={t('user.form.labels.passwordNew')}
                     name="password"
-                    rules={[{ min: 6, message: "Das Passwort muss mindestens 6 Zeichen lang sein." }]}
+                    rules={[{ min: 6, message: t('user.form.validation.passwordMin') }]}
                 >
-                    <Input.Password placeholder="Neues Passwort (falls ändern)" />
+                    <Input.Password placeholder={t('user.form.placeholders.passwordOptional')} />
                 </Form.Item>
                 <Form.Item
-                    label="Personen im Haushalt"
+                    label={t('user.form.labels.persons')}
                     name="persons"
                     rules={[
-                        { required: false, message: "Bitte Anzahl der Personen eingeben" },
-                        { type: "number", message: "Bitte eine Zahl eingeben" },
+                        { required: false, message: t('user.form.validation.personsNumber') },
+                        { type: "number", message: t('user.form.validation.personsNumber') },
                     ]}
                 >
                     <InputNumber min={1} />
                 </Form.Item>
-                <Form.Item label="Profilbild">
+                <Form.Item label={t('user.form.labels.profileImage')}>
                     <Upload customRequest={customUpload} showUploadList={false} accept="image/*">
-                        <Button icon={<UploadOutlined />}>Bild hochladen</Button>
+                        <Button icon={<UploadOutlined />}>{t('user.form.upload.selectImage')}</Button>
                     </Upload>
                     {image && <Avatar src={image} size={80} className={styles.avatar} />}
                 </Form.Item>
                 <Form.Item>
                     <Button type="primary" htmlType="submit" loading={loading} block>
-                        Profil aktualisieren
+                        {t('user.form.buttons.updateProfile')}
                     </Button>
                 </Form.Item>
             </Form>
@@ -137,7 +139,7 @@ export default function UserProfileForm(): JSX.Element {
 
     return (
         <div className={styles.container}>
-            <Card title="Benutzerprofil & Gruppenverwaltung" className={styles.card}>
+            <Card title={t('user.title')} className={styles.card}>
                 <Tabs
                     defaultActiveKey="profile"
                     items={[
@@ -146,7 +148,7 @@ export default function UserProfileForm(): JSX.Element {
                             label: (
                                 <span>
                                     <UserOutlined />
-                                    Profil
+                                    {t('user.tabs.profile')}
                                 </span>
                             ),
                             children: profileTab
@@ -156,7 +158,7 @@ export default function UserProfileForm(): JSX.Element {
                             label: (
                                 <span>
                                     <TeamOutlined />
-                                    Gruppen
+                                    {t('user.tabs.groups')}
                                 </span>
                             ),
                             children: <GroupManagement />
