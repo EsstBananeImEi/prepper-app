@@ -1,6 +1,12 @@
 import { useState, useEffect } from 'react';
 import { useStore } from '../store/Store';
 import { baseApiUrl } from '../shared/Constants';
+import { adminApi } from '../utils/secureApiClient';
+type AdminValidationResponse = {
+    isAdmin: boolean;
+    isValid?: boolean;
+    user?: unknown;
+};
 
 interface AdminValidationResult {
     isAdmin: boolean;
@@ -41,40 +47,11 @@ export const useAdminValidation = (): AdminValidationResult => {
             }
 
             try {
-                const response = await fetch(`${baseApiUrl}/auth/validate-admin`, {
-                    method: 'GET',
-                    headers: {
-                        'Authorization': `Bearer ${store.user.access_token}`,
-                        'Content-Type': 'application/json'
-                    }
+                const validation = (await adminApi.validateAdmin()) as AdminValidationResponse;
+                setResult({
+                    isAdmin: !!validation.isAdmin,
+                    isValidating: false
                 });
-
-                if (response.ok) {
-                    const validation: ServerAdminValidation = await response.json();
-                    setResult({
-                        isAdmin: validation.isAdmin,
-                        isValidating: false
-                    });
-                } else if (response.status === 401) {
-                    // Token invalid/expired
-                    setResult({
-                        isAdmin: false,
-                        isValidating: false,
-                        error: 'Sitzung abgelaufen'
-                    });
-
-                    // Clear invalid token
-                    localStorage.removeItem('user');
-                } else if (response.status === 403) {
-                    // Valid token but not admin
-                    setResult({
-                        isAdmin: false,
-                        isValidating: false,
-                        error: 'Keine Admin-Berechtigung'
-                    });
-                } else {
-                    throw new Error(`Admin validation failed: ${response.status}`);
-                }
             } catch (error) {
                 console.error('Admin validation error:', error);
 
@@ -94,21 +71,10 @@ export const useAdminValidation = (): AdminValidationResult => {
 };
 
 // Utility function for components that need immediate admin check without hook
-export const validateAdminSync = async (token: string): Promise<boolean> => {
+export const validateAdminSync = async (_token: string): Promise<boolean> => {
     try {
-        const response = await fetch(`${baseApiUrl}/auth/validate-admin`, {
-            method: 'GET',
-            headers: {
-                'Authorization': `Bearer ${token}`,
-                'Content-Type': 'application/json'
-            }
-        });
-
-        if (response.ok) {
-            const result: ServerAdminValidation = await response.json();
-            return result.isAdmin;
-        }
-        return false;
+        const result = (await adminApi.validateAdmin()) as AdminValidationResponse;
+        return !!result.isAdmin;
     } catch (error) {
         console.error('Sync admin validation failed:', error);
         return false;

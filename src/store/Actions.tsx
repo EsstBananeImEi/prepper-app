@@ -4,6 +4,7 @@ import { Action, AddToShoppingCard, IncreaseAmount, DecreaseAmount, ClearItemCar
 import { validateBase64Image, debugImageData } from '../utils/imageUtils';
 import { apiDebugger } from '../utils/apiDebugger';
 import { env } from 'process';
+import createSecureApiClient from '../utils/secureApiClient';
 
 export const actionHandler = (action: Action, callback: React.Dispatch<Action>): Promise<void> => {
 
@@ -63,15 +64,13 @@ function sendRequest(
         requestData = dataWithoutId;
     }
 
-    return axios({
+    const api = createSecureApiClient();
+    return api({
         method,
-        url: `${baseApiUrl}${path}`,
+        url: `${path}`,
         data: requestData,
         timeout: 8000,
-        headers: {
-            'Content-Type': 'application/json',
-            ...(token ? { "Authorization": `Bearer ${token}` } : {}),
-        },
+        headers: { 'Content-Type': 'application/json' },
     })
         .then((response: AxiosResponse) => {
             if (response.config.method?.toLowerCase() === 'post' || response.config.method?.toLowerCase() === 'put') {
@@ -136,15 +135,13 @@ function sendStorageRequest(
     const startTime = Date.now();
     const requestUrl = `${baseApiUrl}${path}`;
 
-    return axios({
+    const api = createSecureApiClient();
+    return api({
         method,
-        url: requestUrl,
+        url: path,
         data: requestData,
         timeout: 10000, // Increased timeout
-        headers: {
-            'Content-Type': 'application/json',
-            ...(token ? { "Authorization": `Bearer ${token}` } : {}),
-        },
+        headers: { 'Content-Type': 'application/json' },
     }).then((response: AxiosResponse) => {
         const duration = Date.now() - startTime;
 
@@ -227,12 +224,13 @@ function sendNutrientRequest(
 ): Promise<void> {
     const userData = localStorage.getItem("user");
     const token = userData ? JSON.parse(userData).access_token : null;
-    return axios({
+    const api = createSecureApiClient();
+    return api({
         method,
-        url: `${baseApiUrl}${path}`,
+        url: `${path}`,
         data: { ...action.storageItem.nutrients },
         timeout: 3500,
-        headers: token ? { "Authorization": `Bearer ${token}` } : {},
+        headers: {},
     })
         .then((response: AxiosResponse) => {
             if (response.config.method?.toLowerCase() === 'post' || response.config.method?.toLowerCase() === 'put') {
@@ -255,12 +253,13 @@ function sendUserRequest(
     const token = userData ? JSON.parse(userData).access_token : null;
     const data = action.type === 'FORGOT_PASSWORD' ? { email: action.email } : { ...action.user };
 
-    return axios({
+    const api = createSecureApiClient();
+    return api({
         method,
-        url: `${baseApiUrl}${path}`,
+        url: `${path}`,
         data: data,
         timeout: 3500,
-        headers: token ? { "Authorization": `Bearer ${token}` } : {},
+        headers: {},
     })
         .then((response: AxiosResponse) => {
             if (action.type !== 'FORGOT_PASSWORD') {

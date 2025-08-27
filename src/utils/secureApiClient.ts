@@ -8,6 +8,18 @@ export const createSecureApiClient = () => {
         timeout: 10000,
     });
 
+    // Global refresh state to avoid duplicate refresh calls
+    let isRefreshing = false;
+    let refreshPromise: Promise<string> | null = null;
+    const refreshSubscribers: Array<(token: string) => void> = [];
+    const subscribeTokenRefresh = (cb: (token: string) => void) => refreshSubscribers.push(cb);
+    const onRefreshed = (token: string) => {
+        while (refreshSubscribers.length) {
+            const cb = refreshSubscribers.shift();
+            try { cb && cb(token); } catch { /* noop */ }
+        }
+    };
+
     // Request interceptor - add auth token
     api.interceptors.request.use(
         (config: InternalAxiosRequestConfig) => {
@@ -42,32 +54,58 @@ export const createSecureApiClient = () => {
                     try {
                         const user = JSON.parse(userData);
                         if (user.refresh_token) {
-                            // Try to refresh token
-                            const refreshResponse = await axios.post(`${baseApiUrl}/auth/refresh`, {}, {
-                                headers: { Authorization: `Bearer ${user.refresh_token}` }
-                            });
+                            // If already refreshing, queue this request until it's done
+                            if (isRefreshing && refreshPromise) {
+                                return new Promise((resolve, reject) => {
+                                    subscribeTokenRefresh((newToken) => {
+                                        try {
+                                            if (originalRequest.headers) {
+                                                originalRequest.headers.Authorization = `Bearer ${newToken}`;
+                                            }
+                                            resolve(api(originalRequest));
+                                        } catch (e) { reject(e); }
+                                    });
+                                });
+                            }
 
-                            if (refreshResponse.data.access_token) {
-                                // Update stored user data
-                                const updatedUser = {
-                                    ...user,
-                                    access_token: refreshResponse.data.access_token
-                                };
-                                localStorage.setItem('user', JSON.stringify(updatedUser));
+                            // Start refresh
+                            isRefreshing = true;
+                            refreshPromise = axios
+                                .post(`${baseApiUrl}/auth/refresh`, {}, {
+                                    headers: { Authorization: `Bearer ${user.refresh_token}` }
+                                })
+                                .then((refreshResponse) => {
+                                    const newToken = refreshResponse.data.access_token as string | undefined;
+                                    if (!newToken) throw new Error('No access_token in refresh response');
+                                    const updatedUser = { ...user, access_token: newToken };
+                                    localStorage.setItem('user', JSON.stringify(updatedUser));
+                                    onRefreshed(newToken);
+                                    return newToken;
+                                })
+                                .catch((err) => {
+                                    throw err;
+                                })
+                                .finally(() => {
+                                    isRefreshing = false;
+                                    refreshPromise = null;
+                                });
 
-                                // Retry original request with new token
+                            try {
+                                const newToken = await refreshPromise;
                                 if (originalRequest.headers) {
-                                    originalRequest.headers.Authorization = `Bearer ${refreshResponse.data.access_token}`;
+                                    originalRequest.headers.Authorization = `Bearer ${newToken}`;
                                 }
                                 return api(originalRequest);
+                            } catch (refreshError) {
+                                console.error('Token refresh failed:', refreshError);
                             }
                         }
-                    } catch (refreshError) {
-                        console.error('Token refresh failed:', refreshError);
+                    } catch (parseError) {
+                        console.error('Invalid user data in localStorage during refresh:', parseError);
                     }
                 }
 
-                // If refresh failed, clear user data and redirect to login
+                // If refresh failed or no refresh token, clear user and redirect to login
                 localStorage.removeItem('user');
                 if (typeof window !== 'undefined') {
                     window.location.href = '/login';
@@ -84,28 +122,28 @@ export const createSecureApiClient = () => {
 // Admin-specific API calls with enhanced security
 export const adminApi = {
     // Validate admin status (server-side)
-    validateAdmin: async (): Promise<{ isAdmin: boolean; user?: any }> => {
+    validateAdmin: async (): Promise<{ isAdmin: boolean; user?: unknown }> => {
         const api = createSecureApiClient();
         const response = await api.get('/auth/validate-admin');
         return response.data;
     },
 
     // Get admin dashboard data
-    getDashboardData: async (): Promise<any> => {
+    getDashboardData: async (): Promise<unknown> => {
         const api = createSecureApiClient();
         const response = await api.get('/admin/dashboard');
         return response.data;
     },
 
     // Admin-only user management
-    getUsers: async (): Promise<any[]> => {
+    getUsers: async (): Promise<unknown[]> => {
         const api = createSecureApiClient();
         const response = await api.get('/admin/users');
         return response.data;
     },
 
     // Admin-only system info
-    getSystemInfo: async (): Promise<any> => {
+    getSystemInfo: async (): Promise<unknown> => {
         const api = createSecureApiClient();
         const response = await api.get('/admin/system-info');
         return response.data;

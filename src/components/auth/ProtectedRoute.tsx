@@ -3,7 +3,13 @@ import { Navigate, useLocation } from 'react-router-dom';
 import { Card, Alert, Spin } from 'antd';
 import { LockOutlined, UserOutlined } from '@ant-design/icons';
 import { useStore } from '../../store/Store';
-import { baseApiUrl, validateAdminApi, loginRoute } from '../../shared/Constants';
+import { loginRoute } from '../../shared/Constants';
+import { adminApi } from '../../utils/secureApiClient';
+type AdminValidationResponse = {
+    isAdmin: boolean;
+    isValid?: boolean;
+    user?: unknown;
+};
 import { useTranslation } from 'react-i18next';
 
 interface ProtectedRouteProps {
@@ -71,43 +77,20 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
             setIsValidating(true);
 
             try {
-                // Server-side validation of token and admin status
-                const response = await fetch(validateAdminApi, {
-                    method: 'GET',
-                    headers: {
-                        'Authorization': `Bearer ${store.user?.access_token}`,
-                        'Content-Type': 'application/json'
-                    }
+                // Server-side validation of token and admin status via secure client (auto refresh)
+                const result = (await adminApi.validateAdmin()) as AdminValidationResponse;
+
+                const isAuthenticated = result.isValid === undefined ? !!result.isAdmin : !!result.isValid;
+                const isAdmin = !!result.isAdmin;
+                const isAuthorized = requireAdmin ? isAdmin : isAuthenticated;
+
+                setValidationResult({
+                    isAuthenticated,
+                    isAuthorized,
+                    isAdmin,
+                    error: !isAuthorized ? (requireAdmin ? t('auth.protected.adminRequired') : t('auth.protected.unauthorized')) : undefined
                 });
-
-                if (response.ok) {
-                    const result: AuthValidationResponse = await response.json();
-
-                    const isAuthenticated = result.isValid;
-                    const isAdmin = result.isAdmin;
-                    const isAuthorized = requireAdmin ? isAdmin : isAuthenticated;
-
-                    setValidationResult({
-                        isAuthenticated,
-                        isAuthorized,
-                        isAdmin,
-                        error: !isAuthorized ? (requireAdmin ? t('auth.protected.adminRequired') : t('auth.protected.unauthorized')) : undefined
-                    });
-                } else if (response.status === 401) {
-                    // Token is invalid or expired
-                    setValidationResult({
-                        isAuthenticated: false,
-                        isAuthorized: false,
-                        isAdmin: false,
-                        error: t('auth.protected.sessionExpired')
-                    });
-
-                    // Clear invalid user data
-                    localStorage.removeItem('user');
-                } else {
-                    throw new Error(`Validation failed: ${response.status}`);
-                }
-            } catch (error) {
+            } catch (error: unknown) {
                 console.error('Auth validation failed:', error);
 
                 // Fallback: If server validation fails, deny access for admin routes

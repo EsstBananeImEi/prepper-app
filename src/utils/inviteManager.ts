@@ -9,6 +9,7 @@ import {
     groupJoinInvitationApi,
     buildApiUrl
 } from '../shared/Constants';
+import createSecureApiClient from '../utils/secureApiClient';
 
 export interface InviteToken {
     id: string;
@@ -169,18 +170,13 @@ export class InviteManager {
             try {
                 console.log(`🔄 Verarbeite Token ${invite.token}`);
 
-                const response = await fetch(buildApiUrl(groupJoinInvitationApi(invite.token)), {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${authToken}`  // ✅ Korrekt aus User-Objekt
-                    }
-                });
+                const api = createSecureApiClient();
+                const response = await api.post(groupJoinInvitationApi(invite.token));
 
                 console.log(`📡 Response Status für Token ${invite.token}: ${response.status}`);
 
-                if (response.ok) {
-                    const data = await response.json();
+                if (response.status === 200) {
+                    const data = response.data;
                     console.log(`✅ Token ${invite.token} erfolgreich verarbeitet: "${data.group?.name}"`);
                     this.removePendingInvite(invite.token);
                 } else if (response.status === 409) {
@@ -191,7 +187,7 @@ export class InviteManager {
                     this.removePendingInvite(invite.token);
                 } else if (response.status === 422) {
                     console.error(`❌ Token ${invite.token}: Unprocessable Entity (422) - möglicherweise Token-Problem`);
-                    const errorData = await response.text();
+                    const errorData = typeof response.data === 'string' ? response.data : JSON.stringify(response.data);
                     console.error('Error details:', errorData);
 
                     // Bei 422 Token behalten, da es ein Server-Problem sein könnte
@@ -199,7 +195,7 @@ export class InviteManager {
                         this.removePendingInvite(invite.token);
                     }
                 } else {
-                    const error = await response.json().catch(() => ({ error: 'Backend-Fehler' }));
+                    const error = response.data || { error: 'Backend-Fehler' };
                     console.error(`❌ Token ${invite.token} fehlgeschlagen (${response.status}):`, error);
 
                     if (!invite.persistent) {
@@ -245,12 +241,13 @@ export class InviteManager {
             // ✅ BACKEND-FIRST: Für Email-Invites muss das Backend die Quelle der Wahrheit sein
             console.log(`🔍 Validiere Token im Backend: ${buildApiUrl(groupValidateInvitationApi(token))}`);
 
-            const response = await fetch(buildApiUrl(groupValidateInvitationApi(token)));
+            const api = createSecureApiClient();
+            const response = await api.get(groupValidateInvitationApi(token));
 
             console.log(`📡 Backend Response Status: ${response.status}`);
 
-            if (response.ok) {
-                const data = await response.json();
+            if (response.status === 200) {
+                const data = response.data;
                 console.log('📨 Backend Response Data:', data);
 
                 if (data.valid) {
@@ -283,7 +280,7 @@ export class InviteManager {
                 console.error(`❌ Backend-Fehler (${response.status}) - versuche localStorage-Fallback`);
                 // Nur bei Server-Fehlern lokalen Fallback versuchen
             } else {
-                const errorData = await response.json().catch(() => ({}));
+                const errorData = response.data ?? {};
                 console.warn(`❌ Backend Response nicht OK (${response.status}):`, errorData);
                 return null; // Bei 4xx Fehlern kein Fallback
             }
@@ -345,30 +342,19 @@ export class InviteManager {
             console.log(`🔄 Backend-Gruppenbeitritt für Token: ${token}`);
 
             try {
-                const controller = new AbortController();
-                const timeoutId = setTimeout(() => controller.abort(), 10000);
-
-                const response = await fetch(buildApiUrl(groupJoinInvitationApi(token)), {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${authToken}`  // ✅ Korrekt aus User-Objekt
-                    },
-                    signal: controller.signal
-                });
-
-                clearTimeout(timeoutId);
+                const api = createSecureApiClient();
+                const response = await api.post(groupJoinInvitationApi(token));
 
                 console.log(`📡 Response Status: ${response.status}`);
 
-                if (response.ok) {
-                    const data = await response.json();
+                if (response.status === 200) {
+                    const data = response.data;
                     console.log(`✅ Backend-Gruppenbeitritt erfolgreich: "${data.group?.name}"`);
                     this.removePendingInvite(token);
                     return true;
                 } else if (response.status === 422) {
                     console.error('❌ 422 Unprocessable Entity - Token oder Request Problem');
-                    const errorText = await response.text();
+                    const errorText = typeof response.data === 'string' ? response.data : JSON.stringify(response.data);
                     console.error('Error details:', errorText);
                     throw new Error(`422 Unprocessable Entity: ${errorText}`);
                 } else if (response.status === 404) {
@@ -380,7 +366,7 @@ export class InviteManager {
                     this.removePendingInvite(token);
                     return true;
                 } else {
-                    const error = await response.json().catch(() => ({ error: 'Backend-Fehler' }));
+                    const error = response.data || { error: 'Backend-Fehler' };
                     console.warn(`❌ Backend-Gruppenbeitritt fehlgeschlagen (${response.status}):`, error);
                     throw new Error(error.error || 'Backend-Fehler beim Gruppenbeitritt');
                 }

@@ -2,6 +2,7 @@ import React, { Component, ErrorInfo, ReactNode } from 'react';
 import { Result, Button, Typography } from 'antd';
 import { BugOutlined, ReloadOutlined, MailOutlined } from '@ant-design/icons';
 import { baseApiUrl } from '../../shared/Constants';
+import createSecureApiClient from '../../utils/secureApiClient';
 
 const { Paragraph, Text } = Typography;
 
@@ -125,13 +126,8 @@ class ErrorBoundary extends Component<Props, State> {
     private logToServer = async (errorReport: ErrorReport) => {
         try {
 
-            await fetch(`${baseApiUrl}/api/errors`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(errorReport)
-            });
+            const api = createSecureApiClient();
+            await api.post('/api/errors', errorReport);
         } catch (e) {
             console.error('Failed to log to server:', e);
             // Fallback: Speichere in localStorage für späteren Upload
@@ -142,15 +138,10 @@ class ErrorBoundary extends Component<Props, State> {
     private sendErrorEmail = async (errorReport: ErrorReport) => {
         try {
 
-            await fetch(`${baseApiUrl}/api/errors/notify`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    ...errorReport,
-                    notificationType: 'email'
-                })
+            const api = createSecureApiClient();
+            await api.post('/api/errors/notify', {
+                ...errorReport,
+                notificationType: 'email'
             });
         } catch (e) {
             console.error('Failed to send error email:', e);
@@ -193,16 +184,11 @@ class ErrorBoundary extends Component<Props, State> {
 
             for (const errorReport of failedUploads) {
                 try {
-                    await fetch(`${baseApiUrl}/api/errors`, {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                        },
-                        body: JSON.stringify({
-                            ...errorReport,
-                            retryAttempt: true,
-                            retryTimestamp: new Date().toISOString()
-                        })
+                    const api = createSecureApiClient();
+                    await api.post('/api/errors', {
+                        ...errorReport,
+                        retryAttempt: true,
+                        retryTimestamp: new Date().toISOString()
                     });
 
                     // Erfolgreich hochgeladen - von failed logs entfernen

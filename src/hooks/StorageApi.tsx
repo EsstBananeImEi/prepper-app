@@ -1,49 +1,12 @@
-import axios, { AxiosResponse, Method } from 'axios';
+import { AxiosResponse, Method } from 'axios';
 import { useEffect, useState } from 'react';
 import '../index.css';
 import { baseApiUrl } from '../shared/Constants';
 import { Dimension, Setter } from '../types/Types';
 import { createApiTimer, formatApiError } from '../utils/apiDebugger';
-
-const api = axios.create({
-    baseURL: baseApiUrl,
-    timeout: 10000,
-});
-
-// Fügt bei jeder Anfrage den Authorization-Header hinzu, falls vorhanden
-api.interceptors.response.use(
-    response => response,
-    async (error) => {
-        if (error.response && error.response.status === 401) {
-            const userData = localStorage.getItem("user");
-            if (userData) {
-                const user = JSON.parse(userData);
-                try {
-                    // Neues Token abrufen
-                    const refreshResponse = await axios({
-                        method: 'POST',
-                        url: `${baseApiUrl}/refresh`,
-                        headers: { "Authorization": `Bearer ${user.refresh_token}` },
-                        timeout: 2000
-                    });
-                    // Speichere neues Access-Token
-                    user.access_token = refreshResponse.data.access_token;
-                    localStorage.setItem("user", JSON.stringify(user));
-
-                    // Wiederhole die ursprüngliche Anfrage mit dem neuen Token
-                    error.config.headers["Authorization"] = `Bearer ${user.access_token}`;
-                    return axios(error.config);
-                } catch (refreshError) {
-                    console.error("Refresh-Token ungültig", refreshError);
-                    localStorage.removeItem("user"); // User ausloggen
-                    return Promise.reject(refreshError);
-                }
-            }
-        }
-        return Promise.reject(error);
-    }
-);
-
+import createSecureApiClient from '../utils/secureApiClient';
+// Use the shared secure API client with interceptor de-dup and refresh
+const api = createSecureApiClient();
 export default api;
 
 // Enhanced storageApi with debugging and better error handling

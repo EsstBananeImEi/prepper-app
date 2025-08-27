@@ -1,28 +1,18 @@
-import axios from 'axios';
-import { baseApiUrl, groupsApi, groupIdApi, groupMembersApi, groupInviteApi, groupGenerateInviteTokenApi, groupInvitationsApi, groupRevokeInvitationApi, groupJoinApi, groupJoinInvitationApi, groupLeaveApi, groupUpdateApi, groupDeleteApi, groupRemoveUserApi } from '../shared/Constants';
+import { groupsApi, groupIdApi, groupMembersApi, groupInviteApi, groupGenerateInviteTokenApi, groupInvitationsApi, groupRevokeInvitationApi, groupJoinApi, groupJoinInvitationApi, groupLeaveApi, groupUpdateApi, groupDeleteApi, groupRemoveUserApi } from '../shared/Constants';
 import { GroupModel, GroupMemberModel, GroupInvitationModel, GroupPendingInvitationModel } from '../shared/Models';
 import { handleApiError } from './useApi';
 import { ImageCompressionUtils } from '../utils/imageCompressionUtils';
 import { ImageCacheManager } from '../utils/imageCacheManager';
+import createSecureApiClient from '../utils/secureApiClient';
 
-// API-Instanz mit Auth-Header
-const createAuthenticatedRequest = () => {
-    const userData = localStorage.getItem('user');
-    const token = userData ? JSON.parse(userData).access_token : null;
-
-    return {
-        headers: {
-            'Content-Type': 'application/json',
-            ...(token ? { Authorization: `Bearer ${token}` } : {})
-        }
-    };
-};
+// Shared secure API client (adds Authorization and handles refresh)
+const api = createSecureApiClient();
 
 export const groupsApiService = {
     // Alle Gruppen des Users abrufen
     getUserGroups: async (): Promise<GroupModel[]> => {
         try {
-            const response = await axios.get(`${baseApiUrl}${groupsApi}`, createAuthenticatedRequest());
+            const response = await api.get(groupsApi);
             const groups = response.data;
 
             // Load cached images for groups that have images
@@ -61,7 +51,7 @@ export const groupsApiService = {
                 requestData.image = compressedBase64;
             }
 
-            const response = await axios.post(`${baseApiUrl}${groupsApi}`, requestData, createAuthenticatedRequest());
+            const response = await api.post(groupsApi, requestData);
             const newGroup = response.data;
 
             // Cache the image if it exists
@@ -93,7 +83,7 @@ export const groupsApiService = {
                 requestData.image = null;
             }
 
-            const response = await axios.put(`${baseApiUrl}${groupUpdateApi(groupId)}`, requestData, createAuthenticatedRequest());
+            const response = await api.put(groupUpdateApi(groupId), requestData);
             const updatedGroup = response.data;
 
             // Update cache
@@ -113,7 +103,7 @@ export const groupsApiService = {
     // Gruppe löschen
     deleteGroup: async (groupId: number): Promise<void> => {
         try {
-            await axios.delete(`${baseApiUrl}${groupDeleteApi(groupId)}`, createAuthenticatedRequest());
+            await api.delete(groupDeleteApi(groupId));
             // Remove from cache when group is deleted
             ImageCacheManager.removeCachedImage(groupId);
         } catch (error) {
@@ -124,7 +114,7 @@ export const groupsApiService = {
     // Gruppenmitglieder abrufen
     getGroupMembers: async (groupId: number): Promise<GroupMemberModel[]> => {
         try {
-            const response = await axios.get(`${baseApiUrl}${groupMembersApi(groupId)}`, createAuthenticatedRequest());
+            const response = await api.get(groupMembersApi(groupId));
             return response.data;
         } catch (error) {
             throw new Error(handleApiError(error, false));
@@ -134,7 +124,7 @@ export const groupsApiService = {
     // User per E-Mail zur Gruppe einladen
     inviteUserToGroup: async (groupId: number, data: GroupInvitationModel): Promise<{ message: string; inviteToken: string }> => {
         try {
-            const response = await axios.post(`${baseApiUrl}${groupInviteApi(groupId)}`, data, createAuthenticatedRequest());
+            const response = await api.post(groupInviteApi(groupId), data);
             return response.data;
         } catch (error) {
             throw new Error(handleApiError(error, false));
@@ -144,7 +134,7 @@ export const groupsApiService = {
     // ✅ NEU: Nur Invite-Token generieren (ohne E-Mail)
     generateInviteToken: async (groupId: number): Promise<{ message: string; inviteToken: string }> => {
         try {
-            const response = await axios.post(`${baseApiUrl}${groupGenerateInviteTokenApi(groupId)}`, {}, createAuthenticatedRequest());
+            const response = await api.post(groupGenerateInviteTokenApi(groupId), {});
             return response.data;
         } catch (error) {
             throw new Error(handleApiError(error, false));
@@ -154,7 +144,7 @@ export const groupsApiService = {
     // ✅ NEU: Ausstehende Einladungen einer Gruppe abrufen
     getGroupInvitations: async (groupId: number): Promise<{ invitations: GroupPendingInvitationModel[] }> => {
         try {
-            const response = await axios.get(`${baseApiUrl}${groupInvitationsApi(groupId)}`, createAuthenticatedRequest());
+            const response = await api.get(groupInvitationsApi(groupId));
             return response.data;
         } catch (error) {
             throw new Error(handleApiError(error, false));
@@ -164,7 +154,7 @@ export const groupsApiService = {
     // ✅ NEU: Einladung widerrufen
     revokeInvitation: async (groupId: number, token: string): Promise<{ message: string }> => {
         try {
-            const response = await axios.delete(`${baseApiUrl}${groupRevokeInvitationApi(groupId, token)}`, createAuthenticatedRequest());
+            const response = await api.delete(groupRevokeInvitationApi(groupId, token));
             return response.data;
         } catch (error) {
             throw new Error(handleApiError(error, false));
@@ -174,7 +164,7 @@ export const groupsApiService = {
     // Gruppe über Einladungscode beitreten
     joinGroupByCode: async (inviteCode: string): Promise<{ message: string; group: GroupModel }> => {
         try {
-            const response = await axios.post(`${baseApiUrl}${groupJoinApi(inviteCode)}`, {}, createAuthenticatedRequest());
+            const response = await api.post(groupJoinApi(inviteCode), {});
             return response.data;
         } catch (error) {
             throw new Error(handleApiError(error, false));
@@ -184,7 +174,7 @@ export const groupsApiService = {
     // Gruppe über E-Mail-Token beitreten
     joinGroupByToken: async (inviteToken: string): Promise<{ message: string; group: GroupModel }> => {
         try {
-            const response = await axios.post(`${baseApiUrl}${groupJoinInvitationApi(inviteToken)}`, {}, createAuthenticatedRequest());
+            const response = await api.post(groupJoinInvitationApi(inviteToken), {});
             return response.data;
         } catch (error) {
             throw new Error(handleApiError(error, false));
@@ -194,7 +184,7 @@ export const groupsApiService = {
     // Gruppe verlassen
     leaveGroup: async (groupId: number): Promise<{ message: string }> => {
         try {
-            const response = await axios.post(`${baseApiUrl}${groupLeaveApi(groupId)}`, {}, createAuthenticatedRequest());
+            const response = await api.post(groupLeaveApi(groupId), {});
             return response.data;
         } catch (error) {
             throw new Error(handleApiError(error, false));
@@ -204,7 +194,7 @@ export const groupsApiService = {
     // User aus Gruppe entfernen (nur für Admins)
     removeUserFromGroup: async (groupId: number, userId: number): Promise<{ message: string }> => {
         try {
-            const response = await axios.post(`${baseApiUrl}${groupRemoveUserApi(groupId, userId)}`, {}, createAuthenticatedRequest());
+            const response = await api.post(groupRemoveUserApi(groupId, userId), {});
             return response.data;
         } catch (error) {
             throw new Error(handleApiError(error, false));
