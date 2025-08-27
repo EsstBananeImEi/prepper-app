@@ -494,9 +494,9 @@
 }
 
 .desktopAvatar {
-    width: 40px !important;
-    height: 40px !important;
-    border-radius: 8px;
+    width: 64px !important;
+    height: 64px !important;
+    border-radius: 10px;
 }
 
 .desktopTitle {
