@@ -1,9 +1,9 @@
-import pluralize from "pluralize"
 import { NutrientFactoryType } from "../types/Types"
 import { values } from "lodash"
 
 export function pluralFormFactory(word: string, length: number): string {
-    return pluralize(word, length)
+    // German-friendly: do not auto-append English plural 's'; keep unit as provided
+    return (word || '').trim()
 }
 
 export function NutrientFactory(): NutrientFactoryType[] {
