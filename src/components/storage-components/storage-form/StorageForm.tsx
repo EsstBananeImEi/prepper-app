@@ -33,6 +33,14 @@ import {
 import { handleApiError } from '../../../hooks/useApi';
 import i18n from '../../../i18n';
 import { useTranslation } from 'react-i18next';
+import {
+    defaultCategories,
+    defaultItemUnits,
+    defaultNutrientUnits,
+    defaultPackageUnits,
+    defaultStorageLocations
+} from '../../../shared/Defaults';
+import { getCachedOptions, loadOptionsCache, getOptionsCacheMeta } from '../../../utils/optionsCache';
 
 // No‑Op Callback (anstatt leerer Funktionen)
 const noop = () => {
@@ -215,11 +223,27 @@ export default function StorageDetailForm(): ReactElement {
     }, [id, name, store.storeItems]);
 
     // Optionen aus der DB
+    // Backend-provided, user-created options (not including defaults)
     const [dbCategories, setDbCategories] = useState<{ id: number; name: string }[]>([]);
     const [dbStorageLocations, setDbStorageLocations] = useState<{ id: number; name: string }[]>([]);
     const [dbItemUnits, setDbItemUnits] = useState<{ id: number; name: string }[]>([]);
     const [dbPackageUnits, setDbPackageUnits] = useState<{ id: number; name: string }[]>([]);
     const [dbNutrientUnits, setDbNutrientUnits] = useState<{ id: number; name: string }[]>([]);
+
+    // Merge helpers (case-insensitive unique by visible text)
+    const mergeDefaults = (defaults: string[], userAdded: { id: number; name: string }[]) => {
+        const seen = new Set<string>();
+        const push = (arr: string[], val: string) => {
+            const k = val.trim().toLowerCase();
+            if (!k || seen.has(k)) return;
+            seen.add(k);
+            arr.push(val.trim());
+        };
+        const result: string[] = [];
+        defaults.forEach((d) => push(result, d));
+        userAdded.forEach((u) => push(result, u.name));
+        return result;
+    };
 
     // Wizard state
     const [currentStep, setCurrentStep] = useState<number>(0);
@@ -312,9 +336,16 @@ export default function StorageDetailForm(): ReactElement {
     }, [store.storeItems]);
 
     // Filter DB lists to avoid duplicating popular values in the main options
-    const dbItemUnitsFiltered = useMemo(() => dbItemUnits.filter(u => !popularUnits.includes(u.name)), [dbItemUnits, popularUnits]);
-    const dbStorageLocationsFiltered = useMemo(() => dbStorageLocations.filter(l => !popularLocations.includes(l.name)), [dbStorageLocations, popularLocations]);
-    const dbPackageUnitsFiltered = useMemo(() => dbPackageUnits.filter(p => !popularPackageUnits.includes(p.name)), [dbPackageUnits, popularPackageUnits]);
+    // Build merged options (defaults + user-added), then filter out populars from the tail for cleaner menus
+    const mergedItemUnits = useMemo(() => mergeDefaults(defaultItemUnits, dbItemUnits), [defaultItemUnits, dbItemUnits]);
+    const mergedStorageLocations = useMemo(() => mergeDefaults(defaultStorageLocations, dbStorageLocations), [defaultStorageLocations, dbStorageLocations]);
+    const mergedPackageUnits = useMemo(() => mergeDefaults(defaultPackageUnits, dbPackageUnits), [defaultPackageUnits, dbPackageUnits]);
+    const mergedCategories = useMemo(() => mergeDefaults(defaultCategories, dbCategories), [defaultCategories, dbCategories]);
+    const mergedNutrientUnits = useMemo(() => mergeDefaults(defaultNutrientUnits, dbNutrientUnits), [defaultNutrientUnits, dbNutrientUnits]);
+
+    const itemUnitsFiltered = useMemo(() => mergedItemUnits.filter(u => !popularUnits.includes(u)), [mergedItemUnits, popularUnits]);
+    const storageLocationsFiltered = useMemo(() => mergedStorageLocations.filter(l => !popularLocations.includes(l)), [mergedStorageLocations, popularLocations]);
+    const packageUnitsFiltered = useMemo(() => mergedPackageUnits.filter(p => !popularPackageUnits.includes(p)), [mergedPackageUnits, popularPackageUnits]);
 
     // Für Speichern & Fehleranzeige
     const [saving, setSaving] = useState(false);
@@ -346,14 +377,45 @@ export default function StorageDetailForm(): ReactElement {
         }
     }, [id]); // Only depend on id, not the entire storageItem
 
-    // Load options once when component mounts
+    // Load user-created options with session cache to avoid repeated network calls
     useEffect(() => {
-        storageApi('GET', optionsCategoriesApi, setDbCategories);
-        storageApi('GET', optionsStorageLocationsApi, setDbStorageLocations);
-        storageApi('GET', optionsItemUnitsApi, setDbItemUnits);
-        storageApi('GET', optionsPackageUnitsApi, setDbPackageUnits);
-        storageApi('GET', optionsNutrientUnitsApi, setDbNutrientUnits);
-    }, []); // Run only once
+        if (typeof console !== 'undefined' && typeof console.info === 'function') {
+            console.info('[Options] Init load in StorageForm');
+        }
+        const cached = getCachedOptions();
+        if (cached) {
+            setDbCategories(cached.categories);
+            setDbStorageLocations(cached.storageLocations);
+            setDbItemUnits(cached.itemUnits);
+            setDbPackageUnits(cached.packageUnits);
+            setDbNutrientUnits(cached.nutrientUnits);
+            if (typeof console !== 'undefined' && typeof console.info === 'function') {
+                console.info('[Options] Using cached options', getOptionsCacheMeta());
+            }
+        }
+
+        let mounted = true;
+        loadOptionsCache()
+            .then((data) => {
+                if (!mounted) return;
+                setDbCategories(data.categories);
+                setDbStorageLocations(data.storageLocations);
+                setDbItemUnits(data.itemUnits);
+                setDbPackageUnits(data.packageUnits);
+                setDbNutrientUnits(data.nutrientUnits);
+                if (typeof console !== 'undefined' && typeof console.info === 'function') {
+                    console.info('[Options] Options loaded/refreshed', getOptionsCacheMeta());
+                }
+            })
+            .catch((err) => {
+                if (typeof console !== 'undefined' && typeof console.warn === 'function') {
+                    console.warn('[Options] Failed to load options', err);
+                }
+                // ignore and keep whatever we have
+            });
+
+        return () => { mounted = false; };
+    }, []);
 
 
 
@@ -833,9 +895,9 @@ export default function StorageDetailForm(): ReactElement {
                                         ))}
                                     </Select.OptGroup>
                                 )}
-                                {dbItemUnitsFiltered.map((itemUnit) => (
-                                    <Select.Option key={itemUnit.id} value={itemUnit.name}>
-                                        {itemUnit.name}
+                                {itemUnitsFiltered.map((u) => (
+                                    <Select.Option key={`u-${u}`} value={u}>
+                                        {u}
                                     </Select.Option>
                                 ))}
                             </Select>
@@ -854,9 +916,9 @@ export default function StorageDetailForm(): ReactElement {
                                 placeholder={t('form.placeholders.categories')}
                                 onChange={(value) => setCategories(value.slice(-1))}
                             >
-                                {dbCategories.map((category) => (
-                                    <Select.Option key={category.id} value={category.name}>
-                                        {category.name}
+                                {mergedCategories.map((c) => (
+                                    <Select.Option key={`c-${c}`} value={c}>
+                                        {c}
                                     </Select.Option>
                                 ))}
                             </Select>
@@ -879,9 +941,9 @@ export default function StorageDetailForm(): ReactElement {
                                         ))}
                                     </Select.OptGroup>
                                 )}
-                                {dbStorageLocationsFiltered.map((location) => (
-                                    <Select.Option key={location.id} value={location.name}>
-                                        {location.name}
+                                {storageLocationsFiltered.map((loc) => (
+                                    <Select.Option key={`loc-${loc}`} value={loc}>
+                                        {loc}
                                     </Select.Option>
                                 ))}
                             </Select>
@@ -936,9 +998,9 @@ export default function StorageDetailForm(): ReactElement {
                                         ))}
                                     </Select.OptGroup>
                                 )}
-                                {dbPackageUnitsFiltered.map((pkgUnit) => (
-                                    <Select.Option key={pkgUnit.id} value={pkgUnit.name}>
-                                        {pkgUnit.name}
+                                {packageUnitsFiltered.map((pu) => (
+                                    <Select.Option key={`pu-${pu}`} value={pu}>
+                                        {pu}
                                     </Select.Option>
                                 ))}
                             </Select>
@@ -1016,9 +1078,9 @@ export default function StorageDetailForm(): ReactElement {
                                         placeholder={t('form.placeholders.nutrientUnit')}
                                         onChange={(val: string) => setNutrientUnit(val || '')}
                                     >
-                                        {dbItemUnits.map((itemUnit) => (
-                                            <Select.Option key={itemUnit.id} value={itemUnit.name}>
-                                                {itemUnit.name}
+                                        {mergedItemUnits.map((u) => (
+                                            <Select.Option key={`mu-${u}`} value={u}>
+                                                {u}
                                             </Select.Option>
                                         ))}
                                     </Select>
@@ -1076,9 +1138,9 @@ export default function StorageDetailForm(): ReactElement {
                                                             className={css.nutrientTypeSelect}
                                                             style={{ fontWeight: 'normal' }}
                                                         >
-                                                            {dbNutrientUnits.map((option) => (
-                                                                <Select.Option key={option.id} value={option.name}>
-                                                                    {option.name}
+                                                            {mergedNutrientUnits.map((nu) => (
+                                                                <Select.Option key={`nu-${nu}`} value={nu}>
+                                                                    {nu}
                                                                 </Select.Option>
                                                             ))}
                                                         </Select>

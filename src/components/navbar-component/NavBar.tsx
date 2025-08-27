@@ -26,6 +26,7 @@ import GlobalSearch from '../search/GlobalSearch';
 import ApiDebugPanel from '../debug/ApiDebugPanel';
 import DraggableDebugButton from '../debug/DraggableDebugButton';
 import { useAdminValidation } from '../../hooks/useAdminValidation';
+import { clearOptionsCache } from '../../utils/optionsCache';
 import { useTranslation } from 'react-i18next';
 
 const { Text } = Typography;
@@ -90,6 +91,7 @@ export default function NavBar(): ReactElement {
 
     const handleLogout = () => {
         localStorage.removeItem("user");
+        clearOptionsCache();
         dispatch({ type: "LOGOUT_USER" });
         navigate(homeRoute);
     };
