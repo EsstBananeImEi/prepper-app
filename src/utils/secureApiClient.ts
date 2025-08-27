@@ -1,5 +1,5 @@
 import axios, { AxiosResponse, AxiosError, InternalAxiosRequestConfig } from 'axios';
-import { baseApiUrl, validateAdminApi, authRefreshApi } from '../shared/Constants';
+import { baseApiUrl, validateAdminApi, authRefreshApi, adminUsersApi, adminUserIdApi } from '../shared/Constants';
 
 // Enhanced API interceptor with admin validation
 export const createSecureApiClient = () => {
@@ -126,6 +126,32 @@ export const adminApi = {
         const api = createSecureApiClient();
         const response = await api.get(validateAdminApi);
         return response.data;
+    },
+    // Users management (admin only)
+    listUsers: async (): Promise<Array<{ id: number; username: string; email: string; isAdmin?: boolean; isManager?: boolean; locked?: boolean; persons?: number }>> => {
+        const api = createSecureApiClient();
+        const response = await api.get(adminUsersApi);
+        return response.data;
+    },
+    deleteUser: async (userId: number | string): Promise<void> => {
+        const api = createSecureApiClient();
+        await api.delete(adminUserIdApi(userId));
+    },
+    setAdmin: async (userId: number | string, isAdmin: boolean): Promise<void> => {
+        const api = createSecureApiClient();
+        await api.patch(adminUserIdApi(userId), { isAdmin });
+    },
+    setManager: async (userId: number | string, isManager: boolean): Promise<void> => {
+        const api = createSecureApiClient();
+        await api.patch(adminUserIdApi(userId), { isManager });
+    },
+    setLocked: async (userId: number | string, locked: boolean): Promise<void> => {
+        const api = createSecureApiClient();
+        await api.patch(adminUserIdApi(userId), { locked });
+    },
+    updateEmail: async (userId: number | string, email: string): Promise<void> => {
+        const api = createSecureApiClient();
+        await api.patch(adminUserIdApi(userId), { email });
     }
 };
 

@@ -4,12 +4,14 @@ import { baseApiUrl } from '../shared/Constants';
 import { adminApi } from '../utils/secureApiClient';
 type AdminValidationResponse = {
     isAdmin: boolean;
+    isManager?: boolean;
     isValid?: boolean;
     user?: unknown;
 };
 
 interface AdminValidationResult {
     isAdmin: boolean;
+    isManager: boolean;
     isValidating: boolean;
     error?: string;
 }
@@ -29,6 +31,7 @@ export const useAdminValidation = (): AdminValidationResult => {
     const { store } = useStore();
     const [result, setResult] = useState<AdminValidationResult>({
         isAdmin: false,
+        isManager: false,
         isValidating: true
     });
 
@@ -40,6 +43,7 @@ export const useAdminValidation = (): AdminValidationResult => {
             if (!store.user?.access_token) {
                 setResult({
                     isAdmin: false,
+                    isManager: false,
                     isValidating: false,
                     error: 'Nicht angemeldet'
                 });
@@ -50,6 +54,7 @@ export const useAdminValidation = (): AdminValidationResult => {
                 const validation = (await adminApi.validateAdmin()) as AdminValidationResponse;
                 setResult({
                     isAdmin: !!validation.isAdmin,
+                    isManager: !!validation.isManager,
                     isValidating: false
                 });
             } catch (error) {
@@ -58,6 +63,7 @@ export const useAdminValidation = (): AdminValidationResult => {
                 // Auf Server-Fehler: Deny admin access for security
                 setResult({
                     isAdmin: false,
+                    isManager: false,
                     isValidating: false,
                     error: 'Server-Validierung fehlgeschlagen'
                 });

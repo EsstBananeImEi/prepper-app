@@ -8,6 +8,7 @@ export interface UserModel {
     image: string | null;
     persons: number | null;
     isAdmin?: boolean;
+    isManager?: boolean;
     groups?: string[];
 }
 

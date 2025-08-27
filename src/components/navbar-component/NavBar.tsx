@@ -18,6 +18,7 @@ import React, { ReactElement, useEffect, useState, useCallback } from 'react';
 import { NavLink, useLocation, useNavigate } from "react-router-dom";
 import { useDemensions } from '../../hooks/StorageApi';
 import { homeRoute, basketRoute, itemsRoute, newItemRoute, userApi, loginApi, checklistRoute, adminRoute } from '../../shared/Constants';
+import { adminUsersRoute } from '../../shared/Constants';
 import logo from '../../static/images/prepper-app.svg';
 import { useStore } from '../../store/Store';
 import style from './NavBar.module.css';
@@ -115,9 +116,14 @@ export default function NavBar(): ReactElement {
                         <Menu.Item key="profile" icon={<ProfileOutlined />}>
                             <NavLink to={userApi}>{t('common.user')}</NavLink>
                         </Menu.Item>
-                        {(isAdmin && !adminValidating) && (
+                        {(!adminValidating && isAdmin) && (
                             <Menu.Item key="admin" icon={<SettingOutlined />}>
                                 <NavLink to={adminRoute}>{t('navbar.adminPanel')}</NavLink>
+                            </Menu.Item>
+                        )}
+                        {(!adminValidating && (isAdmin || store.user?.isManager)) && (
+                            <Menu.Item key="adminUsers" icon={<UserOutlined />}>
+                                <NavLink to={adminUsersRoute}>Benutzerverwaltung</NavLink>
                             </Menu.Item>
                         )}
                         <Menu.Item key="logout" icon={<LogoutOutlined />} onClick={handleLogout}>

@@ -24,6 +24,9 @@ export const resetPasswordApi = (token: string): string => `/reset-password/${to
 // ✅ User API Endpoints
 export const userApi = `/user`;
 export const adminApi = `/admin`;
+// Admin - Users management API (to be provided by backend)
+export const adminUsersApi = `/admin/users`;
+export const adminUserIdApi = (id: number | string): string => `${adminUsersApi}/${id}`;
 
 // ✅ Items API Endpoints
 export const itemsApi = `/items`;
@@ -65,6 +68,10 @@ export const itemsRoute = '/items';
 export const basketRoute = '/basket';
 export const checklistRoute = '/checklist';
 export const adminRoute = '/admin';
+export const adminUsersRoute = '/admin/users';
+// Admin user management sub-routes
+export const adminUserIdRoute = (id: number | string): string => `${adminUsersRoute}/${String(id)}`;
+export const adminUserEditRoute = (id: number | string): string => `${adminUserIdRoute(id)}/edit`;
 export const userRoute = '/user';
 export const loginRoute = '/login';
 export const devTestingRoute = '/dev-testing';

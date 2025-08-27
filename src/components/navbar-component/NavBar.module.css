@@ -657,23 +657,84 @@
     display: flex;
     align-items: center;
     gap: 10px;
-    padding-bottom: 10px;
+    padding-bottom: 6px;
     border-bottom: 1px solid #eee;
 }
 
 /* Menü in Dropdown */
 .menuList {
     border: none;
-    padding-top: 10px;
+    padding-top: 0;
+    padding-bottom: 0;
 }
 
 .menuList .ant-menu-item {
-    padding: 10px 15px;
+    padding: 6px 12px;
+    min-height: 32px;
+    line-height: 32px;
     transition: all 0.2s;
 }
 
 .menuList .ant-menu-item:hover {
     background: #f0f0f0;
+}
+
+/* Compact Card for user dropdown */
+.userDropdown {
+    padding: 0;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.userDropdown :global(.ant-card-body) {
+    padding: 8px 8px;
+}
+
+.menuList .ant-menu-item a {
+    line-height: 32px;
+    display: flex;
+    align-items: center;
+}
+
+/* Ensure icons don't introduce extra spacing */
+.menuList .ant-menu-item .anticon {
+    margin-right: 8px;
+}
+
+/* Portrait mode: make dropdown even more compact on small screens */
+@media (orientation: portrait) and (max-width: 600px) {
+    .userInfo {
+        padding-bottom: 4px;
+    }
+
+    .menuList {
+        padding-top: 0;
+        padding-bottom: 0;
+    }
+
+    .menuList .ant-menu-item {
+        padding: 4px 10px;
+        min-height: 32px;
+        line-height: 32px;
+        margin: 0;
+    }
+
+    .menuList .ant-menu-item a {
+        line-height: 32px;
+    }
+}
+
+/* Global overrides for Ant Dropdown/Menu title content height */
+:global(.ant-dropdown-menu-title-content),
+:global(.ant-menu-title-content) {
+    height: 32px;
+    line-height: 32px;
+    display: flex;
+    align-items: center;
+}
+
+:global(.ant-dropdown-menu-item) {
+    min-height: 32px;
 }
 
 /* User Avatar - verbesserte Accessibility */

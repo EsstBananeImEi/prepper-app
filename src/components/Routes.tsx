@@ -12,10 +12,11 @@ import User from './user-component/user-Form/UserForm';
 import ChecklistComponent from './checklist-component/CheckListItem';
 import ResetSuccessForm from './user-component/reset-form/ResetSuccessForm';
 import AdminPage from './admin/AdminPage';
+import AdminUsersPage from './admin/AdminUsersPage';
 import InvitePage from './invite/InvitePage';
 import DeveloperTestingPanel from './debug/DeveloperTestingPanel';
 import ProtectedRoute from './auth/ProtectedRoute';
-import { adminRoute, basketRoute, checklistRoute, devTestingRoute, detailsRouteBase, homeRoute, itemsRoute, loginRoute, newItemRoute, rootRoute, userRoute, resetSuccessRoute, inviteRoute, groupJoinRoute, registerRoute } from '../shared/Constants';
+import { adminRoute, adminUsersRoute, adminUserIdRoute, adminUserEditRoute, basketRoute, checklistRoute, devTestingRoute, detailsRouteBase, homeRoute, itemsRoute, loginRoute, newItemRoute, rootRoute, userRoute, resetSuccessRoute, inviteRoute, groupJoinRoute, registerRoute } from '../shared/Constants';
 
 export default function AppRoutes(): ReactElement {
     return (
@@ -68,6 +69,21 @@ export default function AppRoutes(): ReactElement {
             <Route path={devTestingRoute} element={
                 <ProtectedRoute requireAuth={true} requireAdmin={true}>
                     <DeveloperTestingPanel />
+                </ProtectedRoute>
+            } />
+            <Route path={adminUsersRoute} element={
+                <ProtectedRoute requireAuth={true}>
+                    <AdminUsersPage />
+                </ProtectedRoute>
+            } />
+            <Route path={`${adminUsersRoute}/:id`} element={
+                <ProtectedRoute requireAuth={true}>
+                    <AdminUsersPage />
+                </ProtectedRoute>
+            } />
+            <Route path={`${adminUsersRoute}/:id/edit`} element={
+                <ProtectedRoute requireAuth={true}>
+                    <AdminUsersPage />
                 </ProtectedRoute>
             } />
 
