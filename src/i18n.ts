@@ -167,6 +167,58 @@ const resources = {
                         title: '🔍 Error Logs Inspector',
                         instructions: 'Führen Sie diese Befehle in der Browser-Konsole aus:'
                     }
+                    ,
+                    errorTester: {
+                        cardTitle: '🧪 ErrorBoundary Tester',
+                        infoAlertTitle: 'ℹ️ Test-Kategorien',
+                        infoAlertDesc1: '🟢 Wird von ErrorBoundary abgefangen: Render-Cycle Fehler',
+                        infoAlertDesc2: '🔴 Wird NICHT abgefangen: Async-Fehler, Event-Handler, Network-Requests',
+                        infoAlertDesc3: '📝 Alle Tests werden geloggt: Prüfen Sie die Browser-Konsole',
+                        sections: {
+                            caught: '🟢 Wird von ErrorBoundary abgefangen:',
+                            uncaught: '🔴 Wird NICHT von ErrorBoundary abgefangen:',
+                            proper: '✅ KORREKTE Fehlerbehandlung - Lösungsansätze:'
+                        },
+                        buttons: {
+                            throwError: '🚨 Standard React Error',
+                            typeError: '💥 TypeError auslösen',
+                            referenceError: '🔍 ReferenceError auslösen',
+                            networkErrorSim: '🌐 Network Error simulieren',
+                            realNetworkError: '🌐 Echter Network Error',
+                            asyncError: '⏰ Async Error',
+                            eventHandlerError: '🖱️ Event Handler Error',
+                            properNetwork: '✅ Network Error richtig behandeln',
+                            properAsync: '✅ Async Error richtig behandeln'
+                        },
+                        messages: {
+                            networkLoading: 'Network Request läuft...',
+                            networkSuccess: 'Network Request erfolgreich!',
+                            networkUserError: 'Netzwerk-Fehler: Bitte prüfen Sie Ihre Internetverbindung.',
+                            asyncLoading: 'Async Operation läuft...',
+                            asyncSuccess: 'Async Operation erfolgreich!',
+                            asyncFailedTitle: 'Async Operation fehlgeschlagen',
+                            asyncFailedDesc: 'Ein zeitversetzter Vorgang ist fehlgeschlagen. Der Fehler wurde geloggt.',
+                            asyncFailedMsg: 'Async Operation fehlgeschlagen',
+                            userActionFailedTitle: 'Benutzer-Aktion fehlgeschlagen',
+                            userActionFailedDesc: 'Beim Verarbeiten Ihrer Aktion ist ein Fehler aufgetreten. Bitte versuchen Sie es erneut.',
+                            clearLogsSuccess: 'Alle Error-Logs wurden gelöscht'
+                        },
+                        logsInspector: {
+                            title: '🔍 Error Logs Inspector (Erweitert)',
+                            alertTitle: '📊 Drei verschiedene Log-Kategorien',
+                            manual: '🔴 manual_error_logs: Nicht-abgefangene Fehler (problematisch)',
+                            proper: '🟢 properly_handled_errors: Korrekt behandelte Fehler',
+                            boundary: '🔵 error_logs: ErrorBoundary-Logs (automatisch)',
+                            consoleTitle: 'Console-Befehle für alle Log-Typen:',
+                            comment: {
+                                problematic: '// 🔴 Problematische Fehler (nicht behandelt):',
+                                proper: '// ✅ Korrekt behandelte Fehler:',
+                                boundary: '// 🔵 ErrorBoundary-Logs:',
+                                clear: '// 🗑️ Alle Logs löschen:'
+                            },
+                            clearButton: '🗑️ Alle Error-Logs löschen'
+                        }
+                    }
                 }
             },
             notifications: {
@@ -187,6 +239,10 @@ const resources = {
                 newItem: 'Neu anlegen',
                 new: 'Neu',
                 logout: 'Abmelden',
+            },
+            errorPage: {
+                title: 'Es ist ein Fehler aufgetreten. Bitte später erneut versuchen.',
+                toHome: 'Zur Startseite'
             },
             auth: {
                 resetSuccess: {
@@ -716,6 +772,43 @@ const resources = {
                     logs: {
                         title: '🔍 Error Logs Inspector',
                         instructions: 'Run these commands in the browser console:'
+                    }
+                    ,
+                    errorTester: {
+                        cardTitle: '🧪 ErrorBoundary tester',
+                        infoAlertTitle: 'ℹ️ Test categories',
+                        infoAlertDesc1: '🟢 Caught by ErrorBoundary: render-cycle errors',
+                        infoAlertDesc2: '🔴 NOT caught: async errors, event handlers, network requests',
+                        infoAlertDesc3: '📝 All tests are logged: check the browser console',
+                        sections: {
+                            caught: '🟢 Caught by ErrorBoundary:',
+                            uncaught: '🔴 NOT caught by ErrorBoundary:',
+                            proper: '✅ CORRECT error handling — approaches:'
+                        },
+                        buttons: {
+                            throwError: '🚨 Standard React error',
+                            typeError: '💥 Trigger TypeError',
+                            referenceError: '🔍 Trigger ReferenceError',
+                            networkErrorSim: '🌐 Simulate network error',
+                            realNetworkError: '🌐 Real network error',
+                            asyncError: '⏰ Async error',
+                            eventHandlerError: '🖱️ Event handler error',
+                            properNetwork: '✅ Handle network error correctly',
+                            properAsync: '✅ Handle async error correctly'
+                        },
+                        messages: {
+                            networkLoading: 'Network request in progress...',
+                            networkSuccess: 'Network request successful!',
+                            networkUserError: 'Network error: Please check your internet connection.',
+                            asyncLoading: 'Async operation in progress...',
+                            asyncSuccess: 'Async operation successful!',
+                            asyncFailedTitle: 'Async operation failed',
+                            asyncFailedDesc: 'A deferred operation failed. The error was logged.',
+                            asyncFailedMsg: 'Async operation failed',
+                            userActionFailedTitle: 'User action failed',
+                            userActionFailedDesc: 'An error occurred while processing your action. Please try again.',
+                            clearLogsSuccess: 'All error logs have been cleared'
+                        }
                     }
                 }
             },

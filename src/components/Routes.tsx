@@ -72,7 +72,7 @@ export default function AppRoutes(): ReactElement {
             } />
 
             {/* Public Routes */}
-            <Route path={resetSuccessRoute} element={<LoginForm />} />
+            <Route path={resetSuccessRoute} element={<ResetSuccessForm />} />
             <Route path={`${inviteRoute}/:token`} element={<InvitePage />} />
             <Route path={`${groupJoinRoute}/:token`} element={<InvitePage />} />
             <Route path={loginRoute} element={<LoginForm />} />

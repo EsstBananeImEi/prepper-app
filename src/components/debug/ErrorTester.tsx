@@ -1,16 +1,18 @@
 import React, { useState } from 'react';
 import { Button, Space, Card, Typography, Alert, Divider, message, notification } from 'antd';
 import { BugOutlined, CheckCircleOutlined } from '@ant-design/icons';
+import { useTranslation } from 'react-i18next';
 
 const { Title, Text } = Typography;
 
 const ErrorTester: React.FC = () => {
+    const { t } = useTranslation();
     const [shouldThrow, setShouldThrow] = useState(false);
     const [triggerType, setTriggerType] = useState<string | null>(null);
 
     if (shouldThrow) {
         // Dieser Fehler wird von der ErrorBoundary abgefangen
-        throw new Error('Test Error - ErrorBoundary funktioniert!');
+        throw new Error('Test Error - ErrorBoundary works!');
     }
 
     if (triggerType === 'typeError') {
@@ -140,20 +142,20 @@ const ErrorTester: React.FC = () => {
 
     const properNetworkErrorHandling = async () => {
         try {
-            message.loading({ content: 'Network Request läuft...', key: 'network' });
+            message.loading({ content: t('admin.devPanel.errorTester.messages.networkLoading'), key: 'network' });
 
             const response = await fetch('https://nonexistent-domain-12345.com/api/test');
             if (!response.ok) {
                 throw new Error(`HTTP ${response.status}: ${response.statusText}`);
             }
             const data = await response.json();
-            message.success({ content: 'Network Request erfolgreich!', key: 'network' });
+            message.success({ content: t('admin.devPanel.errorTester.messages.networkSuccess'), key: 'network' });
         } catch (error) {
             // ✅ KORREKTE Behandlung von Network-Fehlern
             console.error('Network Error korrekt behandelt:', error);
 
             message.error({
-                content: 'Netzwerk-Fehler: Bitte prüfen Sie Ihre Internetverbindung.',
+                content: t('admin.devPanel.errorTester.messages.networkUserError'),
                 key: 'network',
                 duration: 5
             });
@@ -193,25 +195,25 @@ const ErrorTester: React.FC = () => {
             }, 1000);
         });
 
-        message.loading({ content: 'Async Operation läuft...', key: 'async' });
+        message.loading({ content: t('admin.devPanel.errorTester.messages.asyncLoading'), key: 'async' });
 
         asyncOperation
             .then((result) => {
-                message.success({ content: 'Async Operation erfolgreich!', key: 'async' });
+                message.success({ content: t('admin.devPanel.errorTester.messages.asyncSuccess'), key: 'async' });
             })
             .catch((error) => {
                 // ✅ KORREKTE Promise-Fehlerbehandlung
                 console.error('Async Error korrekt behandelt:', error);
 
                 notification.warning({
-                    message: 'Async Operation fehlgeschlagen',
-                    description: 'Ein zeitversetzter Vorgang ist fehlgeschlagen. Der Fehler wurde geloggt.',
+                    message: t('admin.devPanel.errorTester.messages.asyncFailedTitle'),
+                    description: t('admin.devPanel.errorTester.messages.asyncFailedDesc'),
                     duration: 4,
                     placement: 'topRight'
                 });
 
                 message.error({
-                    content: 'Async Operation fehlgeschlagen',
+                    content: t('admin.devPanel.errorTester.messages.asyncFailedMsg'),
                     key: 'async'
                 });
 
@@ -245,8 +247,8 @@ const ErrorTester: React.FC = () => {
             console.error('Event Handler Error korrekt behandelt:', error);
 
             notification.error({
-                message: 'Benutzer-Aktion fehlgeschlagen',
-                description: 'Beim Verarbeiten Ihrer Aktion ist ein Fehler aufgetreten. Bitte versuchen Sie es erneut.',
+                message: t('admin.devPanel.errorTester.messages.userActionFailedTitle'),
+                description: t('admin.devPanel.errorTester.messages.userActionFailedDesc'),
                 duration: 5,
                 placement: 'topRight'
             });
@@ -276,7 +278,7 @@ const ErrorTester: React.FC = () => {
         localStorage.removeItem('manual_error_logs');
         localStorage.removeItem('properly_handled_errors');
         localStorage.removeItem('error_logs');
-        message.success('Alle Error-Logs wurden gelöscht');
+        message.success(t('admin.devPanel.errorTester.messages.clearLogsSuccess'));
     };
 
     return (
@@ -284,18 +286,18 @@ const ErrorTester: React.FC = () => {
             title={
                 <div>
                     <BugOutlined style={{ marginRight: 8, color: '#ff4d4f' }} />
-                    🧪 ErrorBoundary Tester
+                    {t('admin.devPanel.errorTester.cardTitle')}
                 </div>
             }
             style={{ maxWidth: 600, margin: '20px auto' }}
         >
             <Alert
-                message="ℹ️ Test-Kategorien"
+                message={t('admin.devPanel.errorTester.infoAlertTitle')}
                 description={
                     <div>
-                        <p><strong>🟢 Wird von ErrorBoundary abgefangen:</strong> Render-Cycle Fehler</p>
-                        <p><strong>🔴 Wird NICHT abgefangen:</strong> Async-Fehler, Event-Handler, Network-Requests</p>
-                        <p><strong>📝 Alle Tests werden geloggt:</strong> Prüfen Sie die Browser-Konsole</p>
+                        <p><strong>{t('admin.devPanel.errorTester.infoAlertDesc1')}</strong></p>
+                        <p><strong>{t('admin.devPanel.errorTester.infoAlertDesc2')}</strong></p>
+                        <p><strong>{t('admin.devPanel.errorTester.infoAlertDesc3')}</strong></p>
                     </div>
                 }
                 type="info"
@@ -306,7 +308,7 @@ const ErrorTester: React.FC = () => {
             <Space direction="vertical" size="middle" style={{ width: '100%' }}>
                 {/* Buttons die ErrorBoundary auslösen */}
                 <div>
-                    <Text strong style={{ color: '#52c41a' }}>🟢 Wird von ErrorBoundary abgefangen:</Text>
+                    <Text strong style={{ color: '#52c41a' }}>{t('admin.devPanel.errorTester.sections.caught')}</Text>
 
                     <Button
                         type="primary"
@@ -315,7 +317,7 @@ const ErrorTester: React.FC = () => {
                         block
                         style={{ marginTop: 8 }}
                     >
-                        🚨 Standard React Error
+                        {t('admin.devPanel.errorTester.buttons.throwError')}
                     </Button>
 
                     <Button
@@ -325,7 +327,7 @@ const ErrorTester: React.FC = () => {
                         block
                         style={{ marginTop: 4 }}
                     >
-                        💥 TypeError auslösen
+                        {t('admin.devPanel.errorTester.buttons.typeError')}
                     </Button>
 
                     <Button
@@ -335,7 +337,7 @@ const ErrorTester: React.FC = () => {
                         block
                         style={{ marginTop: 4 }}
                     >
-                        🔍 ReferenceError auslösen
+                        {t('admin.devPanel.errorTester.buttons.referenceError')}
                     </Button>
 
                     <Button
@@ -345,7 +347,7 @@ const ErrorTester: React.FC = () => {
                         block
                         style={{ marginTop: 4 }}
                     >
-                        🌐 Network Error simulieren
+                        {t('admin.devPanel.errorTester.buttons.networkErrorSim')}
                     </Button>
                 </div>
 
@@ -353,7 +355,7 @@ const ErrorTester: React.FC = () => {
 
                 {/* Buttons die NICHT abgefangen werden */}
                 <div>
-                    <Text strong style={{ color: '#ff4d4f' }}>🔴 Wird NICHT von ErrorBoundary abgefangen:</Text>
+                    <Text strong style={{ color: '#ff4d4f' }}>{t('admin.devPanel.errorTester.sections.uncaught')}</Text>
 
                     <Button
                         type="dashed"
@@ -361,7 +363,7 @@ const ErrorTester: React.FC = () => {
                         block
                         style={{ marginTop: 8 }}
                     >
-                        🌐 Echter Network Error
+                        {t('admin.devPanel.errorTester.buttons.realNetworkError')}
                     </Button>
 
                     <Button
@@ -370,7 +372,7 @@ const ErrorTester: React.FC = () => {
                         block
                         style={{ marginTop: 4 }}
                     >
-                        ⏰ Async Error
+                        {t('admin.devPanel.errorTester.buttons.asyncError')}
                     </Button>
 
                     <Button
@@ -379,7 +381,7 @@ const ErrorTester: React.FC = () => {
                         block
                         style={{ marginTop: 4 }}
                     >
-                        🖱️ Event Handler Error
+                        {t('admin.devPanel.errorTester.buttons.eventHandlerError')}
                     </Button>
                 </div>
 
@@ -387,7 +389,7 @@ const ErrorTester: React.FC = () => {
 
                 {/* Buttons die RICHTIGE Fehlerbehandlung zeigen */}
                 <div>
-                    <Text strong style={{ color: '#1890ff' }}>✅ KORREKTE Fehlerbehandlung - Lösungsansätze:</Text>
+                    <Text strong style={{ color: '#1890ff' }}>{t('admin.devPanel.errorTester.sections.proper')}</Text>
 
                     <Button
                         type="primary"
@@ -396,7 +398,7 @@ const ErrorTester: React.FC = () => {
                         style={{ marginTop: 8, background: '#52c41a', borderColor: '#52c41a' }}
                         icon={<CheckCircleOutlined />}
                     >
-                        ✅ Network Error richtig behandeln
+                        {t('admin.devPanel.errorTester.buttons.properNetwork')}
                     </Button>
 
                     <Button
@@ -406,7 +408,7 @@ const ErrorTester: React.FC = () => {
                         style={{ marginTop: 4, background: '#52c41a', borderColor: '#52c41a' }}
                         icon={<CheckCircleOutlined />}
                     >
-                        ✅ Async Error richtig behandeln
+                        {t('admin.devPanel.errorTester.buttons.properAsync')}
                     </Button>
 
                     <Button
@@ -416,22 +418,22 @@ const ErrorTester: React.FC = () => {
                         style={{ marginTop: 4, background: '#52c41a', borderColor: '#52c41a' }}
                         icon={<CheckCircleOutlined />}
                     >
-                        ✅ Event Handler Error richtig behandeln
+                        {t('admin.devPanel.errorTester.buttons.properEvent')}
                     </Button>
                 </div>
 
                 <Divider />
 
                 {/* Informations-Sektion für manuelle Fehler-Logs */}
-                <Card size="small" title="🔍 Error Logs Inspector (Erweitert)">
+                <Card size="small" title={t('admin.devPanel.errorTester.logsInspector.title')}>
                     <Space direction="vertical" style={{ width: '100%' }}>
                         <Alert
-                            message="📊 Drei verschiedene Log-Kategorien"
+                            message={t('admin.devPanel.errorTester.logsInspector.alertTitle')}
                             description={
                                 <div style={{ fontSize: '11px' }}>
-                                    <p><strong style={{ color: '#ff4d4f' }}>🔴 manual_error_logs:</strong> Nicht-abgefangene Fehler (problematisch)</p>
-                                    <p><strong style={{ color: '#52c41a' }}>🟢 properly_handled_errors:</strong> Korrekt behandelte Fehler</p>
-                                    <p><strong style={{ color: '#1890ff' }}>🔵 error_logs:</strong> ErrorBoundary-Logs (automatisch)</p>
+                                    <p><strong style={{ color: '#ff4d4f' }}>{t('admin.devPanel.errorTester.logsInspector.manual')}</strong></p>
+                                    <p><strong style={{ color: '#52c41a' }}>{t('admin.devPanel.errorTester.logsInspector.proper')}</strong></p>
+                                    <p><strong style={{ color: '#1890ff' }}>{t('admin.devPanel.errorTester.logsInspector.boundary')}</strong></p>
                                 </div>
                             }
                             type="info"
@@ -440,7 +442,7 @@ const ErrorTester: React.FC = () => {
                         />
 
                         <Text type="secondary" style={{ fontSize: '12px' }}>
-                            Console-Befehle für alle Log-Typen:
+                            {t('admin.devPanel.errorTester.logsInspector.consoleTitle')}
                         </Text>
                         <div style={{
                             background: '#f5f5f5',
@@ -452,25 +454,25 @@ const ErrorTester: React.FC = () => {
                             wordBreak: 'break-all',
                             whiteSpace: 'pre-wrap'
                         }}>
-                            <div style={{ color: '#ff4d4f' }}>{`// 🔴 Problematische Fehler (nicht behandelt):`}</div>
+                            <div style={{ color: '#ff4d4f' }}>{t('admin.devPanel.errorTester.logsInspector.comment.problematic')}</div>
                             <div style={{ wordBreak: 'break-all' }}>
                                 console.log(JSON.parse(localStorage.getItem(&apos;manual_error_logs&apos;) || &apos;[]&apos;));
                             </div>
                             <br />
 
-                            <div style={{ color: '#52c41a' }}>{`// ✅ Korrekt behandelte Fehler:`}</div>
+                            <div style={{ color: '#52c41a' }}>{t('admin.devPanel.errorTester.logsInspector.comment.proper')}</div>
                             <div style={{ wordBreak: 'break-all' }}>
                                 console.log(JSON.parse(localStorage.getItem(&apos;properly_handled_errors&apos;) || &apos;[]&apos;));
                             </div>
                             <br />
 
-                            <div style={{ color: '#1890ff' }}>{`// 🔵 ErrorBoundary-Logs:`}</div>
+                            <div style={{ color: '#1890ff' }}>{t('admin.devPanel.errorTester.logsInspector.comment.boundary')}</div>
                             <div style={{ wordBreak: 'break-all' }}>
                                 console.log(JSON.parse(localStorage.getItem(&apos;error_logs&apos;) || &apos;[]&apos;));
                             </div>
                             <br />
 
-                            <div style={{ color: '#666' }}>{`// 🗑️ Alle Logs löschen:`}</div>
+                            <div style={{ color: '#666' }}>{t('admin.devPanel.errorTester.logsInspector.comment.clear')}</div>
                             <div style={{ wordBreak: 'break-all' }}>
                                 localStorage.clear(); // oder einzeln löschen
                             </div>
@@ -481,7 +483,7 @@ const ErrorTester: React.FC = () => {
                             size="small"
                             style={{ marginTop: 8 }}
                         >
-                            🗑️ Alle Error-Logs löschen
+                            {t('admin.devPanel.errorTester.logsInspector.clearButton')}
                         </Button>
                     </Space>
                 </Card>
@@ -492,7 +494,7 @@ const ErrorTester: React.FC = () => {
                     block
                     style={{ marginTop: 8 }}
                 >
-                    ❌ React Error Overlay schließen
+                    {t('admin.devPanel.errorTester.buttons.closeOverlay')}
                 </Button>
 
                 {/* Erweiterte Hilfreiche Hinweise */}
@@ -503,10 +505,11 @@ const ErrorTester: React.FC = () => {
                     borderRadius: 6
                 }}>
                     <Text style={{ fontSize: '12px', color: '#389e0d' }}>
-                        💡 <strong>Praktische Lernziele:</strong><br />
-                        • <strong>Rote Buttons:</strong> Zeigen was NICHT funktioniert (ErrorBoundary-Grenzen)<br />
-                        • <strong>Grüne Buttons:</strong> Zeigen WIE es richtig gemacht wird (mit User-Feedback)<br />
-                        • <strong>Logs:</strong> Vergleichen Sie problematische vs. korrekt behandelte Fehler
+                        {t('admin.devPanel.testing.title')}<br />
+                        {/* Reusing testing context bullet points from devPanel.info for consistency */}
+                        • <strong>{t('admin.devPanel.info.bullets.errorBoundary')}</strong><br />
+                        • <strong>{t('admin.devPanel.info.bullets.errorLogging')}</strong><br />
+                        • <strong>{t('admin.devPanel.logs.instructions')}</strong>
                     </Text>
                 </div>
 
@@ -517,11 +520,7 @@ const ErrorTester: React.FC = () => {
                     borderRadius: 6
                 }}>
                     <Text style={{ fontSize: '12px', color: '#0958d9' }}>
-                        🎓 <strong>Produktions-Ready Ansätze:</strong><br />
-                        • <strong>try-catch</strong> für Event-Handler und synchrone Operationen<br />
-                        • <strong>Promise.catch()</strong> für asynchrone Operationen<br />
-                        • <strong>User-Feedback</strong> mit message/notification Components<br />
-                        • <strong>Strukturiertes Logging</strong> für Monitoring und Debugging
+                        {t('admin.devPanel.env.title')}
                     </Text>
                 </div>
 
@@ -532,8 +531,7 @@ const ErrorTester: React.FC = () => {
                     borderRadius: 6
                 }}>
                     <Text style={{ fontSize: '12px', color: '#d46b08' }}>
-                        ⚠️ <strong>Development Mode:</strong> Das React Error Overlay kann die ErrorBoundary überdecken.
-                        Klicken Sie das &quot;X&quot; oben rechts im roten Error Overlay weg, um die ErrorBoundary zu sehen.
+                        {t('admin.devPanel.testing.warningTitle')} {t('admin.devPanel.testing.warningDesc')}
                     </Text>
                 </div>
             </Space>
