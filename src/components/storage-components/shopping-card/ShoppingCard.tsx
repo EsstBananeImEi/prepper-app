@@ -14,7 +14,6 @@ import SafeAvatar from '../../common/SafeAvatar'
 interface Props {
     storedItems: BasketModel[]
     dimensions: Dimension
-    pagination: { minValue: number, maxValue: number }
 }
 
 export default function ShoppingCard(props: Props): ReactElement {
@@ -26,7 +25,6 @@ export default function ShoppingCard(props: Props): ReactElement {
 
     const dimensions = props.dimensions
     const [descWidth, setDescWidth] = useState(900)
-    const { minValue, maxValue } = props.pagination
     const trimText = (text: string) => {
         const maxTextChars = (descWidth / 8) - 3
         const cuttedText = text.length > maxTextChars ? text.substring(0, (maxTextChars)) + '...' : text
@@ -68,7 +66,7 @@ export default function ShoppingCard(props: Props): ReactElement {
     }
     return (<>
 
-        {props.storedItems.slice(minValue, maxValue).map(storeageItem =>
+        {props.storedItems.map(storeageItem =>
             <div style={{ padding: '5px' }} key={storeageItem.id} className="space-align-block">
                 <Space >
                     <Badge count={countItems(storeageItem.id)} offset={[-20, 20]} style={{ backgroundColor: '#52c41a' }}>
