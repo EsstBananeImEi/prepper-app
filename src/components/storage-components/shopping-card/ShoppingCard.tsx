@@ -79,8 +79,11 @@ export default function ShoppingCard(props: Props): ReactElement {
             const idForLink = storageItem?.id ?? basketItem.id
             const basketCount = countItemsByName(basketItem.name)
             const subtitle = basketItem.categories && trimText(basketItem.categories.join(', '))
+            const mainCategory = (basketItem.categories && basketItem.categories.length > 0
+                ? basketItem.categories[0]
+                : (storageItem?.categories && storageItem.categories[0]) || '')
 
-            // Desktop look: image banner above title, inventory row at bottom
+            // Desktop look: image banner above title, inventory row at bottom (without label text)
             if (isDesktop) {
                 return (
                     <div style={{ padding: '5px' }} key={`desk-${basketItem.id}`} className="space-align-block">
@@ -100,13 +103,7 @@ export default function ShoppingCard(props: Props): ReactElement {
                                             </div>
                                             <div className={listStyles.desktopTitle} title={basketItem.name}>{basketItem.name}</div>
                                             <div className={listStyles.desktopInventoryRow}>
-                                                {storageItem ? (
-                                                    <span className={listStyles.desktopInventory}>
-                                                        Bestand: {storageItem.amount} {storageItem.unit}
-                                                    </span>
-                                                ) : (
-                                                    <span className={listStyles.desktopInventory}>&nbsp;</span>
-                                                )}
+                                                <span className={listStyles.desktopInventory}>{subtitle || '\u00A0'}</span>
                                             </div>
                                         </div>
                                     </Link>
@@ -117,42 +114,36 @@ export default function ShoppingCard(props: Props): ReactElement {
                 )
             }
 
-            // Landscape/mobile cards: image left, title right, subtitle below, bottom info row
+            // Landscape/mobile cards: image left, title right, subtitle below, bottom info row; badge top-right of image
             return (
                 <div style={{ padding: '5px' }} key={`land-${basketItem.id}`} className="space-align-block">
                     <Space>
-                        <Badge count={basketCount} offset={[-20, 20]} style={{ backgroundColor: '#52c41a' }}>
-                            <Card className={listStyles.storageCard}
-                                actions={[
-                                    <MinusCircleOutlined onClick={(e) => onDecreaseAmount(e, basketItem)} key='minus' />,
-                                    <DeleteOutlined onClick={(e) => onChangeCard(e, { type: 'CLEAR_ITEM_CARD', basketItems: basketItem })} key="delete" />,
-                                    <PlusCircleOutlined onClick={(e) => onIncreaseAmount(e, basketItem)} key="plus" />
-                                ]}
-                            >
-                                <Link to={itemIdRoute(idForLink)}>
-                                    <div className={listStyles.cardContent}>
-                                        <div className={listStyles.cardHeader}>
-                                            <div className={listStyles.cardImage}>
+                        <Card className={listStyles.storageCard}
+                            actions={[
+                                <MinusCircleOutlined onClick={(e) => onDecreaseAmount(e, basketItem)} key='minus' />,
+                                <DeleteOutlined onClick={(e) => onChangeCard(e, { type: 'CLEAR_ITEM_CARD', basketItems: basketItem })} key="delete" />,
+                                <PlusCircleOutlined onClick={(e) => onIncreaseAmount(e, basketItem)} key="plus" />
+                            ]}
+                        >
+                            <Link to={itemIdRoute(idForLink)}>
+                                <div className={listStyles.cardContent}>
+                                    <div className={listStyles.cardHeader}>
+                                        <div className={listStyles.cardImage}>
+                                            <Badge count={basketCount} style={{ backgroundColor: '#52c41a' }} offset={[-6, 6]}>
                                                 <SafeAvatar className={listStyles.cardAvatar} src={basketItem.icon} showWarnings={process.env.NODE_ENV === 'development'} />
-                                            </div>
-                                            <div className={listStyles.cardInfo}>
-                                                <div className={listStyles.cardTitleWrap}>
-                                                    <div className={listStyles.cardTitle} title={basketItem.name}>{basketItem.name}</div>
-                                                </div>
-                                                <div className={listStyles.cardSubtitle} title={subtitle || ''}>{subtitle}</div>
-                                            </div>
+                                            </Badge>
                                         </div>
-                                        <div className={listStyles.cardInventory}>
-                                            {storageItem ? (
-                                                <span>Bestand: {storageItem.amount} {storageItem.unit}</span>
-                                            ) : (
-                                                <span>&nbsp;</span>
-                                            )}
+                                        <div className={listStyles.cardInfo}>
+                                            <div className={listStyles.cardTitleWrap}>
+                                                <div className={listStyles.cardTitle} title={basketItem.name}>{basketItem.name}</div>
+                                            </div>
+                                            <div className={listStyles.cardSubtitle} title="">&nbsp;</div>
                                         </div>
                                     </div>
-                                </Link>
-                            </Card>
-                        </Badge>
+                                    <div className={listStyles.cardInventory}><span>{subtitle || '\u00A0'}</span></div>
+                                </div>
+                            </Link>
+                        </Card>
                     </Space>
                 </div>
             )
