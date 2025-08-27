@@ -264,6 +264,14 @@
         width: 150px;
         height: 160px;
         /* compact but consistent */
+        display: flex;
+        flex-direction: column;
+    }
+
+    .storageCard :global(.ant-card-body) {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
     }
 
     .itemsWrapper :global(.space-align-block) {
@@ -275,9 +283,10 @@
     .cardContent {
         display: grid;
         grid-template-columns: auto 1fr;
-        grid-template-rows: auto 1fr auto;
+        grid-template-rows: 32px 16px 1fr;
+        /* fixed header rows to keep layout stable */
         grid-template-areas: "image title" "image subtitle" "inventory inventory";
-        align-items: start;
+        align-items: center;
         gap: 4px 6px;
         text-align: left;
     }
@@ -291,16 +300,28 @@
         grid-area: title;
         font-size: 12px;
         align-self: center;
+        -webkit-line-clamp: 1;
+        /* single line */
+        display: -webkit-box;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+        white-space: nowrap;
+        text-overflow: ellipsis;
     }
 
     .cardSubtitle {
         grid-area: subtitle;
         font-size: 11px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
     }
 
     .cardInventory {
         grid-area: inventory;
         font-size: 11px;
+        align-self: end;
+        /* stick to bottom of growing last row */
     }
 }
 
@@ -309,6 +330,14 @@
     .storageCard {
         width: 150px;
         height: 160px;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .storageCard :global(.ant-card-body) {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
     }
 
     .itemsWrapper :global(.space-align-block) {
@@ -318,9 +347,9 @@
     .cardContent {
         display: grid;
         grid-template-columns: auto 1fr;
-        grid-template-rows: auto 1fr auto;
+        grid-template-rows: 32px 16px 1fr;
         grid-template-areas: "image title" "image subtitle" "inventory inventory";
-        align-items: start;
+        align-items: center;
         gap: 4px 6px;
         text-align: left;
     }
@@ -334,16 +363,26 @@
         grid-area: title;
         font-size: 12px;
         align-self: center;
+        -webkit-line-clamp: 1;
+        display: -webkit-box;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+        white-space: nowrap;
+        text-overflow: ellipsis;
     }
 
     .cardSubtitle {
         grid-area: subtitle;
         font-size: 11px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
     }
 
     .cardInventory {
         grid-area: inventory;
         font-size: 11px;
+        align-self: end;
     }
 }
 
@@ -421,6 +460,15 @@
     overflow: hidden;
     width: 200px;
     height: 200px;
+    display: flex;
+    flex-direction: column;
+}
+
+.desktopCard :global(.ant-card-body) {
+    padding: 12px;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
 }
 
 .desktopCard :global(.ant-card-body) {
