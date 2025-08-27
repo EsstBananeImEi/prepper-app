@@ -7,6 +7,7 @@ import styles from './BreadcrumbNav.module.css';
 const BreadcrumbNav: React.FC = () => {
     const location = useLocation();
     const [activeFilterCount, setActiveFilterCount] = useState<number>(0);
+    const [activeShoppingFilterCount, setActiveShoppingFilterCount] = useState<number>(0);
 
     useEffect(() => {
         const onFiltersChanged = (e: Event) => {
@@ -33,6 +34,30 @@ const BreadcrumbNav: React.FC = () => {
             }
         } catch { /* noop */ }
         return () => window.removeEventListener('storageFiltersChanged', onFiltersChanged as EventListener);
+    }, []);
+
+    // Listen to Shopping (basket) filter changes
+    useEffect(() => {
+        const onShoppingFiltersChanged = (e: Event) => {
+            const custom = e as CustomEvent<{ count: number }>;
+            const next = typeof custom.detail?.count === 'number' ? custom.detail.count : 0;
+            setActiveShoppingFilterCount(next);
+        };
+        window.addEventListener('shoppingFiltersChanged', onShoppingFiltersChanged as EventListener);
+        // initialize from sessionStorage
+        try {
+            const raw = sessionStorage.getItem('shoppingFilters');
+            if (raw) {
+                const f = JSON.parse(raw);
+                const isDefaultSort = (f.sortField ?? 'name') === 'name' && (f.sortOrder ?? 'asc') === 'asc';
+                const count =
+                    (Array.isArray(f.selectedCategories) ? f.selectedCategories.length : 0) +
+                    (typeof f.searchText === 'string' && f.searchText.trim() ? 1 : 0) +
+                    (isDefaultSort ? 0 : 1);
+                setActiveShoppingFilterCount(count);
+            }
+        } catch { /* noop */ }
+        return () => window.removeEventListener('shoppingFiltersChanged', onShoppingFiltersChanged as EventListener);
     }, []);
 
     // Route-zu-Breadcrumb-Mapping
@@ -117,9 +142,13 @@ const BreadcrumbNav: React.FC = () => {
     const breadcrumbItems = getBreadcrumbItems(location.pathname);
 
     const isStorageList = location.pathname === '/items';
+    const isBasketList = location.pathname === '/basket';
 
     const openStorageFilters = () => {
         window.dispatchEvent(new CustomEvent('openStorageFilters'));
+    };
+    const openShoppingFilters = () => {
+        window.dispatchEvent(new CustomEvent('openShoppingFilters'));
     };
 
     // Zeige Breadcrumb nur an, wenn mehr als nur Home vorhanden ist
@@ -141,6 +170,17 @@ const BreadcrumbNav: React.FC = () => {
                     className={styles.filterButton}
                 >
                     {activeFilterCount > 0 ? `Filter (${activeFilterCount})` : 'Filter'}
+                </Button>
+            )}
+            {isBasketList && (
+                <Button
+                    type="default"
+                    icon={<FilterOutlined />}
+                    onClick={openShoppingFilters}
+                    aria-label={activeShoppingFilterCount > 0 ? `Filter öffnen – ${activeShoppingFilterCount} aktiv` : 'Filter öffnen'}
+                    className={styles.filterButton}
+                >
+                    {activeShoppingFilterCount > 0 ? `Filter (${activeShoppingFilterCount})` : 'Filter'}
                 </Button>
             )}
         </div>

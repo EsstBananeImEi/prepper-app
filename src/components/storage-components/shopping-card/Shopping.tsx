@@ -56,6 +56,13 @@ export default function Shopping(): ReactElement {
         try { window.dispatchEvent(new CustomEvent('shoppingFiltersChanged', { detail: { count: activeCount } })) } catch { /* noop */ }
     }, [selectedCategories, searchText, sortField, sortOrder])
 
+    // Open Drawer via breadcrumb button custom event (align with StorageList)
+    useEffect(() => {
+        const onOpen = () => setShowFilters(true)
+        window.addEventListener('openShoppingFilters', onOpen as EventListener)
+        return () => window.removeEventListener('openShoppingFilters', onOpen as EventListener)
+    }, [])
+
     // Measure Drawer height similar to StorageList
     useEffect(() => {
         if (!showFilters) return
@@ -154,11 +161,6 @@ export default function Shopping(): ReactElement {
 
     return (
         <>
-            <div className={styles.filterToggle} onClick={() => setShowFilters(true)}>
-                <span>Filter & Sortierung</span>
-                {showFilters ? <UpOutlined style={{ fontSize: 18, color: '#666' }} /> : <DownOutlined style={{ fontSize: 18, color: '#666' }} />}
-            </div>
-
             <Drawer
                 title={
                     <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
