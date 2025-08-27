@@ -1,4 +1,4 @@
-import { Button, Drawer, Input, Pagination, Select, Tag, Tooltip } from 'antd'
+import { Button, Drawer, Input, Pagination, Select, Tag, Tooltip, Divider } from 'antd'
 import React, { ReactElement, useMemo, useRef, useState, useEffect } from 'react'
 import { Message } from 'semantic-ui-react'
 import { useDemensions } from '../../../hooks/StorageApi'
@@ -261,7 +261,29 @@ export default function Shopping(): ReactElement {
             >
                 {(dimensions.width > 450 && !(isPortrait && dimensions.width <= 600)) ? (
                     <>
-                        <ShoppingCard storedItems={paginatedItems} dimensions={dimensions} />
+                        {sortField === 'category' ? (
+                            <>
+                                {(() => {
+                                    // Group current page by first category
+                                    const groups = new Map<string, typeof paginatedItems>();
+                                    paginatedItems.forEach(item => {
+                                        const category = (item.categories && item.categories[0]) || 'Ohne Kategorie'
+                                        if (!groups.has(category)) groups.set(category, [])
+                                        groups.get(category)!.push(item)
+                                    })
+                                    return Array.from(groups.entries()).map(([category, items]) => (
+                                        <React.Fragment key={`cat-${category}`}>
+                                            <div style={{ width: '100%' }}>
+                                                <Divider orientation="left">{category}</Divider>
+                                            </div>
+                                            <ShoppingCard storedItems={items} dimensions={dimensions} />
+                                        </React.Fragment>
+                                    ))
+                                })()}
+                            </>
+                        ) : (
+                            <ShoppingCard storedItems={paginatedItems} dimensions={dimensions} />
+                        )}
                         {sortedItems.length !== 0 && (
                             <Pagination
                                 pageSize={pageSize}
