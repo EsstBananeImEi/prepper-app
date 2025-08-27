@@ -130,9 +130,21 @@ export default function StorageList(): ReactElement {
             const newSize = Math.max(1, rows * cols);
             if (newSize !== pageSize) setPageSize(newSize);
         };
-        const id = window.setTimeout(measure, 0);
+        // run multiple times to cover initial layout/image load
+        measure();
+        const id0 = window.setTimeout(measure, 0);
+        const id1 = window.setTimeout(measure, 120);
+        const raf = window.requestAnimationFrame(measure);
+        const onLoad = () => measure();
+        window.addEventListener('load', onLoad);
         window.addEventListener('resize', measure);
-        return () => { window.clearTimeout(id); window.removeEventListener('resize', measure); };
+        return () => {
+            window.clearTimeout(id0);
+            window.clearTimeout(id1);
+            window.cancelAnimationFrame(raf);
+            window.removeEventListener('load', onLoad);
+            window.removeEventListener('resize', measure);
+        };
         // Include only stable deps; using dimensions below separately to trigger remeasure
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [isDesktop]);
@@ -572,6 +584,15 @@ export default function StorageList(): ReactElement {
                                     style={{ padding: '5px' }}
                                     key={`storage-item-${storageItem.id}`}
                                     className="space-align-block"
+                                    onLoadCapture={() => {
+                                        // If images or content cause size changes, let the desktop measurer run again
+                                        if (isDesktop) {
+                                            try {
+                                                const event = new Event('resize');
+                                                window.dispatchEvent(event);
+                                            } catch { /* noop */ }
+                                        }
+                                    }}
                                 >
                                     <Space>
                                         {isDesktop ? (
