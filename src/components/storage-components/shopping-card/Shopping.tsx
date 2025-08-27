@@ -278,6 +278,8 @@ export default function Shopping(): ReactElement {
                         dimensions={dimensions}
                         key="list"
                         groupByCategory={sortField === 'category'}
+                        hideCategoryHeaders={false}
+                        compact
                     />
                 )}
             </div>

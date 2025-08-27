@@ -15,6 +15,10 @@ interface Props {
     storedItems: BasketModel[];
     dimensions: Dimension;
     groupByCategory?: boolean;
+    // When true, render a compact list like the category grouping items (no description, tighter spacing)
+    compact?: boolean;
+    // When grouping is enabled, hide the category headers
+    hideCategoryHeaders?: boolean;
 }
 
 export default function ShoppingList(props: Props): ReactElement {
@@ -87,8 +91,10 @@ export default function ShoppingList(props: Props): ReactElement {
             <>
                 {groupedItems.map(([category, items]) => (
                     <React.Fragment key={category}>
-                        <Divider orientation="left">{category}</Divider>
-                        {items.map((listItem, index) => (
+                        {!props.hideCategoryHeaders && (
+                            <Divider orientation="left">{category}</Divider>
+                        )}
+                        {items.map((listItem) => (
                             <div key={`div-${listItem.id}`} style={{ width: '100%' }}>
                                 <List.Item
                                     key={listItem.id}
@@ -120,7 +126,6 @@ export default function ShoppingList(props: Props): ReactElement {
                                                 <span>{listItem.name}</span>
                                             </div>
                                         }
-
                                         key={`meta${listItem.id}`}
                                     />
                                     <Badge
@@ -139,14 +144,15 @@ export default function ShoppingList(props: Props): ReactElement {
     }
 
     // Standardanzeige ohne Gruppierung
+    // Standardanzeige ohne Gruppierung
     return (
         <>
             {props.storedItems.map((listItem, index) => (
                 <div key={`div-${listItem.id}`} style={{ width: '100%' }}>
-                    <Divider />
+                    {!props.compact && <Divider />}
                     <List.Item
                         key={index}
-                        className={styles.title}
+                        className={props.compact ? listStyles.devider : styles.title}
                         actions={[
                             <MinusCircleOutlined
                                 className={styles.iconAction}
@@ -174,9 +180,7 @@ export default function ShoppingList(props: Props): ReactElement {
                                     <span>{listItem.name}</span>
                                 </div>
                             }
-                            description={
-                                listItem.categories && trimText(listItem.categories.join(', '))
-                            }
+                            {...(!props.compact && { description: listItem.categories && trimText(listItem.categories.join(', ')) })}
                             key={`meta${listItem.id}`}
                         />
                         <Badge
@@ -186,7 +190,7 @@ export default function ShoppingList(props: Props): ReactElement {
                             style={{ backgroundColor: '#52c41a' }}
                         />
                     </List.Item>
-                    {index + 1 === props.storedItems.length && <Divider />}
+                    {!props.compact && index + 1 === props.storedItems.length && <Divider />}
                 </div>
             ))}
         </>
