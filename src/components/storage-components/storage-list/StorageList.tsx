@@ -17,7 +17,7 @@ export default function StorageList(): ReactElement {
 
     // Pagination
     const [currentPage, setCurrentPage] = useState(1);
-    const pageSize = 10;
+    const [pageSize, setPageSize] = useState(10);
     const handleChange = (page: number) => setCurrentPage(page);
     const [dimensions] = useDemensions(handleChange, currentPage);
     // Compute portrait directly from current dimensions to react instantly on rotate
@@ -99,6 +99,71 @@ export default function StorageList(): ReactElement {
     }, []);
 
     const items = store.storeItems || [];
+
+    // Dynamic desktop grid page size calculation
+    const itemsWrapperRef = useRef<HTMLDivElement | null>(null);
+    useEffect(() => {
+        if (!isDesktop) {
+            if (pageSize !== 10) setPageSize(10);
+            return;
+        }
+        const measure = () => {
+            const el = itemsWrapperRef.current;
+            if (!el) return;
+            const rect = el.getBoundingClientRect();
+            const availableHeight = Math.max(0, window.innerHeight - rect.top - 32); // smaller buffer so more rows fit
+            const availableWidth = el.clientWidth;
+            // Measure actual tile footprint (wrapper .space-align-block includes padding; add margins)
+            const sampleBlock = el.querySelector('.space-align-block') as HTMLElement | null;
+            let tileW = 210, tileH = 210;
+            if (sampleBlock) {
+                const cs = window.getComputedStyle(sampleBlock);
+                const ml = parseFloat(cs.marginLeft || '0');
+                const mr = parseFloat(cs.marginRight || '0');
+                const mt = parseFloat(cs.marginTop || '0');
+                const mb = parseFloat(cs.marginBottom || '0');
+                tileW = sampleBlock.offsetWidth + ml + mr;
+                tileH = sampleBlock.offsetHeight + mt + mb;
+            }
+            const cols = Math.max(1, Math.floor(availableWidth / tileW));
+            const rows = Math.max(1, Math.floor(availableHeight / tileH));
+            const newSize = Math.max(1, rows * cols);
+            if (newSize !== pageSize) setPageSize(newSize);
+        };
+        const id = window.setTimeout(measure, 0);
+        window.addEventListener('resize', measure);
+        return () => { window.clearTimeout(id); window.removeEventListener('resize', measure); };
+        // Include only stable deps; using dimensions below separately to trigger remeasure
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [isDesktop]);
+
+    // Remeasure on dimension changes and when chips/filter blocks change layout
+    useEffect(() => {
+        if (!isDesktop) return;
+        const el = itemsWrapperRef.current;
+        if (!el) return;
+        const rect = el.getBoundingClientRect();
+        const availableHeight = Math.max(0, window.innerHeight - rect.top - 32);
+        const availableWidth = el.clientWidth;
+        const sampleBlock = el.querySelector('.space-align-block') as HTMLElement | null;
+        let tileW = 210, tileH = 210;
+        if (sampleBlock) {
+            const cs = window.getComputedStyle(sampleBlock);
+            const ml = parseFloat(cs.marginLeft || '0');
+            const mr = parseFloat(cs.marginRight || '0');
+            const mt = parseFloat(cs.marginTop || '0');
+            const mb = parseFloat(cs.marginBottom || '0');
+            tileW = sampleBlock.offsetWidth + ml + mr;
+            tileH = sampleBlock.offsetHeight + mt + mb;
+        }
+        const cols = Math.max(1, Math.floor(availableWidth / tileW));
+        const rows = Math.max(1, Math.floor(availableHeight / tileH));
+        const newSize = Math.max(1, rows * cols);
+        if (newSize !== pageSize) setPageSize(newSize);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [isDesktop, dimensions.width, dimensions.height, selectedCategories.length, selectedLocations.length, selectedUnits.length, onlyZero, stockStatus.length, searchText, sortField, sortOrder]);
+
+    // (moved below after filteredItems is defined)
 
     // Recalculate drawer height so the overlay floats and contains content safely
     useEffect(() => {
@@ -218,11 +283,19 @@ export default function StorageList(): ReactElement {
         return arr;
     }, [items, searchText, selectedCategories, selectedLocations, selectedUnits, onlyZero, stockStatus, sortField, sortOrder]);
 
+    // Clamp current page when pageSize or total changes
+    useEffect(() => {
+        const total = filteredItems.length;
+        const maxPage = Math.max(1, Math.ceil(total / pageSize));
+        if (currentPage > maxPage) setCurrentPage(maxPage);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [pageSize, filteredItems.length]);
+
     // Pagination slice
     const paginatedItems = useMemo(() => {
         const start = (currentPage - 1) * pageSize;
         return filteredItems.slice(start, start + pageSize);
-    }, [filteredItems, currentPage]);
+    }, [filteredItems, currentPage, pageSize]);
 
     // Active filter count (include sort if not default)
     const isDefaultSort = sortField === 'name' && sortOrder === 'asc';
@@ -490,6 +563,7 @@ export default function StorageList(): ReactElement {
                         display: 'flex',
                         flexWrap: 'wrap',
                     }}
+                    ref={itemsWrapperRef}
                 >
                     {(dimensions.width > 450 && !(isPortrait && dimensions.width <= 600)) ? (
                         <>
