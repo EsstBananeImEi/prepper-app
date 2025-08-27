@@ -1,7 +1,7 @@
 import { DeleteOutlined, MinusCircleOutlined, PlusCircleOutlined } from '@ant-design/icons'
 import { Badge, Card, Space } from 'antd'
 import Meta from 'antd/lib/card/Meta'
-import React, { ReactElement, SyntheticEvent, useEffect, useState } from 'react'
+import React, { ReactElement, SyntheticEvent, useEffect, useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { useDemensions } from '../../../hooks/StorageApi'
 import { itemIdRoute } from '../../../shared/Constants'
@@ -40,8 +40,11 @@ export default function ShoppingCard(props: Props): ReactElement {
         }
     }, [dimensions])
 
-    const countItems = (id: number) => {
-        return store.shoppingCard.filter(storageItem => storageItem.id === id).reduce((acc, item) => acc + parseInt(item.amount), 0)
+    // Count by name to be robust if basket IDs ever get out of sync
+    const countItemsByName = (name: string) => {
+        return store.shoppingCard
+            .filter(storageItem => storageItem.name === name)
+            .reduce((acc, item) => acc + parseInt(item.amount), 0)
     }
     const onDecreaseAmount = (event: SyntheticEvent, basketItems: BasketModel) => {
         const action: Action = {
@@ -69,7 +72,7 @@ export default function ShoppingCard(props: Props): ReactElement {
         {props.storedItems.map(storeageItem =>
             <div style={{ padding: '5px' }} key={storeageItem.id} className="space-align-block">
                 <Space >
-                    <Badge count={countItems(storeageItem.id)} offset={[-20, 20]} style={{ backgroundColor: '#52c41a' }}>
+                    <Badge count={countItemsByName(storeageItem.name)} offset={[-20, 20]} style={{ backgroundColor: '#52c41a' }}>
 
                         <Card
                             style={{ width: 300, minHeight: '145px' }}
@@ -80,7 +83,10 @@ export default function ShoppingCard(props: Props): ReactElement {
                                     <PlusCircleOutlined onClick={(e) => onIncreaseAmount(e, storeageItem)} key="plus" />
                                 ]}
                         >
-                            <Link to={itemIdRoute(storeageItem.id)}>
+                            {/** Resolve the current storage item id by name to avoid wrong detail navigation if basket IDs drift */}
+                            <Link to={itemIdRoute(
+                                (store.storeItems.find(i => i.name === storeageItem.name)?.id) ?? storeageItem.id
+                            )}>
                                 <Meta
                                     avatar={<SafeAvatar src={storeageItem.icon} showWarnings={process.env.NODE_ENV === 'development'} />}
                                     title={storeageItem.name}
