@@ -9,6 +9,7 @@ import { StorageModel } from '../../StorageModel';
 import { BiSolidFridge } from 'react-icons/bi';
 import { BsBookshelf } from 'react-icons/bs';
 import styles from './StorageListItem.module.css';
+import { useTranslation } from 'react-i18next';
 import SafeAvatar from '../../../common/SafeAvatar';
 import { ReactElement, SyntheticEvent, useEffect, useState } from 'react';
 
@@ -18,6 +19,7 @@ interface Props {
 
 export default function StorageListItem(props: Props): ReactElement {
     const { storageItem } = props;
+    const { t } = useTranslation();
     const history = useNavigate();
     const { store, dispatch } = useStore();
 
@@ -40,7 +42,7 @@ export default function StorageListItem(props: Props): ReactElement {
         }
         return (
             <>
-                <span>Bestand: </span>
+                <span>{t('storage.stock')}: </span>
                 <span className={colorClass}>
                     {storageItem.amount} {pluralFormFactory(storageItem.unit, storageItem.amount)}
                 </span>
@@ -53,20 +55,20 @@ export default function StorageListItem(props: Props): ReactElement {
         const loc = location.toLowerCase();
         if (loc.includes('kühlregal')) {
             return (
-                <span title="Tiefkühler" className={styles.icon}>
+                <span title={t('storage.locations.freezer')} className={styles.icon}>
                     ❄️
                 </span>
             );
         } else if (loc.includes('kühlschrank') || loc.includes('fach')) {
             return (
-                <span title="Kühlschrank" className={styles.icon}>
-                    <BiSolidFridge className={styles.iconFridge} title="Kühlschrank" />
+                <span title={t('storage.locations.fridge')} className={styles.icon}>
+                    <BiSolidFridge className={styles.iconFridge} title={t('storage.locations.fridge')} />
                 </span>
             );
         } else if (loc.includes('lager') || loc.includes('keller') || loc.includes('speisekammer')) {
             return (
-                <span title="Lager" className={styles.icon}>
-                    <BsBookshelf className={styles.iconShelf} title="Lager" />
+                <span title={t('storage.locations.storage')} className={styles.icon}>
+                    <BsBookshelf className={styles.iconShelf} title={t('storage.locations.storage')} />
                 </span>
             );
         }

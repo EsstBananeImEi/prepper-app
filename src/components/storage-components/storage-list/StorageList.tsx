@@ -10,8 +10,10 @@ import StorageDesktopCardItem from './storage-item/StorageDesktopCardItem';
 import StorageListItem from './storage-item/StorageListItem';
 import styles from './StorageList.module.css';
 import { useStore } from '../../../store/Store';
+import { useTranslation } from 'react-i18next';
 
 export default function StorageList(): ReactElement {
+    const { t } = useTranslation();
     const { store } = useStore();
     const history = useNavigate();
 
@@ -359,8 +361,8 @@ export default function StorageList(): ReactElement {
             <Drawer
                 title={
                     <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                        <span>Filter & Sortierung</span>
-                        {activeFilterCount > 0 && <Tag color="processing">{activeFilterCount} aktiv</Tag>}
+                        <span>{t('storage.drawerTitle')}</span>
+                        {activeFilterCount > 0 && <Tag color="processing">{activeFilterCount} {t('storage.activeCountSuffix')}</Tag>}
                     </div>
                 }
                 placement="top"
@@ -375,9 +377,9 @@ export default function StorageList(): ReactElement {
                 <div ref={drawerContentRef} className={styles.filterBar}>
                     <div className={styles.filtersGrid}>
                         <div>
-                            <div className={styles.label}>Suchen</div>
+                            <div className={styles.label}>{t('storage.labels.search')}</div>
                             <Input
-                                placeholder="Name suchen"
+                                placeholder={t('storage.placeholders.searchName')}
                                 value={searchText}
                                 onChange={(e) => {
                                     setSearchText(e.target.value);
@@ -387,11 +389,11 @@ export default function StorageList(): ReactElement {
                             />
                         </div>
                         <div>
-                            <div className={styles.label}>Kategorien</div>
+                            <div className={styles.label}>{t('storage.labels.categories')}</div>
                             <Select
                                 mode="multiple"
                                 className={`${styles.dropdown} ${styles.mySelect}`}
-                                placeholder="Kategorien wählen"
+                                placeholder={t('storage.placeholders.selectCategories')}
                                 value={selectedCategories}
                                 onChange={(vals: string[]) => {
                                     setSelectedCategories(vals);
@@ -410,11 +412,11 @@ export default function StorageList(): ReactElement {
                             </Select>
                         </div>
                         <div>
-                            <div className={styles.label}>Lagerorte</div>
+                            <div className={styles.label}>{t('storage.labels.locations')}</div>
                             <Select
                                 mode="multiple"
                                 className={`${styles.dropdown} ${styles.mySelect}`}
-                                placeholder="Lagerorte wählen"
+                                placeholder={t('storage.placeholders.selectLocations')}
                                 value={selectedLocations}
                                 onChange={(vals: string[]) => {
                                     setSelectedLocations(vals);
@@ -433,11 +435,11 @@ export default function StorageList(): ReactElement {
                             </Select>
                         </div>
                         <div>
-                            <div className={styles.label}>Einheiten</div>
+                            <div className={styles.label}>{t('storage.labels.units')}</div>
                             <Select
                                 mode="multiple"
                                 className={`${styles.dropdown} ${styles.mySelect}`}
-                                placeholder="Einheiten wählen"
+                                placeholder={t('storage.placeholders.selectUnits')}
                                 value={selectedUnits}
                                 onChange={(vals: string[]) => {
                                     setSelectedUnits(vals);
@@ -456,11 +458,11 @@ export default function StorageList(): ReactElement {
                             </Select>
                         </div>
                         <div className={styles.sortControls}>
-                            <div className={styles.label}>Sortieren</div>
+                            <div className={styles.label}>{t('storage.labels.sort')}</div>
                             <div className={styles.sortRow}>
                                 <Select
                                     className={styles.dropdown}
-                                    placeholder="Feld wählen"
+                                    placeholder={t('storage.placeholders.selectSortField')}
                                     value={sortField}
                                     onChange={(value) => {
                                         setSortField(value as 'name' | 'storageLocation' | 'amount' | 'lastChanged');
@@ -468,14 +470,14 @@ export default function StorageList(): ReactElement {
                                     }}
                                     suffixIcon={<DownOutlined style={{ fontSize: 18, color: '#666' }} />}
                                 >
-                                    <Select.Option key="name" value="name">Name</Select.Option>
-                                    <Select.Option key="storageLocation" value="storageLocation">Lagerort</Select.Option>
-                                    <Select.Option key="amount" value="amount">Menge</Select.Option>
-                                    <Select.Option key="lastChanged" value="lastChanged">Zuletzt geändert</Select.Option>
+                                    <Select.Option key="name" value="name">{t('storage.sortField.name')}</Select.Option>
+                                    <Select.Option key="storageLocation" value="storageLocation">{t('storage.sortField.storageLocation')}</Select.Option>
+                                    <Select.Option key="amount" value="amount">{t('storage.sortField.amount')}</Select.Option>
+                                    <Select.Option key="lastChanged" value="lastChanged">{t('storage.sortField.lastChanged')}</Select.Option>
                                 </Select>
-                                <Tooltip title={sortOrder === 'asc' ? 'Aufsteigend' : 'Absteigend'}>
+                                <Tooltip title={sortOrder === 'asc' ? t('storage.sortOrder.asc') : t('storage.sortOrder.desc')}>
                                     <Button
-                                        aria-label="Sortierreihenfolge wechseln"
+                                        aria-label={t('storage.sortOrder.toggleAria')}
                                         onClick={() => setSortOrder((prev) => (prev === 'asc' ? 'desc' : 'asc'))}
                                         className={styles.orderButton}
                                     >
@@ -485,7 +487,7 @@ export default function StorageList(): ReactElement {
                             </div>
                         </div>
                         <div className={styles.moreFilters}>
-                            <div className={styles.label}>Bestand</div>
+                            <div className={styles.label}>{t('storage.labels.stock')}</div>
                             <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
                                 <Checkbox
                                     checked={onlyZero}
@@ -494,13 +496,13 @@ export default function StorageList(): ReactElement {
                                         setCurrentPage(1);
                                     }}
                                 >
-                                    Nur Bestand 0
+                                    {t('storage.onlyZero')}
                                 </Checkbox>
                                 <Checkbox.Group
                                     options={[
-                                        { label: 'Kritisch', value: 'low' },
-                                        { label: 'Wenig', value: 'mid' },
-                                        { label: 'Ausreichend', value: 'high' },
+                                        { label: t('storage.status.low'), value: 'low' },
+                                        { label: t('storage.status.mid'), value: 'mid' },
+                                        { label: t('storage.status.high'), value: 'high' },
                                     ]}
                                     value={stockStatus}
                                     onChange={(vals) => {
@@ -520,7 +522,7 @@ export default function StorageList(): ReactElement {
                         searchText.trim() ||
                         !isDefaultSort) && (
                             <div className={styles.chipsRow}>
-                                {searchText.trim() && <Tag color="blue">Suche: {searchText.trim()}</Tag>}
+                                {searchText.trim() && <Tag color="blue">{t('storage.chips.searchPrefix')}{searchText.trim()}</Tag>}
                                 {selectedCategories.map((c) => (
                                     <Tag key={`cat-${c}`} closable onClose={() => removeCategory(c)}>
                                         {c}
@@ -536,21 +538,21 @@ export default function StorageList(): ReactElement {
                                         {u}
                                     </Tag>
                                 ))}
-                                {onlyZero && <Tag color="default">Bestand 0</Tag>}
-                                {stockStatus.includes('low') && <Tag color="red">Kritisch</Tag>}
-                                {stockStatus.includes('mid') && <Tag color="orange">Wenig</Tag>}
-                                {stockStatus.includes('high') && <Tag color="green">Ausreichend</Tag>}
+                                {onlyZero && <Tag color="default">{t('storage.chips.stockZero')}</Tag>}
+                                {stockStatus.includes('low') && <Tag color="red">{t('storage.status.low')}</Tag>}
+                                {stockStatus.includes('mid') && <Tag color="orange">{t('storage.status.mid')}</Tag>}
+                                {stockStatus.includes('high') && <Tag color="green">{t('storage.status.high')}</Tag>}
                                 {!isDefaultSort && (
                                     <Tag
                                         color="geekblue"
                                         closable
                                         onClose={resetSort}
                                     >
-                                        {`Sortierung: ${sortFieldLabel(sortField)} ${sortOrder === 'asc' ? '↑' : '↓'}`}
+                                        {`${t('storage.chips.sortPrefix')}${sortFieldLabel(sortField)} ${sortOrder === 'asc' ? '↑' : '↓'}`}
                                     </Tag>
                                 )}
                                 <Button size="small" onClick={clearFilters} className={styles.clearBtn}>
-                                    Filter zurücksetzen
+                                    {t('common.filter')} zurücksetzen
                                 </Button>
                             </div>
                         )}
@@ -561,10 +563,10 @@ export default function StorageList(): ReactElement {
                 <Empty
                     image="https://gw.alipayobjects.com/zos/antfincdn/ZHrcdLPrvN/empty.svg"
                     imageStyle={{ height: 200 }}
-                    description={<span style={{ color: 'red' }}>Keine Artikel vorhanden</span>}
+                    description={<span style={{ color: 'red' }}>{t('storage.empty.noItems')}</span>}
                 >
                     <Button onClick={onGoToNew} type="primary">
-                        Artikel anlegen
+                        {t('storage.empty.createItem')}
                     </Button>
                 </Empty>
             ) : (

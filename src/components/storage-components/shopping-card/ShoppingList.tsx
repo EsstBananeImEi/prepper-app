@@ -10,6 +10,7 @@ import { actionHandler } from '../../../store/Actions';
 import styles from '../storage-list/storage-item/StorageListItem.module.css';
 import listStyles from './ShoppingList.module.css';
 import SafeAvatar from '../../common/SafeAvatar';
+import { useTranslation } from 'react-i18next';
 
 interface Props {
     storedItems: BasketModel[];
@@ -22,6 +23,7 @@ interface Props {
 }
 
 export default function ShoppingList(props: Props): ReactElement {
+    const { t } = useTranslation();
     const { store, dispatch } = useStore();
     const onChangeCard = (event: SyntheticEvent, action: Action): void => {
         console.log('onChangeCard', action);
@@ -75,7 +77,7 @@ export default function ShoppingList(props: Props): ReactElement {
             const groups = new Map<string, BasketModel[]>();
             props.storedItems.forEach(item => {
                 const category =
-                    item.categories && item.categories.length > 0 ? item.categories[0] : 'Ohne Kategorie';
+                    item.categories && item.categories.length > 0 ? item.categories[0] : t('shopping.uncategorized');
                 if (!groups.has(category)) {
                     groups.set(category, []);
                 }

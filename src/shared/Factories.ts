@@ -2,8 +2,42 @@ import { NutrientFactoryType } from "../types/Types"
 import { values } from "lodash"
 
 export function pluralFormFactory(word: string, length: number): string {
-    // German-friendly: do not auto-append English plural 's'; keep unit as provided
-    return (word || '').trim()
+    const unit = (word || '').trim()
+    if (!unit) return ''
+    // If count is 1 (or effectively 1.0), return singular as provided
+    const n = Number(length)
+    if (!isFinite(n) || Math.abs(n - 1) < 1e-9) return unit
+
+    // Minimal German pluralization for common units (fallback to unchanged)
+    const map: Record<string, { sing: string; plural: string }> = {
+        'Stück': { sing: 'Stück', plural: 'Stück' },
+        'Stk': { sing: 'Stk', plural: 'Stk' },
+        'Packung': { sing: 'Packung', plural: 'Packungen' },
+        'Pck.': { sing: 'Pck.', plural: 'Pck.' },
+        'Rolle': { sing: 'Rolle', plural: 'Rollen' },
+        'Flasche': { sing: 'Flasche', plural: 'Flaschen' },
+        'Dose': { sing: 'Dose', plural: 'Dosen' },
+        'Glas': { sing: 'Glas', plural: 'Gläser' },
+        'Beutel': { sing: 'Beutel', plural: 'Beutel' },
+        'Tüte': { sing: 'Tüte', plural: 'Tüten' },
+        'Karton': { sing: 'Karton', plural: 'Kartons' },
+        'Kiste': { sing: 'Kiste', plural: 'Kisten' },
+        'Sack': { sing: 'Sack', plural: 'Säcke' },
+        'Packungen': { sing: 'Packung', plural: 'Packungen' },
+        // Common short units should not change
+        'g': { sing: 'g', plural: 'g' },
+        'kg': { sing: 'kg', plural: 'kg' },
+        'mg': { sing: 'mg', plural: 'mg' },
+        'l': { sing: 'l', plural: 'l' },
+        'ml': { sing: 'ml', plural: 'ml' },
+        'cm': { sing: 'cm', plural: 'cm' },
+        'm': { sing: 'm', plural: 'm' },
+        'St': { sing: 'St', plural: 'St' },
+    }
+    const entry = map[unit]
+    if (entry) return entry.plural
+    // Default: leave unchanged (no English s)
+    return unit
 }
 
 export function NutrientFactory(): NutrientFactoryType[] {

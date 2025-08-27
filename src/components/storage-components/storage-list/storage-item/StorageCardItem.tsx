@@ -7,6 +7,7 @@ import { Link } from 'react-router-dom';
 import { storageApi } from '../../../../hooks/StorageApi';
 import { itemIdRoute, itemIdApi } from '../../../../shared/Constants';
 import { pluralFormFactory } from '../../../../shared/Factories';
+import { useTranslation } from 'react-i18next';
 import { Action, useStore } from '../../../../store/Store';
 import { StorageModel } from '../../StorageModel';
 import { actionHandler } from '../../../../store/Actions';
@@ -19,6 +20,7 @@ interface Props {
 
 export default function StorageCardItem(props: Props): ReactElement {
     const storageItem = props.storageItem;
+    const { t } = useTranslation();
 
     const { store, dispatch } = useStore();
     const [amount, setAmount] = useState(storageItem.amount);
@@ -45,7 +47,7 @@ export default function StorageCardItem(props: Props): ReactElement {
 
         return (
             <span style={color}>
-                Bestand: {amount} {pluralFormFactory(storageItem.unit, amount)}
+                {t('storage.stock')}: {amount} {pluralFormFactory(storageItem.unit, amount)}
             </span>
         );
     };
@@ -54,12 +56,12 @@ export default function StorageCardItem(props: Props): ReactElement {
     const getLocationIcon = (location: string) => {
         const loc = location.toLowerCase();
         if (loc.includes('kühler')) {
-            return <span title="Tiefkühler" style={{ marginLeft: '8px', fontSize: '20px' }}>❄️</span>;
+            return <span title={t('storage.locations.freezer')} style={{ marginLeft: '8px', fontSize: '20px' }}>❄️</span>;
         } else if (loc.includes('kühlschrank') || loc.includes('fach')) {
-            return <span title="Kühlschrank" style={{ marginLeft: '8px', fontSize: '20px' }}><BiSolidFridge style={{ fontSize: '20px', color: '#1890ff' }} title="Kühlschrank" />
+            return <span title={t('storage.locations.fridge')} style={{ marginLeft: '8px', fontSize: '20px' }}><BiSolidFridge style={{ fontSize: '20px', color: '#1890ff' }} title={t('storage.locations.fridge')} />
             </span>;
         } else if (loc.includes('lager') || loc.includes('keller') || loc.includes('speisekammer')) {
-            return <span title="Tiefkühler" style={{ marginLeft: '8px', fontSize: '20px' }}><BsBookshelf style={{ fontSize: '20px', color: '#1890ff' }} title="Lager" /></span>
+            return <span title={t('storage.locations.storage')} style={{ marginLeft: '8px', fontSize: '20px' }}><BsBookshelf style={{ fontSize: '20px', color: '#1890ff' }} title={t('storage.locations.storage')} /></span>
         }
         return null;
     };

@@ -8,8 +8,10 @@ import ShoppingCard from './ShoppingCard'
 import ShoppingList from './ShoppingList'
 import styles from '../storage-list/StorageList.module.css'
 import { CloseCircleOutlined, DownOutlined, UpOutlined } from '@ant-design/icons';
+import { useTranslation } from 'react-i18next'
 
 export default function Shopping(): ReactElement {
+    const { t } = useTranslation()
     const { store } = useStore()
     const [currentPage, setCurrentPage] = useState(1)
     const handleChange = (page: number) => setCurrentPage(page)
@@ -164,8 +166,8 @@ export default function Shopping(): ReactElement {
             <Drawer
                 title={
                     <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                        <span>Filter & Sortierung</span>
-                        {(() => { const isDefault = sortField === 'name' && sortOrder === 'asc'; const count = selectedCategories.length + (searchText.trim() ? 1 : 0) + (isDefault ? 0 : 1); return count > 0 ? <Tag color="processing">{count} aktiv</Tag> : null })()}
+                        <span>{t('shopping.drawerTitle')}</span>
+                        {(() => { const isDefault = sortField === 'name' && sortOrder === 'asc'; const count = selectedCategories.length + (searchText.trim() ? 1 : 0) + (isDefault ? 0 : 1); return count > 0 ? <Tag color="processing">{count} {t('shopping.activeCountSuffix')}</Tag> : null })()}
                     </div>
                 }
                 placement="top"
@@ -180,19 +182,19 @@ export default function Shopping(): ReactElement {
                 <div ref={drawerContentRef} className={styles.filterBar}>
                     <div className={styles.filtersGrid}>
                         <div>
-                            <div className={styles.label}>Suchen</div>
+                            <div className={styles.label}>{t('shopping.labels.search')}</div>
                             <Input
-                                placeholder="Name suchen"
+                                placeholder={t('shopping.placeholders.searchName')}
                                 value={searchText}
                                 onChange={(e) => { setSearchText(e.target.value); setCurrentPage(1) }}
                             />
                         </div>
                         <div>
-                            <div className={styles.label}>Kategorien</div>
+                            <div className={styles.label}>{t('shopping.labels.categories')}</div>
                             <Select
                                 mode="multiple"
                                 className={`${styles.dropdown} ${styles.mySelect}`}
-                                placeholder="Kategorien wählen"
+                                placeholder={t('shopping.placeholders.selectCategories')}
                                 value={selectedCategories}
                                 onChange={(vals: string[]) => { setSelectedCategories(vals); setCurrentPage(1) }}
                                 allowClear
@@ -206,20 +208,20 @@ export default function Shopping(): ReactElement {
                             </Select>
                         </div>
                         <div className={styles.sortControls}>
-                            <div className={styles.label}>Sortieren</div>
+                            <div className={styles.label}>{t('shopping.labels.sort')}</div>
                             <div className={styles.sortRow}>
                                 <Select
                                     className={styles.dropdown}
-                                    placeholder="Feld wählen"
+                                    placeholder={t('shopping.placeholders.selectSortField')}
                                     value={sortField}
                                     onChange={(value) => { setSortField(value as 'name' | 'category'); setCurrentPage(1) }}
                                     suffixIcon={<DownOutlined style={{ fontSize: 18, color: '#666' }} />}
                                 >
-                                    <Select.Option key="name" value="name">Name</Select.Option>
-                                    <Select.Option key="category" value="category">Kategorie</Select.Option>
+                                    <Select.Option key="name" value="name">{t('shopping.sortField.name')}</Select.Option>
+                                    <Select.Option key="category" value="category">{t('shopping.sortField.category')}</Select.Option>
                                 </Select>
-                                <Tooltip title={sortOrder === 'asc' ? 'Aufsteigend' : 'Absteigend'}>
-                                    <Button aria-label="Sortierreihenfolge wechseln" onClick={() => setSortOrder(prev => prev === 'asc' ? 'desc' : 'asc')} className={styles.orderButton}>
+                                <Tooltip title={sortOrder === 'asc' ? t('shopping.sortOrder.asc') : t('shopping.sortOrder.desc')}>
+                                    <Button aria-label={t('shopping.sortOrder.toggleAria')} onClick={() => setSortOrder(prev => prev === 'asc' ? 'desc' : 'asc')} className={styles.orderButton}>
                                         {sortOrder === 'asc' ? <UpOutlined /> : <DownOutlined />}
                                     </Button>
                                 </Tooltip>
@@ -229,14 +231,14 @@ export default function Shopping(): ReactElement {
 
                     {(selectedCategories.length > 0 || searchText.trim() || !(sortField === 'name' && sortOrder === 'asc')) && (
                         <div className={styles.chipsRow}>
-                            {searchText.trim() && <Tag color="blue">Suche: {searchText.trim()}</Tag>}
+                            {searchText.trim() && <Tag color="blue">{t('shopping.chips.searchPrefix')}{searchText.trim()}</Tag>}
                             {selectedCategories.map(c => (
                                 <Tag key={`cat-${c}`} closable onClose={() => setSelectedCategories(prev => prev.filter(x => x !== c))}>{c}</Tag>
                             ))}
                             {!(sortField === 'name' && sortOrder === 'asc') && (
-                                <Tag color="geekblue" closable onClose={() => { setSortField('name'); setSortOrder('asc') }}>Sortierung: {sortField === 'name' ? 'Name' : 'Kategorie'} {sortOrder === 'asc' ? '↑' : '↓'}</Tag>
+                                <Tag color="geekblue" closable onClose={() => { setSortField('name'); setSortOrder('asc') }}>{t('shopping.chips.sortPrefix')}{sortField === 'name' ? t('shopping.sortField.name') : t('shopping.sortField.category')} {sortOrder === 'asc' ? '↑' : '↓'}</Tag>
                             )}
-                            <Button size="small" onClick={() => { setSelectedCategories([]); setSearchText(''); setSortField('name'); setSortOrder('asc'); setCurrentPage(1) }} className={styles.clearBtn}>Filter zurücksetzen</Button>
+                            <Button size="small" onClick={() => { setSelectedCategories([]); setSearchText(''); setSortField('name'); setSortOrder('asc'); setCurrentPage(1) }} className={styles.clearBtn}>{t('shopping.clearFilters')}</Button>
                         </div>
                     )}
                 </div>
@@ -245,8 +247,8 @@ export default function Shopping(): ReactElement {
             {store.shoppingCard.length <= 0 && (
                 <Message className='blue'
                     icon='shopping cart'
-                    header='Der Einkaufswagen ist leer!'
-                    content='Scheint als brauchst du derzeit nichts'
+                    header={t('shopping.empty.header')}
+                    content={t('shopping.empty.content')}
                 />
             )}
 
@@ -267,7 +269,7 @@ export default function Shopping(): ReactElement {
                                     // Group current page by first category
                                     const groups = new Map<string, typeof paginatedItems>();
                                     paginatedItems.forEach(item => {
-                                        const category = (item.categories && item.categories[0]) || 'Ohne Kategorie'
+                                        const category = (item.categories && item.categories[0]) || t('shopping.uncategorized')
                                         if (!groups.has(category)) groups.set(category, [])
                                         groups.get(category)!.push(item)
                                     })

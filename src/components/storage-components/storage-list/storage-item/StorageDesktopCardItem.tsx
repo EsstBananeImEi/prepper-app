@@ -5,6 +5,7 @@ import { Link } from 'react-router-dom';
 import { storageApi } from '../../../../hooks/StorageApi';
 import { itemIdRoute, itemIdApi } from '../../../../shared/Constants';
 import { pluralFormFactory } from '../../../../shared/Factories';
+import { useTranslation } from 'react-i18next';
 import { Action, useStore } from '../../../../store/Store';
 import { StorageModel } from '../../StorageModel';
 import { actionHandler } from '../../../../store/Actions';
@@ -16,6 +17,7 @@ interface Props {
 }
 
 export default function StorageDesktopCardItem({ storageItem }: Props): ReactElement {
+    const { t } = useTranslation();
     const { store, dispatch } = useStore();
     const [amount, setAmount] = useState(storageItem.amount);
     const [basketAmount, setBasketAmount] = useState(store.shoppingCard.find(item => item.name === storageItem.name)?.amount || 0);
@@ -33,7 +35,7 @@ export default function StorageDesktopCardItem({ storageItem }: Props): ReactEle
         else if (amount <= storageItem.midAmount && amount > storageItem.lowestAmount) color.color = 'orange';
         return (
             <span className={listStyles.desktopInventory} style={color}>
-                Bestand: {amount} {pluralFormFactory(storageItem.unit, amount)}
+                {t('storage.stock')}: {amount} {pluralFormFactory(storageItem.unit, amount)}
             </span>
         );
     };

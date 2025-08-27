@@ -6,6 +6,8 @@ import {
 } from "react-router-dom";
 import Routes from './Routes';
 import Layout from './Layout';
+import { ConfigProvider } from 'antd';
+import deDE from 'antd/es/locale/de_DE';
 import { StoreProvider } from '../store/Store';
 import ScrollToTop from './ScrollToTop';
 import HideRoutes from './HideRoutes';
@@ -22,7 +24,9 @@ function App(): ReactElement {
         <ErrorBoundary>
             <StoreProvider>
                 <Router>
-                    <AppContent />
+                    <ConfigProvider locale={deDE}>
+                        <AppContent />
+                    </ConfigProvider>
                 </Router>
             </StoreProvider>
         </ErrorBoundary>

@@ -4,8 +4,10 @@ import { HomeOutlined, FilterOutlined } from '@ant-design/icons';
 import { useLocation, Link } from 'react-router-dom';
 import { rootRoute, homeRoute, itemsRoute, newItemRoute, checklistRoute, basketRoute, userRoute, loginRoute, detailsRouteBase } from '../../shared/Constants';
 import styles from './BreadcrumbNav.module.css';
+import { useTranslation } from 'react-i18next';
 
 const BreadcrumbNav: React.FC = () => {
+    const { t } = useTranslation();
     const location = useLocation();
     const [activeFilterCount, setActiveFilterCount] = useState<number>(0);
     const [activeShoppingFilterCount, setActiveShoppingFilterCount] = useState<number>(0);
@@ -65,30 +67,30 @@ const BreadcrumbNav: React.FC = () => {
     const getBreadcrumbItems = (pathname: string) => {
         const items = [
             {
-                title: <Link to={rootRoute}><HomeOutlined /> Home</Link>,
+                title: <Link to={rootRoute}><HomeOutlined /> {t('common.home')}</Link>,
                 key: 'home'
             }
         ];
 
         if (pathname.startsWith(itemsRoute)) {
             items.push({
-                title: <Link to={itemsRoute}>Storage</Link>,
+                title: <Link to={itemsRoute}>{t('common.storage')}</Link>,
                 key: 'storage'
             });
 
             if (pathname.includes('/new')) {
                 items.push({
-                    title: <Link to={newItemRoute}>Neues Item</Link>,
+                    title: <Link to={newItemRoute}>{t('breadcrumb.newItem')}</Link>,
                     key: 'new-item'
                 });
             } else if (pathname.includes('/edit')) {
                 items.push({
-                    title: <Link to="">Item bearbeiten</Link>,
+                    title: <Link to="">{t('breadcrumb.editItem')}</Link>,
                     key: 'edit-item'
                 });
             } else if (pathname !== itemsRoute) {
                 items.push({
-                    title: <Link to="">Item Details</Link>,
+                    title: <Link to="">{t('breadcrumb.itemDetails')}</Link>,
                     key: 'item-details'
                 });
             }
@@ -107,7 +109,7 @@ const BreadcrumbNav: React.FC = () => {
             };
 
             items.push({
-                title: <Link to={homeRoute}>Notfallvorsorge</Link>,
+                title: <Link to={homeRoute}>{t('breadcrumb.emergency')}</Link>,
                 key: 'emergency'
             });
 
@@ -117,22 +119,22 @@ const BreadcrumbNav: React.FC = () => {
             });
         } else if (pathname === checklistRoute) {
             items.push({
-                title: <Link to="">Checkliste</Link>,
+                title: <Link to="">{t('common.checklist')}</Link>,
                 key: 'checklist'
             });
         } else if (pathname === basketRoute) {
             items.push({
-                title: <Link to="">Einkaufsliste</Link>,
+                title: <Link to="">{t('common.basket')}</Link>,
                 key: 'basket'
             });
         } else if (pathname === userRoute) {
             items.push({
-                title: <Link to="">Benutzerprofil</Link>,
+                title: <Link to="">{t('common.user')}</Link>,
                 key: 'user'
             });
         } else if (pathname === loginRoute) {
             items.push({
-                title: <Link to="">Anmeldung</Link>,
+                title: <Link to="">{t('common.login')}</Link>,
                 key: 'login'
             });
         }
@@ -167,10 +169,10 @@ const BreadcrumbNav: React.FC = () => {
                     type="default"
                     icon={<FilterOutlined />}
                     onClick={openStorageFilters}
-                    aria-label={activeFilterCount > 0 ? `Filter öffnen – ${activeFilterCount} aktiv` : 'Filter öffnen'}
+                    aria-label={activeFilterCount > 0 ? `${t('common.filter')} öffnen – ${activeFilterCount} aktiv` : `${t('common.filter')} öffnen`}
                     className={styles.filterButton}
                 >
-                    {activeFilterCount > 0 ? `Filter (${activeFilterCount})` : 'Filter'}
+                    {activeFilterCount > 0 ? t('common.filter_with_count', { count: activeFilterCount }) : t('common.filter')}
                 </Button>
             )}
             {isBasketList && (
@@ -178,10 +180,10 @@ const BreadcrumbNav: React.FC = () => {
                     type="default"
                     icon={<FilterOutlined />}
                     onClick={openShoppingFilters}
-                    aria-label={activeShoppingFilterCount > 0 ? `Filter öffnen – ${activeShoppingFilterCount} aktiv` : 'Filter öffnen'}
+                    aria-label={activeShoppingFilterCount > 0 ? `${t('common.filter')} öffnen – ${activeShoppingFilterCount} aktiv` : `${t('common.filter')} öffnen`}
                     className={styles.filterButton}
                 >
-                    {activeShoppingFilterCount > 0 ? `Filter (${activeShoppingFilterCount})` : 'Filter'}
+                    {activeShoppingFilterCount > 0 ? t('common.filter_with_count', { count: activeShoppingFilterCount }) : t('common.filter')}
                 </Button>
             )}
         </div>
