@@ -487,15 +487,13 @@
 }
 
 .desktopHeader {
-    display: grid;
-    grid-template-columns: auto 1fr;
-    gap: 8px;
-    align-items: center;
+    display: block;
 }
 
-.desktopAvatar {
-    width: 64px !important;
+.desktopImage {
+    width: 100% !important;
     height: 64px !important;
+    object-fit: cover;
     border-radius: 10px;
 }
 

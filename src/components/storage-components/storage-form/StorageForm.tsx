@@ -376,6 +376,7 @@ export default function StorageDetailForm(): ReactElement {
         });
     };    // Beim Speichern werden numerische Werte konvertiert und Daten validiert
     const getUpdatedItem = (): StorageModel => {
+        const t = (s?: string | null) => (s ?? '').trim();
         // Validate and sanitize icon data for API
         let processedIcon = '';
         if (icon) {
@@ -436,24 +437,25 @@ export default function StorageDetailForm(): ReactElement {
 
         return {
             ...initialItem,
-            name: name.trim(),
+            name: t(name),
             amount: Number(amount) || 0,
             lowestAmount: Number(lowestAmount) || 0,
             midAmount: Number(midAmount) || 0,
-            unit: unit.trim(),
-            packageQuantity: packageQuantity && packageQuantity.trim() !== '' ? Number(packageQuantity) : undefined,
-            packageUnit: packageUnit.trim(),
-            storageLocation: storageLocation.trim(),
-            categories: categories.filter(cat => cat && cat.trim() !== ''), // Remove empty categories
+            unit: t(unit),
+            packageQuantity: packageQuantity && t(packageQuantity) !== '' ? Number(packageQuantity) : undefined,
+            packageUnit: t(packageUnit),
+            storageLocation: t(storageLocation),
+            categories: (categories || []).filter(cat => t(cat) !== ''), // Remove empty categories
             icon: processedIcon,
             nutrients: {
-                description: nutrientDescription.trim(),
-                unit: nutrientUnit.trim(),
-                amount: Number(nutrientAmount) || 100, values: nutrients.map(nutrient => ({
+                description: t(nutrientDescription),
+                unit: t(nutrientUnit),
+                amount: Number(nutrientAmount) || 100,
+                values: (nutrients || []).map(nutrient => ({
                     ...nutrient,
-                    name: nutrient.name.trim(),
-                    color: nutrient.color.trim(),
-                    values: nutrient.values.filter(val => val.typ && val.typ.trim() !== '') // Remove empty values
+                    name: t(nutrient.name),
+                    color: t(nutrient.color),
+                    values: (nutrient.values || []).filter(val => t(val.typ) !== '') // Remove empty values
                 })).filter(nutrient => nutrient.name !== '') // Remove empty nutrients
             },
         };

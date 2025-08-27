@@ -79,9 +79,9 @@ export default function StorageDesktopCardItem({ storageItem }: Props): ReactEle
             <Link to={itemIdRoute(storageItem.id)}>
                 <div className={listStyles.desktopContent}>
                     <div className={listStyles.desktopHeader}>
-                        <SafeAvatar className={listStyles.desktopAvatar} src={storageItem.icon} showWarnings={process.env.NODE_ENV === 'development'} />
-                        <div className={listStyles.desktopTitle} title={storageItem.name}>{storageItem.name}</div>
+                        <SafeAvatar className={listStyles.desktopImage} src={storageItem.icon} showWarnings={process.env.NODE_ENV === 'development'} />
                     </div>
+                    <div className={listStyles.desktopTitle} title={storageItem.name}>{storageItem.name}</div>
                     <div className={listStyles.desktopInventoryRow}>{getAvailable()}</div>
                 </div>
             </Link>
