@@ -143,6 +143,30 @@
     box-sizing: border-box;
 }
 
+/* Unified pagination look and vertical centering */
+.pagination {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    padding-top: 10px;
+}
+
+.pagination :global(.ant-pagination-item),
+.pagination :global(.ant-pagination-prev .ant-pagination-item-link),
+.pagination :global(.ant-pagination-next .ant-pagination-item-link) {
+    height: 32px;
+    line-height: 32px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.pagination :global(.ant-pagination-item a) {
+    line-height: 32px;
+    display: inline-flex;
+    align-items: center;
+}
+
 /* Modern storage card look */
 .storageCard {
     border-radius: 12px !important;

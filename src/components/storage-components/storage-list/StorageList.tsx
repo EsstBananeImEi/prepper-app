@@ -584,17 +584,13 @@ export default function StorageList(): ReactElement {
                             ))}
                             {filteredItems.length > pageSize && (
                                 <Pagination
-                                    responsive
                                     pageSize={pageSize}
                                     current={currentPage}
                                     total={filteredItems.length}
                                     onChange={handleChange}
-                                    style={{
-                                        width: '100%',
-                                        display: 'flex',
-                                        justifyContent: 'center',
-                                        paddingTop: '10px',
-                                    }}
+                                    size="default"
+                                    showLessItems={false}
+                                    className={styles.pagination}
                                 />
                             )}
                         </>
@@ -609,19 +605,13 @@ export default function StorageList(): ReactElement {
                             ))}
                             {filteredItems.length > pageSize && (
                                 <Pagination
-                                    responsive
                                     pageSize={pageSize}
                                     current={currentPage}
                                     total={filteredItems.length}
                                     onChange={handleChange}
-                                    style={{
-                                        width: '100%',
-                                        display: 'flex',
-                                        justifyContent: 'center',
-                                        paddingTop: '10px',
-                                        marginTop: '30px',
-                                        fontSize: '1.5rem',
-                                    }}
+                                    size="default"
+                                    showLessItems={false}
+                                    className={styles.pagination}
                                 />
                             )}
                         </>
