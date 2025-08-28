@@ -243,6 +243,147 @@ const resources = {
                     }
                 }
             },
+            // de specific admin users strings will be added below in the de section; English lives in en.translation
+            adminUsers: {
+                title: 'Benutzerverwaltung',
+                refresh: 'Aktualisieren',
+                noAccess: 'Kein Zugriff',
+                table: {
+                    columns: {
+                        id: 'ID',
+                        username: 'Benutzername',
+                        status: 'Status',
+                        manage: 'Verwalten'
+                    },
+                    open: 'Öffnen'
+                },
+                tags: {
+                    admin: 'Admin',
+                    user: 'Benutzer',
+                    manager: 'Verwalter',
+                    locked: 'Gesperrt'
+                },
+                drawer: {
+                    titleWithId: 'Benutzer #{{id}}',
+                    title: 'Benutzer',
+                    fields: {
+                        username: 'Benutzername',
+                        email: 'E-Mail',
+                        roles: 'Rollen/Status',
+                        confidential: 'Vertraulich'
+                    },
+                    buttons: {
+                        save: 'Speichern',
+                        unlock: 'Entsperren',
+                        lock: 'Sperren',
+                        delete: 'Benutzer löschen',
+                        close: 'Schließen'
+                    },
+                    confirmDelete: {
+                        title: 'Benutzer wirklich löschen?',
+                        ok: 'Löschen',
+                        cancel: 'Abbrechen'
+                    }
+                },
+                messages: {
+                    loadError: 'Fehler beim Laden der Benutzer',
+                    adminOnlyChangeAdmin: 'Nur Admins dürfen Adminrechte ändern',
+                    adminGranted: 'Zum Admin gemacht',
+                    adminRevoked: 'Admin entfernt',
+                    actionFailed: 'Aktion fehlgeschlagen',
+                    managerSet: 'Als Verwalter gesetzt',
+                    managerRemoved: 'Verwalter entfernt',
+                    userLocked: 'Benutzer gesperrt',
+                    userUnlocked: 'Benutzer entsperrt',
+                    emailUpdated: 'E-Mail aktualisiert',
+                    emailUpdateFailed: 'E-Mail konnte nicht aktualisiert werden',
+                    userDeleted: 'Benutzer gelöscht',
+                    deleteFailed: 'Löschen fehlgeschlagen'
+                }
+            },
+            // Invitation Manager (Gruppeneinladungen verwalten)
+            // Used by components/invite/InvitationManager.tsx
+            inviteManager: {
+                titleWithName: 'Einladungen verwalten - "{{name}}"',
+                refresh: 'Aktualisieren',
+                close: 'Schließen',
+                intro: 'Hier siehst du alle ausstehenden Einladungen für diese Gruppe. Du kannst Einladungen widerrufen, um die Tokens ungültig zu machen.',
+                table: {
+                    columns: {
+                        email: 'E-Mail',
+                        status: 'Status',
+                        invitedBy: 'Erstellt von',
+                        createdAt: 'Erstellt am',
+                        expiresAt: 'Läuft ab',
+                        actions: 'Aktionen'
+                    },
+                    linkInvitation: 'Link-Einladung'
+                },
+                statuses: {
+                    expired: 'Abgelaufen',
+                    pending: 'Ausstehend',
+                    used: 'Verwendet',
+                    expiresSoon: 'Läuft bald ab',
+                    remaining: '{{hours}}h {{minutes}}m verbleibend',
+                    remainingMinutes: '{{minutes}}m verbleibend'
+                },
+                tooltips: {
+                    copyLink: 'Link kopieren',
+                    revoke: 'Einladung widerrufen'
+                },
+                confirm: {
+                    revokeTitle: 'Einladung widerrufen',
+                    ok: 'Widerrufen',
+                    cancel: 'Abbrechen'
+                },
+                messages: {
+                    loadError: 'Fehler beim Laden der Einladungen',
+                    copySuccess: 'Einladungslink kopiert!',
+                    copyError: 'Fehler beim Kopieren des Links',
+                    revokeSuccessEmail: 'Einladung für {{email}} wurde widerrufen',
+                    revokeSuccess: 'Einladung wurde widerrufen',
+                    revokeError: 'Fehler beim Widerrufen der Einladung'
+                },
+                empty: {
+                    loading: 'Lade Einladungen...',
+                    none: 'Keine ausstehenden Einladungen'
+                },
+                tips: '💡 Tipp: Widerrufene Einladungen können nicht mehr verwendet werden. Abgelaufene Einladungen werden automatisch ungültig.'
+            },
+            // Public Invite landing page
+            invitePage: {
+                title: 'Gruppen-Einladung',
+                backHome: 'Zur Startseite',
+                groupLabel: 'Gruppe:',
+                invitedBy: 'Eingeladen von:',
+                validFor: 'Gültig noch: {{duration}}',
+                youWereInvited: 'Du wurdest von {{inviter}} eingeladen, der Gruppe "{{group}}" beizutreten.',
+                loggedInAs: 'Angemeldet als: {{user}}',
+                joinButton: 'Gruppe beitreten',
+                joining: 'Trete bei...',
+                loginRequired: {
+                    title: 'Anmeldung erforderlich',
+                    desc: 'Um der Gruppe beizutreten, musst du dich erst anmelden oder registrieren.'
+                },
+                login: 'Anmelden',
+                register: 'Neues Konto erstellen',
+                or: 'oder',
+                autoAddNote: 'Nach erfolgreicher Anmeldung wirst du automatisch der Gruppe hinzugefügt.',
+                invalid: {
+                    title: 'Einladung ungültig',
+                    desc: 'Diese Einladung konnte nicht gefunden werden.'
+                },
+                errors: {
+                    noToken: 'Kein Invite-Token gefunden',
+                    invalidOrExpired: 'Dieser Einladungslink ist ungültig oder abgelaufen',
+                    validate: 'Fehler beim Validieren der Einladung',
+                    join: 'Fehler beim Beitritt zur Gruppe. Bitte versuche es erneut.'
+                },
+                time: {
+                    hours: '{{count}} Stunden',
+                    days: '{{count}} Tagen'
+                }
+            },
             emergency: {
                 toc: 'Inhaltsverzeichnis',
                 titles: {
@@ -1040,7 +1181,8 @@ const resources = {
                     leave: 'Verlassen',
                     members: 'Mitglieder',
                     remove: 'Entfernen',
-                    close: 'Schließen'
+                    close: 'Schließen',
+                    inviteLink: 'Einladungslink'
                 },
                 empty: {
                     title: 'Keine Gruppen gefunden',
@@ -1102,6 +1244,49 @@ const resources = {
                     create: 'Erstellen',
                     save: 'Speichern',
                     join: 'Beitreten'
+                },
+                members: {
+                    joinedAt: 'Beigetreten: {{date}}'
+                },
+                invite: {
+                    errorCreateLink: 'Fehler beim Erstellen des Einladungslinks',
+                    linkCopiedClipboard: 'Einladungslink in die Zwischenablage kopiert!',
+                    linkCopied: 'Einladungslink kopiert!',
+                    shareTitleWithName: 'Gruppe "{{name}}" teilen',
+                    shareTitle: 'Gruppe teilen',
+                    createLinkTitle: 'Einladungslink erstellen',
+                    createLinkDesc: 'Teile diesen Link mit Personen, die du zur Gruppe einladen möchtest. Der Link ist 48 Stunden gültig.',
+                    creatingLink: 'Erstelle Einladungslink...',
+                    linkLabel: 'Einladungslink:',
+                    copyLink: 'Link kopieren',
+                    shareByEmail: 'Per E-Mail teilen',
+                    shareByWhatsApp: 'Per WhatsApp teilen',
+                    manageInvites: 'Einladungen verwalten',
+                    emailInviteTitle: 'Per E-Mail einladen',
+                    emailPlaceholder: 'benutzer@example.com',
+                    sendEmail: 'Einladung senden',
+                    sendingEmail: 'Sende Einladung...',
+                    emailAutoSendNote: 'Eine E-Mail mit dem Einladungslink wird automatisch versendet',
+                    emailSendSuccess: 'Einladung erfolgreich an {{email}} gesendet!',
+                    emailSendError: 'Fehler beim Senden der E-Mail-Einladung',
+                    howItWorksTitle: 'So funktioniert\'s:',
+                    hiw: {
+                        b1: 'Teile den Link mit Personen, die du einladen möchtest',
+                        b2: 'Wenn sie bereits ein Konto haben, treten sie sofort der Gruppe bei',
+                        b3: 'Neue Benutzer werden zur Registrierung geleitet',
+                        b4: 'Nach der Anmeldung werden sie automatisch der Gruppe hinzugefügt'
+                    },
+                    security: {
+                        title: 'Sicherheitshinweis',
+                        desc: 'Teile Einladungslinks nur mit vertrauenswürdigen Personen. Jeder mit dem Link kann der Gruppe beitreten.'
+                    },
+                    email: {
+                        subject: 'Einladung zur Gruppe "{{name}}"',
+                        body: 'Hallo!\n\n{{inviter}} hat dich zur Gruppe "{{name}}" in der Prepper App eingeladen.\n\nKlicke auf den folgenden Link, um der Gruppe beizutreten:\n{{url}}\n\nFalls du noch kein Konto hast, kannst du dich kostenlos registrieren.\n\nViele Grüße!\nDas Prepper App Team'
+                    },
+                    whatsapp: {
+                        text: '🏠 Einladung zur Gruppe "{{name}}"\n\n{{inviter}} hat dich zur Prepper App eingeladen!\n\n👉 {{url}}\n\nTritt bei und teile deine Notvorräte mit der Gruppe! 📦'
+                    }
                 }
             },
             invites: {
@@ -2381,7 +2566,8 @@ const resources = {
                     leave: 'Leave',
                     members: 'Members',
                     remove: 'Remove',
-                    close: 'Close'
+                    close: 'Close',
+                    inviteLink: 'Invite link'
                 },
                 empty: {
                     title: 'No groups found',
@@ -2443,6 +2629,49 @@ const resources = {
                     create: 'Create',
                     save: 'Save',
                     join: 'Join'
+                },
+                members: {
+                    joinedAt: 'Joined: {{date}}'
+                },
+                invite: {
+                    errorCreateLink: 'Error creating invite link',
+                    linkCopiedClipboard: 'Invite link copied to clipboard!',
+                    linkCopied: 'Invite link copied!',
+                    shareTitleWithName: 'Share group "{{name}}"',
+                    shareTitle: 'Share group',
+                    createLinkTitle: 'Create invite link',
+                    createLinkDesc: 'Share this link with people you want to invite to the group. The link is valid for 48 hours.',
+                    creatingLink: 'Creating invite link...',
+                    linkLabel: 'Invite link:',
+                    copyLink: 'Copy link',
+                    shareByEmail: 'Share via email',
+                    shareByWhatsApp: 'Share via WhatsApp',
+                    manageInvites: 'Manage invites',
+                    emailInviteTitle: 'Invite via email',
+                    emailPlaceholder: 'user@example.com',
+                    sendEmail: 'Send invite',
+                    sendingEmail: 'Sending invite...',
+                    emailAutoSendNote: 'An email with the invite link will be sent automatically',
+                    emailSendSuccess: 'Invite successfully sent to {{email}}!',
+                    emailSendError: 'Error sending email invite',
+                    howItWorksTitle: "How it works:",
+                    hiw: {
+                        b1: 'Share the link with people you want to invite',
+                        b2: 'If they already have an account, they will join the group immediately',
+                        b3: 'New users will be directed to register',
+                        b4: 'After logging in, they will automatically be added to the group'
+                    },
+                    security: {
+                        title: 'Security note',
+                        desc: 'Only share invite links with trusted people. Anyone with the link can join the group.'
+                    },
+                    email: {
+                        subject: 'Invitation to the group "{{name}}"',
+                        body: 'Hello!\n\n{{inviter}} has invited you to the group "{{name}}" in the Prepper App.\n\nClick the following link to join the group:\n{{url}}\n\nIf you don\'t have an account yet, you can register for free.\n\nBest regards!\nThe Prepper App Team'
+                    },
+                    whatsapp: {
+                        text: '🏠 Invitation to the group "{{name}}"\n\n{{inviter}} has invited you to the Prepper App!\n\n👉 {{url}}\n\nJoin and share your emergency supplies with the group! 📦'
+                    }
                 }
             },
             invites: {

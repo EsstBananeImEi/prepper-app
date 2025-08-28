@@ -4,6 +4,8 @@ import { Card, Button, Typography, Alert, Spin, Space, Divider } from 'antd';
 import { UserOutlined, TeamOutlined, ClockCircleOutlined, UserAddOutlined } from '@ant-design/icons';
 import { InviteManager, type InviteToken } from '../../utils/inviteManager';
 import { useStore } from '../../store/Store';
+import { useTranslation } from 'react-i18next';
+import { loginRoute, registerRoute, inviteRoute, userRoute, homeRoute } from '../../shared/Constants';
 
 const { Title, Text, Paragraph } = Typography;
 
@@ -11,6 +13,7 @@ const InvitePage: React.FC = () => {
     const { token } = useParams<{ token: string }>();
     const navigate = useNavigate();
     const { store } = useStore();
+    const { t } = useTranslation();
     const [invite, setInvite] = useState<InviteToken | null>(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string>('');
@@ -20,7 +23,7 @@ const InvitePage: React.FC = () => {
         if (token) {
             validateInvite(token);
         } else {
-            setError('Kein Invite-Token gefunden');
+            setError(t('invitePage.errors.noToken'));
             setLoading(false);
         }
     }, [token]);
@@ -61,14 +64,14 @@ const InvitePage: React.FC = () => {
             const validatedInvite = await InviteManager.validateInviteToken(inviteToken);
 
             if (!validatedInvite) {
-                setError('Dieser Einladungslink ist ungültig oder abgelaufen');
+                setError(t('invitePage.errors.invalidOrExpired'));
                 return;
             }
 
             setInvite(validatedInvite);
         } catch (error) {
             console.error('Fehler beim Validieren der Einladung:', error);
-            setError('Fehler beim Validieren der Einladung');
+            setError(t('invitePage.errors.validate'));
         } finally {
             setLoading(false);
         }
@@ -89,7 +92,7 @@ const InvitePage: React.FC = () => {
             );
 
             // Leite zum Login weiter
-            navigate(`/login?redirect=/invite/${token}`);
+            navigate(`${loginRoute}?redirect=${inviteRoute}/${token}`);
             return;
         }
 
@@ -105,16 +108,16 @@ const InvitePage: React.FC = () => {
 
             if (success) {
                 // Erfolgreicher Beitritt - Navigate zur Gruppenverwaltung
-                navigate('/user', {
+                navigate(userRoute, {
                     state: {
-                        message: `Du bist erfolgreich der Gruppe "${invite.groupName}" beigetreten!`,
+                        message: t('invitePage.messages.joinSuccess', { groupName: invite.groupName }),
                         tab: 'groups' // Falls es Tabs gibt
                     }
                 });
             }
         } catch (error) {
             console.error('Fehler beim Gruppenbeitritt:', error);
-            setError('Fehler beim Beitritt zur Gruppe. Bitte versuche es erneut.');
+            setError(t('invitePage.errors.join'));
         } finally {
             setJoining(false);
         }
@@ -137,7 +140,7 @@ const InvitePage: React.FC = () => {
         );
 
         // Leite zur Registrierung weiter
-        navigate(`/register?redirect=/invite/${token}`);
+        navigate(`${registerRoute}?redirect=${inviteRoute}/${token}`);
     };
 
     const formatExpiryDate = (timestamp: number): string => {
@@ -146,10 +149,10 @@ const InvitePage: React.FC = () => {
         const diffHours = Math.ceil((timestamp - now.getTime()) / (1000 * 60 * 60));
 
         if (diffHours < 24) {
-            return `${diffHours} Stunden`;
+            return t('invitePage.time.hours', { count: diffHours });
         } else {
             const diffDays = Math.ceil(diffHours / 24);
-            return `${diffDays} Tagen`;
+            return t('invitePage.time.days', { count: diffDays });
         }
     };
 
@@ -172,14 +175,14 @@ const InvitePage: React.FC = () => {
                 <Card>
                     <div style={{ textAlign: 'center' }}>
                         <Alert
-                            message="Einladung ungültig"
-                            description={error || 'Diese Einladung konnte nicht gefunden werden.'}
+                            message={t('invitePage.invalid.title')}
+                            description={error || t('invitePage.invalid.desc')}
                             type="error"
                             showIcon
                             style={{ marginBottom: 24 }}
                         />
-                        <Button type="primary" onClick={() => navigate('/')}>
-                            Zur Startseite
+                        <Button type="primary" onClick={() => navigate(homeRoute)}>
+                            {t('invitePage.backHome')}
                         </Button>
                     </div>
                 </Card>
@@ -194,37 +197,36 @@ const InvitePage: React.FC = () => {
             <Card>
                 <div style={{ textAlign: 'center', marginBottom: 32 }}>
                     <TeamOutlined style={{ fontSize: 48, color: '#1890ff', marginBottom: 16 }} />
-                    <Title level={2}>Gruppen-Einladung</Title>
+                    <Title level={2}>{t('invitePage.title')}</Title>
                 </div>
 
                 <div style={{ marginBottom: 24 }}>
                     <Card size="small" style={{ backgroundColor: '#f6f8fa' }}>
                         <Space direction="vertical" size="small" style={{ width: '100%' }}>
                             <div>
-                                <Text strong>Gruppe:</Text>
+                                <Text strong>{t('invitePage.groupLabel')}</Text>
                                 <Text style={{ marginLeft: 8, fontSize: 16 }}>{invite.groupName}</Text>
                             </div>
                             <div>
                                 <UserOutlined style={{ marginRight: 8 }} />
-                                <Text>Eingeladen von: {invite.inviterName}</Text>
+                                <Text>{t('invitePage.invitedBy')} {invite.inviterName}</Text>
                             </div>
                             <div>
                                 <ClockCircleOutlined style={{ marginRight: 8 }} />
-                                <Text>Gültig noch: {formatExpiryDate(invite.expiresAt)}</Text>
+                                <Text>{t('invitePage.validFor', { duration: formatExpiryDate(invite.expiresAt) })}</Text>
                             </div>
                         </Space>
                     </Card>
                 </div>
 
                 <Paragraph>
-                    Du wurdest von <Text strong>{invite.inviterName}</Text> eingeladen,
-                    der Gruppe <Text strong>&quot;{invite.groupName}&quot;</Text> beizutreten.
+                    {t('invitePage.youWereInvited', { inviter: invite.inviterName, group: invite.groupName })}
                 </Paragraph>
 
                 {isLoggedIn ? (
                     <div>
                         <Alert
-                            message={`Angemeldet als: ${store.user?.username || store.user?.email}`}
+                            message={t('invitePage.loggedInAs', { user: store.user?.username || store.user?.email })}
                             type="info"
                             showIcon
                             style={{ marginBottom: 16 }}
@@ -237,14 +239,14 @@ const InvitePage: React.FC = () => {
                             onClick={handleJoinGroup}
                             block
                         >
-                            {joining ? 'Trete bei...' : 'Gruppe beitreten'}
+                            {joining ? t('invitePage.joining') : t('invitePage.joinButton')}
                         </Button>
                     </div>
                 ) : (
                     <div>
                         <Alert
-                            message="Anmeldung erforderlich"
-                            description="Um der Gruppe beizutreten, musst du dich erst anmelden oder registrieren."
+                            message={t('invitePage.loginRequired.title')}
+                            description={t('invitePage.loginRequired.desc')}
                             type="warning"
                             showIcon
                             style={{ marginBottom: 24 }}
@@ -255,13 +257,13 @@ const InvitePage: React.FC = () => {
                                 type="primary"
                                 size="large"
                                 icon={<UserOutlined />}
-                                onClick={() => navigate(`/login?redirect=/invite/${token}`)}
+                                onClick={() => navigate(`${loginRoute}?redirect=${inviteRoute}/${token}`)}
                                 block
                             >
-                                Anmelden
+                                {t('invitePage.login')}
                             </Button>
 
-                            <Divider>oder</Divider>
+                            <Divider>{t('invitePage.or')}</Divider>
 
                             <Button
                                 size="large"
@@ -269,21 +271,21 @@ const InvitePage: React.FC = () => {
                                 onClick={handleRegister}
                                 block
                             >
-                                Neues Konto erstellen
+                                {t('invitePage.register')}
                             </Button>
                         </Space>
 
                         <div style={{ marginTop: 16, textAlign: 'center' }}>
                             <Text type="secondary" style={{ fontSize: 12 }}>
-                                Nach erfolgreicher Anmeldung wirst du automatisch der Gruppe hinzugefügt.
+                                {t('invitePage.autoAddNote')}
                             </Text>
                         </div>
                     </div>
                 )}
 
                 <div style={{ marginTop: 24, textAlign: 'center' }}>
-                    <Button type="link" onClick={() => navigate('/')}>
-                        Zur Startseite
+                    <Button type="link" onClick={() => navigate(homeRoute)}>
+                        {t('invitePage.backHome')}
                     </Button>
                 </div>
             </Card>

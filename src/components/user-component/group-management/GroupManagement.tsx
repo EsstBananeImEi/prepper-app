@@ -233,7 +233,7 @@ export default function GroupManagement(): React.ReactElement {
             setInviteUrl(url);
         } catch (error) {
             console.error('Fehler beim Erstellen des Invite-Links:', error);
-            message.error('Fehler beim Erstellen des Einladungslinks');
+            message.error(t('groups.invite.errorCreateLink'));
         } finally {
             setInviteLoading(false);
         }
@@ -242,7 +242,7 @@ export default function GroupManagement(): React.ReactElement {
     const handleCopyInviteLink = async () => {
         try {
             await navigator.clipboard.writeText(inviteUrl);
-            message.success('Einladungslink in die Zwischenablage kopiert!');
+            message.success(t('groups.invite.linkCopiedClipboard'));
         } catch (error) {
             console.error('Fehler beim Kopieren:', error);
             const textArea = document.createElement('textarea');
@@ -251,21 +251,19 @@ export default function GroupManagement(): React.ReactElement {
             textArea.select();
             document.execCommand('copy');
             document.body.removeChild(textArea);
-            message.success('Einladungslink kopiert!');
+            message.success(t('groups.invite.linkCopied'));
         }
     };
 
     const handleShareInviteViaEmail = () => {
         if (!inviteGroup) return;
-        const subject = encodeURIComponent(`Einladung zur Gruppe "${inviteGroup.name}"`);
+        const subject = encodeURIComponent(t('groups.invite.email.subject', { name: inviteGroup.name }));
         const body = encodeURIComponent(
-            `Hallo!\n\n` +
-            `${getUserName()} hat dich zur Gruppe "${inviteGroup.name}" in der Prepper App eingeladen.\n\n` +
-            `Klicke auf den folgenden Link, um der Gruppe beizutreten:\n` +
-            `${inviteUrl}\n\n` +
-            `Falls du noch kein Konto hast, kannst du dich kostenlos registrieren.\n\n` +
-            `Viele Grüße!\n` +
-            `Das Prepper App Team`
+            t('groups.invite.email.body', {
+                inviter: getUserName(),
+                name: inviteGroup.name,
+                url: inviteUrl
+            })
         );
 
         const mailtoLink = `mailto:?subject=${subject}&body=${body}`;
@@ -275,10 +273,11 @@ export default function GroupManagement(): React.ReactElement {
     const handleShareInviteViaWhatsApp = () => {
         if (!inviteGroup) return;
         const text = encodeURIComponent(
-            `🏠 Einladung zur Gruppe "${inviteGroup.name}"\n\n` +
-            `${getUserName()} hat dich zur Prepper App eingeladen!\n\n` +
-            `👉 ${inviteUrl}\n\n` +
-            `Tritt bei und teile deine Notvorräte mit der Gruppe! 📦`
+            t('groups.invite.whatsapp.text', {
+                name: inviteGroup.name,
+                inviter: getUserName(),
+                url: inviteUrl
+            })
         );
         const whatsappUrl = `https://wa.me/?text=${text}`;
         window.open(whatsappUrl, '_blank');
@@ -297,11 +296,11 @@ export default function GroupManagement(): React.ReactElement {
             const backendToken = response.inviteToken;
             const url = InviteManager.createInviteUrl(backendToken);
             setInviteUrl(url);
-            message.success(`Einladung erfolgreich an ${values.email} gesendet!`);
+            message.success(t('groups.invite.emailSendSuccess', { email: values.email }));
             inviteEmailForm.resetFields();
         } catch (error) {
             console.error('Fehler beim Senden der Email-Einladung:', error);
-            message.error('Fehler beim Senden der Email-Einladung');
+            message.error(t('groups.invite.emailSendError'));
         } finally {
             setInviteSendingEmail(false);
         }
@@ -440,13 +439,13 @@ export default function GroupManagement(): React.ReactElement {
                                     icon={<PlusOutlined />}
                                     onClick={() => setCreateModalVisible(true)}
                                 >
-                                    Gruppe erstellen
+                                    {t('groups.buttons.create')}
                                 </Button>
                                 <Button
                                     icon={<LoginOutlined />}
                                     onClick={() => setJoinModalVisible(true)}
                                 >
-                                    Gruppe beitreten
+                                    {t('groups.buttons.join')}
                                 </Button>
                             </Space>
                         </div>
@@ -483,7 +482,7 @@ export default function GroupManagement(): React.ReactElement {
                                             style={{ width: '100%' }}
                                             className={styles.actionSmall}
                                         >
-                                            <span className={styles.desktopText}>Einladungslink</span>
+                                            <span className={styles.desktopText}>{t('groups.buttons.inviteLink')}</span>
                                         </Button>,
                                         <Button
                                             key="edit"
@@ -936,7 +935,7 @@ export default function GroupManagement(): React.ReactElement {
                                             <>
                                                 <br />
                                                 <Text type="secondary">
-                                                    Beigetreten: {new Date(member.joinedAt).toLocaleDateString('de-DE')}
+                                                    {t('groups.members.joinedAt', { date: new Date(member.joinedAt).toLocaleDateString() })}
                                                 </Text>
                                             </>
                                         )}
@@ -953,7 +952,7 @@ export default function GroupManagement(): React.ReactElement {
                 title={
                     <Space>
                         <ShareAltOutlined />
-                        {inviteGroup ? `Gruppe "${inviteGroup.name}" teilen` : 'Gruppe teilen'}
+                        {inviteGroup ? t('groups.invite.shareTitleWithName', { name: inviteGroup.name }) : t('groups.invite.shareTitle')}
                     </Space>
                 }
                 open={inviteModalVisible}
@@ -963,20 +962,20 @@ export default function GroupManagement(): React.ReactElement {
             >
                 <Space direction="vertical" size="large" style={{ width: '100%' }}>
                     <AntdAlert
-                        message="Einladungslink erstellen"
-                        description="Teile diesen Link mit Personen, die du zur Gruppe einladen möchtest. Der Link ist 48 Stunden gültig."
+                        message={t('groups.invite.createLinkTitle')}
+                        description={t('groups.invite.createLinkDesc')}
                         type="info"
                         showIcon
                     />
 
                     {inviteLoading ? (
                         <div style={{ textAlign: 'center', padding: '20px 0' }}>
-                            <Text>Erstelle Einladungslink...</Text>
+                            <Text>{t('groups.invite.creatingLink')}</Text>
                         </div>
                     ) : (
                         inviteUrl && (
                             <div>
-                                <Text strong>Einladungslink:</Text>
+                                <Text strong>{t('groups.invite.linkLabel')}</Text>
                                 <div style={{
                                     marginTop: 8,
                                     padding: 12,
@@ -1006,25 +1005,25 @@ export default function GroupManagement(): React.ReactElement {
                                             icon={<CopyOutlined />}
                                             onClick={handleCopyInviteLink}
                                         >
-                                            Link kopieren
+                                            {t('groups.invite.copyLink')}
                                         </Button>
                                         <Button
                                             icon={<span>📧</span>}
                                             onClick={handleShareInviteViaEmail}
                                         >
-                                            Per E-Mail teilen
+                                            {t('groups.invite.shareByEmail')}
                                         </Button>
                                         <Button
                                             icon={<span>💬</span>}
                                             onClick={handleShareInviteViaWhatsApp}
                                         >
-                                            Per WhatsApp teilen
+                                            {t('groups.invite.shareByWhatsApp')}
                                         </Button>
                                         <Button
                                             icon={<SettingOutlined />}
                                             onClick={() => setInviteManagerVisible(true)}
                                         >
-                                            Einladungen verwalten
+                                            {t('groups.invite.manageInvites')}
                                         </Button>
                                     </Space>
                                 </div>
@@ -1034,7 +1033,7 @@ export default function GroupManagement(): React.ReactElement {
                                 <div>
                                     <Typography.Title level={5} style={{ margin: '0 0 16px 0' }}>
                                         <MailOutlined style={{ marginRight: 8 }} />
-                                        Per E-Mail einladen
+                                        {t('groups.invite.emailInviteTitle')}
                                     </Typography.Title>
                                     <Form
                                         form={inviteEmailForm}
@@ -1044,13 +1043,13 @@ export default function GroupManagement(): React.ReactElement {
                                         <Form.Item
                                             name="email"
                                             rules={[
-                                                { required: true, message: 'Bitte E-Mail-Adresse eingeben' },
-                                                { type: 'email', message: 'Ungültige E-Mail-Adresse' }
+                                                { required: true, message: t('user.form.validation.emailRequired') },
+                                                { type: 'email', message: t('user.form.validation.emailInvalid') }
                                             ]}
                                             style={{ marginBottom: 12 }}
                                         >
                                             <Input
-                                                placeholder="benutzer@example.com"
+                                                placeholder={t('groups.invite.emailPlaceholder')}
                                                 prefix={<MailOutlined />}
                                             />
                                         </Form.Item>
@@ -1062,12 +1061,12 @@ export default function GroupManagement(): React.ReactElement {
                                                 loading={inviteSendingEmail}
                                                 block
                                             >
-                                                {inviteSendingEmail ? 'Sende Einladung...' : 'Einladung senden'}
+                                                {inviteSendingEmail ? t('groups.invite.sendingEmail') : t('groups.invite.sendEmail')}
                                             </Button>
                                         </Form.Item>
                                     </Form>
                                     <div style={{ marginTop: 8, fontSize: 12, color: '#666' }}>
-                                        Eine E-Mail mit dem Einladungslink wird automatisch versendet
+                                        {t('groups.invite.emailAutoSendNote')}
                                     </div>
                                 </div>
                             </div>
@@ -1077,20 +1076,20 @@ export default function GroupManagement(): React.ReactElement {
                     <Divider />
 
                     <div>
-                        <Text strong>So funktioniert&apos;s:</Text>
+                        <Text strong>{t('groups.invite.howItWorksTitle')}</Text>
                         <Typography.Paragraph style={{ marginTop: 8 }}>
                             <ul style={{ paddingLeft: 20 }}>
-                                <li>Teile den Link mit Personen, die du einladen möchtest</li>
-                                <li>Wenn sie bereits ein Konto haben, treten sie sofort der Gruppe bei</li>
-                                <li>Neue Benutzer werden zur Registrierung geleitet</li>
-                                <li>Nach der Anmeldung werden sie automatisch der Gruppe hinzugefügt</li>
+                                <li>{t('groups.invite.hiw.b1')}</li>
+                                <li>{t('groups.invite.hiw.b2')}</li>
+                                <li>{t('groups.invite.hiw.b3')}</li>
+                                <li>{t('groups.invite.hiw.b4')}</li>
                             </ul>
                         </Typography.Paragraph>
                     </div>
 
                     <AntdAlert
-                        message="Sicherheitshinweis"
-                        description="Teile Einladungslinks nur mit vertrauenswürdigen Personen. Jeder mit dem Link kann der Gruppe beitreten."
+                        message={t('groups.invite.security.title')}
+                        description={t('groups.invite.security.desc')}
                         type="warning"
                         showIcon
                         style={{ fontSize: 12 }}

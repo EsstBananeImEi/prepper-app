@@ -57,7 +57,7 @@ export default function AdminUsersPage() {
             setUsers(list);
         } catch (e) {
             console.error(e);
-            message.error('Fehler beim Laden der Benutzer');
+            message.error(t('adminUsers.messages.loadError'));
         } finally {
             setLoading(false);
         }
@@ -106,38 +106,38 @@ export default function AdminUsersPage() {
 
     const onToggleAdmin = async (u: ManagedUser, next: boolean) => {
         if (!isAdmin) {
-            message.error('Nur Admins dürfen Adminrechte ändern');
+            message.error(t('adminUsers.messages.adminOnlyChangeAdmin'));
             return;
         }
         try {
             await adminApi.setAdmin(u.id, next);
-            message.success(next ? 'Zum Admin gemacht' : 'Admin entfernt');
+            message.success(next ? t('adminUsers.messages.adminGranted') : t('adminUsers.messages.adminRevoked'));
             setSelectedUser(prev => (prev && prev.id === u.id ? { ...prev, isAdmin: next } : prev));
             load();
         } catch {
-            message.error('Aktion fehlgeschlagen');
+            message.error(t('adminUsers.messages.actionFailed'));
         }
     };
 
     const onToggleManager = async (u: ManagedUser, next: boolean) => {
         try {
             await adminApi.setManager(u.id, next);
-            message.success(next ? 'Als Verwalter gesetzt' : 'Verwalter entfernt');
+            message.success(next ? t('adminUsers.messages.managerSet') : t('adminUsers.messages.managerRemoved'));
             setSelectedUser(prev => (prev && prev.id === u.id ? { ...prev, isManager: next } : prev));
             load();
         } catch {
-            message.error('Aktion fehlgeschlagen');
+            message.error(t('adminUsers.messages.actionFailed'));
         }
     };
 
     const onToggleLocked = async (u: ManagedUser, next: boolean) => {
         try {
             await adminApi.setLocked(u.id, next);
-            message.success(next ? 'Benutzer gesperrt' : 'Benutzer entsperrt');
+            message.success(next ? t('adminUsers.messages.userLocked') : t('adminUsers.messages.userUnlocked'));
             setSelectedUser(prev => (prev && prev.id === u.id ? { ...prev, locked: next } : prev));
             load();
         } catch {
-            message.error('Aktion fehlgeschlagen');
+            message.error(t('adminUsers.messages.actionFailed'));
         }
     };
 
@@ -146,44 +146,44 @@ export default function AdminUsersPage() {
         if (!nextEmail) return;
         try {
             await adminApi.updateEmail(u.id, nextEmail);
-            message.success('E-Mail aktualisiert');
+            message.success(t('adminUsers.messages.emailUpdated'));
             setEmailEdits(prev => ({ ...prev, [u.id]: '' }));
             setSelectedUser(prev => (prev && prev.id === u.id ? { ...prev, email: nextEmail } : prev));
             load();
         } catch {
-            message.error('E-Mail konnte nicht aktualisiert werden');
+            message.error(t('adminUsers.messages.emailUpdateFailed'));
         }
     };
 
     const onDelete = async (u: ManagedUser) => {
         try {
             await adminApi.deleteUser(u.id);
-            message.success('Benutzer gelöscht');
+            message.success(t('adminUsers.messages.userDeleted'));
             // Close panel if the deleted user is currently open
             if (selectedUser && selectedUser.id === u.id) {
                 closePanel();
             }
             load();
         } catch {
-            message.error('Löschen fehlgeschlagen');
+            message.error(t('adminUsers.messages.deleteFailed'));
         }
     };
 
     const columns: ColumnsType<ManagedUser> = [
-        { title: 'ID', dataIndex: 'id', key: 'id', width: 80 },
-        { title: 'Benutzername', dataIndex: 'username', key: 'username' },
+        { title: t('adminUsers.table.columns.id'), dataIndex: 'id', key: 'id', width: 80 },
+        { title: t('adminUsers.table.columns.username'), dataIndex: 'username', key: 'username' },
         {
-            title: 'Status', key: 'roles', render: (_: unknown, u: ManagedUser) => (
+            title: t('adminUsers.table.columns.status'), key: 'roles', render: (_: unknown, u: ManagedUser) => (
                 <Space>
-                    {u.isAdmin ? <Tag color="gold">Admin</Tag> : <Tag>Benutzer</Tag>}
-                    {u.isManager ? <Tag color="blue">Verwalter</Tag> : null}
-                    {u.locked ? <Tag color="red">Gesperrt</Tag> : null}
+                    {u.isAdmin ? <Tag color="gold">{t('adminUsers.tags.admin')}</Tag> : <Tag>{t('adminUsers.tags.user')}</Tag>}
+                    {u.isManager ? <Tag color="blue">{t('adminUsers.tags.manager')}</Tag> : null}
+                    {u.locked ? <Tag color="red">{t('adminUsers.tags.locked')}</Tag> : null}
                 </Space>
             )
         },
         {
-            title: 'Verwalten', key: 'manage', width: 120, render: (_: unknown, u: ManagedUser) => (
-                <Button size="small" icon={<EyeOutlined />} onClick={(e) => { e.stopPropagation(); openPanel(u); }}>Öffnen</Button>
+            title: t('adminUsers.table.columns.manage'), key: 'manage', width: 120, render: (_: unknown, u: ManagedUser) => (
+                <Button size="small" icon={<EyeOutlined />} onClick={(e) => { e.stopPropagation(); openPanel(u); }}>{t('adminUsers.table.open')}</Button>
             )
         },
     ];
@@ -208,7 +208,7 @@ export default function AdminUsersPage() {
         return (
             <div>
                 <Card>
-                    <Typography.Text>Kein Zugriff</Typography.Text>
+                    <Typography.Text>{t('adminUsers.noAccess')}</Typography.Text>
                 </Card>
             </div>
         );
@@ -218,8 +218,8 @@ export default function AdminUsersPage() {
         <>
             <div ref={containerRef}>
                 <Card
-                    title={<Space><UserSwitchOutlined />Benutzerverwaltung</Space>}
-                    extra={<Button icon={<ReloadOutlined />} onClick={load}>Aktualisieren</Button>}
+                    title={<Space><UserSwitchOutlined />{t('adminUsers.title')}</Space>}
+                    extra={<Button icon={<ReloadOutlined />} onClick={load}>{t('adminUsers.refresh')}</Button>}
                     bodyStyle={{ padding: isPortrait ? '8px 10px 12px' : '16px' }}
                     style={isPortrait ? { margin: '0 8px' } : undefined}
                 >
@@ -248,7 +248,7 @@ export default function AdminUsersPage() {
             </div>
 
             <Drawer
-                title={selectedUser ? `Benutzer #${selectedUser.id}` : 'Benutzer'}
+                title={selectedUser ? t('adminUsers.drawer.titleWithId', { id: selectedUser.id }) : t('adminUsers.drawer.title')}
                 placement={isPortrait ? 'bottom' : 'right'}
                 height={isPortrait ? drawerHeight : undefined}
                 width={isPortrait ? undefined : drawerWidth}
@@ -261,10 +261,10 @@ export default function AdminUsersPage() {
                 {selectedUser && (
                     <div>
                         <Descriptions column={1} size="small" bordered>
-                            <Descriptions.Item label="Benutzername">{selectedUser.username}</Descriptions.Item>
-                            <Descriptions.Item label="E-Mail">
+                            <Descriptions.Item label={t('adminUsers.drawer.fields.username')}>{selectedUser.username}</Descriptions.Item>
+                            <Descriptions.Item label={t('adminUsers.drawer.fields.email')}>
                                 {isOnlyManager && selectedUser.isAdmin ? (
-                                    <Typography.Text type="secondary">Vertraulich</Typography.Text>
+                                    <Typography.Text type="secondary">{t('adminUsers.drawer.fields.confidential')}</Typography.Text>
                                 ) : (
                                     <div style={{ display: 'flex', gap: 8, flexWrap: isPortrait ? 'wrap' as const : 'nowrap' as const }}>
                                         <Input
@@ -281,21 +281,21 @@ export default function AdminUsersPage() {
                                             block={isPortrait}
                                             style={{ alignSelf: isPortrait ? 'stretch' : 'center' }}
                                         >
-                                            Speichern
+                                            {t('adminUsers.drawer.buttons.save')}
                                         </Button>
                                     </div>
                                 )}
                             </Descriptions.Item>
-                            <Descriptions.Item label="Rollen/Status">
+                            <Descriptions.Item label={t('adminUsers.drawer.fields.roles')}>
                                 <Space wrap>
                                     <span>
-                                        Admin: <Switch checked={!!selectedUser.isAdmin} onChange={(v) => onToggleAdmin(selectedUser, v)} disabled={!isAdmin} />
+                                        {t('adminUsers.tags.admin')}: <Switch checked={!!selectedUser.isAdmin} onChange={(v) => onToggleAdmin(selectedUser, v)} disabled={!isAdmin} />
                                     </span>
                                     <span>
-                                        Verwalter: <Switch checked={!!selectedUser.isManager} onChange={(v) => onToggleManager(selectedUser, v)} disabled={!(isAdmin || isManager)} />
+                                        {t('adminUsers.tags.manager')}: <Switch checked={!!selectedUser.isManager} onChange={(v) => onToggleManager(selectedUser, v)} disabled={!(isAdmin || isManager)} />
                                     </span>
                                     <Button size="small" icon={selectedUser.locked ? <UnlockOutlined /> : <LockOutlined />} onClick={() => onToggleLocked(selectedUser, !selectedUser.locked)} disabled={!(isAdmin || isManager)}>
-                                        {selectedUser.locked ? 'Entsperren' : 'Sperren'}
+                                        {selectedUser.locked ? t('adminUsers.drawer.buttons.unlock') : t('adminUsers.drawer.buttons.lock')}
                                     </Button>
                                 </Space>
                             </Descriptions.Item>
@@ -304,10 +304,10 @@ export default function AdminUsersPage() {
                         <Divider />
 
                         <Space>
-                            <Popconfirm title="Benutzer wirklich löschen?" onConfirm={() => onDelete(selectedUser)} okText="Löschen" cancelText="Abbrechen" disabled={!isAdmin}>
-                                <Button danger icon={<DeleteOutlined />} disabled={!isAdmin}>Benutzer löschen</Button>
+                            <Popconfirm title={t('adminUsers.drawer.confirmDelete.title')} onConfirm={() => onDelete(selectedUser)} okText={t('adminUsers.drawer.confirmDelete.ok')} cancelText={t('adminUsers.drawer.confirmDelete.cancel')} disabled={!isAdmin}>
+                                <Button danger icon={<DeleteOutlined />} disabled={!isAdmin}>{t('adminUsers.drawer.buttons.delete')}</Button>
                             </Popconfirm>
-                            <Button onClick={closePanel}>Schließen</Button>
+                            <Button onClick={closePanel}>{t('adminUsers.drawer.buttons.close')}</Button>
                         </Space>
                     </div>
                 )}

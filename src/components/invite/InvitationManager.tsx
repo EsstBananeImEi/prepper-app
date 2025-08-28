@@ -4,6 +4,7 @@ import { DeleteOutlined, ReloadOutlined, ClockCircleOutlined, MailOutlined, Link
 import { groupsApiService } from '../../hooks/useGroupsApi';
 import { GroupPendingInvitationModel } from '../../shared/Models';
 import { InviteManager } from '../../utils/inviteManager';
+import { useTranslation } from 'react-i18next';
 
 const { Text } = Typography;
 
@@ -20,6 +21,7 @@ const InvitationManager: React.FC<InvitationManagerProps> = ({
     visible,
     onClose
 }) => {
+    const { t } = useTranslation();
     const [invitations, setInvitations] = useState<GroupPendingInvitationModel[]>([]);
     const [loading, setLoading] = useState(false);
     const [refreshing, setRefreshing] = useState(false);
@@ -32,7 +34,7 @@ const InvitationManager: React.FC<InvitationManagerProps> = ({
             setInvitations(response.invitations);
         } catch (error) {
             console.error('Fehler beim Laden der Einladungen:', error);
-            message.error('Fehler beim Laden der Einladungen');
+            message.error(t('inviteManager.messages.loadError'));
         } finally {
             setRefreshing(false);
         }
@@ -46,15 +48,15 @@ const InvitationManager: React.FC<InvitationManagerProps> = ({
 
             message.success(
                 email
-                    ? `Einladung für ${email} wurde widerrufen`
-                    : 'Einladung wurde widerrufen'
+                    ? t('inviteManager.messages.revokeSuccessEmail', { email })
+                    : t('inviteManager.messages.revokeSuccess')
             );
 
             // Liste neu laden
             await loadInvitations();
         } catch (error) {
             console.error('Fehler beim Widerrufen der Einladung:', error);
-            message.error('Fehler beim Widerrufen der Einladung');
+            message.error(t('inviteManager.messages.revokeError'));
         } finally {
             setLoading(false);
         }
@@ -65,10 +67,10 @@ const InvitationManager: React.FC<InvitationManagerProps> = ({
         try {
             const url = InviteManager.createInviteUrl(token);
             await navigator.clipboard.writeText(url);
-            message.success('Einladungslink kopiert!');
+            message.success(t('inviteManager.messages.copySuccess'));
         } catch (error) {
             console.error('Fehler beim Kopieren:', error);
-            message.error('Fehler beim Kopieren des Links');
+            message.error(t('inviteManager.messages.copyError'));
         }
     };
 
@@ -79,16 +81,16 @@ const InvitationManager: React.FC<InvitationManagerProps> = ({
         const isExpired = expires < now;
 
         if (isExpired) {
-            return <Tag color="default">Abgelaufen</Tag>;
+            return <Tag color="default">{t('inviteManager.statuses.expired')}</Tag>;
         }
 
         switch (status) {
             case 'pending':
-                return <Tag color="orange">Ausstehend</Tag>;
+                return <Tag color="orange">{t('inviteManager.statuses.pending')}</Tag>;
             case 'used':
-                return <Tag color="green">Verwendet</Tag>;
+                return <Tag color="green">{t('inviteManager.statuses.used')}</Tag>;
             case 'expired':
-                return <Tag color="default">Abgelaufen</Tag>;
+                return <Tag color="default">{t('inviteManager.statuses.expired')}</Tag>;
             default:
                 return <Tag color="default">{status}</Tag>;
         }
@@ -103,22 +105,22 @@ const InvitationManager: React.FC<InvitationManagerProps> = ({
         const diffMinutes = Math.floor((diffMs % (1000 * 60 * 60)) / (1000 * 60));
 
         if (diffMs < 0) {
-            return 'Abgelaufen';
+            return t('inviteManager.statuses.expired');
         }
 
         if (diffHours > 0) {
-            return `${diffHours}h ${diffMinutes}m verbleibend`;
+            return t('inviteManager.statuses.remaining', { hours: diffHours, minutes: diffMinutes });
         } else if (diffMinutes > 0) {
-            return `${diffMinutes}m verbleibend`;
+            return t('inviteManager.statuses.remainingMinutes', { minutes: diffMinutes });
         } else {
-            return 'Läuft bald ab';
+            return t('inviteManager.statuses.expiresSoon');
         }
     };
 
     // Tabellen-Spalten definieren
     const columns = [
         {
-            title: 'E-Mail',
+            title: t('inviteManager.table.columns.email'),
             dataIndex: 'invitedEmail',
             key: 'invitedEmail',
             render: (email: string) => (
@@ -130,36 +132,36 @@ const InvitationManager: React.FC<InvitationManagerProps> = ({
                 ) : (
                     <Text type="secondary">
                         <LinkOutlined />
-                        Link-Einladung
+                        {t('inviteManager.table.linkInvitation')}
                     </Text>
                 )
             )
         },
         {
-            title: 'Status',
+            title: t('inviteManager.table.columns.status'),
             dataIndex: 'status',
             key: 'status',
             render: (status: string, record: GroupPendingInvitationModel) =>
                 renderStatusTag(status, record.expiresAt)
         },
         {
-            title: 'Erstellt von',
+            title: t('inviteManager.table.columns.invitedBy'),
             dataIndex: 'inviterName',
             key: 'inviterName',
             render: (name: string) => <Text>{name}</Text>
         },
         {
-            title: 'Erstellt am',
+            title: t('inviteManager.table.columns.createdAt'),
             dataIndex: 'createdAt',
             key: 'createdAt',
-            render: (date: string) => new Date(date).toLocaleString('de-DE')
+            render: (date: string) => new Date(date).toLocaleString()
         },
         {
-            title: 'Läuft ab',
+            title: t('inviteManager.table.columns.expiresAt'),
             dataIndex: 'expiresAt',
             key: 'expiresAt',
             render: (date: string) => (
-                <Tooltip title={new Date(date).toLocaleString('de-DE')}>
+                <Tooltip title={new Date(date).toLocaleString()}>
                     <Space>
                         <ClockCircleOutlined />
                         <Text type="secondary">{formatExpiresAt(date)}</Text>
@@ -168,12 +170,12 @@ const InvitationManager: React.FC<InvitationManagerProps> = ({
             )
         },
         {
-            title: 'Aktionen',
+            title: t('inviteManager.table.columns.actions'),
             key: 'actions',
             render: (_: unknown, record: GroupPendingInvitationModel) => (
                 <Space>
                     {record.status === 'pending' && (
-                        <Tooltip title="Link kopieren">
+                        <Tooltip title={t('inviteManager.tooltips.copyLink')}>
                             <Button
                                 type="text"
                                 icon={<LinkOutlined />}
@@ -183,13 +185,13 @@ const InvitationManager: React.FC<InvitationManagerProps> = ({
                         </Tooltip>
                     )}
                     <Popconfirm
-                        title="Einladung widerrufen"
+                        title={t('inviteManager.confirm.revokeTitle')}
                         onConfirm={() => revokeInvitation(record.token, record.invitedEmail)}
-                        okText="Widerrufen"
-                        cancelText="Abbrechen"
+                        okText={t('inviteManager.confirm.ok')}
+                        cancelText={t('inviteManager.confirm.cancel')}
                         okButtonProps={{ danger: true }}
                     >
-                        <Tooltip title="Einladung widerrufen">
+                        <Tooltip title={t('inviteManager.tooltips.revoke')}>
                             <Button
                                 type="text"
                                 icon={<DeleteOutlined />}
@@ -216,17 +218,17 @@ const InvitationManager: React.FC<InvitationManagerProps> = ({
             title={
                 <Space>
                     <MailOutlined />
-                    Einladungen verwalten - &quot;{groupName}&quot;
+                    {t('inviteManager.titleWithName', { name: groupName })}
                 </Space>
             }
             open={visible}
             onCancel={onClose}
             footer={[
                 <Button key="refresh" icon={<ReloadOutlined />} onClick={loadInvitations} loading={refreshing}>
-                    Aktualisieren
+                    {t('inviteManager.refresh')}
                 </Button>,
                 <Button key="close" onClick={onClose}>
-                    Schließen
+                    {t('inviteManager.close')}
                 </Button>
             ]}
             width={1000}
@@ -234,8 +236,7 @@ const InvitationManager: React.FC<InvitationManagerProps> = ({
             <Space direction="vertical" style={{ width: '100%' }} size="large">
                 <div>
                     <Text type="secondary">
-                        Hier siehst du alle ausstehenden Einladungen für diese Gruppe.
-                        Du kannst Einladungen widerrufen, um die Tokens ungültig zu machen.
+                        {t('inviteManager.intro')}
                     </Text>
                 </div>
 
@@ -247,15 +248,14 @@ const InvitationManager: React.FC<InvitationManagerProps> = ({
                     pagination={false}
                     size="small"
                     locale={{
-                        emptyText: refreshing ? 'Lade Einladungen...' : 'Keine ausstehenden Einladungen'
+                        emptyText: refreshing ? t('inviteManager.empty.loading') : t('inviteManager.empty.none')
                     }}
                 />
 
                 {invitations && invitations.length > 0 && (
                     <div>
                         <Text type="secondary" style={{ fontSize: '12px' }}>
-                            💡 Tipp: Widerrufene Einladungen können nicht mehr verwendet werden.
-                            Abgelaufene Einladungen werden automatisch ungültig.
+                            {t('inviteManager.tips')}
                         </Text>
                     </div>
                 )}
