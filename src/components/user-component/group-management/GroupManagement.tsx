@@ -15,7 +15,8 @@ import {
     Avatar,
     Tooltip,
     Upload,
-    Progress
+    Progress,
+    Alert as AntdAlert
 } from 'antd';
 import {
     PlusOutlined,
@@ -30,13 +31,18 @@ import {
     CameraOutlined,
     UploadOutlined,
     CompressOutlined,
-    ShareAltOutlined
+    ShareAltOutlined,
+    LinkOutlined,
+    MailOutlined,
+    SendOutlined,
+    SettingOutlined
 } from '@ant-design/icons';
 import { groupsApiService } from '../../../hooks/useGroupsApi';
 import { GroupModel, GroupMemberModel, UserModel } from '../../../shared/Models';
 import { useApi, useMutation } from '../../../hooks/useApi';
 import { ImageCompressionUtils } from '../../../utils/imageCompressionUtils';
-import InviteButton from '../../invite/InviteButton';
+import InvitationManager from '../../invite/InvitationManager';
+import { InviteManager } from '../../../utils/inviteManager';
 import styles from './GroupManagement.module.css';
 import { useStore } from '~/store/Store';
 import { useTranslation } from 'react-i18next';
@@ -74,6 +80,15 @@ export default function GroupManagement(): React.ReactElement {
     const [removeCurrentImage, setRemoveCurrentImage] = useState<boolean>(false);
     const [imageCompressionProgress, setImageCompressionProgress] = useState<number>(0);
     const [isCompressing, setIsCompressing] = useState<boolean>(false);
+
+    // Invite modal state
+    const [inviteModalVisible, setInviteModalVisible] = useState(false);
+    const [inviteManagerVisible, setInviteManagerVisible] = useState(false);
+    const [inviteUrl, setInviteUrl] = useState('');
+    const [inviteLoading, setInviteLoading] = useState(false);
+    const [inviteSendingEmail, setInviteSendingEmail] = useState(false);
+    const [inviteGroup, setInviteGroup] = useState<{ id: number; name: string } | null>(null);
+    const [inviteEmailForm] = Form.useForm();
 
     const [createForm] = Form.useForm<CreateGroupForm>();
     const [updateForm] = Form.useForm<UpdateGroupForm>();
@@ -199,6 +214,97 @@ export default function GroupManagement(): React.ReactElement {
     const handleCopyInviteCode = (inviteCode: string) => {
         navigator.clipboard.writeText(inviteCode);
         message.success(t('groups.toasts.inviteCopied'));
+    };
+
+    const handleOpenInvite = async (group: GroupModel) => {
+        setInviteGroup({ id: group.id, name: group.name });
+        setInviteModalVisible(true);
+        if (!inviteUrl) {
+            await generateInviteLink(group.id);
+        }
+    };
+
+    const generateInviteLink = async (groupId: number) => {
+        try {
+            setInviteLoading(true);
+            const response = await groupsApiService.generateInviteToken(groupId);
+            const backendToken = response.inviteToken;
+            const url = InviteManager.createInviteUrl(backendToken);
+            setInviteUrl(url);
+        } catch (error) {
+            console.error('Fehler beim Erstellen des Invite-Links:', error);
+            message.error('Fehler beim Erstellen des Einladungslinks');
+        } finally {
+            setInviteLoading(false);
+        }
+    };
+
+    const handleCopyInviteLink = async () => {
+        try {
+            await navigator.clipboard.writeText(inviteUrl);
+            message.success('Einladungslink in die Zwischenablage kopiert!');
+        } catch (error) {
+            console.error('Fehler beim Kopieren:', error);
+            const textArea = document.createElement('textarea');
+            textArea.value = inviteUrl;
+            document.body.appendChild(textArea);
+            textArea.select();
+            document.execCommand('copy');
+            document.body.removeChild(textArea);
+            message.success('Einladungslink kopiert!');
+        }
+    };
+
+    const handleShareInviteViaEmail = () => {
+        if (!inviteGroup) return;
+        const subject = encodeURIComponent(`Einladung zur Gruppe "${inviteGroup.name}"`);
+        const body = encodeURIComponent(
+            `Hallo!\n\n` +
+            `${getUserName()} hat dich zur Gruppe "${inviteGroup.name}" in der Prepper App eingeladen.\n\n` +
+            `Klicke auf den folgenden Link, um der Gruppe beizutreten:\n` +
+            `${inviteUrl}\n\n` +
+            `Falls du noch kein Konto hast, kannst du dich kostenlos registrieren.\n\n` +
+            `Viele Grüße!\n` +
+            `Das Prepper App Team`
+        );
+
+        const mailtoLink = `mailto:?subject=${subject}&body=${body}`;
+        window.open(mailtoLink);
+    };
+
+    const handleShareInviteViaWhatsApp = () => {
+        if (!inviteGroup) return;
+        const text = encodeURIComponent(
+            `🏠 Einladung zur Gruppe "${inviteGroup.name}"\n\n` +
+            `${getUserName()} hat dich zur Prepper App eingeladen!\n\n` +
+            `👉 ${inviteUrl}\n\n` +
+            `Tritt bei und teile deine Notvorräte mit der Gruppe! 📦`
+        );
+        const whatsappUrl = `https://wa.me/?text=${text}`;
+        window.open(whatsappUrl, '_blank');
+    };
+
+    const handleSendInviteEmailViaBackend = async (values: { email: string }) => {
+        if (!inviteGroup) return;
+        try {
+            setInviteSendingEmail(true);
+            const response = await groupsApiService.inviteUserToGroup(inviteGroup.id, {
+                groupId: inviteGroup.id,
+                invitedEmail: values.email,
+                inviteToken: '',
+                inviteUrl: ''
+            });
+            const backendToken = response.inviteToken;
+            const url = InviteManager.createInviteUrl(backendToken);
+            setInviteUrl(url);
+            message.success(`Einladung erfolgreich an ${values.email} gesendet!`);
+            inviteEmailForm.resetFields();
+        } catch (error) {
+            console.error('Fehler beim Senden der Email-Einladung:', error);
+            message.error('Fehler beim Senden der Email-Einladung');
+        } finally {
+            setInviteSendingEmail(false);
+        }
     };
 
     const handleCreateImageUpload = async (file: File) => {
@@ -363,8 +469,21 @@ export default function GroupManagement(): React.ReactElement {
                                             icon={<UserOutlined />}
                                             onClick={() => handleShowMembers(group)}
                                             size="small"
+                                            style={{ width: '100%' }}
+                                            className={styles.actionSmall}
                                         >
                                             <span className={styles.desktopText}>{t('groups.buttons.members')}</span> ({group.memberCount})
+                                        </Button>,
+                                        <Button
+                                            key={`invite-${group.id}`}
+                                            icon={<UsergroupAddOutlined />}
+                                            onClick={() => handleOpenInvite(group)}
+                                            disabled={group.role !== 'admin'}
+                                            size="small"
+                                            style={{ width: '100%' }}
+                                            className={styles.actionSmall}
+                                        >
+                                            <span className={styles.desktopText}>Einladungslink</span>
                                         </Button>,
                                         <Button
                                             key="edit"
@@ -372,17 +491,11 @@ export default function GroupManagement(): React.ReactElement {
                                             onClick={() => handleEditGroup(group)}
                                             disabled={group.role !== 'admin' && !group.isCreator}
                                             size="small"
+                                            style={{ width: '100%' }}
+                                            className={styles.actionSmall}
                                         >
                                             <span className={styles.desktopText}>{t('groups.buttons.edit')}</span>
                                         </Button>,
-                                        <InviteButton
-                                            key={`invite-${group.id}`}
-                                            groupId={group.id.toString()}
-                                            groupName={group.name}
-                                            inviterName={getUserName()}
-                                            size="small"
-                                            disabled={group.role !== 'admin'}
-                                        />,
                                         group.isCreator ? (
                                             <Popconfirm
                                                 key="delete"
@@ -397,6 +510,8 @@ export default function GroupManagement(): React.ReactElement {
                                                     icon={<DeleteOutlined />}
                                                     loading={deleteLoading}
                                                     size="small"
+                                                    style={{ width: '100%' }}
+                                                    className={styles.actionSmall}
                                                 >
                                                     <span className={styles.mobileText}>{t('groups.buttons.delete')}</span>
                                                 </Button>
@@ -414,6 +529,8 @@ export default function GroupManagement(): React.ReactElement {
                                                     icon={<LogoutOutlined />}
                                                     loading={leaveLoading}
                                                     size="small"
+                                                    style={{ width: '100%' }}
+                                                    className={styles.actionSmall}
                                                 >
                                                     {t('groups.buttons.leave')}
                                                 </Button>
@@ -830,6 +947,163 @@ export default function GroupManagement(): React.ReactElement {
                     )}
                 />
             </Modal>
+
+            {/* Einladungen Modal (ersetzt InviteButton) */}
+            <Modal
+                title={
+                    <Space>
+                        <ShareAltOutlined />
+                        {inviteGroup ? `Gruppe "${inviteGroup.name}" teilen` : 'Gruppe teilen'}
+                    </Space>
+                }
+                open={inviteModalVisible}
+                onCancel={() => setInviteModalVisible(false)}
+                footer={null}
+                width={600}
+            >
+                <Space direction="vertical" size="large" style={{ width: '100%' }}>
+                    <AntdAlert
+                        message="Einladungslink erstellen"
+                        description="Teile diesen Link mit Personen, die du zur Gruppe einladen möchtest. Der Link ist 48 Stunden gültig."
+                        type="info"
+                        showIcon
+                    />
+
+                    {inviteLoading ? (
+                        <div style={{ textAlign: 'center', padding: '20px 0' }}>
+                            <Text>Erstelle Einladungslink...</Text>
+                        </div>
+                    ) : (
+                        inviteUrl && (
+                            <div>
+                                <Text strong>Einladungslink:</Text>
+                                <div style={{
+                                    marginTop: 8,
+                                    padding: 12,
+                                    backgroundColor: '#f5f5f5',
+                                    borderRadius: 6,
+                                    border: '1px solid #d9d9d9'
+                                }}>
+                                    <Space style={{ width: '100%' }}>
+                                        <LinkOutlined />
+                                        <Text
+                                            code
+                                            style={{
+                                                flex: 1,
+                                                wordBreak: 'break-all',
+                                                fontSize: 12
+                                            }}
+                                        >
+                                            {inviteUrl}
+                                        </Text>
+                                    </Space>
+                                </div>
+
+                                <div style={{ marginTop: 16 }}>
+                                    <Space wrap>
+                                        <Button
+                                            type="primary"
+                                            icon={<CopyOutlined />}
+                                            onClick={handleCopyInviteLink}
+                                        >
+                                            Link kopieren
+                                        </Button>
+                                        <Button
+                                            icon={<span>📧</span>}
+                                            onClick={handleShareInviteViaEmail}
+                                        >
+                                            Per E-Mail teilen
+                                        </Button>
+                                        <Button
+                                            icon={<span>💬</span>}
+                                            onClick={handleShareInviteViaWhatsApp}
+                                        >
+                                            Per WhatsApp teilen
+                                        </Button>
+                                        <Button
+                                            icon={<SettingOutlined />}
+                                            onClick={() => setInviteManagerVisible(true)}
+                                        >
+                                            Einladungen verwalten
+                                        </Button>
+                                    </Space>
+                                </div>
+
+                                <Divider />
+
+                                <div>
+                                    <Typography.Title level={5} style={{ margin: '0 0 16px 0' }}>
+                                        <MailOutlined style={{ marginRight: 8 }} />
+                                        Per E-Mail einladen
+                                    </Typography.Title>
+                                    <Form
+                                        form={inviteEmailForm}
+                                        onFinish={handleSendInviteEmailViaBackend}
+                                        layout="vertical"
+                                    >
+                                        <Form.Item
+                                            name="email"
+                                            rules={[
+                                                { required: true, message: 'Bitte E-Mail-Adresse eingeben' },
+                                                { type: 'email', message: 'Ungültige E-Mail-Adresse' }
+                                            ]}
+                                            style={{ marginBottom: 12 }}
+                                        >
+                                            <Input
+                                                placeholder="benutzer@example.com"
+                                                prefix={<MailOutlined />}
+                                            />
+                                        </Form.Item>
+                                        <Form.Item style={{ marginBottom: 0 }}>
+                                            <Button
+                                                type="primary"
+                                                htmlType="submit"
+                                                icon={<SendOutlined />}
+                                                loading={inviteSendingEmail}
+                                                block
+                                            >
+                                                {inviteSendingEmail ? 'Sende Einladung...' : 'Einladung senden'}
+                                            </Button>
+                                        </Form.Item>
+                                    </Form>
+                                    <div style={{ marginTop: 8, fontSize: 12, color: '#666' }}>
+                                        Eine E-Mail mit dem Einladungslink wird automatisch versendet
+                                    </div>
+                                </div>
+                            </div>
+                        )
+                    )}
+
+                    <Divider />
+
+                    <div>
+                        <Text strong>So funktioniert&apos;s:</Text>
+                        <Typography.Paragraph style={{ marginTop: 8 }}>
+                            <ul style={{ paddingLeft: 20 }}>
+                                <li>Teile den Link mit Personen, die du einladen möchtest</li>
+                                <li>Wenn sie bereits ein Konto haben, treten sie sofort der Gruppe bei</li>
+                                <li>Neue Benutzer werden zur Registrierung geleitet</li>
+                                <li>Nach der Anmeldung werden sie automatisch der Gruppe hinzugefügt</li>
+                            </ul>
+                        </Typography.Paragraph>
+                    </div>
+
+                    <AntdAlert
+                        message="Sicherheitshinweis"
+                        description="Teile Einladungslinks nur mit vertrauenswürdigen Personen. Jeder mit dem Link kann der Gruppe beitreten."
+                        type="warning"
+                        showIcon
+                        style={{ fontSize: 12 }}
+                    />
+                </Space>
+            </Modal>
+
+            <InvitationManager
+                groupId={inviteGroup?.id.toString() || ''}
+                groupName={inviteGroup?.name || ''}
+                visible={inviteManagerVisible}
+                onClose={() => setInviteManagerVisible(false)}
+            />
         </div>
     );
 }

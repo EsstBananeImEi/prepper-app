@@ -4,6 +4,7 @@ import { ShareAltOutlined, CopyOutlined, LinkOutlined, UserAddOutlined, MailOutl
 import { InviteManager } from '../../utils/inviteManager';
 import { groupsApiService } from '../../hooks/useGroupsApi';
 import InvitationManager from './InvitationManager';
+import styles from './InviteButton.module.css';
 
 const { Text, Paragraph } = Typography;
 
@@ -15,6 +16,7 @@ interface InviteButtonProps {
     type?: 'primary' | 'default' | 'link';
     size?: 'small' | 'middle' | 'large';
     disabled?: boolean;
+    block?: boolean;
 }
 
 const InviteButton: React.FC<InviteButtonProps> = ({
@@ -24,7 +26,8 @@ const InviteButton: React.FC<InviteButtonProps> = ({
     className,
     type = 'default',
     size = 'middle',
-    disabled = false
+    disabled = false,
+    block = false
 }) => {
     const [modalVisible, setModalVisible] = useState(false);
     const [managerVisible, setManagerVisible] = useState(false);
@@ -143,7 +146,12 @@ const InviteButton: React.FC<InviteButtonProps> = ({
                 icon={<UserAddOutlined />}
                 onClick={handleShowModal}
                 disabled={disabled}
-                className={className}
+                className={[
+                    className,
+                    block ? styles.blockFullWidth : undefined,
+                    size === 'small' ? styles.sizeSmall : size === 'large' ? styles.sizeLarge : styles.sizeMiddle
+                ].filter(Boolean).join(' ')}
+                block={block}
             >
                 Einladungslink
             </Button>

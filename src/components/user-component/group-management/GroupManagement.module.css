@@ -76,20 +76,24 @@
     }
 
     .container .listItem .ant-list-item-action {
-        gap: 16px;
-        flex-wrap: nowrap;
+        display: grid !important;
+        grid-template-columns: 1fr 1fr !important;
+        gap: 8px 12px !important;
         margin-left: 24px !important;
-        align-items: center;
-        flex-shrink: 0;
+        align-items: stretch !important;
+        justify-content: stretch !important;
+        width: 100%;
     }
 
     .container .listItem .ant-list-item-action>li {
-        margin: 0 8px;
+        margin: 0 !important;
         flex-shrink: 0;
+        width: 100% !important;
+        list-style: none !important;
     }
 
     .container .listItem .ant-list-item-action button {
-        min-width: 120px;
+        width: 100% !important;
         height: 36px;
         font-size: 14px;
     }
@@ -182,25 +186,33 @@
         line-height: 1.4;
     }
 
-    .container .listItem .ant-list-item-action {
+    /* Use a strict 2x2 grid so columns align (1 over 3, 2 over 4) */
+    .container .listItem :global(.ant-list-item-action) {
         margin-left: 0 !important;
         margin-top: 0 !important;
-        display: flex !important;
-        flex-wrap: wrap !important;
+        display: grid !important;
+        grid-template-columns: 1fr 1fr !important;
+        grid-auto-rows: auto;
         gap: 12px !important;
         width: 100% !important;
-        justify-content: flex-start !important;
-        align-self: flex-end;
+        justify-content: stretch !important;
+        align-items: stretch !important;
     }
 
-    .container .listItem .ant-list-item-action>li {
+    /* remove vertical separators */
+    .container .listItem :global(.ant-list-item-action > li)::after {
+        display: none !important;
+    }
+
+    .container .listItem :global(.ant-list-item-action > li) {
         margin: 0 !important;
-        flex: 0 1 auto !important;
-        min-width: 120px !important;
+        list-style: none !important;
+        width: 100% !important;
     }
 
-    .container .listItem .ant-list-item-action button {
+    .container .listItem :global(.ant-list-item-action button) {
         width: 100% !important;
+        /* stretch to full cell width */
         height: 36px !important;
         font-size: 13px !important;
         padding: 4px 8px !important;
@@ -217,7 +229,7 @@
 /* Tablet Landscape - Optimiert für mittlere Bildschirme */
 @media (min-width: 769px) and (max-width: 1023px) {
     .container {
-        padding: 12px 16px;
+        padding: 10px 14px;
     }
 
     .header {
@@ -226,12 +238,12 @@
     }
 
     .container .listItem {
-        padding: 20px !important;
+        padding: 14px 16px !important;
         border-radius: 8px;
         margin-bottom: 12px;
-        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-        transition: box-shadow 0.3s ease;
-        background: #fafafa;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+        transition: box-shadow 0.2s ease;
+        background: #fff;
         border: 1px solid #f0f0f0;
     }
 
@@ -239,21 +251,215 @@
         box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
     }
 
+    /* Use a compact, wrapping actions row under content without overflow */
     .container .listItem :global(.ant-list-item-action) {
-        gap: 12px;
-        flex-wrap: wrap;
-        margin-left: 16px !important;
-        justify-content: flex-end;
+        display: grid !important;
+        grid-template-columns: 1fr 1fr;
+        /* equal 2x2 grid */
+        gap: 8px 12px !important;
+        align-items: stretch !important;
+        /* align actions under the content (title/description), not under the avatar */
+        margin-left: 0 !important;
+        padding-left: 52px !important;
+        /* avatar(36) + gap(16) */
+        width: 100% !important;
+        /* prevent overflowing right edge */
+        box-sizing: border-box !important;
+        justify-content: start !important;
+    }
+
+    /* remove vertical separators between action items */
+    .container .listItem :global(.ant-list-item-action > li)::after {
+        display: none !important;
     }
 
     .container .listItem :global(.ant-list-item-action > li) {
-        margin: 2px 4px;
-        flex: 0 0 auto;
+        margin: 0 !important;
+        list-style: none !important;
+        width: 100% !important;
+        /* each grid cell fills column */
+        display: block !important;
     }
 
     .container .listItem :global(.ant-list-item-action button) {
-        min-width: 100px;
+        width: 100% !important;
+        /* align vertically per column */
         height: 32px;
+        font-size: 13px;
+        padding: 0 10px;
+        border-radius: 6px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 6px;
+        line-height: 1;
+    }
+
+    .container .listItem :global(.ant-list-item-action button .anticon) {
+        font-size: 14px;
+    }
+
+    .container .listItem :global(.ant-list-item-action button:hover) {
+        filter: brightness(0.98);
+        box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
+    }
+
+    .container .listItem :global(.ant-list-item-action .ant-btn-dangerous:hover) {
+        filter: none;
+        box-shadow: 0 1px 6px rgba(255, 77, 79, 0.25);
+    }
+
+    /* Reduce avatar and title sizes to avoid overly large, empty look */
+    .container .listItem :global(.ant-list-item-meta-avatar .ant-avatar) {
+        width: 36px !important;
+        height: 36px !important;
+        line-height: 36px !important;
+        font-size: 18px !important;
+    }
+
+    .container .listItem :global(.ant-list-item-meta-title) {
+        font-size: 16px;
+        line-height: 1.3;
+    }
+
+    .container .listItem :global(.ant-list-item-meta-description) {
+        font-size: 13px;
+        line-height: 1.3;
+        max-width: 100%;
+    }
+
+    /* Turn the list into a responsive 2-column grid to reduce card width in landscape */
+    .container :global(.ant-list-items) {
+        display: grid !important;
+        grid-template-columns: repeat(auto-fit, minmax(380px, 1fr));
+        gap: 16px;
+        align-items: stretch;
+    }
+
+    .container :global(.ant-list-item) {
+        margin-bottom: 0 !important;
+        /* grid gap handles spacing */
+    }
+
+    /* Ensure left alignment of content and labels under landscape */
+    .container .listItem {
+        text-align: left !important;
+        align-items: flex-start !important;
+    }
+
+    .container .listItem :global(.ant-list-item-meta) {
+        align-items: flex-start !important;
+    }
+
+    .container .listItem :global(.ant-list-item-meta-title),
+    .container .listItem :global(.ant-list-item-meta-content),
+    .container .listItem :global(.ant-list-item-meta-description) {
+        text-align: left !important;
+    }
+
+    .container .listItem :global(.ant-space) {
+        justify-content: flex-start !important;
+    }
+}
+
+/* Phone landscape: very compact; avoid empty look */
+@media (max-height: 480px) and (orientation: landscape) {
+    .container {
+        padding: 8px 10px;
+    }
+
+    .container .listItem {
+        padding: 10px 12px !important;
+        border-radius: 8px;
+        background: #fff;
+    }
+
+    .container .listItem :global(.ant-list-item-action) {
+        display: grid !important;
+        grid-template-columns: 1fr 1fr;
+        /* equal columns */
+        gap: 6px 10px !important;
+        margin-left: 0 !important;
+        padding-left: 4px !important;
+        /* align under content; previously 44px was too much */
+        width: 100% !important;
+        /* prevent overflow */
+        box-sizing: border-box !important;
+        justify-content: start !important;
+        align-items: stretch !important;
+    }
+
+    .container .listItem :global(.ant-list-item-action > li)::after {
+        display: none !important;
+    }
+
+    .container .listItem :global(.ant-list-item-action > li) {
+        display: block !important;
+    }
+
+    .container .listItem :global(.ant-list-item-action > li) {
+        margin: 0 !important;
+        list-style: none !important;
+        width: 100% !important;
+    }
+
+    .container .listItem :global(.ant-list-item-action button) {
+        width: 100% !important;
+        height: 30px;
+        font-size: 12px;
+        padding: 0 8px;
+        border-radius: 6px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 6px;
+        line-height: 1;
+    }
+
+    .container .listItem :global(.ant-list-item-action button .anticon) {
+        font-size: 14px;
+    }
+
+    .container .listItem :global(.ant-list-item-meta-avatar .ant-avatar) {
+        width: 32px !important;
+        height: 32px !important;
+        line-height: 32px !important;
+        font-size: 16px !important;
+    }
+
+    .container .listItem :global(.ant-list-item-meta-title) {
+        font-size: 15px;
+    }
+
+    .container .listItem :global(.ant-list-item-meta-description) {
+        font-size: 12px;
+    }
+
+    .container :global(.ant-list-items) {
+        display: grid !important;
+        grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+        gap: 10px;
+        align-items: stretch;
+    }
+
+    /* Ensure left alignment on phone landscape as well */
+    .container .listItem {
+        text-align: left !important;
+        align-items: flex-start !important;
+    }
+
+    .container .listItem :global(.ant-list-item-meta) {
+        align-items: flex-start !important;
+    }
+
+    .container .listItem :global(.ant-list-item-meta-title),
+    .container .listItem :global(.ant-list-item-meta-content),
+    .container .listItem :global(.ant-list-item-meta-description) {
+        text-align: left !important;
+    }
+
+    .container .listItem :global(.ant-space) {
+        justify-content: flex-start !important;
     }
 }
 
@@ -301,22 +507,22 @@
         text-align: left;
     }
 
+    /* Switch to 2-column grid for aligned buttons */
     .container .listItem :global(.ant-list-item-action) {
         margin-left: 0 !important;
         margin-top: 16px !important;
-        display: flex !important;
-        flex-wrap: wrap !important;
+        display: grid !important;
+        grid-template-columns: 1fr 1fr !important;
+        grid-auto-rows: auto;
         gap: 8px !important;
         width: 100% !important;
-        justify-content: flex-start !important;
+        justify-content: stretch !important;
     }
 
     .container .listItem :global(.ant-list-item-action > li) {
         margin: 0 !important;
-        flex: 1 1 0 !important;
-        min-width: 0 !important;
-        max-width: none !important;
-        width: 0 !important;
+        width: 100% !important;
+        list-style: none !important;
     }
 
     .container .listItem :global(.ant-list-item-action button) {
@@ -414,19 +620,25 @@
     .container .listItem :global(.ant-list-item-action) {
         margin-left: 0 !important;
         margin-top: 16px !important;
-        display: flex !important;
-        flex-wrap: wrap !important;
+        display: grid !important;
+        grid-template-columns: 1fr 1fr !important;
+        grid-auto-rows: auto;
         gap: 8px !important;
         width: 100% !important;
-        justify-content: flex-start !important;
+        box-sizing: border-box !important;
+        justify-content: stretch !important;
+        align-items: stretch !important;
     }
 
     .container .listItem :global(.ant-list-item-action > li) {
         margin: 0 !important;
-        flex: 1 1 0 !important;
-        min-width: 0 !important;
-        max-width: none !important;
-        width: 0 !important;
+        width: 100% !important;
+        list-style: none !important;
+        display: block !important;
+    }
+
+    .container .listItem :global(.ant-list-item-action > li)::after {
+        display: none !important;
     }
 
     .container .listItem :global(.ant-list-item-action button) {
@@ -633,4 +845,68 @@
 /* Scroll-Performance Optimierung */
 .container {
     contain: layout style;
+
+    /* Top-align content inside list items and force left text alignment */
+    .container .listItem :global(.ant-list-item) {
+        align-items: flex-start !important;
+    }
+
+    .container .listItem :global(.ant-list-item-meta),
+    .container .listItem :global(.ant-list-item-meta-title),
+    .container .listItem :global(.ant-list-item-meta-content),
+    .container .listItem :global(.ant-list-item-meta-description) {
+        text-align: left !important;
+    }
+
+    .container .listItem :global(.ant-list-item) {
+        align-items: flex-start !important;
+    }
+
+    .container .listItem :global(.ant-list-item-meta),
+    .container .listItem :global(.ant-list-item-meta-title),
+    .container .listItem :global(.ant-list-item-meta-content),
+    .container .listItem :global(.ant-list-item-meta-description) {
+        text-align: left !important;
+    }
+}
+
+/* Helper: force an individual button to take full available width in action grids */
+.fullWidthButton {
+    width: 100% !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    box-sizing: border-box !important;
+}
+
+/* Helper: normalize small action button sizing */
+.actionSmall {
+    height: 32px !important;
+    line-height: 32px !important;
+    font-size: 13px !important;
+    padding: 0 10px !important;
+    border-radius: 6px !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 6px !important;
+    box-sizing: border-box !important;
+}
+
+.actionSmall :global(.anticon) {
+    font-size: 14px;
+}
+
+/* --- Specific overrides for the Invite action button size --- */
+/* Ensure our .actionSmall sizing wins over earlier breakpoint rules with !important */
+.container .listItem .actionSmall:global(.ant-btn) {
+    height: 32px !important;
+    line-height: 32px !important;
+    font-size: 13px !important;
+    padding: 0 10px !important;
+    border-radius: 6px !important;
+}
+
+.container .listItem .actionSmall:global(.ant-btn) :global(.anticon) {
+    font-size: 14px !important;
 }
