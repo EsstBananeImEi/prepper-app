@@ -250,7 +250,7 @@ export default function NavBar(): ReactElement {
                                 {/* Home Item */}
                                 <Menu.Item key="home" data-menu-id="home" data-label={t('common.home')}>
                                     <NavLink to={homeRoute}>
-                                        <HomeTwoTone twoToneColor={selectedKeys.includes('home') ? '#1890ff' : '#ffffff'} className={style.icon} />
+                                        <HomeTwoTone twoToneColor={selectedKeys.includes('home') ? '#1890ff' : '#bfbfbf'} className={style.icon} />
                                     </NavLink>
                                 </Menu.Item>
 
@@ -259,19 +259,19 @@ export default function NavBar(): ReactElement {
                                     <>
                                         <Menu.Item key="checklist" data-label={t('common.checklist')}>
                                             <NavLink to={checklistRoute}>
-                                                <CheckCircleTwoTone twoToneColor={selectedKeys.includes('checklist') ? '#1890ff' : '#ffffff'} className={style.icon} />
+                                                <CheckCircleTwoTone twoToneColor={selectedKeys.includes('checklist') ? '#1890ff' : '#bfbfbf'} className={style.icon} />
                                             </NavLink>
                                         </Menu.Item>
                                         <Menu.Item key="items" data-label={t('common.storage_plural')}>
                                             <NavLink to={itemsRoute}>
-                                                <ProfileTwoTone twoToneColor={selectedKeys.includes('items') ? '#1890ff' : '#ffffff'} className={style.icon} />
+                                                <ProfileTwoTone twoToneColor={selectedKeys.includes('items') ? '#1890ff' : '#bfbfbf'} className={style.icon} />
                                             </NavLink>
                                         </Menu.Item>
                                         {/* Removed 'Neu anlegen' from mobile bottom navbar */}
                                         <Menu.Item key="shopping" data-label={t('common.basket')}>
                                             <NavLink to={basketRoute}>
                                                 <Badge offset={[0, 0]} size="small" count={countItems()}>
-                                                    <ShoppingTwoTone twoToneColor={selectedKeys.includes('shopping') ? '#1890ff' : '#ffffff'} className={style.icon} />
+                                                    <ShoppingTwoTone twoToneColor={selectedKeys.includes('shopping') ? '#1890ff' : '#bfbfbf'} className={style.icon} />
                                                 </Badge>
                                             </NavLink>
                                         </Menu.Item>
