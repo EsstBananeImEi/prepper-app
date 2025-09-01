@@ -38,6 +38,21 @@ const resources = {
                     short: 'Kurze Einheiten (z. B. g, kg, l)',
                     customNote: 'Benutzerdefinierte Einheiten werden in einer späteren Version unterstützt.'
                 }
+                ,
+                deleteAccount: {
+                    title: 'Profil löschen',
+                    desc: 'Dein Profil und alle zugehörigen Daten werden dauerhaft gelöscht. Diese Aktion kann nicht rückgängig gemacht werden.',
+                    button: 'Profil löschen',
+                    confirmTitle: 'Profil wirklich löschen?',
+                    confirmOk: 'Ja, löschen',
+                    confirmCancel: 'Abbrechen',
+                    passwordLabel: 'Zur Bestätigung gib bitte dein Passwort ein:',
+                    passwordPlaceholder: 'Passwort',
+                    passwordRequired: 'Bitte gib dein Passwort ein.',
+                    wrongPassword: 'Falsches Passwort.',
+                    success: 'Profil wurde gelöscht.',
+                    error: 'Löschen fehlgeschlagen. Bitte versuche es erneut.'
+                }
             },
             search: {
                 placeholder: 'Suche nach Items, Checkliste, Kategorien oder Seiten...',
@@ -1637,6 +1652,21 @@ const resources = {
                     custom: 'Custom',
                     short: 'Short units (e.g., g, kg, l)',
                     customNote: 'Custom units will be supported in a future version.'
+                }
+                ,
+                deleteAccount: {
+                    title: 'Delete profile',
+                    desc: 'Your profile and all associated data will be permanently deleted. This action cannot be undone.',
+                    button: 'Delete profile',
+                    confirmTitle: 'Really delete your profile?',
+                    confirmOk: 'Yes, delete',
+                    confirmCancel: 'Cancel',
+                    passwordLabel: 'To confirm, please enter your password:',
+                    passwordPlaceholder: 'Password',
+                    passwordRequired: 'Please enter your password.',
+                    wrongPassword: 'Wrong password.',
+                    success: 'Profile deleted.',
+                    error: 'Deletion failed. Please try again.'
                 }
             },
             admin: {
