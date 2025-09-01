@@ -1,0 +1,56 @@
+.modalWrap :global(.ant-modal) {
+    margin: 8px;
+}
+
+.responsiveTable :global(.ant-table) {
+    width: 100%;
+}
+
+/* Allow table to scroll horizontally on small viewports */
+.responsiveTable :global(.ant-table-content) {
+    overflow-x: auto;
+}
+
+/* Wrap long text within cells to avoid overflow in portrait */
+.wrapText {
+    white-space: normal;
+    overflow-wrap: anywhere;
+}
+
+/* Make modal body fit within viewport in portrait */
+.modalWrap :global(.ant-modal-body) {
+    max-height: 75vh;
+    overflow: auto;
+}
+
+/* Mobile list layout */
+.mobileList :global(.ant-table-tbody)>tr>td {
+    padding: 8px 0;
+}
+
+.mobileItem {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 8px;
+}
+
+.mobileMain {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    min-width: 0;
+    /* allow text to wrap */
+}
+
+.mobileLine {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.mobileActions {
+    display: flex;
+    gap: 6px;
+    flex-shrink: 0;
+}

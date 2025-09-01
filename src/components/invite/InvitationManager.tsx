@@ -1,10 +1,13 @@
 import React, { useState, useEffect } from 'react';
-import { Table, Button, Modal, message, Space, Typography, Tag, Popconfirm } from 'antd';
+import { Table, Button, Modal, message, Space, Typography, Tag, Popconfirm, Grid } from 'antd';
+type AntdBreakpoint = 'xs' | 'sm' | 'md' | 'lg' | 'xl' | 'xxl';
 import { DeleteOutlined, ReloadOutlined, ClockCircleOutlined, MailOutlined, LinkOutlined } from '@ant-design/icons';
 import { groupsApiService } from '../../hooks/useGroupsApi';
 import { GroupPendingInvitationModel } from '../../shared/Models';
 import { InviteManager } from '../../utils/inviteManager';
 import { useTranslation } from 'react-i18next';
+import styles from './InvitationManager.module.css';
+import type { ColumnsType } from 'antd/es/table';
 
 const { Text } = Typography;
 
@@ -25,6 +28,10 @@ const InvitationManager: React.FC<InvitationManagerProps> = ({
     const [invitations, setInvitations] = useState<GroupPendingInvitationModel[]>([]);
     const [loading, setLoading] = useState(false);
     const [refreshing, setRefreshing] = useState(false);
+
+    // Breakpoints: Mobile-Ansicht bei xs
+    const screens = Grid.useBreakpoint();
+    const isMobile = !screens.sm;
 
     // Einladungen laden
     const loadInvitations = async () => {
@@ -117,8 +124,8 @@ const InvitationManager: React.FC<InvitationManagerProps> = ({
         }
     };
 
-    // Tabellen-Spalten definieren
-    const columns = [
+    // Desktop: Tabellen-Spalten definieren
+    const desktopColumns: ColumnsType<GroupPendingInvitationModel> = [
         {
             title: t('inviteManager.table.columns.email'),
             dataIndex: 'invitedEmail',
@@ -127,34 +134,39 @@ const InvitationManager: React.FC<InvitationManagerProps> = ({
                 email ? (
                     <Space>
                         <MailOutlined />
-                        <Text>{email}</Text>
+                        <Text className={styles.wrapText}>{email}</Text>
                     </Space>
                 ) : (
-                    <Text type="secondary">
+                    <Text type="secondary" className={styles.wrapText}>
                         <LinkOutlined />
                         {t('inviteManager.table.linkInvitation')}
                     </Text>
                 )
-            )
+            ),
+            responsive: ['xs', 'sm', 'md', 'lg', 'xl', 'xxl'] as AntdBreakpoint[],
         },
         {
             title: t('inviteManager.table.columns.status'),
             dataIndex: 'status',
             key: 'status',
             render: (status: string, record: GroupPendingInvitationModel) =>
-                renderStatusTag(status, record.expiresAt)
+                renderStatusTag(status, record.expiresAt),
+            width: 120,
+            responsive: ['xs', 'sm', 'md', 'lg', 'xl', 'xxl'] as AntdBreakpoint[],
         },
         {
             title: t('inviteManager.table.columns.invitedBy'),
             dataIndex: 'inviterName',
             key: 'inviterName',
-            render: (name: string) => <Text>{name}</Text>
+            render: (name: string) => <Text className={styles.wrapText}>{name}</Text>,
+            responsive: ['sm', 'md', 'lg', 'xl', 'xxl'] as AntdBreakpoint[],
         },
         {
             title: t('inviteManager.table.columns.createdAt'),
             dataIndex: 'createdAt',
             key: 'createdAt',
-            render: (date: string) => new Date(date).toLocaleString()
+            render: (date: string) => <Text className={styles.wrapText}>{new Date(date).toLocaleString()}</Text>,
+            responsive: ['md', 'lg', 'xl', 'xxl'] as AntdBreakpoint[],
         },
         {
             title: t('inviteManager.table.columns.expiresAt'),
@@ -163,42 +175,101 @@ const InvitationManager: React.FC<InvitationManagerProps> = ({
             render: (date: string) => (
                 <Space>
                     <ClockCircleOutlined />
-                    <Text type="secondary">{formatExpiresAt(date)}</Text>
+                    <Text type="secondary" className={styles.wrapText}>{formatExpiresAt(date)}</Text>
                 </Space>
-            )
+            ),
+            responsive: ['xs', 'sm', 'md', 'lg', 'xl', 'xxl'] as AntdBreakpoint[],
         },
         {
             title: t('inviteManager.table.columns.actions'),
             key: 'actions',
-            render: (_: unknown, record: GroupPendingInvitationModel) => (
-                <Space>
-                    {record.status === 'pending' && (
+            render: (_: unknown, record: GroupPendingInvitationModel) => {
+                const isExpired = new Date(record.expiresAt) < new Date();
+                return (
+                    <Space style={{ flexWrap: 'wrap' }}>
+                        {record.status === 'pending' && (
+                            <Button
+                                type="text"
+                                icon={<LinkOutlined />}
+                                size="small"
+                                onClick={() => copyInviteLink(record.token)}
+                            />
+                        )}
+                        {!isExpired && (
+                            <Popconfirm
+                                title={t('inviteManager.confirm.revokeTitle')}
+                                onConfirm={() => revokeInvitation(record.token, record.invitedEmail)}
+                                okText={t('inviteManager.confirm.ok')}
+                                cancelText={t('inviteManager.confirm.cancel')}
+                                okButtonProps={{ danger: true }}
+                            >
+                                <Button
+                                    type="text"
+                                    icon={<DeleteOutlined />}
+                                    size="small"
+                                    danger
+                                    loading={loading}
+                                />
+                            </Popconfirm>
+                        )}
+                    </Space>
+                );
+            },
+            width: 140,
+            responsive: ['xs', 'sm', 'md', 'lg', 'xl', 'xxl'] as AntdBreakpoint[],
+        }
+    ];
+
+    // Mobile: Einzelspalte mit gestapelten Zeileninhalten
+    const renderMobileItem = (_: unknown, record: GroupPendingInvitationModel) => (
+
+        <div className={styles.mobileItem}>
+            <div className={styles.mobileMain}>
+                <div className={styles.mobileLine}>
+                    {record.invitedEmail ? <MailOutlined /> : <LinkOutlined />}
+                    <Text className={styles.wrapText}>
+                        {record.invitedEmail || t('inviteManager.table.linkInvitation')}
+                    </Text>
+                </div>
+                <div className={styles.mobileLine}>
+                    <ClockCircleOutlined />
+                    <Text type="secondary" className={styles.wrapText}>{formatExpiresAt(record.expiresAt)}</Text>
+                </div>
+                <div className={styles.mobileLine}>{renderStatusTag(record.status, record.expiresAt)}</div>
+                {record.inviterName && (
+                    <div className={styles.mobileLine}>
+                        <Text type="secondary" className={styles.wrapText}>{record.inviterName}</Text>
+                    </div>
+                )}
+            </div>
+            <div className={styles.mobileActions}>
+                {record.status === 'pending' && (
+                    <>
                         <Button
                             type="text"
                             icon={<LinkOutlined />}
                             size="small"
-                            onClick={() => copyInviteLink(record.token)}
-                        />
-                    )}
-                    <Popconfirm
-                        title={t('inviteManager.confirm.revokeTitle')}
-                        onConfirm={() => revokeInvitation(record.token, record.invitedEmail)}
-                        okText={t('inviteManager.confirm.ok')}
-                        cancelText={t('inviteManager.confirm.cancel')}
-                        okButtonProps={{ danger: true }}
-                    >
-                        <Button
-                            type="text"
-                            icon={<DeleteOutlined />}
-                            size="small"
-                            danger
-                            loading={loading}
-                        />
-                    </Popconfirm>
-                </Space>
-            )
-        }
+                            onClick={() => copyInviteLink(record.token)} />
+                        <Popconfirm
+                            title={t('inviteManager.confirm.revokeTitle')}
+                            onConfirm={() => revokeInvitation(record.token, record.invitedEmail)}
+                            okText={t('inviteManager.confirm.ok')}
+                            cancelText={t('inviteManager.confirm.cancel')}
+                            okButtonProps={{ danger: true }}
+                        >
+                            <Button type="text" icon={<DeleteOutlined />} size="small" danger loading={loading} />
+                        </Popconfirm>
+                    </>
+                )}
+            </div>
+        </div>
+    );
+
+    const mobileColumns: ColumnsType<GroupPendingInvitationModel> = [
+        { title: '', key: 'mobile', render: renderMobileItem },
     ];
+
+    const columns: ColumnsType<GroupPendingInvitationModel> = isMobile ? mobileColumns : desktopColumns;
 
     // Beim Öffnen des Modals Daten laden
     useEffect(() => {
@@ -217,6 +288,7 @@ const InvitationManager: React.FC<InvitationManagerProps> = ({
             }
             open={visible}
             onCancel={onClose}
+            wrapClassName={styles.modalWrap}
             footer={[
                 <Button key="refresh" icon={<ReloadOutlined />} onClick={loadInvitations} loading={refreshing}>
                     {t('inviteManager.refresh')}
@@ -225,7 +297,9 @@ const InvitationManager: React.FC<InvitationManagerProps> = ({
                     {t('inviteManager.close')}
                 </Button>
             ]}
-            width={1000}
+            width={'100%'}
+            style={{ maxWidth: 1000 }}
+            bodyStyle={{ maxHeight: '75vh', overflow: 'auto' }}
         >
             <Space direction="vertical" style={{ width: '100%' }} size="large">
                 <div>
@@ -235,12 +309,15 @@ const InvitationManager: React.FC<InvitationManagerProps> = ({
                 </div>
 
                 <Table
+                    className={isMobile ? `${styles.responsiveTable} ${styles.mobileList}` : styles.responsiveTable}
                     columns={columns}
                     dataSource={invitations || []}
                     rowKey="id"
                     loading={refreshing}
                     pagination={false}
                     size="small"
+                    showHeader={!isMobile}
+                    scroll={isMobile ? undefined : { x: true }}
                     locale={{
                         emptyText: refreshing ? t('inviteManager.empty.loading') : t('inviteManager.empty.none')
                     }}
