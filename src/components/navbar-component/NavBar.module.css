@@ -127,6 +127,20 @@
     transition: color 0.2s ease-in-out;
 }
 
+/* Active (selected) state: no background, icon turns blue */
+.menu :global(.ant-menu-item-selected) {
+    background-color: transparent !important;
+}
+
+.menu :global(.ant-menu-item-selected) .anticon,
+.menu :global(.ant-menu-item-selected) .icon {
+    color: #1890ff !important;
+}
+
+.menu :global(.ant-menu-item-selected) a {
+    color: #ffffff !important;
+}
+
 /* Menu Text Styling */
 .menu .ant-menu-item a {
     color: #ffffff !important;
@@ -460,7 +474,7 @@
 /* Bottom Navigation Icon Styling */
 @media (max-width: 600px) {
     .icon {
-        font-size: 24px !important;
+        font-size: 36px !important;
         margin-bottom: 4px !important;
         display: block !important;
     }
@@ -482,6 +496,15 @@
 
     .mobileNav .menu .ant-menu-item:hover::after {
         color: #1890ff !important;
+    }
+}
+
+/* Portrait: keep label text color white for active/hover; only icon changes color */
+@media (orientation: portrait) and (max-width: 600px) {
+
+    .mobileNav .menu .ant-menu-item-selected::after,
+    .mobileNav .menu .ant-menu-item:hover::after {
+        color: rgba(255, 255, 255, 0.7) !important;
     }
 }
 
@@ -529,11 +552,13 @@
     }
 
     /* Selected state for bottom nav */
-    .mobileNav .menu .ant-menu-item-selected {
-        background-color: rgba(24, 144, 255, 0.15) !important;
+    .mobileNav .menu :global(.ant-menu-item-selected),
+    .mobileNav .menu :global(.ant-menu-item-selected:hover) {
+        background-color: transparent !important;
+        background: transparent !important;
     }
 
-    .mobileNav .menu .ant-menu-item-selected .icon {
+    .mobileNav .menu :global(.ant-menu-item-selected) .icon {
         color: #1890ff !important;
         transform: scale(1.1);
     }
@@ -902,5 +927,23 @@
     /* Ensure user avatar remains visible */
     .userMenuMobile {
         margin-left: 6px;
+    }
+}
+
+/* Portrait mobile: neutralize any flexbox ordering from Ant Design overflow logic */
+@media (orientation: portrait) and (max-width: 600px) {
+
+    /* Ensure Ant overflow container doesn't clip and respects our layout */
+    .mobileNav .menu :global(.ant-menu-overflow) {
+        overflow: visible !important;
+    }
+
+    /* Reset potential order manipulations that could cause spacing/jumps */
+    .mobileNav .menu :global(.ant-menu-overflow-item),
+    .mobileNav .menu :global(.ant-menu-item),
+    .mobileNav .menu :global(.ant-menu-submenu),
+    .mobileNav .menu :global(.ant-menu-item-icon),
+    .mobileNav .menu :global(.anticon) {
+        order: 0 !important;
     }
 }

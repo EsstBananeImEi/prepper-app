@@ -1,12 +1,11 @@
 import {
-    HomeOutlined,
-    PlusOutlined,
-    UnorderedListOutlined,
-    ShoppingCartOutlined,
+    HomeTwoTone,
+    ProfileTwoTone,
+    ShoppingTwoTone,
+    CheckCircleTwoTone,
     UserOutlined,
     LogoutOutlined,
     ProfileOutlined,
-    CheckSquareOutlined,
     BugOutlined,
     SearchOutlined,
     MenuOutlined,
@@ -50,13 +49,10 @@ export default function NavBar(): ReactElement {
     const debugPanelEnabled = localStorage.getItem('debugPanelEnabled') === 'true';
     const shouldShowDebugButton = isLoggedIn && isAdmin && debugPanelEnabled && !adminValidating;
 
-    // Check if we should show burger menu (screen width < 430px)
-    const shouldShowBurgerMenu = dimensions.width <= 430;
-
     const getSelectedKeysDesktop = useCallback((): string[] => {
         if (isLoggedIn && location.pathname === homeRoute) return ['home'];
         if (location.pathname === itemsRoute) return ['items'];
-        if (location.pathname === newItemRoute) return ['newItem'];
+        // no explicit selection for new item creation route in navbar
         if (location.pathname === basketRoute) return ['shopping'];
         if (location.pathname === checklistRoute) return ['checklist'];
         if (location.pathname === userApi || location.pathname === loginApi) return ['auth'];
@@ -158,17 +154,13 @@ export default function NavBar(): ReactElement {
                         <img src={logo} alt="Logo" className={style.logo} />
                     </NavLink>
                     {isLoggedIn && (
-                        <Menu theme="dark" mode="horizontal" selectedKeys={getSelectedKeysDesktop()} className={style.menu}>
+                        <Menu theme="dark" mode="horizontal" selectedKeys={selectedKeys} className={style.menu}>
                             <Menu.Item key="storage">
                                 <NavLink to={itemsRoute}>
                                     <span className="nav-text">{t('common.storage_plural')}</span>
                                 </NavLink>
                             </Menu.Item>
-                            <Menu.Item key="newItem">
-                                <NavLink to={newItemRoute}>
-                                    <span className="nav-text">{t('navbar.newItem')}</span>
-                                </NavLink>
-                            </Menu.Item>
+                            {/* Removed 'Neu anlegen' from navbar as per request */}
                             <Menu.Item key="checklist">
                                 <NavLink to={checklistRoute}>
                                     <span className="nav-text">{t('common.checklist')}</span>
@@ -254,11 +246,11 @@ export default function NavBar(): ReactElement {
                     {/* Bottom Navigation */}
                     <div className={style.mobileNavContainer}>
                         <div className={style.mobileNav}>
-                            <Menu theme="dark" mode="horizontal" selectedKeys={getSelectedKeysDesktop()} className={style.menu}>
+                            <Menu theme="dark" mode="horizontal" selectedKeys={selectedKeys} className={style.menu}>
                                 {/* Home Item */}
                                 <Menu.Item key="home" data-menu-id="home" data-label={t('common.home')}>
                                     <NavLink to={homeRoute}>
-                                        <HomeOutlined className={style.icon} />
+                                        <HomeTwoTone twoToneColor={selectedKeys.includes('home') ? '#1890ff' : '#ffffff'} className={style.icon} />
                                     </NavLink>
                                 </Menu.Item>
 
@@ -267,23 +259,19 @@ export default function NavBar(): ReactElement {
                                     <>
                                         <Menu.Item key="checklist" data-label={t('common.checklist')}>
                                             <NavLink to={checklistRoute}>
-                                                <CheckSquareOutlined className={style.icon} />
+                                                <CheckCircleTwoTone twoToneColor={selectedKeys.includes('checklist') ? '#1890ff' : '#ffffff'} className={style.icon} />
                                             </NavLink>
                                         </Menu.Item>
                                         <Menu.Item key="items" data-label={t('common.storage_plural')}>
                                             <NavLink to={itemsRoute}>
-                                                <UnorderedListOutlined className={style.icon} />
+                                                <ProfileTwoTone twoToneColor={selectedKeys.includes('items') ? '#1890ff' : '#ffffff'} className={style.icon} />
                                             </NavLink>
                                         </Menu.Item>
-                                        <Menu.Item key="newItem" data-label={t('navbar.new')}>
-                                            <NavLink to={newItemRoute}>
-                                                <PlusOutlined className={style.icon} />
-                                            </NavLink>
-                                        </Menu.Item>
+                                        {/* Removed 'Neu anlegen' from mobile bottom navbar */}
                                         <Menu.Item key="shopping" data-label={t('common.basket')}>
                                             <NavLink to={basketRoute}>
                                                 <Badge offset={[0, 0]} size="small" count={countItems()}>
-                                                    <ShoppingCartOutlined className={style.icon} />
+                                                    <ShoppingTwoTone twoToneColor={selectedKeys.includes('shopping') ? '#1890ff' : '#ffffff'} className={style.icon} />
                                                 </Badge>
                                             </NavLink>
                                         </Menu.Item>

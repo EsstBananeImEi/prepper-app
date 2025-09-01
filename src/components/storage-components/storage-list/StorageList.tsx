@@ -1,6 +1,6 @@
 import { Button, Divider, Empty, Pagination, Select, Space, Tag, Checkbox, Tooltip, Input, Drawer } from 'antd';
 import React, { ReactElement, useState, useEffect, useMemo, useRef } from 'react';
-import { CloseCircleOutlined, DownOutlined, UpOutlined, SearchOutlined } from '@ant-design/icons';
+import { CloseCircleOutlined, DownOutlined, UpOutlined, SearchOutlined, PlusOutlined } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
 import { useDemensions } from '../../../hooks/StorageApi';
 import { newItemRoute } from '../../../shared/Constants';
@@ -641,6 +641,25 @@ export default function StorageList(): ReactElement {
                     )}
                 </div>
             )}
+
+            {/* Floating add button to create new item */}
+            <Button
+                type="primary"
+                shape="circle"
+                size="large"
+                aria-label={t('storage.add.fabAria', 'Neues Item anlegen')}
+                style={{
+                    position: 'fixed',
+                    right: 24,
+                    bottom: (isPortrait && dimensions.width <= 600)
+                        ? `calc(96px + env(safe-area-inset-bottom))`
+                        : 24,
+                    zIndex: 1100,
+                    boxShadow: '0 6px 16px rgba(0,0,0,0.2)'
+                }}
+                icon={<PlusOutlined />}
+                onClick={onGoToNew}
+            />
         </>
     );
 }
