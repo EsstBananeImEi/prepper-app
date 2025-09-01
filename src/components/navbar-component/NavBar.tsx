@@ -16,7 +16,7 @@ import { Badge, Layout, Menu, Avatar, Dropdown, Card, Typography, Button } from 
 import React, { ReactElement, useEffect, useState, useCallback } from 'react';
 import { NavLink, useLocation, useNavigate } from "react-router-dom";
 import { useDemensions } from '../../hooks/StorageApi';
-import { homeRoute, basketRoute, itemsRoute, newItemRoute, userApi, loginApi, checklistRoute, adminRoute } from '../../shared/Constants';
+import { homeRoute, basketRoute, itemsRoute, newItemRoute, userApi, loginApi, checklistRoute, adminRoute, impressumRoute, privacyRoute, settingsRoute } from '../../shared/Constants';
 import { adminUsersRoute } from '../../shared/Constants';
 import logo from '../../static/images/prepper-app.svg';
 import { useStore } from '../../store/Store';
@@ -42,6 +42,7 @@ export default function NavBar(): ReactElement {
     const [selectedKeys, setSelectedKeys] = React.useState<string[]>([]);
     const [debugPanelVisible, setDebugPanelVisible] = useState(false);
     const [burgerMenuVisible, setBurgerMenuVisible] = useState(false);
+    const [userMenuOpen, setUserMenuOpen] = useState(false);
 
     // Secure admin validation using server-side check
     const { isAdmin, isValidating: adminValidating } = useAdminValidation();
@@ -103,7 +104,13 @@ export default function NavBar(): ReactElement {
         <Card className={style.userDropdown}>
             {isLoggedIn ? (
                 <>
-                    <div className={style.userInfo}>
+                    <div
+                        className={style.userInfo}
+                        role="button"
+                        tabIndex={0}
+                        onClick={() => { setUserMenuOpen(false); navigate(userApi); }}
+                        onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setUserMenuOpen(false); navigate(userApi); } }}
+                    >
                         <Avatar
                             src={store.user?.image || undefined}
                             icon={!store.user?.image ? <UserOutlined /> : undefined}
@@ -118,19 +125,43 @@ export default function NavBar(): ReactElement {
                         </div>
                     </div>
                     <Menu className={style.menuList}>
-                        <Menu.Item key="profile" icon={<ProfileOutlined />}>
-                            <NavLink to={userApi}>{t('common.user')}</NavLink>
+                        <Menu.Item key="label-account" disabled>
+                            <Text type="secondary" style={{ fontSize: 12 }}>{t('navbar.section.account', 'Konto')}</Text>
                         </Menu.Item>
-                        {(!adminValidating && isAdmin) && (
-                            <Menu.Item key="admin" icon={<SettingOutlined />}>
-                                <NavLink to={adminRoute}>{t('navbar.adminPanel')}</NavLink>
-                            </Menu.Item>
-                        )}
+                        {/* Konto */}
+                        <Menu.Item key="settings">
+                            <NavLink to={settingsRoute}>{t('settings.title', 'Einstellungen')}</NavLink>
+                        </Menu.Item>
+
                         {(!adminValidating && (isAdmin || store.user?.isManager)) && (
-                            <Menu.Item key="adminUsers" icon={<UserOutlined />}>
-                                <NavLink to={adminUsersRoute}>Benutzerverwaltung</NavLink>
-                            </Menu.Item>
+                            <>
+                                <Menu.Divider />
+                                <Menu.Item key="label-admin" disabled>
+                                    <Text type="secondary" style={{ fontSize: 12 }}>{t('navbar.section.admin', 'Verwaltung')}</Text>
+                                </Menu.Item>
+                                {isAdmin && (
+                                    <Menu.Item key="admin" icon={<SettingOutlined />}>
+                                        <NavLink to={adminRoute}>{t('navbar.adminPanel')}</NavLink>
+                                    </Menu.Item>
+                                )}
+                                <Menu.Item key="adminUsers" icon={<UserOutlined />}>
+                                    <NavLink to={adminUsersRoute}>Benutzerverwaltung</NavLink>
+                                </Menu.Item>
+                            </>
                         )}
+
+                        <Menu.Divider />
+                        <Menu.Item key="label-legal" disabled>
+                            <Text type="secondary" style={{ fontSize: 12 }}>{t('navbar.section.legal', 'Rechtliches')}</Text>
+                        </Menu.Item>
+                        <Menu.Item key="impressum">
+                            <NavLink to={impressumRoute}>{t('common.impressum')}</NavLink>
+                        </Menu.Item>
+                        <Menu.Item key="privacy">
+                            <NavLink to={privacyRoute}>{t('common.privacy')}</NavLink>
+                        </Menu.Item>
+
+                        <Menu.Divider />
                         <Menu.Item key="logout" icon={<LogoutOutlined />} onClick={handleLogout}>
                             {t('navbar.logout')}
                         </Menu.Item>
@@ -138,8 +169,21 @@ export default function NavBar(): ReactElement {
                 </>
             ) : (
                 <Menu className={style.menuList}>
+                    <Menu.Item key="label-general" disabled>
+                        <Text type="secondary" style={{ fontSize: 12 }}>{t('navbar.section.general', 'Allgemein')}</Text>
+                    </Menu.Item>
                     <Menu.Item key="login">
                         <NavLink to={loginApi}>{t('common.login')}</NavLink>
+                    </Menu.Item>
+                    <Menu.Divider />
+                    <Menu.Item key="label-legal" disabled>
+                        <Text type="secondary" style={{ fontSize: 12 }}>{t('navbar.section.legal', 'Rechtliches')}</Text>
+                    </Menu.Item>
+                    <Menu.Item key="impressum">
+                        <NavLink to={impressumRoute}>{t('common.impressum')}</NavLink>
+                    </Menu.Item>
+                    <Menu.Item key="privacy">
+                        <NavLink to={privacyRoute}>{t('common.privacy')}</NavLink>
                     </Menu.Item>
                 </Menu>
             )}
@@ -183,27 +227,15 @@ export default function NavBar(): ReactElement {
                         </div>
                     )}
 
-                    {isLoggedIn ? (
-                        <Dropdown overlay={userMenu} trigger={['click']} placement="bottomRight">
-                            <div className={style.userMenuMobile}>
-                                <Avatar
-                                    src={store.user?.image || undefined}
-                                    icon={!store.user?.image ? <UserOutlined /> : undefined}
-                                    className={style.userAvatar}
-                                />
-                            </div>
-                        </Dropdown>
-                    ) : (
+                    <Dropdown overlay={userMenu} trigger={['click']} placement="bottomRight" open={userMenuOpen} onOpenChange={setUserMenuOpen}>
                         <div className={style.userMenuMobile}>
-                            <NavLink to={loginApi}>
-                                <Avatar
-                                    src={store.user?.image || undefined}
-                                    icon={!store.user?.image ? <UserOutlined /> : undefined}
-                                    className={style.userAvatar}
-                                />
-                            </NavLink>
+                            <Avatar
+                                src={store.user?.image || undefined}
+                                icon={!store.user?.image ? <UserOutlined /> : undefined}
+                                className={style.userAvatar}
+                            />
                         </div>
-                    )}
+                    </Dropdown>
                 </>
             ) : (
                 <>
@@ -220,27 +252,15 @@ export default function NavBar(): ReactElement {
                             </div>
                         )}
 
-                        {isLoggedIn ? (
-                            <Dropdown overlay={userMenu} trigger={['click']} placement="bottomRight">
-                                <div className={style.userMenuMobile}>
-                                    <Avatar
-                                        src={store.user?.image || undefined}
-                                        icon={!store.user?.image ? <UserOutlined /> : undefined}
-                                        className={style.userAvatar}
-                                    />
-                                </div>
-                            </Dropdown>
-                        ) : (
+                        <Dropdown overlay={userMenu} trigger={['click']} placement="bottomRight" open={userMenuOpen} onOpenChange={setUserMenuOpen}>
                             <div className={style.userMenuMobile}>
-                                <NavLink to={loginApi}>
-                                    <Avatar
-                                        src={store.user?.image || undefined}
-                                        icon={!store.user?.image ? <UserOutlined /> : undefined}
-                                        className={style.userAvatar}
-                                    />
-                                </NavLink>
+                                <Avatar
+                                    src={store.user?.image || undefined}
+                                    icon={!store.user?.image ? <UserOutlined /> : undefined}
+                                    className={style.userAvatar}
+                                />
                             </div>
-                        )}
+                        </Dropdown>
                     </div>
 
                     {/* Bottom Navigation */}

@@ -26,6 +26,7 @@ type FormMode = 'login' | 'register' | 'forgotPassword' | 'resetSuccess';
 export default function AuthForm() {
     const { t } = useTranslation();
     const [form] = Form.useForm();
+    const acceptPolicies = Form.useWatch('acceptPolicies', form);
     const [formMode, setFormMode] = useState<FormMode>('login');
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState("");
@@ -221,7 +222,7 @@ export default function AuthForm() {
                                 type="primary"
                                 htmlType="submit"
                                 block
-                                disabled={loading || (formMode === 'register' && !((form.getFieldValue && form.getFieldValue('acceptPolicies')) || false))}
+                                disabled={loading || (formMode === 'register' && !acceptPolicies)}
                             >
                                 {loading ? <LoadingOutlined /> : formMode === 'login' ? t('auth.buttons.login') : formMode === 'register' ? t('auth.buttons.register') : t('auth.buttons.requestNewPassword')}
                             </Button>

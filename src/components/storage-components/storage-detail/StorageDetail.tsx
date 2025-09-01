@@ -4,6 +4,8 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { itemsRoute, editItemRoute } from '../../../shared/Constants';
 import LoadingSpinner from '../../loading-spinner/LoadingSpinner';
 import { NutrientValueModel } from '../StorageModel';
+import { useUnitPreferences } from '../../../hooks/useUnitPreferences';
+import { formatQuantity } from '../../../utils/unitFormatter';
 import css from './StorageDetail.module.css';
 import { useStore } from '../../../store/Store';
 import { actionHandler } from '../../../store/Actions';
@@ -18,6 +20,7 @@ export default function StorageDetail(): ReactElement {
     const [saving, setSaving] = useState(false);
     const [saveError, setSaveError] = useState<string>('');
     const { store, dispatch } = useStore();
+    const unitPrefs = useUnitPreferences();
 
     const storageItem = store.storeItems.find((item) => id ? item.id === parseInt(id) : false);
     // Falls id nicht vorhanden ist, sofort einen Fehler anzeigen oder eine alternative UI rendern
@@ -66,6 +69,8 @@ export default function StorageDetail(): ReactElement {
 
     };
 
+    const fq = formatQuantity(storageItem.amount, storageItem.unit, unitPrefs);
+
     return (
         <div className={css.container}>
             {saveError && (
@@ -108,11 +113,11 @@ export default function StorageDetail(): ReactElement {
                     </div>
                     <div className={css.itemFieldRow}>
                         <label>{t('detail.labels.amount')}</label>
-                        <div>{storageItem.amount}</div>
+                        <div>{fq.value}</div>
                     </div>
                     <div className={css.itemFieldRow}>
                         <label>{t('detail.labels.unit')}</label>
-                        <div>{storageItem.unit && storageItem.unit.trim() !== '' ? storageItem.unit : '-'}</div>
+                        <div>{fq.unit && fq.unit.trim() !== '' ? fq.unit : '-'}</div>
                     </div>
                     <div className={css.itemFieldRow}>
                         <label>{t('detail.labels.categories')}</label>
@@ -152,18 +157,18 @@ export default function StorageDetail(): ReactElement {
                 <div className={css.itemFields}>
                     <div className={css.itemFieldRow}>
                         <label>{t('detail.labels.packageQty')}</label>
-                        <div>{storageItem.packageQuantity != null ? storageItem.packageQuantity : '-'}</div>
+                        <div>{typeof storageItem.packageQuantity === 'number' ? storageItem.packageQuantity : '-'}</div>
                     </div>
                     <div className={css.itemFieldRow}>
                         <label>{t('detail.labels.packageUnit')}</label>
-                        <div>{storageItem.packageUnit ? storageItem.packageUnit : '-'}</div>
+                        <div>{storageItem.packageUnit && storageItem.packageUnit.trim() !== '' ? storageItem.packageUnit : '-'}</div>
                     </div>
                 </div>
             </div>
 
             {/* Nährwerte */}
-            {storageItem.nutrients && storageItem.nutrients.values.length > 0 && (
-                <div className={css.nutrientSection}>
+            {storageItem.nutrients && (
+                <div className={css.itemFormCard}>
                     <div className={css.nutrientSectionHeader}>
                         {t('detail.nutrientsHeader', { amount: storageItem.nutrients.amount, unit: storageItem.nutrients.unit })}
                     </div>

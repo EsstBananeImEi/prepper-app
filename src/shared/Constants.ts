@@ -84,6 +84,7 @@ export const groupJoinRoute = '/groups/join';
 export const registerRoute = '/register';
 export const impressumRoute = '/impressum';
 export const privacyRoute = '/privacy';
+export const settingsRoute = '/settings';
 export const itemIdRoute = (id: number | string): string => `${itemsRoute}/${String(id)}`;
 export const newItemRoute = `${itemsRoute}/new`;
 export const editItemRoute = (id: number | string): string => `${itemIdRoute(id)}/edit`;

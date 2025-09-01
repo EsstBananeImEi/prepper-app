@@ -13,6 +13,8 @@ import { StorageModel } from '../../StorageModel';
 import { actionHandler } from '../../../../store/Actions';
 import SafeAvatar from '../../../common/SafeAvatar';
 import listStyles from '../StorageList.module.css';
+import { useUnitPreferences } from '../../../../hooks/useUnitPreferences';
+import { formatQuantity } from '../../../../utils/unitFormatter';
 
 interface Props {
     storageItem: StorageModel;
@@ -21,6 +23,7 @@ interface Props {
 export default function StorageCardItem(props: Props): ReactElement {
     const storageItem = props.storageItem;
     const { t } = useTranslation();
+    const unitPrefs = useUnitPreferences();
 
     const { store, dispatch } = useStore();
     const [amount, setAmount] = useState(storageItem.amount);
@@ -45,9 +48,10 @@ export default function StorageCardItem(props: Props): ReactElement {
             color['color'] = 'orange';
         }
 
+        const fq = formatQuantity(amount, storageItem.unit, unitPrefs);
         return (
             <span style={color}>
-                {t('storage.stock')}: {amount} {pluralFormFactory(storageItem.unit, amount)}
+                {t('storage.stock')}: {fq.text}
             </span>
         );
     };

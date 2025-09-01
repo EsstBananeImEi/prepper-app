@@ -11,6 +11,8 @@ import { StorageModel } from '../../StorageModel';
 import { actionHandler } from '../../../../store/Actions';
 import SafeAvatar from '../../../common/SafeAvatar';
 import listStyles from '../StorageList.module.css';
+import { useUnitPreferences } from '../../../../hooks/useUnitPreferences';
+import { formatQuantity } from '../../../../utils/unitFormatter';
 
 interface Props {
     storageItem: StorageModel;
@@ -18,6 +20,7 @@ interface Props {
 
 export default function StorageDesktopCardItem({ storageItem }: Props): ReactElement {
     const { t } = useTranslation();
+    const unitPrefs = useUnitPreferences();
     const { store, dispatch } = useStore();
     const [amount, setAmount] = useState(storageItem.amount);
     const [basketAmount, setBasketAmount] = useState(store.shoppingCard.find(item => item.name === storageItem.name)?.amount || 0);
@@ -33,9 +36,10 @@ export default function StorageDesktopCardItem({ storageItem }: Props): ReactEle
         const color: React.CSSProperties = { color: 'red' };
         if (amount > storageItem.midAmount) color.color = 'green';
         else if (amount <= storageItem.midAmount && amount > storageItem.lowestAmount) color.color = 'orange';
+        const fq = formatQuantity(amount, storageItem.unit, unitPrefs);
         return (
             <span className={listStyles.desktopInventory} style={color}>
-                {t('storage.stock')}: {amount} {pluralFormFactory(storageItem.unit, amount)}
+                {t('storage.stock')}: {fq.text}
             </span>
         );
     };

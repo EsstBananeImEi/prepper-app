@@ -16,9 +16,10 @@ import AdminUsersPage from './admin/AdminUsersPage';
 import InvitePage from './invite/InvitePage';
 import DeveloperTestingPanel from './debug/DeveloperTestingPanel';
 import ProtectedRoute from './auth/ProtectedRoute';
-import { adminRoute, adminUsersRoute, adminUserIdRoute, adminUserEditRoute, basketRoute, checklistRoute, devTestingRoute, detailsRouteBase, homeRoute, itemsRoute, loginRoute, newItemRoute, rootRoute, userRoute, resetSuccessRoute, inviteRoute, groupJoinRoute, registerRoute, impressumRoute, privacyRoute } from '../shared/Constants';
+import { adminRoute, adminUsersRoute, adminUserIdRoute, adminUserEditRoute, basketRoute, checklistRoute, devTestingRoute, detailsRouteBase, homeRoute, itemsRoute, loginRoute, newItemRoute, rootRoute, userRoute, resetSuccessRoute, inviteRoute, groupJoinRoute, registerRoute, impressumRoute, privacyRoute, settingsRoute } from '../shared/Constants';
 import Impressum from './legal/Impressum';
 import Privacy from './legal/Privacy';
+import Settings from './settings/Settings';
 
 export default function AppRoutes(): ReactElement {
     return (
@@ -59,6 +60,11 @@ export default function AppRoutes(): ReactElement {
             <Route path={userRoute} element={
                 <ProtectedRoute requireAuth={true}>
                     <User />
+                </ProtectedRoute>
+            } />
+            <Route path={settingsRoute} element={
+                <ProtectedRoute requireAuth={true}>
+                    <Settings />
                 </ProtectedRoute>
             } />
 

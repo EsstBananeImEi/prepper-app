@@ -12,6 +12,8 @@ import styles from './StorageListItem.module.css';
 import { useTranslation } from 'react-i18next';
 import SafeAvatar from '../../../common/SafeAvatar';
 import { ReactElement, SyntheticEvent, useEffect, useState } from 'react';
+import { useUnitPreferences } from '../../../../hooks/useUnitPreferences';
+import { formatQuantity } from '../../../../utils/unitFormatter';
 
 interface Props {
     storageItem: StorageModel;
@@ -22,6 +24,7 @@ export default function StorageListItem(props: Props): ReactElement {
     const { t } = useTranslation();
     const history = useNavigate();
     const { store, dispatch } = useStore();
+    const unitPrefs = useUnitPreferences();
 
     const [amount, setAmount] = useState(store.shoppingCard.find(item => item.name === storageItem.name)?.amount || 0);
 
@@ -40,11 +43,12 @@ export default function StorageListItem(props: Props): ReactElement {
         } else if (storageItem.amount <= storageItem.midAmount && storageItem.amount > storageItem.lowestAmount) {
             colorClass = styles.midAmount;
         }
+        const fq = formatQuantity(storageItem.amount, storageItem.unit, unitPrefs);
         return (
             <>
                 <span>{t('storage.stock')}: </span>
                 <span className={colorClass}>
-                    {storageItem.amount} {pluralFormFactory(storageItem.unit, storageItem.amount)}
+                    {fq.text}
                 </span>
             </>
         );

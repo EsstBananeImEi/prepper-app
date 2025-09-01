@@ -24,4 +24,18 @@
     .viewer {
         max-height: 55vh;
     }
+
+    /* Keep legal links side-by-side in portrait */
+    .inlineRow {
+        display: inline-flex;
+        align-items: center;
+        white-space: nowrap;
+        flex-wrap: nowrap;
+        gap: 4px;
+    }
+
+    .inlineRow>span,
+    .inlineRow>a {
+        display: inline-flex;
+    }
 }

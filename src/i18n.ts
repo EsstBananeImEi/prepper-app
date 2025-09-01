@@ -25,6 +25,20 @@ const resources = {
                 filter_open: 'Filter öffnen',
                 filter_open_active: 'Filter öffnen – {{count}} aktiv',
             },
+            settings: {
+                title: 'Einstellungen',
+                language: 'Sprache',
+                languageHint: 'Wähle die bevorzugte Sprache der App',
+                unitsTitle: 'Maßeinheiten',
+                unitsHint: 'Wähle das bevorzugte Einheitensystem',
+                units: {
+                    metric: 'Metrisch (g, kg, l)',
+                    imperial: 'Imperial (oz, lb, gal)',
+                    custom: 'Benutzerdefiniert',
+                    short: 'Kurze Einheiten (z. B. g, kg, l)',
+                    customNote: 'Benutzerdefinierte Einheiten werden in einer späteren Version unterstützt.'
+                }
+            },
             search: {
                 placeholder: 'Suche nach Items, Checkliste, Kategorien oder Seiten...',
                 no_results: 'Keine Ergebnisse gefunden',
@@ -1611,6 +1625,20 @@ const resources = {
                     addItem: 'Add new item'
                 }
             },
+            settings: {
+                title: 'Settings',
+                language: 'Language',
+                languageHint: 'Choose your preferred app language',
+                unitsTitle: 'Units',
+                unitsHint: 'Choose your preferred unit system',
+                units: {
+                    metric: 'Metric (g, kg, l)',
+                    imperial: 'Imperial (oz, lb, gal)',
+                    custom: 'Custom',
+                    short: 'Short units (e.g., g, kg, l)',
+                    customNote: 'Custom units will be supported in a future version.'
+                }
+            },
             admin: {
                 validating: 'Validating permission...',
                 title: 'Admin Panel',
@@ -2973,7 +3001,7 @@ i18n
     .use(initReactI18next)
     .init({
         resources,
-        lng: 'de',
+        lng: (typeof window !== 'undefined' && localStorage.getItem('lang')) || 'de',
         fallbackLng: 'de',
         interpolation: {
             escapeValue: false,
