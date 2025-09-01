@@ -1,0 +1,27 @@
+.inlineRow {
+    display: inline-flex;
+    align-items: center;
+    flex-wrap: nowrap;
+    white-space: nowrap;
+    gap: 6px;
+}
+
+.inlineRow>a,
+.inlineRow>span {
+    display: inline-flex;
+    align-items: center;
+    line-height: 1.2;
+}
+
+.viewer {
+    max-height: 60vh;
+    overflow: auto;
+    padding-right: 6px;
+    /* prevent layout shift when scrollbar appears */
+}
+
+@media (max-width: 576px) {
+    .viewer {
+        max-height: 55vh;
+    }
+}

@@ -10,6 +10,10 @@ export interface UserModel {
     isAdmin?: boolean;
     isManager?: boolean;
     groups?: string[];
+    // Frontend-only field used during registration to indicate acceptance
+    acceptPolicies?: boolean;
+    // Server-provided flag whether the user has accepted legal policies
+    accepted_policies?: boolean;
 }
 
 export interface GroupModel {

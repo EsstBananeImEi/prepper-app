@@ -16,6 +16,10 @@ const resources = {
                 user: 'Benutzerprofil',
                 login: 'Anmeldung',
                 password: 'Passwort',
+                impressum: 'Impressum',
+                privacy: 'Datenschutz',
+                ok: 'Akzeptieren',
+                cancel: 'Ablehnen',
                 filter: 'Filter',
                 filter_with_count: 'Filter ({{count}})',
                 filter_open: 'Filter öffnen',
@@ -1090,6 +1094,11 @@ const resources = {
                     defaultMessage: 'Passwort erfolgreich zurückgesetzt.',
                     toLogin: 'Zum Login'
                 },
+                acceptPolicies: {
+                    labelPrefix: 'Ich akzeptiere',
+                    and: 'und',
+                    required: 'Bitte akzeptieren Sie die Richtlinien.'
+                },
                 titles: {
                     login: 'Login',
                     register: 'Registrieren',
@@ -1118,6 +1127,8 @@ const resources = {
                     unexpected: 'Ein unerwarteter Fehler ist aufgetreten.'
                 },
                 protected: {
+                    impressum: 'Imprint',
+                    privacy: 'Privacy Policy',
                     accessDeniedTitle: 'Zugriff verweigert',
                     accessDeniedBody1: 'Sie haben keine Administrator-Berechtigung für diesen Bereich.',
                     securityNote: 'Sicherheitshinweis: Admin-Berechtigungen werden server-seitig validiert und können nicht durch Client-Manipulation umgangen werden.',
@@ -1132,6 +1143,13 @@ const resources = {
                     adminValidated: 'Admin-Berechtigung wird jetzt server-seitig validiert!',
                     note1: 'Das manuelle Setzen von user.isAdmin = true in localStorage funktioniert nicht mehr. Alle Admin-Bereiche werden durch JWT-Token und Backend-Validierung geschützt.',
                     note2: 'Für Development-Zwecke: Verwenden Sie die Backend-API um Admin-Status zu setzen.'
+                }
+            },
+            legal: {
+                policiesGate: {
+                    title: 'Impressum und Datenschutz bestätigen',
+                    textPrefix: 'Um fortzufahren, bestätige bitte, dass du unser Impressum und die Datenschutzerklärung gelesen und verstanden hast. Du kannst die Dokumente über die folgenden Links jederzeit einsehen:',
+                    closeReader: 'Lesemodus schließen'
                 }
             },
             user: {
@@ -1177,6 +1195,8 @@ const resources = {
                     create: 'Gruppe erstellen',
                     join: 'Gruppe beitreten',
                     edit: 'Bearbeiten',
+                    ok: 'Accept',
+                    cancel: 'Decline',
                     delete: 'Löschen',
                     leave: 'Verlassen',
                     members: 'Mitglieder',
@@ -1230,6 +1250,11 @@ const resources = {
                     changeImage: 'Bild ändern',
                     chooseAnotherImage: 'Anderes Bild wählen',
                     removeCurrentImage: 'Aktuelles Bild entfernen',
+                    acceptPolicies: {
+                        labelPrefix: 'I accept the',
+                        and: 'and',
+                        required: 'Please accept the policies.'
+                    },
                     removeNewSelection: 'Neue Auswahl entfernen',
                     supportedFormats: 'Unterstützte Formate: JPG, PNG, GIF (max. 5MB)',
                     imagesOptimized: 'Bilder werden automatisch optimiert',
@@ -2519,6 +2544,13 @@ const resources = {
                     adminValidated: 'Admin permission is now validated on the server!',
                     note1: 'Manually setting user.isAdmin = true in localStorage no longer works. All admin areas are protected by JWT tokens and backend validation.',
                     note2: 'For development purposes: Use the backend API to set admin status.'
+                }
+            },
+            legal: {
+                policiesGate: {
+                    title: 'Confirm Imprint and Privacy Policy',
+                    textPrefix: 'To continue, please confirm that you have read and understood our Imprint and Privacy Policy. You can review both documents at any time using the links below:',
+                    closeReader: 'Close reader'
                 }
             },
             user: {

@@ -16,7 +16,9 @@ import AdminUsersPage from './admin/AdminUsersPage';
 import InvitePage from './invite/InvitePage';
 import DeveloperTestingPanel from './debug/DeveloperTestingPanel';
 import ProtectedRoute from './auth/ProtectedRoute';
-import { adminRoute, adminUsersRoute, adminUserIdRoute, adminUserEditRoute, basketRoute, checklistRoute, devTestingRoute, detailsRouteBase, homeRoute, itemsRoute, loginRoute, newItemRoute, rootRoute, userRoute, resetSuccessRoute, inviteRoute, groupJoinRoute, registerRoute } from '../shared/Constants';
+import { adminRoute, adminUsersRoute, adminUserIdRoute, adminUserEditRoute, basketRoute, checklistRoute, devTestingRoute, detailsRouteBase, homeRoute, itemsRoute, loginRoute, newItemRoute, rootRoute, userRoute, resetSuccessRoute, inviteRoute, groupJoinRoute, registerRoute, impressumRoute, privacyRoute } from '../shared/Constants';
+import Impressum from './legal/Impressum';
+import Privacy from './legal/Privacy';
 
 export default function AppRoutes(): ReactElement {
     return (
@@ -93,6 +95,8 @@ export default function AppRoutes(): ReactElement {
             <Route path={`${groupJoinRoute}/:token`} element={<InvitePage />} />
             <Route path={loginRoute} element={<LoginForm />} />
             <Route path={registerRoute} element={<LoginForm />} />
+            <Route path={impressumRoute} element={<Impressum />} />
+            <Route path={privacyRoute} element={<Privacy />} />
             <Route path={`${detailsRouteBase}/:category`} element={<NotfallDetail />} />
             <Route path={homeRoute} element={<Home />} />
             <Route path={rootRoute} element={<Navigate to={homeRoute} replace />} />

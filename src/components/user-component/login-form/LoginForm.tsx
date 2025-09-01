@@ -2,10 +2,11 @@ import React, { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useStore } from "../../../store/Store";
 import { actionHandler } from "../../../store/Actions";
-import { Button, Card, Form, Input, Typography, Alert, Space } from "antd";
+import { Button, Card, Form, Input, Typography, Alert, Space, Checkbox } from "antd";
+import { Link } from "react-router-dom";
 import { LoadingOutlined } from "@ant-design/icons";
 import { UserModel } from "../../../shared/Models";
-import { itemsRoute, loginRoute, registerRoute } from "../../../shared/Constants";
+import { itemsRoute, loginRoute, registerRoute, impressumRoute, privacyRoute } from "../../../shared/Constants";
 import axios from "axios";
 import styles from "./LoginForm.module.css";
 import { useInviteRedirect } from "../../../hooks/useInviteProcessor";
@@ -17,12 +18,14 @@ interface AuthFormValues {
     email: string;
     password?: string;
     username?: string;
+    acceptPolicies?: boolean;
 }
 
 type FormMode = 'login' | 'register' | 'forgotPassword' | 'resetSuccess';
 
 export default function AuthForm() {
     const { t } = useTranslation();
+    const [form] = Form.useForm();
     const [formMode, setFormMode] = useState<FormMode>('login');
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState("");
@@ -100,7 +103,7 @@ export default function AuthForm() {
                     refresh_token: null,
                     image: null,
                 };
-                await actionHandler({ type: "REGISTER_USER", user }, dispatch);
+                await actionHandler({ type: "REGISTER_USER", user: { ...user, acceptPolicies: !!values.acceptPolicies } }, dispatch);
 
                 // Wichtig: Flag setzen um automatische Invite-Verarbeitung zu verhindern
                 sessionStorage.setItem('just_registered', 'true');
@@ -158,7 +161,7 @@ export default function AuthForm() {
                         </Title>
                         {error && <Alert message={error} type="error" showIcon className="mb-4" />}
                         {info && <Alert message={info} type="info" showIcon className="mb-4" />}
-                        <Form onFinish={handleSubmit} layout="vertical">
+                        <Form form={form} onFinish={handleSubmit} layout="vertical">
                             {formMode === 'register' && (
                                 <Form.Item
                                     label={t('user.form.labels.username')}
@@ -193,7 +196,33 @@ export default function AuthForm() {
                                     <Input.Password placeholder={t('common.password') || 'Passwort'} />
                                 </Form.Item>
                             )}
-                            <Button type="primary" htmlType="submit" block disabled={loading}>
+                            {formMode === 'register' && (
+                                <Form.Item
+                                    name="acceptPolicies"
+                                    valuePropName="checked"
+                                    rules={[
+                                        {
+                                            validator: (_, value) =>
+                                                value ? Promise.resolve() : Promise.reject(new Error(t('auth.acceptPolicies.required'))),
+                                        },
+                                    ]}
+                                >
+                                    <Checkbox>
+                                        <span className={styles.inlineLabel}>
+                                            <span>{t('auth.acceptPolicies.labelPrefix')}</span>
+                                            <Link to={impressumRoute}>{t('common.impressum')}</Link>
+                                            <span>{t('auth.acceptPolicies.and')}</span>
+                                            <Link to={privacyRoute}>{t('common.privacy')}</Link>
+                                        </span>
+                                    </Checkbox>
+                                </Form.Item>
+                            )}
+                            <Button
+                                type="primary"
+                                htmlType="submit"
+                                block
+                                disabled={loading || (formMode === 'register' && !((form.getFieldValue && form.getFieldValue('acceptPolicies')) || false))}
+                            >
                                 {loading ? <LoadingOutlined /> : formMode === 'login' ? t('auth.buttons.login') : formMode === 'register' ? t('auth.buttons.register') : t('auth.buttons.requestNewPassword')}
                             </Button>
                         </Form>
