@@ -28,6 +28,7 @@ import DraggableDebugButton from '../debug/DraggableDebugButton';
 import { useAdminValidation } from '../../hooks/useAdminValidation';
 import { clearOptionsCache } from '../../utils/optionsCache';
 import { useTranslation } from 'react-i18next';
+import { authApi } from '../../utils/secureApiClient';
 
 const { Text } = Typography;
 
@@ -89,11 +90,17 @@ export default function NavBar(): ReactElement {
         return items > 0 ? items : null;
     };
 
-    const handleLogout = () => {
-        localStorage.removeItem("user");
-        clearOptionsCache();
-        dispatch({ type: "LOGOUT_USER" });
-        navigate(homeRoute);
+    const handleLogout = async () => {
+        try {
+            await authApi.logout();
+        } catch {
+            // ignore errors
+        } finally {
+            localStorage.removeItem("user");
+            clearOptionsCache();
+            dispatch({ type: "LOGOUT_USER" });
+            navigate(homeRoute);
+        }
     };
 
     const userMenu = (

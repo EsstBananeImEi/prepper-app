@@ -75,12 +75,20 @@ export const createSecureApiClient = () => {
                                     headers: { Authorization: `Bearer ${user.refresh_token}` }
                                 })
                                 .then((refreshResponse) => {
-                                    const newToken = refreshResponse.data.access_token as string | undefined;
-                                    if (!newToken) throw new Error('No access_token in refresh response');
-                                    const updatedUser = { ...user, access_token: newToken };
+                                    const newAccess = refreshResponse.data.access_token as string | undefined;
+                                    if (!newAccess) throw new Error('No access_token in refresh response');
+                                    const newRefresh = refreshResponse.data.refresh_token as string | undefined;
+                                    const sessionExp = refreshResponse.data.session_exp as number | undefined;
+                                    const updatedUser = {
+                                        ...user,
+                                        access_token: newAccess,
+                                        // Wenn Rotation aktiv ist, Refresh-Token aktualisieren
+                                        ...(newRefresh ? { refresh_token: newRefresh } : {}),
+                                        ...(sessionExp ? { session_exp: sessionExp } : {})
+                                    };
                                     localStorage.setItem('user', JSON.stringify(updatedUser));
-                                    onRefreshed(newToken);
-                                    return newToken;
+                                    onRefreshed(newAccess);
+                                    return newAccess;
                                 })
                                 .catch((err) => {
                                     throw err;
@@ -152,6 +160,18 @@ export const adminApi = {
     updateEmail: async (userId: number | string, email: string): Promise<void> => {
         const api = createSecureApiClient();
         await api.patch(adminUserIdApi(userId), { email });
+    }
+};
+
+// Auth API helpers
+export const authApi = {
+    // Revoke the current refresh token server-side
+    logout: async (): Promise<void> => {
+        const userData = localStorage.getItem('user');
+        const user = userData ? JSON.parse(userData) as { refresh_token?: string } : null;
+        const refresh = user?.refresh_token;
+        if (!refresh) return; // nothing to revoke
+        await axios.post(`${baseApiUrl}/logout`, {}, { headers: { Authorization: `Bearer ${refresh}` } });
     }
 };
 
