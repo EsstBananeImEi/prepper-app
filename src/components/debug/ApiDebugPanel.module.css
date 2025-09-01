@@ -64,8 +64,9 @@
     padding: 12px;
     max-height: calc(100vh - 200px);
     /* Account for header and navbars */
-    overflow-y: auto;
     overflow-x: hidden;
+    overflow-y: hidden;
+    /* default: inner sections manage scroll */
 }
 
 /* Mobile panel content */
@@ -78,8 +79,14 @@
 }
 
 .actionButtons {
-    margin-bottom: 8px;
+    margin-bottom: 0;
+    /* tighter spacing before status card on desktop */
     text-align: right;
+}
+
+/* Remove extra top margin on the Space container right after the buttons */
+.actionButtons+ :global(.ant-space-vertical) {
+    margin-top: 0 !important;
 }
 
 /* Mobile action buttons */
@@ -100,6 +107,48 @@
 .timelineContainer {
     max-height: 300px;
     overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    /* momentum scrolling on iOS */
+    scroll-behavior: smooth;
+    padding-top: 10px;
+    /* prevent first timeline dot/content from being clipped */
+    padding-bottom: 4px;
+}
+
+/* Landscape and short-viewports: let the whole panel content scroll and expand inner lists */
+@media (max-height: 520px),
+(orientation: landscape) and (max-width: 900px) {
+    .panelContent {
+        overflow-y: auto;
+        /* allow scrolling of entire panel content */
+        padding-top: 2px;
+        /* tighter top padding */
+    }
+
+    .actionButtons {
+        margin-bottom: -40px;
+        /* pull status card closer under the buttons */
+    }
+
+    .timelineContainer {
+        max-height: none;
+        /* avoid clipping the list; rely on panelContent scroll */
+    }
+
+    .statusCard {
+        margin-top: 0;
+    }
+
+    .statusCard .ant-card-body,
+    .timelineCard .ant-card-body {
+        padding: 6px 10px;
+        /* slightly tighter spacing on small height */
+    }
+
+    .statusCard .ant-card-head {
+        padding: 6px 10px;
+        /* reduce card header height */
+    }
 }
 
 /* Ensure timeline items are compact */
@@ -132,4 +181,57 @@
 
 .timelineContainer .ant-alert-description {
     font-size: 10px;
+}
+
+/* Request details expansion */
+.requestDetails {
+    border: 1px solid #f0f0f0;
+    border-radius: 6px;
+    padding: 6px;
+    background: #fafafa;
+}
+
+.requestDetailsHeader {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 4px;
+}
+
+.requestMeta {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin-bottom: 4px;
+}
+
+.requestPre {
+    margin: 0;
+    padding: 6px;
+    background: #0b1020;
+    color: #e2e8f0;
+    border-radius: 4px;
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+    font-size: 11px;
+    max-height: 180px;
+    overflow: auto;
+}
+
+.reqResGrid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+}
+
+@media (max-width: 600px) {
+    .reqResGrid {
+        grid-template-columns: 1fr;
+    }
+}
+
+.detailsBlock summary {
+    cursor: pointer;
+    font-size: 11px;
+    color: #555;
+    margin: 4px 0;
 }

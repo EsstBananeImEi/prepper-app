@@ -8,9 +8,13 @@ export interface ApiRequestLog {
     timestamp: string;
     method: string;
     url: string;
-    status?: number; duration?: number;
+    status?: number;
+    duration?: number;
     error?: string;
-    data?: unknown;
+    requestData?: unknown;
+    responseData?: unknown;
+    requestHeaders?: Record<string, unknown>;
+    responseHeaders?: Record<string, unknown>;
 }
 
 class ApiDebugger {
@@ -43,7 +47,8 @@ class ApiDebugger {
             console.log(`${icon} API ${request.method} ${request.url}${duration}`, {
                 status: request.status,
                 error: request.error,
-                data: request.data
+                requestData: request.requestData,
+                responseData: request.responseData
             });
         }
     }

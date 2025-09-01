@@ -10,6 +10,7 @@ import styles from '../storage-list/StorageList.module.css'
 import { CloseCircleOutlined, DownOutlined, UpOutlined, PlusOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next'
 import { actionHandler } from '../../../store/Actions'
+import { loadOptionsCache } from '../../../utils/optionsCache'
 
 export default function Shopping(): ReactElement {
     const { t } = useTranslation()
@@ -37,7 +38,8 @@ export default function Shopping(): ReactElement {
     const drawerContentRef = useRef<HTMLDivElement | null>(null)
     // Manual add modal
     const [showAddModal, setShowAddModal] = useState<boolean>(false)
-    const [addForm] = Form.useForm<{ name: string; amount: number }>()
+    const [addForm] = Form.useForm<{ name: string; amount: number; category?: string | string[] }>()
+    const [externalCategories, setExternalCategories] = useState<string[]>([])
 
     // Load filters from session
     useEffect(() => {
@@ -123,6 +125,56 @@ export default function Shopping(): ReactElement {
         () => Array.from(new Set(storedItems.flatMap(item => item.categories || []))).sort((a, b) => a.localeCompare(b)),
         [storedItems]
     )
+    // Helper: normalize & unique category list (case-insensitive, trimmed)
+    const normalizeCategories = (arr: string[]): string[] => {
+        const seen = new Map<string, string>();
+        for (const raw of arr) {
+            if (!raw) continue;
+            const trimmed = String(raw).trim();
+            if (!trimmed) continue;
+            const key = trimmed.toLocaleLowerCase();
+            if (!seen.has(key)) seen.set(key, trimmed);
+        }
+        return Array.from(seen.values()).sort((a, b) => a.localeCompare(b));
+    };
+
+    // Load categories from backend (options cache) on mount
+    useEffect(() => {
+        let mounted = true;
+        loadOptionsCache()
+            .then(data => {
+                if (!mounted) return;
+                const names = (data.categories || []).map(c => c.name).filter(Boolean) as string[];
+                setExternalCategories(normalizeCategories(names));
+            })
+            .catch(() => { /* ignore */ });
+        return () => { mounted = false };
+    }, [])
+
+    // Also refresh when opening the modal (ensures options are fresh)
+    useEffect(() => {
+        if (!showAddModal) return;
+        let mounted = true;
+        loadOptionsCache()
+            .then(data => {
+                if (!mounted) return;
+                const names = (data.categories || []).map(c => c.name).filter(Boolean) as string[];
+                setExternalCategories(normalizeCategories(names));
+            })
+            .catch(() => { /* ignore */ });
+        return () => { mounted = false };
+    }, [showAddModal])
+
+    // Use the broadest category list for the manual add modal: union of backend categories, all storage items and cart items
+    const modalCategoryOptions = useMemo(() => {
+        const localCats = [
+            ...store.storeItems.flatMap(item => item.categories || []),
+            ...storedItems.flatMap(item => item.categories || []),
+        ].filter(Boolean) as string[];
+        const isBanned = (s: string) => /^\s*categorie\s*$/i.test(s);
+        const union = [...externalCategories, ...localCats].filter((s) => !isBanned(String(s)));
+        return normalizeCategories(union);
+    }, [externalCategories, store.storeItems, storedItems])
 
     // Desktop dynamic pagination like item list
     const [pageSize, setPageSize] = useState(10)
@@ -196,18 +248,28 @@ export default function Shopping(): ReactElement {
             const name = (values.name || '').trim()
             if (!name) return
             const amountNum = Math.max(1, Number(values.amount || 1))
+            // Support tags mode (array) but keep only the last value as a single category
+            const selectedCategoryRaw = Array.isArray(values.category)
+                ? String(values.category[values.category.length - 1] || '')
+                : String(values.category || '')
+            const selectedCategory = selectedCategoryRaw.trim()
             const match = findBestStorageMatch(name)
             // Merge if identical name already exists in basket
             const existing = store.shoppingCard.find(i => i.name.toLowerCase() === name.toLowerCase())
             if (existing) {
                 const nextAmount = String(Math.max(0, Number(existing.amount || 0) + amountNum))
-                await actionHandler({ type: 'UPDATE_CARD_ITEM', basketItems: { ...existing, amount: nextAmount } }, dispatch)
+                const updatedExisting = {
+                    ...existing,
+                    amount: nextAmount,
+                    ...(selectedCategory ? { categories: [selectedCategory] } : {})
+                }
+                await actionHandler({ type: 'UPDATE_CARD_ITEM', basketItems: updatedExisting }, dispatch)
             } else {
                 const basketItem: BasketModel = {
                     id: 0 as unknown as number,
                     name,
                     amount: String(amountNum),
-                    categories: match?.categories || [],
+                    categories: selectedCategory ? [selectedCategory] : (match?.categories || []),
                     icon: match?.icon || ''
                 }
                 await actionHandler({ type: 'ADD_TO_CARD', basketItems: basketItem }, dispatch)
@@ -238,6 +300,22 @@ export default function Shopping(): ReactElement {
                     </Form.Item>
                     <Form.Item name="amount" label={t('shopping.add.fields.amount')} rules={[{ type: 'number', min: 1, message: t('shopping.add.validation.amountMin') }]}>
                         <InputNumber min={1} style={{ width: '100%' }} />
+                    </Form.Item>
+                    <Form.Item name="category" label={t('shopping.add.fields.category')}>
+                        <Select
+                            mode="tags"
+                            showSearch
+                            allowClear
+                            placeholder={t('shopping.add.placeholders.category')}
+                            options={modalCategoryOptions.map(c => ({ label: c, value: c }))}
+                            filterOption={(input, option) => (option?.label as string).toLowerCase().includes(input.toLowerCase())}
+                            tokenSeparators={[',']}
+                            onChange={(vals) => {
+                                const arr = Array.isArray(vals) ? vals : [vals];
+                                const last = arr.length ? [arr[arr.length - 1]] : [];
+                                addForm.setFieldsValue({ category: last });
+                            }}
+                        />
                     </Form.Item>
                 </Form>
             </Modal>

@@ -152,7 +152,8 @@ function sendStorageRequest(
             url: requestUrl,
             status: response.status,
             duration,
-            data: response.data
+            requestData,
+            responseData: response.data
         });
 
         // console.group('✅ Storage API Response');
@@ -180,7 +181,8 @@ function sendStorageRequest(
                 status: response.status,
                 duration,
                 error: `Backend validation error: ${response.data}`,
-                data: response.data
+                requestData,
+                responseData: response.data
             });
 
             // Treat this as an error even though status is 200
@@ -203,7 +205,8 @@ function sendStorageRequest(
                 status: error.response?.status,
                 duration,
                 error: error.message || 'Unknown error',
-                data: error.response?.data
+                requestData,
+                responseData: error.response?.data
             });
 
             // console.group('❌ Storage API Error');

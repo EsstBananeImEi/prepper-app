@@ -146,7 +146,6 @@ export default function ShoppingList(props: Props): ReactElement {
     }
 
     // Standardanzeige ohne Gruppierung
-    // Standardanzeige ohne Gruppierung
     return (
         <>
             {props.storedItems.map((listItem, index) => (

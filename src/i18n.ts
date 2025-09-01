@@ -1463,10 +1463,12 @@ const resources = {
                     fabAria: 'Neuen Artikel zum Einkaufswagen hinzufügen',
                     fields: {
                         name: 'Name',
-                        amount: 'Menge'
+                        amount: 'Menge',
+                        category: 'Kategorie'
                     },
                     placeholders: {
-                        name: 'Artikelname (z.B. Milch)'
+                        name: 'Artikelname (z.B. Milch)',
+                        category: 'Kategorie wählen'
                     },
                     validation: {
                         nameRequired: 'Bitte einen Artikelnamen eingeben',
@@ -2842,10 +2844,12 @@ const resources = {
                     fabAria: 'Add a new item to the shopping cart',
                     fields: {
                         name: 'Name',
-                        amount: 'Amount'
+                        amount: 'Amount',
+                        category: 'Category'
                     },
                     placeholders: {
-                        name: 'Item name (e.g., milk)'
+                        name: 'Item name (e.g., milk)',
+                        category: 'Select category'
                     },
                     validation: {
                         nameRequired: 'Please enter an item name',

@@ -1,7 +1,15 @@
 import axios, { AxiosResponse, AxiosError, InternalAxiosRequestConfig } from 'axios';
+import { apiDebugger } from './apiDebugger';
 import { baseApiUrl, validateAdminApi, authRefreshApi, adminUsersApi, adminUserIdApi } from '../shared/Constants';
 
 // Enhanced API interceptor with admin validation
+type RequestHeaders = Record<string, unknown> | undefined;
+interface AugmentedAxiosRequestConfig extends InternalAxiosRequestConfig {
+    _startedAt?: number;
+    _requestData?: unknown;
+    _requestHeaders?: RequestHeaders;
+}
+
 export const createSecureApiClient = () => {
     const api = axios.create({
         baseURL: baseApiUrl,
@@ -35,16 +43,39 @@ export const createSecureApiClient = () => {
                     localStorage.removeItem('user');
                 }
             }
-            return config;
+            // Attach a start time and snapshot of request payload/headers for logging
+            const cfg = config as AugmentedAxiosRequestConfig;
+            cfg._startedAt = Date.now();
+            cfg._requestData = config.data as unknown;
+            cfg._requestHeaders = { ...(config.headers || {}) } as RequestHeaders;
+            return cfg;
         },
         (error) => Promise.reject(error)
     );
 
     // Response interceptor - handle auth failures
     api.interceptors.response.use(
-        (response: AxiosResponse) => response,
+        (response: AxiosResponse) => {
+            try {
+                const cfg = (response.config || {}) as AugmentedAxiosRequestConfig;
+                const startedAt: number | undefined = cfg._startedAt;
+                const duration = typeof startedAt === 'number' ? Date.now() - startedAt : undefined;
+                apiDebugger.logRequest({
+                    timestamp: new Date().toISOString(),
+                    method: (response.config?.method || 'GET').toUpperCase(),
+                    url: response.config?.url || '',
+                    status: response.status,
+                    duration,
+                    requestData: cfg._requestData,
+                    responseData: response.data,
+                    requestHeaders: cfg._requestHeaders,
+                    responseHeaders: (response.headers as unknown as Record<string, unknown>) || undefined,
+                });
+            } catch { /* noop */ }
+            return response;
+        },
         async (error: AxiosError) => {
-            const originalRequest = error.config as InternalAxiosRequestConfig & { _retry?: boolean };
+            const originalRequest = error.config as AugmentedAxiosRequestConfig & { _retry?: boolean };
 
             if (error.response?.status === 401 && !originalRequest._retry) {
                 originalRequest._retry = true;
@@ -120,6 +151,23 @@ export const createSecureApiClient = () => {
                 }
             }
 
+            try {
+                const cfg = (error.config || {}) as AugmentedAxiosRequestConfig;
+                const startedAt: number | undefined = cfg._startedAt;
+                const duration = typeof startedAt === 'number' ? Date.now() - startedAt : undefined;
+                apiDebugger.logRequest({
+                    timestamp: new Date().toISOString(),
+                    method: (error.config?.method || 'GET').toUpperCase(),
+                    url: error.config?.url || '',
+                    status: error.response?.status,
+                    duration,
+                    error: (error.response?.data as unknown as { error?: string })?.error || error.message,
+                    requestData: cfg._requestData,
+                    responseData: error.response?.data,
+                    requestHeaders: cfg._requestHeaders,
+                    responseHeaders: (error.response?.headers as unknown as Record<string, unknown>) || undefined,
+                });
+            } catch { /* noop */ }
             return Promise.reject(error);
         }
     );

@@ -1,6 +1,6 @@
 
 import React, { useState, useEffect, useRef, useCallback } from 'react';
-import { Card, Badge, Button, Timeline, Typography, Space, Alert } from 'antd';
+import { Card, Badge, Button, Timeline, Typography, Space, Alert, message } from 'antd';
 import { BugOutlined, WarningOutlined, CheckCircleOutlined, CloseCircleOutlined, DragOutlined, CloseOutlined } from '@ant-design/icons';
 import { apiDebugger, ApiRequestLog, analyzeApiError } from '../../utils/apiDebugger';
 import styles from './ApiDebugPanel.module.css';
@@ -25,6 +25,7 @@ export default function ApiDebugPanel({ visible, onClose }: Props) {
         errorRate: 0,
         lastHourRequests: 0
     });
+    const [expandedIndex, setExpandedIndex] = useState<number | null>(null);
 
     // Simplified draggable functionality - only track if dragging
     const [isDragging, setIsDragging] = useState(false);
@@ -164,6 +165,7 @@ export default function ApiDebugPanel({ visible, onClose }: Props) {
             errorRate: 0,
             lastHourRequests: 0
         });
+        setExpandedIndex(null);
     };
 
     const exportLogs = () => {
@@ -272,7 +274,7 @@ export default function ApiDebugPanel({ visible, onClose }: Props) {
                                 <Text type="secondary" style={{ fontSize: '12px' }}>No API requests logged yet</Text>
                             ) : (
                                 <Timeline>
-                                    {logs.slice(0, 10).map((log, index) => {
+                                    {logs.map((log, index) => {
                                         const analysis = getErrorAnalysis(log);
                                         return (
                                             <Timeline.Item
@@ -283,7 +285,7 @@ export default function ApiDebugPanel({ visible, onClose }: Props) {
                                                 <Space direction="vertical" size="small" style={{ width: '100%' }}>
                                                     <Space size="small" wrap>
                                                         <Text strong style={{ fontSize: '11px' }}>{log.method}</Text>
-                                                        <Text code style={{ fontSize: '10px' }}>
+                                                        <Text code style={{ fontSize: '10px', cursor: 'pointer' }} onClick={() => setExpandedIndex(expandedIndex === index ? null : index)}>
                                                             {log.url.length > 30 ? `${log.url.substring(0, 30)}...` : log.url}
                                                         </Text>
                                                         {log.status && (
@@ -317,6 +319,64 @@ export default function ApiDebugPanel({ visible, onClose }: Props) {
                                                             type="error"
                                                             style={{ marginTop: 2, fontSize: '10px' }}
                                                         />
+                                                    )}
+
+                                                    {expandedIndex === index && (
+                                                        <div className={styles.requestDetails}>
+                                                            <div className={styles.requestDetailsHeader}>
+                                                                <Text strong style={{ fontSize: 11 }}>Details</Text>
+                                                                <Space size="small">
+                                                                    <Button size="small" onClick={() => setExpandedIndex(null)}>Schließen</Button>
+                                                                    <Button size="small" onClick={() => {
+                                                                        try {
+                                                                            const text = JSON.stringify({
+                                                                                timestamp: log.timestamp,
+                                                                                method: log.method,
+                                                                                url: log.url,
+                                                                                status: log.status,
+                                                                                duration: log.duration,
+                                                                                error: log.error,
+                                                                                requestData: log.requestData,
+                                                                                responseData: log.responseData,
+                                                                                requestHeaders: log.requestHeaders,
+                                                                                responseHeaders: log.responseHeaders
+                                                                            }, null, 2);
+                                                                            navigator.clipboard?.writeText(text);
+                                                                            message.success('Details kopiert');
+                                                                        } catch {
+                                                                            message.error('Kopieren fehlgeschlagen');
+                                                                        }
+                                                                    }}>Kopieren</Button>
+                                                                </Space>
+                                                            </div>
+                                                            <div className={styles.requestMeta}>
+                                                                <Text style={{ fontSize: 10 }}>Status: <strong>{log.status ?? '-'}</strong></Text>
+                                                                <Text style={{ fontSize: 10 }}>Dauer: <strong>{formatDuration(log.duration)}</strong></Text>
+                                                                <Text style={{ fontSize: 10 }}>Zeit: <strong>{new Date(log.timestamp).toLocaleString()}</strong></Text>
+                                                            </div>
+                                                            <div className={styles.reqResGrid}>
+                                                                <div>
+                                                                    <Text strong style={{ fontSize: 11 }}>Request</Text>
+                                                                    {log.requestHeaders && (
+                                                                        <details className={styles.detailsBlock}>
+                                                                            <summary>Headers</summary>
+                                                                            <pre className={styles.requestPre}>{JSON.stringify(log.requestHeaders, null, 2)}</pre>
+                                                                        </details>
+                                                                    )}
+                                                                    <pre className={styles.requestPre}>{log.requestData !== undefined ? JSON.stringify(log.requestData, null, 2) : '{ }'}</pre>
+                                                                </div>
+                                                                <div>
+                                                                    <Text strong style={{ fontSize: 11 }}>Response</Text>
+                                                                    {log.responseHeaders && (
+                                                                        <details className={styles.detailsBlock}>
+                                                                            <summary>Headers</summary>
+                                                                            <pre className={styles.requestPre}>{JSON.stringify(log.responseHeaders, null, 2)}</pre>
+                                                                        </details>
+                                                                    )}
+                                                                    <pre className={styles.requestPre}>{log.responseData !== undefined ? JSON.stringify(log.responseData, null, 2) : '{ }'}</pre>
+                                                                </div>
+                                                            </div>
+                                                        </div>
                                                     )}
                                                 </Space>
                                             </Timeline.Item>
