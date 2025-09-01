@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Card, Table, Button, Modal, message, Space, Typography, Tag, Tooltip, Popconfirm } from 'antd';
+import { Table, Button, Modal, message, Space, Typography, Tag, Popconfirm } from 'antd';
 import { DeleteOutlined, ReloadOutlined, ClockCircleOutlined, MailOutlined, LinkOutlined } from '@ant-design/icons';
 import { groupsApiService } from '../../hooks/useGroupsApi';
 import { GroupPendingInvitationModel } from '../../shared/Models';
@@ -161,12 +161,10 @@ const InvitationManager: React.FC<InvitationManagerProps> = ({
             dataIndex: 'expiresAt',
             key: 'expiresAt',
             render: (date: string) => (
-                <Tooltip title={new Date(date).toLocaleString()}>
-                    <Space>
-                        <ClockCircleOutlined />
-                        <Text type="secondary">{formatExpiresAt(date)}</Text>
-                    </Space>
-                </Tooltip>
+                <Space>
+                    <ClockCircleOutlined />
+                    <Text type="secondary">{formatExpiresAt(date)}</Text>
+                </Space>
             )
         },
         {
@@ -175,14 +173,12 @@ const InvitationManager: React.FC<InvitationManagerProps> = ({
             render: (_: unknown, record: GroupPendingInvitationModel) => (
                 <Space>
                     {record.status === 'pending' && (
-                        <Tooltip title={t('inviteManager.tooltips.copyLink')}>
-                            <Button
-                                type="text"
-                                icon={<LinkOutlined />}
-                                size="small"
-                                onClick={() => copyInviteLink(record.token)}
-                            />
-                        </Tooltip>
+                        <Button
+                            type="text"
+                            icon={<LinkOutlined />}
+                            size="small"
+                            onClick={() => copyInviteLink(record.token)}
+                        />
                     )}
                     <Popconfirm
                         title={t('inviteManager.confirm.revokeTitle')}
@@ -191,15 +187,13 @@ const InvitationManager: React.FC<InvitationManagerProps> = ({
                         cancelText={t('inviteManager.confirm.cancel')}
                         okButtonProps={{ danger: true }}
                     >
-                        <Tooltip title={t('inviteManager.tooltips.revoke')}>
-                            <Button
-                                type="text"
-                                icon={<DeleteOutlined />}
-                                size="small"
-                                danger
-                                loading={loading}
-                            />
-                        </Tooltip>
+                        <Button
+                            type="text"
+                            icon={<DeleteOutlined />}
+                            size="small"
+                            danger
+                            loading={loading}
+                        />
                     </Popconfirm>
                 </Space>
             )
