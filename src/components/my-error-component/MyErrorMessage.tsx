@@ -3,6 +3,7 @@ import React, { ReactElement, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { homeRoute } from '../../shared/Constants';
+import logger from '../../utils/logger';
 
 export default function MyErrorMessage(): ReactElement {
     const { t } = useTranslation();
@@ -11,7 +12,7 @@ export default function MyErrorMessage(): ReactElement {
 
     useEffect(() => {
         // Protokolliere die Fehlermeldung in der Konsole
-        console.error("Error message:", message);
+        logger.error("Error message:", message);
     }, [message]);
 
 

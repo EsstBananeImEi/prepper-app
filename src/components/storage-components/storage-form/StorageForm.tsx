@@ -41,6 +41,7 @@ import {
     defaultStorageLocations
 } from '../../../shared/Defaults';
 import { getCachedOptions, loadOptionsCache, getOptionsCacheMeta } from '../../../utils/optionsCache';
+import logger from '../../../utils/logger';
 
 // No‑Op Callback (anstatt leerer Funktionen)
 const noop = () => {
@@ -379,9 +380,7 @@ export default function StorageDetailForm(): ReactElement {
 
     // Load user-created options with session cache to avoid repeated network calls
     useEffect(() => {
-        if (typeof console !== 'undefined' && typeof console.info === 'function') {
-            console.info('[Options] Init load in StorageForm');
-        }
+        logger.info('[Options] Init load in StorageForm');
         const cached = getCachedOptions();
         if (cached) {
             setDbCategories(cached.categories);
@@ -389,9 +388,7 @@ export default function StorageDetailForm(): ReactElement {
             setDbItemUnits(cached.itemUnits);
             setDbPackageUnits(cached.packageUnits);
             setDbNutrientUnits(cached.nutrientUnits);
-            if (typeof console !== 'undefined' && typeof console.info === 'function') {
-                console.info('[Options] Using cached options', getOptionsCacheMeta());
-            }
+            logger.info('[Options] Using cached options', getOptionsCacheMeta());
         }
 
         let mounted = true;
@@ -403,14 +400,10 @@ export default function StorageDetailForm(): ReactElement {
                 setDbItemUnits(data.itemUnits);
                 setDbPackageUnits(data.packageUnits);
                 setDbNutrientUnits(data.nutrientUnits);
-                if (typeof console !== 'undefined' && typeof console.info === 'function') {
-                    console.info('[Options] Options loaded/refreshed', getOptionsCacheMeta());
-                }
+                logger.info('[Options] Options loaded/refreshed', getOptionsCacheMeta());
             })
             .catch((err) => {
-                if (typeof console !== 'undefined' && typeof console.warn === 'function') {
-                    console.warn('[Options] Failed to load options', err);
-                }
+                logger.warn('[Options] Failed to load options', err);
                 // ignore and keep whatever we have
             });
 
@@ -426,8 +419,8 @@ export default function StorageDetailForm(): ReactElement {
         try {
             message.loading(i18n.t('form.notifications.imageProcessing'), 0);
 
-            console.group('🖼️ Image Upload Debug');
-            console.log('File info:', {
+            logger.group('🖼️ Image Upload Debug');
+            logger.log('File info:', {
                 name: file.name,
                 type: file.type,
                 size: file.size,
@@ -437,11 +430,11 @@ export default function StorageDetailForm(): ReactElement {
             // Validate and convert file to Base64
             const validationResult = await fileToBase64(file);
 
-            console.log('Validation result:', validationResult);
+            logger.log('Validation result:', validationResult);
 
             if (!validationResult.isValid) {
-                console.error('Validation failed:', validationResult.error);
-                console.groupEnd();
+                logger.error('Validation failed:', validationResult.error);
+                logger.groupEnd();
                 message.destroy();
                 message.error(`${validationResult.error || i18n.t('form.notifications.invalidImageData')} [File: ${file.name}, Type: ${file.type}]`);
                 return false;
@@ -450,7 +443,7 @@ export default function StorageDetailForm(): ReactElement {
             // Enhanced debugging with detailed image analysis
             debugImageData(processedImage, `Upload Handler - ${file.name}`);
 
-            console.log('Processed image info:', {
+            logger.log('Processed image info:', {
                 length: processedImage.length,
                 startsWithDataUrl: processedImage.startsWith('data:'),
                 mimeType: processedImage.split(',')[0]
@@ -458,28 +451,28 @@ export default function StorageDetailForm(): ReactElement {
 
             // Compress if image is large
             const imageSizeKB = (processedImage.length * 3) / 4 / 1024;
-            console.log('Image size:', Math.round(imageSizeKB * 100) / 100, 'KB');
+            logger.log('Image size:', Math.round(imageSizeKB * 100) / 100, 'KB');
 
             if (imageSizeKB > 500) { // Compress if larger than 500KB
                 try {
-                    console.log('Compressing image...');
+                    logger.log('Compressing image...');
                     processedImage = await compressBase64Image(processedImage, 800, 600, 0.8);
                     const newSizeKB = (processedImage.length * 3) / 4 / 1024;
-                    console.log('Compressed to:', Math.round(newSizeKB * 100) / 100, 'KB');
+                    logger.log('Compressed to:', Math.round(newSizeKB * 100) / 100, 'KB');
                     message.info(i18n.t('form.notifications.imageCompressedInfo'));
                 } catch (compressionError) {
-                    console.warn('Compression failed, using original:', compressionError);
+                    logger.warn('Compression failed, using original:', compressionError);
                 }
             }
 
             setIcon(processedImage);
-            console.log('Image set successfully');
-            console.groupEnd();
+            logger.log('Image set successfully');
+            logger.groupEnd();
             message.destroy();
             message.success(i18n.t('form.notifications.imageLoadedSuccess'));
         } catch (error) {
-            console.error('Image processing error:', error);
-            console.groupEnd();
+            logger.error('Image processing error:', error);
+            logger.groupEnd();
             message.destroy();
             message.error(i18n.t('form.notifications.imageProcessError'));
         }
@@ -573,22 +566,22 @@ export default function StorageDetailForm(): ReactElement {
         // Validate and sanitize icon data for API
         let processedIcon = '';
         if (icon) {
-            console.group('🔧 Processing Icon for API');
-            console.log('Original icon length:', icon.length);
-            console.log('Icon starts with data URL:', icon.startsWith('data:'));
+            logger.group('🔧 Processing Icon for API');
+            logger.log('Original icon length:', icon.length);
+            logger.log('Icon starts with data URL:', icon.startsWith('data:'));
 
-            const iconValidation = validateBase64Image(icon); console.log('Icon validation result:', iconValidation); if (iconValidation.isValid) {
+            const iconValidation = validateBase64Image(icon); logger.log('Icon validation result:', iconValidation); if (iconValidation.isValid) {
                 // EXPERIMENTAL: Try data URL format first since backend might expect it
                 // Many backends expect the full data URL instead of just Base64
                 processedIcon = ensureDataUrlPrefix(iconValidation.processedData || icon);
-                console.log('Processed icon with data URL prefix');
-                console.log('Processed icon length:', processedIcon.length);
-                console.log('First 50 chars:', processedIcon.substring(0, 50));
+                logger.log('Processed icon with data URL prefix');
+                logger.log('Processed icon length:', processedIcon.length);
+                logger.log('First 50 chars:', processedIcon.substring(0, 50));
 
                 // Additional debugging: Test what backend might expect
-                console.group('🔬 Backend Format Testing'); console.log('Option 1 - With data URL (NEW APPROACH):', processedIcon.substring(0, 50) + '...');
-                console.log('Option 2 - Pure Base64 (old approach):', sanitizeBase64ForApi(processedIcon).substring(0, 30) + '...');
-                console.log('Option 3 - Original icon:', icon.substring(0, 50) + '...');
+                logger.group('🔬 Backend Format Testing'); logger.log('Option 1 - With data URL (NEW APPROACH):', processedIcon.substring(0, 50) + '...');
+                logger.log('Option 2 - Pure Base64 (old approach):', sanitizeBase64ForApi(processedIcon).substring(0, 30) + '...');
+                logger.log('Option 3 - Original icon:', icon.substring(0, 50) + '...');
 
                 // Test if it's a valid image format
                 try {
@@ -600,32 +593,32 @@ export default function StorageDetailForm(): ReactElement {
 
                     // Check image signature
                     if (bytes[0] === 0xFF && bytes[1] === 0xD8) {
-                        console.log('✅ Detected JPEG format');
+                        logger.log('✅ Detected JPEG format');
                     } else if (bytes[0] === 0x89 && bytes[1] === 0x50) {
-                        console.log('✅ Detected PNG format');
+                        logger.log('✅ Detected PNG format');
                     } else {
-                        console.warn('❓ Unknown image format, first bytes:', Array.from(bytes.slice(0, 8)).map(b => b.toString(16).padStart(2, '0')).join(' '));
+                        logger.warn('❓ Unknown image format, first bytes:', Array.from(bytes.slice(0, 8)).map(b => b.toString(16).padStart(2, '0')).join(' '));
                     }
                 } catch (e) {
-                    console.error('❌ Cannot decode Base64 for format detection:', e);
+                    logger.error('❌ Cannot decode Base64 for format detection:', e);
                 }
-                console.groupEnd();
+                logger.groupEnd();
             } else {
-                console.warn('Invalid icon data, attempting repair:', iconValidation.error);
-                console.warn('Icon preview:', icon.substring(0, 100));
+                logger.warn('Invalid icon data, attempting repair:', iconValidation.error);
+                logger.warn('Icon preview:', icon.substring(0, 100));
 
                 // Try to repair the image data
                 const repairResult = repairBase64Image(icon);
                 if (repairResult.isValid && repairResult.processedData) {
-                    console.log('✅ Image data repaired successfully');
+                    logger.log('✅ Image data repaired successfully');
                     processedIcon = ensureDataUrlPrefix(repairResult.processedData);
                 } else {
-                    console.error('❌ Could not repair image data:', repairResult.error);
+                    logger.error('❌ Could not repair image data:', repairResult.error);
                     // Set empty icon if repair also fails
                     processedIcon = '';
                 }
             }
-            console.groupEnd();
+            logger.groupEnd();
         }
 
         return {
@@ -708,30 +701,30 @@ export default function StorageDetailForm(): ReactElement {
 
         const updatedItem = getUpdatedItem();
 
-        console.group('💾 Saving Storage Item');
-        console.log('Item Data:', updatedItem);
-        console.log('Is New:', isNew);
-        console.log('ID:', id);
+        logger.group('💾 Saving Storage Item');
+        logger.log('Item Data:', updatedItem);
+        logger.log('Is New:', isNew);
+        logger.log('ID:', id);
 
         // Detailed debugging for icon if icon is != ''
         if (updatedItem.icon && updatedItem.icon !== '') {
-            console.group('🖼️ Icon Details for Save');
-            console.log('Icon length:', updatedItem.icon.length);
-            console.log('First 50 chars:', updatedItem.icon.substring(0, 50));
-            console.log('Last 50 chars:', updatedItem.icon.substring(Math.max(0, updatedItem.icon.length - 50)));
-            console.log('Contains data URL prefix:', updatedItem.icon.startsWith('data:'));
+            logger.group('🖼️ Icon Details for Save');
+            logger.log('Icon length:', updatedItem.icon.length);
+            logger.log('First 50 chars:', updatedItem.icon.substring(0, 50));
+            logger.log('Last 50 chars:', updatedItem.icon.substring(Math.max(0, updatedItem.icon.length - 50)));
+            logger.log('Contains data URL prefix:', updatedItem.icon.startsWith('data:'));
 
             // Test Base64 validity
             try {
                 const testData = updatedItem.icon.startsWith('data:') ? updatedItem.icon.split(',')[1] : updatedItem.icon;
                 window.atob(testData.substring(0, Math.min(100, testData.length)));
-                console.log('✅ Icon Base64 is valid');
+                logger.log('✅ Icon Base64 is valid');
             } catch (error) {
-                console.error('❌ Icon Base64 is invalid:', error);
+                logger.error('❌ Icon Base64 is invalid:', error);
             }
-            console.groupEnd();
+            logger.groupEnd();
         }
-        console.groupEnd();
+        logger.groupEnd();
 
         try {
             if (isNew) {
@@ -758,15 +751,15 @@ export default function StorageDetailForm(): ReactElement {
             }
             history(itemsRoute);
         } catch (error: unknown) {
-            console.group('🚨 Save Error Details');
-            console.error('Error object:', error);
-            console.error('Error type:', typeof error);
-            console.error('Error constructor:', error?.constructor?.name);
+            logger.group('🚨 Save Error Details');
+            logger.error('Error object:', error);
+            logger.error('Error type:', typeof error);
+            logger.error('Error constructor:', error?.constructor?.name);
             if (error instanceof Error) {
-                console.error('Error message:', error.message);
-                console.error('Error stack:', error.stack);
+                logger.error('Error message:', error.message);
+                logger.error('Error stack:', error.stack);
             }
-            console.groupEnd();
+            logger.groupEnd();
 
             // Prefer backend message for 409 (Conflict)
             type BackendErrorData = { error?: string; message?: string };

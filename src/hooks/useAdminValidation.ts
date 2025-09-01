@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useStore } from '../store/Store';
 import { baseApiUrl } from '../shared/Constants';
 import { adminApi } from '../utils/secureApiClient';
+import logger from '../utils/logger';
 type AdminValidationResponse = {
     isAdmin: boolean;
     isManager?: boolean;
@@ -58,7 +59,7 @@ export const useAdminValidation = (): AdminValidationResult => {
                     isValidating: false
                 });
             } catch (error) {
-                console.error('Admin validation error:', error);
+                logger.error('Admin validation error:', error);
 
                 // Auf Server-Fehler: Deny admin access for security
                 setResult({
@@ -82,7 +83,7 @@ export const validateAdminSync = async (_token: string): Promise<boolean> => {
         const result = (await adminApi.validateAdmin()) as AdminValidationResponse;
         return !!result.isAdmin;
     } catch (error) {
-        console.error('Sync admin validation failed:', error);
+        logger.error('Sync admin validation failed:', error);
         return false;
     }
 };

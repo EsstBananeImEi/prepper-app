@@ -1,6 +1,7 @@
 import axios, { AxiosResponse, AxiosError, InternalAxiosRequestConfig } from 'axios';
 import { apiDebugger } from './apiDebugger';
 import { baseApiUrl, validateAdminApi, authRefreshApi, adminUsersApi, adminUserIdApi } from '../shared/Constants';
+import logger from './logger';
 
 // Enhanced API interceptor with admin validation
 type RequestHeaders = Record<string, unknown> | undefined;
@@ -39,7 +40,7 @@ export const createSecureApiClient = () => {
                         config.headers.Authorization = `Bearer ${user.access_token}`;
                     }
                 } catch (error) {
-                    console.error('Invalid user data in localStorage:', error);
+                    logger.error('Invalid user data in localStorage:', error);
                     localStorage.removeItem('user');
                 }
             }
@@ -136,11 +137,11 @@ export const createSecureApiClient = () => {
                                 }
                                 return api(originalRequest);
                             } catch (refreshError) {
-                                console.error('Token refresh failed:', refreshError);
+                                logger.error('Token refresh failed:', refreshError);
                             }
                         }
                     } catch (parseError) {
-                        console.error('Invalid user data in localStorage during refresh:', parseError);
+                        logger.error('Invalid user data in localStorage during refresh:', parseError);
                     }
                 }
 

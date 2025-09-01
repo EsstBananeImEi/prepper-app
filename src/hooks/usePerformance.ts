@@ -1,4 +1,5 @@
 import { useEffect } from 'react';
+import logger from '../utils/logger';
 
 interface PerformanceMetrics {
     loadTime: number;
@@ -52,21 +53,21 @@ export const usePerformanceMonitoring = () => {
                         fcpObserver.observe({ entryTypes: ['paint'] });
 
                     } catch (error) {
-                        console.warn('Performance Observer nicht unterstützt:', error);
+                        logger.warn('Performance Observer nicht unterstützt:', error);
                     }
                 }
 
                 // Metriken in Development-Modus loggen
                 if (process.env.NODE_ENV === 'development') {
-                    console.log('🚀 Performance Metrics:', metrics);
+                    logger.log('🚀 Performance Metrics:', metrics);
 
                     // Warnungen für schlechte Performance
                     if (metrics.loadTime > 3000) {
-                        console.warn('⚠️ Slow load time detected:', metrics.loadTime + 'ms');
+                        logger.warn('⚠️ Slow load time detected:', metrics.loadTime + 'ms');
                     }
 
                     if (metrics.largestContentfulPaint && metrics.largestContentfulPaint > 2500) {
-                        console.warn('⚠️ Poor LCP detected:', metrics.largestContentfulPaint + 'ms');
+                        logger.warn('⚠️ Poor LCP detected:', metrics.largestContentfulPaint + 'ms');
                     }
                 }
             }
@@ -96,10 +97,10 @@ export const useMemoryMonitoring = () => {
                 const totalMemory = memory.totalJSHeapSize / 1024 / 1024; // MB
 
                 if (process.env.NODE_ENV === 'development') {
-                    console.log(`💾 Memory Usage: ${usedMemory.toFixed(2)}MB / ${totalMemory.toFixed(2)}MB`);
+                    logger.log(`💾 Memory Usage: ${usedMemory.toFixed(2)}MB / ${totalMemory.toFixed(2)}MB`);
 
                     if (usedMemory > 50) { // Warnung bei > 50MB
-                        console.warn('⚠️ High memory usage detected');
+                        logger.warn('⚠️ High memory usage detected');
                     }
                 }
             }

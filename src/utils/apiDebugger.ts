@@ -3,6 +3,7 @@
  * API Debugging and Monitoring Utilities
  */
 import i18n from '../i18n';
+import logger from './logger';
 
 export interface ApiRequestLog {
     timestamp: string;
@@ -44,7 +45,7 @@ class ApiDebugger {
         if (process.env.NODE_ENV === 'development') {
             const icon = request.error ? '❌' : '✅';
             const duration = request.duration ? ` (${request.duration}ms)` : '';
-            console.log(`${icon} API ${request.method} ${request.url}${duration}`, {
+            logger.log(`${icon} API ${request.method} ${request.url}${duration}`, {
                 status: request.status,
                 error: request.error,
                 requestData: request.requestData,

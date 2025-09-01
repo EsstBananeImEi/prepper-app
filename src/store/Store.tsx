@@ -4,6 +4,7 @@ import { useStorageApi } from "../hooks/StorageApi";
 import { basketItemsApi, itemsApi } from "../shared/Constants";
 import { UserModel } from "~/shared/Models";
 import { validateAndCleanStorageItems } from "../utils/imageUtils";
+import logger from '../utils/logger';
 
 // Store Interface
 export interface Store {
@@ -233,7 +234,7 @@ export function reducer(store: Store, action: Action): Store {
             return { ...store, shoppingCard: action.basketItems ? action.basketItems : [] };
 
         case 'CLEAR_ITEM_CARD':
-            console.log("Clear Item Card:", action.basketItems);
+            logger.log("Clear Item Card:", action.basketItems);
             return {
                 ...store, shoppingCard: store.shoppingCard.filter(item => item.id !== action.basketItems.id) as BasketModel[]
             };
@@ -253,7 +254,7 @@ export function reducer(store: Store, action: Action): Store {
 
         // Benutzer Login
         case 'LOGIN_USER':
-            console.log("Set Store User:", action.user);
+            logger.log("Set Store User:", action.user);
             localStorage.setItem("user", JSON.stringify(action.user));
             writeSessionMeta(startNewSessionMeta());
             return { ...store, user: action.user };
@@ -326,7 +327,7 @@ export function StoreProvider(props: { children: ReactElement, store?: Store }):
             const cleanedBasketItems = validateAndCleanStorageItems(basketItems);
             // Only dispatch if the cleaning actually changed something
             if (JSON.stringify(cleanedBasketItems) !== JSON.stringify(basketItems)) {
-                console.log('Cleaned corrupted basket items');
+                logger.log('Cleaned corrupted basket items');
                 dispatch({ type: 'INITIAL_CARDS', basketItems: cleanedBasketItems });
             } else {
                 dispatch({ type: 'INITIAL_CARDS', basketItems: basketItems });
@@ -342,7 +343,7 @@ export function StoreProvider(props: { children: ReactElement, store?: Store }):
             const cleanedStorageItems = validateAndCleanStorageItems(storageItems);
             // Only dispatch if the cleaning actually changed something
             if (JSON.stringify(cleanedStorageItems) !== JSON.stringify(storageItems)) {
-                console.log('Cleaned corrupted storage items');
+                logger.log('Cleaned corrupted storage items');
                 dispatch({ type: 'INITIAL_STORAGE', storageItems: cleanedStorageItems });
             } else {
                 dispatch({ type: 'INITIAL_STORAGE', storageItems: storageItems });

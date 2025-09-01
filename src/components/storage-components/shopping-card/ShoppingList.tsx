@@ -11,6 +11,7 @@ import styles from '../storage-list/storage-item/StorageListItem.module.css';
 import listStyles from './ShoppingList.module.css';
 import SafeAvatar from '../../common/SafeAvatar';
 import { useTranslation } from 'react-i18next';
+import logger from '../../../utils/logger';
 
 interface Props {
     storedItems: BasketModel[];
@@ -26,7 +27,7 @@ export default function ShoppingList(props: Props): ReactElement {
     const { t } = useTranslation();
     const { store, dispatch } = useStore();
     const onChangeCard = (event: SyntheticEvent, action: Action): void => {
-        console.log('onChangeCard', action);
+        logger.log('onChangeCard', action);
         actionHandler(action, dispatch);
     };
     const dimensions = props.dimensions;

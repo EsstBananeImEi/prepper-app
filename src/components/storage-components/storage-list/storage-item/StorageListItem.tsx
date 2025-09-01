@@ -14,6 +14,7 @@ import SafeAvatar from '../../../common/SafeAvatar';
 import { ReactElement, SyntheticEvent, useEffect, useState } from 'react';
 import { useUnitPreferences } from '../../../../hooks/useUnitPreferences';
 import { formatQuantity } from '../../../../utils/unitFormatter';
+import logger from '../../../../utils/logger';
 
 interface Props {
     storageItem: StorageModel;
@@ -81,15 +82,15 @@ export default function StorageListItem(props: Props): ReactElement {
 
     const onIncrease = (e: React.FormEvent) => {
         e.stopPropagation();
-        console.log(`🔧 Manual increase triggered for item ${storageItem.id} (${storageItem.name})`);
-        console.trace('Increase action call stack');
+        logger.log(`🔧 Manual increase triggered for item ${storageItem.id} (${storageItem.name})`);
+        logger.trace('Increase action call stack');
         actionHandler({ type: 'INCREASE_STORAGE_ITEM', storageItem: { ...storageItem, amount: storageItem.amount + 1 } }, dispatch);
     };
 
     const onDecrease = (e: React.FormEvent) => {
         e.stopPropagation();
-        console.log(`🔧 Manual decrease triggered for item ${storageItem.id} (${storageItem.name})`);
-        console.trace('Decrease action call stack');
+        logger.log(`🔧 Manual decrease triggered for item ${storageItem.id} (${storageItem.name})`);
+        logger.trace('Decrease action call stack');
         const next = Math.max(0, storageItem.amount - 1);
         // If it's already 0, avoid dispatching and thus avoid a redundant PUT
         if (next === storageItem.amount) return;

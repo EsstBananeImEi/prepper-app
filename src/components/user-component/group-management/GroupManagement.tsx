@@ -46,6 +46,7 @@ import { InviteManager } from '../../../utils/inviteManager';
 import styles from './GroupManagement.module.css';
 import { useStore } from '~/store/Store';
 import { useTranslation } from 'react-i18next';
+import logger from '../../../utils/logger';
 
 const { Title, Text } = Typography;
 const { TextArea } = Input;
@@ -232,7 +233,7 @@ export default function GroupManagement(): React.ReactElement {
             const url = InviteManager.createInviteUrl(backendToken);
             setInviteUrl(url);
         } catch (error) {
-            console.error('Fehler beim Erstellen des Invite-Links:', error);
+            logger.error('Fehler beim Erstellen des Invite-Links:', error);
             message.error(t('groups.invite.errorCreateLink'));
         } finally {
             setInviteLoading(false);
@@ -244,7 +245,7 @@ export default function GroupManagement(): React.ReactElement {
             await navigator.clipboard.writeText(inviteUrl);
             message.success(t('groups.invite.linkCopiedClipboard'));
         } catch (error) {
-            console.error('Fehler beim Kopieren:', error);
+            logger.error('Fehler beim Kopieren:', error);
             const textArea = document.createElement('textarea');
             textArea.value = inviteUrl;
             document.body.appendChild(textArea);
@@ -299,7 +300,7 @@ export default function GroupManagement(): React.ReactElement {
             message.success(t('groups.invite.emailSendSuccess', { email: values.email }));
             inviteEmailForm.resetFields();
         } catch (error) {
-            console.error('Fehler beim Senden der Email-Einladung:', error);
+            logger.error('Fehler beim Senden der Email-Einladung:', error);
             message.error(t('groups.invite.emailSendError'));
         } finally {
             setInviteSendingEmail(false);
@@ -550,7 +551,7 @@ export default function GroupManagement(): React.ReactElement {
                                                 icon={!group.image && <UsergroupAddOutlined />}
                                                 size="large"
                                                 onError={() => {
-                                                    console.warn('Avatar image failed to load for group:', group.name);
+                                                    logger.warn('Avatar image failed to load for group:', group.name);
                                                     return false;
                                                 }}
                                             />

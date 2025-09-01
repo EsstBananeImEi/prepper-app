@@ -40,8 +40,8 @@
         "web-vitals": "^4.2.4"
     },
     "scripts": {
-        "start": "react-scripts start",
-        "build": "react-scripts build",
+        "start": "cross-env NODE_ENV=development react-scripts start",
+        "build": "cross-env NODE_ENV=production react-scripts build",
         "test": "react-scripts test",
         "eject": "react-scripts eject"
     },
@@ -72,6 +72,7 @@
         "@types/react-i18next": "^8.1.0",
         "@typescript-eslint/eslint-plugin": "^8.24.0",
         "@typescript-eslint/parser": "^8.24.0",
+        "cross-env": "^10.0.0",
         "eslint": "9.20.1",
         "eslint-config-react": "^1.1.7",
         "eslint-plugin-react": "^7.24.0",

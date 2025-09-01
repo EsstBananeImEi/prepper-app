@@ -5,6 +5,7 @@ import { baseApiUrl } from '../shared/Constants';
 import { Dimension, Setter } from '../types/Types';
 import { createApiTimer, formatApiError } from '../utils/apiDebugger';
 import createSecureApiClient from '../utils/secureApiClient';
+import logger from '../utils/logger';
 // Use the shared secure API client with interceptor de-dup and refresh
 const api = createSecureApiClient();
 export default api;
@@ -22,7 +23,7 @@ export function storageApi<T>(method: Method, path: string, callback: Setter<T>,
             const errorMessage = formatApiError(error);
             timer.finish(error.response?.status, errorMessage);
 
-            console.error('StorageAPI Error:', {
+            logger.error('StorageAPI Error:', {
                 method,
                 path,
                 error: errorMessage,

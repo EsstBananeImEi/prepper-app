@@ -15,6 +15,7 @@ import SafeAvatar from '../../../common/SafeAvatar';
 import listStyles from '../StorageList.module.css';
 import { useUnitPreferences } from '../../../../hooks/useUnitPreferences';
 import { formatQuantity } from '../../../../utils/unitFormatter';
+import logger from '../../../../utils/logger';
 
 interface Props {
     storageItem: StorageModel;
@@ -119,9 +120,9 @@ export default function StorageCardItem(props: Props): ReactElement {
             if (amount === 0 && storageItem.amount === 0) {
                 return;
             }
-            console.log(`🔧 StorageCardItem: Amount changed for item ${storageItem.id} from ${storageItem.amount} to ${amount}, updating via API`);
+            logger.log(`🔧 StorageCardItem: Amount changed for item ${storageItem.id} from ${storageItem.amount} to ${amount}, updating via API`);
             const onGoToList = () => {
-                console.log(`📍 StorageCardItem: API update complete, stay on card`);
+                logger.log(`📍 StorageCardItem: API update complete, stay on card`);
             };
             const safeAmount = Math.max(0, amount);
             storageApi('PUT', itemIdApi(storageItem.id), onGoToList, { ...storageItem, amount: safeAmount });

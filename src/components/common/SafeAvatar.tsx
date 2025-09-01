@@ -3,6 +3,7 @@ import { Avatar } from 'antd';
 import { AvatarProps } from 'antd/lib/avatar';
 import { UserOutlined } from '@ant-design/icons';
 import { validateBase64Image, ensureDataUrlPrefix } from '../../utils/imageUtils';
+import logger from '../../utils/logger';
 
 interface SafeAvatarProps extends Omit<AvatarProps, 'src'> {
     src?: string;
@@ -34,14 +35,14 @@ export default function SafeAvatar({
                 return ensureDataUrlPrefix(validation.processedData);
             } else {
                 if (showWarnings && process.env.NODE_ENV === 'development') {
-                    console.warn('SafeAvatar: Invalid image data detected:', validation.error);
+                    logger.warn('SafeAvatar: Invalid image data detected:', validation.error);
                 }
                 setHasImageError(true);
                 return undefined;
             }
         } catch (error) {
             if (showWarnings && process.env.NODE_ENV === 'development') {
-                console.error('SafeAvatar: Error processing image:', error);
+                logger.error('SafeAvatar: Error processing image:', error);
             }
             setHasImageError(true);
             return undefined;
@@ -50,7 +51,7 @@ export default function SafeAvatar({
 
     const handleImageError = useCallback(() => {
         if (showWarnings) {
-            console.warn('SafeAvatar: Image failed to load, falling back to icon');
+            logger.warn('SafeAvatar: Image failed to load, falling back to icon');
         }
         setHasImageError(true);
         return false; // Return false to use Avatar's default fallback behavior

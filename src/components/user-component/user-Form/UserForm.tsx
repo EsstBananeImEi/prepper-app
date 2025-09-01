@@ -8,6 +8,7 @@ import { UserModel } from "../../../shared/Models";
 import GroupManagement from "../group-management/GroupManagement";
 import styles from "./UserForm.module.css";
 import { useTranslation } from 'react-i18next';
+import logger from '../../../utils/logger';
 
 interface FormValues {
     username: string;
@@ -63,7 +64,7 @@ export default function UserProfileForm(): JSX.Element {
             await actionHandler({ type: "EDIT_USER", user: payload }, dispatch);
             message.success(t('user.form.buttons.updateProfile'));
         } catch (err: unknown) {
-            console.error("Fehler beim Aktualisieren des Profils:", err);
+            logger.error("Fehler beim Aktualisieren des Profils:", err);
             setError(t('notifications.apiErrorTitle'));
         } finally {
             setLoading(false);

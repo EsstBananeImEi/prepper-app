@@ -10,6 +10,7 @@ import {
     buildApiUrl
 } from '../shared/Constants';
 import createSecureApiClient from '../utils/secureApiClient';
+import logger from './logger';
 
 export interface InviteToken {
     id: string;
@@ -70,7 +71,7 @@ export class InviteManager {
         const url = `${normalizedBase}/invite/${token}`;
 
         // Debug-Ausgabe um das Problem zu verfolgen
-        console.log('🔗 URL Generation Debug:', {
+        logger.log('🔗 URL Generation Debug:', {
             originalBase: base,
             normalizedBase,
             token,
@@ -113,7 +114,7 @@ export class InviteManager {
         filteredInvites.push(newInvite);
         localStorage.setItem(this.STORAGE_KEY, JSON.stringify(filteredInvites));
 
-        console.log('Pending invite stored:', newInvite);
+        logger.log('Pending invite stored:', newInvite);
     }
 
     /**
@@ -137,7 +138,7 @@ export class InviteManager {
 
             return validInvites;
         } catch (error) {
-            console.warn('Fehler beim Laden der pending invites:', error);
+            logger.warn('Fehler beim Laden der pending invites:', error);
             return [];
         }
     }
@@ -149,46 +150,46 @@ export class InviteManager {
         const pendingInvites = this.getPendingInvites();
 
         if (pendingInvites.length === 0) {
-            console.log('ℹ️ Keine ausstehenden Invites vorhanden');
+            logger.log('ℹ️ Keine ausstehenden Invites vorhanden');
             return;
         }
 
-        console.log(`🚀 Verarbeite ${pendingInvites.length} ausstehende Invites für User ${userId}`);
+        logger.log(`🚀 Verarbeite ${pendingInvites.length} ausstehende Invites für User ${userId}`);
 
         // ✅ KORRIGIERT: Token aus User-Objekt im localStorage lesen
         const user = JSON.parse(localStorage.getItem('user') || 'null');
         const authToken = user?.access_token;
 
         if (!authToken) {
-            console.error('❌ Kein Access-Token gefunden - User muss eingeloggt sein');
+            logger.error('❌ Kein Access-Token gefunden - User muss eingeloggt sein');
             return;
         }
 
-        console.log('🔑 Access-Token gefunden:', authToken ? 'Ja' : 'Nein');
+        logger.log('🔑 Access-Token gefunden:', authToken ? 'Ja' : 'Nein');
 
         for (const invite of pendingInvites) {
             try {
-                console.log(`🔄 Verarbeite Token ${invite.token}`);
+                logger.log(`🔄 Verarbeite Token ${invite.token}`);
 
                 const api = createSecureApiClient();
                 const response = await api.post(groupJoinInvitationApi(invite.token));
 
-                console.log(`📡 Response Status für Token ${invite.token}: ${response.status}`);
+                logger.log(`📡 Response Status für Token ${invite.token}: ${response.status}`);
 
                 if (response.status === 200) {
                     const data = response.data;
-                    console.log(`✅ Token ${invite.token} erfolgreich verarbeitet: "${data.group?.name}"`);
+                    logger.log(`✅ Token ${invite.token} erfolgreich verarbeitet: "${data.group?.name}"`);
                     this.removePendingInvite(invite.token);
                 } else if (response.status === 409) {
-                    console.log(`ℹ️ Token ${invite.token}: Bereits Mitglied der Gruppe`);
+                    logger.log(`ℹ️ Token ${invite.token}: Bereits Mitglied der Gruppe`);
                     this.removePendingInvite(invite.token);
                 } else if (response.status === 404) {
-                    console.warn(`❌ Token ${invite.token}: Nicht gefunden oder abgelaufen`);
+                    logger.warn(`❌ Token ${invite.token}: Nicht gefunden oder abgelaufen`);
                     this.removePendingInvite(invite.token);
                 } else if (response.status === 422) {
-                    console.error(`❌ Token ${invite.token}: Unprocessable Entity (422) - möglicherweise Token-Problem`);
+                    logger.error(`❌ Token ${invite.token}: Unprocessable Entity (422) - möglicherweise Token-Problem`);
                     const errorData = typeof response.data === 'string' ? response.data : JSON.stringify(response.data);
-                    console.error('Error details:', errorData);
+                    logger.error('Error details:', errorData);
 
                     // Bei 422 Token behalten, da es ein Server-Problem sein könnte
                     if (!invite.persistent) {
@@ -196,20 +197,20 @@ export class InviteManager {
                     }
                 } else {
                     const error = response.data || { error: 'Backend-Fehler' };
-                    console.error(`❌ Token ${invite.token} fehlgeschlagen (${response.status}):`, error);
+                    logger.error(`❌ Token ${invite.token} fehlgeschlagen (${response.status}):`, error);
 
                     if (!invite.persistent) {
-                        console.log(`🗑️ Entferne nicht-persistenten Token ${invite.token}`);
+                        logger.log(`🗑️ Entferne nicht-persistenten Token ${invite.token}`);
                         this.removePendingInvite(invite.token);
                     }
                 }
             } catch (error: unknown) {
                 const errorMessage = error instanceof Error ? error.message : String(error);
-                console.error(`❌ Fehler beim Verarbeiten von Token ${invite.token}:`, errorMessage);
+                logger.error(`❌ Fehler beim Verarbeiten von Token ${invite.token}:`, errorMessage);
 
                 // Bei Netzwerkfehlern Token behalten
                 if (!errorMessage.includes('Failed to fetch') && !errorMessage.includes('Network')) {
-                    console.log(`🗑️ Entferne fehlerhaften Token ${invite.token}`);
+                    logger.log(`🗑️ Entferne fehlerhaften Token ${invite.token}`);
                     this.removePendingInvite(invite.token);
                 }
             }
@@ -221,7 +222,7 @@ export class InviteManager {
      */
     static clearPendingInvites(): void {
         localStorage.removeItem(this.STORAGE_KEY);
-        console.log('Alle ausstehenden Invites gelöscht');
+        logger.log('Alle ausstehenden Invites gelöscht');
     }
 
     /**
@@ -239,16 +240,16 @@ export class InviteManager {
     static async validateInviteToken(token: string): Promise<InviteToken | null> {
         try {
             // ✅ BACKEND-FIRST: Für Email-Invites muss das Backend die Quelle der Wahrheit sein
-            console.log(`🔍 Validiere Token im Backend: ${buildApiUrl(groupValidateInvitationApi(token))}`);
+            logger.log(`🔍 Validiere Token im Backend: ${buildApiUrl(groupValidateInvitationApi(token))}`);
 
             const api = createSecureApiClient();
             const response = await api.get(groupValidateInvitationApi(token));
 
-            console.log(`📡 Backend Response Status: ${response.status}`);
+            logger.log(`📡 Backend Response Status: ${response.status}`);
 
             if (response.status === 200) {
                 const data = response.data;
-                console.log('📨 Backend Response Data:', data);
+                logger.log('📨 Backend Response Data:', data);
 
                 if (data.valid) {
                     // Sichere Behandlung des expiresAt Datums
@@ -267,60 +268,60 @@ export class InviteManager {
                         createdAt: data.createdAt ? new Date(data.createdAt).getTime() : Date.now()
                     };
 
-                    console.log('✅ Backend-Token erfolgreich validiert:', inviteToken);
+                    logger.log('✅ Backend-Token erfolgreich validiert:', inviteToken);
                     return inviteToken;
                 } else {
-                    console.warn('❌ Backend sagt Token ist ungültig:', data);
+                    logger.warn('❌ Backend sagt Token ist ungültig:', data);
                     return null;
                 }
             } else if (response.status === 404) {
-                console.warn('❌ Token nicht gefunden oder abgelaufen (404)');
+                logger.warn('❌ Token nicht gefunden oder abgelaufen (404)');
                 return null;
             } else if (response.status >= 500) {
-                console.error(`❌ Backend-Fehler (${response.status}) - versuche localStorage-Fallback`);
+                logger.error(`❌ Backend-Fehler (${response.status}) - versuche localStorage-Fallback`);
                 // Nur bei Server-Fehlern lokalen Fallback versuchen
             } else {
                 const errorData = response.data ?? {};
-                console.warn(`❌ Backend Response nicht OK (${response.status}):`, errorData);
+                logger.warn(`❌ Backend Response nicht OK (${response.status}):`, errorData);
                 return null; // Bei 4xx Fehlern kein Fallback
             }
 
             // ⚠️ FALLBACK: Nur bei Server-Fehlern oder wenn lokaler Token existiert
-            console.log('🔄 Backend nicht verfügbar - prüfe lokalen Fallback');
+            logger.log('🔄 Backend nicht verfügbar - prüfe lokalen Fallback');
             const storedInvites = this.getStoredInviteTokens();
             const invite = storedInvites.find(inv => inv.token === token);
 
             if (!invite) {
-                console.warn('❌ Token weder im Backend noch lokal gefunden:', token);
+                logger.warn('❌ Token weder im Backend noch lokal gefunden:', token);
                 return null;
             }
 
             if (invite.expiresAt < Date.now()) {
-                console.warn('❌ Lokaler Token ist abgelaufen:', token);
+                logger.warn('❌ Lokaler Token ist abgelaufen:', token);
                 return null;
             }
 
             if (invite.usedAt) {
-                console.warn('❌ Lokaler Token wurde bereits verwendet:', token);
+                logger.warn('❌ Lokaler Token wurde bereits verwendet:', token);
                 return null;
             }
 
-            console.log('✅ Fallback zu lokalem Token erfolgreich');
+            logger.log('✅ Fallback zu lokalem Token erfolgreich');
             return invite;
         } catch (error) {
-            console.error('❌ Fehler beim Validieren des Invite-Tokens:', error);
+            logger.error('❌ Fehler beim Validieren des Invite-Tokens:', error);
 
             // Bei Netzwerkfehlern lokalen Fallback versuchen
-            console.log('🔄 Netzwerkfehler - versuche lokalen Fallback');
+            logger.log('🔄 Netzwerkfehler - versuche lokalen Fallback');
             const storedInvites = this.getStoredInviteTokens();
             const invite = storedInvites.find(inv => inv.token === token);
 
             if (invite && invite.expiresAt > Date.now() && !invite.usedAt) {
-                console.log('✅ Lokaler Fallback erfolgreich');
+                logger.log('✅ Lokaler Fallback erfolgreich');
                 return invite;
             }
 
-            console.warn('❌ Kein gültiger lokaler Token verfügbar');
+            logger.warn('❌ Kein gültiger lokaler Token verfügbar');
             return null;
         }
     }
@@ -335,49 +336,49 @@ export class InviteManager {
             const authToken = user?.access_token;
 
             if (!authToken) {
-                console.error('❌ Kein Access-Token gefunden - User muss eingeloggt sein');
+                logger.error('❌ Kein Access-Token gefunden - User muss eingeloggt sein');
                 throw new Error('No access token available');
             }
 
-            console.log(`🔄 Backend-Gruppenbeitritt für Token: ${token}`);
+            logger.log(`🔄 Backend-Gruppenbeitritt für Token: ${token}`);
 
             try {
                 const api = createSecureApiClient();
                 const response = await api.post(groupJoinInvitationApi(token));
 
-                console.log(`📡 Response Status: ${response.status}`);
+                logger.log(`📡 Response Status: ${response.status}`);
 
                 if (response.status === 200) {
                     const data = response.data;
-                    console.log(`✅ Backend-Gruppenbeitritt erfolgreich: "${data.group?.name}"`);
+                    logger.log(`✅ Backend-Gruppenbeitritt erfolgreich: "${data.group?.name}"`);
                     this.removePendingInvite(token);
                     return true;
                 } else if (response.status === 422) {
-                    console.error('❌ 422 Unprocessable Entity - Token oder Request Problem');
+                    logger.error('❌ 422 Unprocessable Entity - Token oder Request Problem');
                     const errorText = typeof response.data === 'string' ? response.data : JSON.stringify(response.data);
-                    console.error('Error details:', errorText);
+                    logger.error('Error details:', errorText);
                     throw new Error(`422 Unprocessable Entity: ${errorText}`);
                 } else if (response.status === 404) {
-                    console.warn('❌ Token nicht gefunden (404)');
+                    logger.warn('❌ Token nicht gefunden (404)');
                     this.removePendingInvite(token);
                     throw new Error('Token nicht gefunden');
                 } else if (response.status === 409) {
-                    console.warn('❌ Bereits Mitglied der Gruppe (409)');
+                    logger.warn('❌ Bereits Mitglied der Gruppe (409)');
                     this.removePendingInvite(token);
                     return true;
                 } else {
                     const error = response.data || { error: 'Backend-Fehler' };
-                    console.warn(`❌ Backend-Gruppenbeitritt fehlgeschlagen (${response.status}):`, error);
+                    logger.warn(`❌ Backend-Gruppenbeitritt fehlgeschlagen (${response.status}):`, error);
                     throw new Error(error.error || 'Backend-Fehler beim Gruppenbeitritt');
                 }
             } catch (fetchError: unknown) {
                 const errorMessage = fetchError instanceof Error ? fetchError.message : String(fetchError);
-                console.warn('⚠️ Backend-API Fehler:', errorMessage);
+                logger.warn('⚠️ Backend-API Fehler:', errorMessage);
                 throw fetchError;
             }
         } catch (error: unknown) {
             const errorMessage = error instanceof Error ? error.message : String(error);
-            console.error('❌ Fehler beim Gruppenbeitritt:', errorMessage);
+            logger.error('❌ Fehler beim Gruppenbeitritt:', errorMessage);
             throw error;
         }
     }
@@ -398,7 +399,7 @@ export class InviteManager {
             }));
 
             localStorage.setItem(this.STORAGE_KEY, JSON.stringify(updatedInvites));
-            console.log(`${persistentInvites.length} persistente Invites mit Email ${email} verknüpft`);
+            logger.log(`${persistentInvites.length} persistente Invites mit Email ${email} verknüpft`);
         }
     }
 
@@ -407,14 +408,14 @@ export class InviteManager {
      */
     static debugPendingInvites(): void {
         const pendingInvites = this.getPendingInvites();
-        console.log('🔍 Aktuelle pending Invites:', pendingInvites);
+        logger.log('🔍 Aktuelle pending Invites:', pendingInvites);
 
         if (pendingInvites.length === 0) {
-            console.log('✅ Keine pending Invites vorhanden');
+            logger.log('✅ Keine pending Invites vorhanden');
         } else {
             pendingInvites.forEach((invite, index) => {
                 const expiredText = invite.expiresAt < Date.now() ? ' (ABGELAUFEN)' : '';
-                console.log(`${index + 1}. ${invite.groupName} - Token: ${invite.token.substring(0, 10)}...${expiredText}`);
+                logger.log(`${index + 1}. ${invite.groupName} - Token: ${invite.token.substring(0, 10)}...${expiredText}`);
             });
         }
     }
@@ -425,7 +426,7 @@ export class InviteManager {
     static forceCleanPendingInvites(): void {
         const beforeCount = this.getPendingInvites().length;
         this.clearPendingInvites();
-        console.log(`🗑️ ${beforeCount} pending Invites zwangsweise gelöscht`);
+        logger.log(`🗑️ ${beforeCount} pending Invites zwangsweise gelöscht`);
     }
 
     /**
@@ -475,7 +476,7 @@ export class InviteManager {
             const stored = localStorage.getItem('invite_tokens');
             return stored ? JSON.parse(stored) : [];
         } catch (error) {
-            console.warn('Fehler beim Laden der Invite-Tokens:', error);
+            logger.warn('Fehler beim Laden der Invite-Tokens:', error);
             return [];
         }
     }

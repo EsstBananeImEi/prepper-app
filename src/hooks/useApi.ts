@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { notification } from 'antd';
 import i18n from '../i18n';
 import axios from 'axios';
+import logger from '../utils/logger';
 
 interface ApiState<T> {
     data: T | null;
@@ -23,15 +24,15 @@ export function handleApiError(error: unknown, showNotification: boolean = true)
     let debugInfo = '';
 
     if (axios.isAxiosError(error)) {
-        console.group('🚨 API Error Details');
-        console.error('Status:', error.response?.status);
-        console.error('Status Text:', error.response?.statusText);
-        console.error('URL:', error.config?.url);
-        console.error('Method:', error.config?.method?.toUpperCase());
-        console.error('Headers:', error.config?.headers);
-        console.error('Request Data:', error.config?.data);
-        console.error('Response Data:', error.response?.data);
-        console.groupEnd();
+        logger.group('🚨 API Error Details');
+        logger.error('Status:', error.response?.status);
+        logger.error('Status Text:', error.response?.statusText);
+        logger.error('URL:', error.config?.url);
+        logger.error('Method:', error.config?.method?.toUpperCase());
+        logger.error('Headers:', error.config?.headers);
+        logger.error('Request Data:', error.config?.data);
+        logger.error('Response Data:', error.response?.data);
+        logger.groupEnd();
 
         // Handle specific error cases
         switch (error.response?.status) {
@@ -69,7 +70,7 @@ export function handleApiError(error: unknown, showNotification: boolean = true)
             errorMessage += ` [Debug: ${debugInfo}]`;
         }
     } else if (error instanceof Error) {
-        console.error('Non-Axios Error:', error);
+        logger.error('Non-Axios Error:', error);
         errorMessage = error.message;
     }
 

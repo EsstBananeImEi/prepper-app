@@ -3,6 +3,7 @@ import { Result, Button, Typography } from 'antd';
 import { BugOutlined, ReloadOutlined, MailOutlined } from '@ant-design/icons';
 import { errorsApi, errorsNotifyApi } from '../../shared/Constants';
 import createSecureApiClient from '../../utils/secureApiClient';
+import logger from '../../utils/logger';
 
 const { Paragraph, Text } = Typography;
 
@@ -68,7 +69,7 @@ class ErrorBoundary extends Component<Props, State> {
     }
 
     componentDidCatch(error: Error, errorInfo: ErrorInfo) {
-        console.error('ErrorBoundary caught an error:', error, errorInfo);
+        logger.error('ErrorBoundary caught an error:', error, errorInfo);
 
         const errorId = `error_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
 
@@ -119,7 +120,7 @@ class ErrorBoundary extends Component<Props, State> {
             const recentErrors = existingErrors.slice(-50);
             localStorage.setItem('error_logs', JSON.stringify(recentErrors));
         } catch (e) {
-            console.error('Failed to log to localStorage:', e);
+            logger.error('Failed to log to localStorage:', e);
         }
     };
 
@@ -129,7 +130,7 @@ class ErrorBoundary extends Component<Props, State> {
             const api = createSecureApiClient();
             await api.post(errorsApi, errorReport);
         } catch (e) {
-            console.error('Failed to log to server:', e);
+            logger.error('Failed to log to server:', e);
             // Fallback: Speichere in localStorage für späteren Upload
             this.logToLocalStorage({ ...errorReport, failedServerUpload: true });
         }
@@ -144,7 +145,7 @@ class ErrorBoundary extends Component<Props, State> {
                 notificationType: 'email'
             });
         } catch (e) {
-            console.error('Failed to send error email:', e);
+            logger.error('Failed to send error email:', e);
         }
     };
 
@@ -178,7 +179,7 @@ class ErrorBoundary extends Component<Props, State> {
 
             if (failedUploads.length === 0) return;
 
-            console.log(`Versuche ${failedUploads.length} fehlgeschlagene Error-Logs erneut hochzuladen...`);
+            logger.log(`Versuche ${failedUploads.length} fehlgeschlagene Error-Logs erneut hochzuladen...`);
 
             const successfulRetries: ErrorReport[] = [];
 
@@ -193,10 +194,10 @@ class ErrorBoundary extends Component<Props, State> {
 
                     // Erfolgreich hochgeladen - von failed logs entfernen
                     successfulRetries.push(errorReport);
-                    console.log(`Error-Log ${errorReport.errorId} erfolgreich nachträglich hochgeladen`);
+                    logger.log(`Error-Log ${errorReport.errorId} erfolgreich nachträglich hochgeladen`);
 
                 } catch (retryError) {
-                    console.warn(`Retry für Error-Log ${errorReport.errorId} fehlgeschlagen:`, retryError);
+                    logger.warn(`Retry für Error-Log ${errorReport.errorId} fehlgeschlagen:`, retryError);
                 }
             }
 
@@ -213,11 +214,11 @@ class ErrorBoundary extends Component<Props, State> {
                 });
 
                 localStorage.setItem('error_logs', JSON.stringify(updatedLogs));
-                console.log(`${successfulRetries.length} Error-Logs erfolgreich nachträglich hochgeladen`);
+                logger.log(`${successfulRetries.length} Error-Logs erfolgreich nachträglich hochgeladen`);
             }
 
         } catch (e) {
-            console.error('Fehler beim Retry von failed uploads:', e);
+            logger.error('Fehler beim Retry von failed uploads:', e);
         }
     };
 

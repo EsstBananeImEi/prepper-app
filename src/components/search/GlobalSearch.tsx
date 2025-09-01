@@ -6,6 +6,7 @@ import { useStore } from '../../store/Store';
 import { BasketModel, StorageModel } from '../storage-components/StorageModel';
 import { useTranslation } from 'react-i18next';
 import { basketRoute, checklistRoute, detailsRouteBase, itemIdRoute, itemsRoute, newItemRoute } from '../../shared/Constants';
+import logger from '../../utils/logger';
 
 const { Text } = Typography;
 
@@ -207,7 +208,7 @@ const GlobalSearch: React.FC = () => {
                 type: 'emergency' as const,
                 data: category
             }));
-        console.log('Emergency search results:', emergencyResults);
+        logger.log('Emergency search results:', emergencyResults);
         results.push(...emergencyResults);
 
         // Seiten durchsuchen
@@ -266,31 +267,31 @@ const GlobalSearch: React.FC = () => {
 
     // Synchronisation von searchResults und options
     useEffect(() => {
-        console.log('Setting options from searchResults:', searchResults);
+        logger.log('Setting options from searchResults:', searchResults);
         setOptions(searchResults);
     }, [searchResults]);
 
     const handleSelect = (value: string) => {
-        console.log('handleSelect called with value:', value);
-        console.log('Current searchResults:', searchResults);
-        console.log('Current options:', options);
+        logger.log('handleSelect called with value:', value);
+        logger.log('Current searchResults:', searchResults);
+        logger.log('Current options:', options);
 
         // Suche sowohl in searchResults als auch in options als Fallback
         let selected = searchResults.find(item => item.value === value);
         if (!selected) {
-            console.warn('Not found in searchResults, searching in options...');
+            logger.warn('Not found in searchResults, searching in options...');
             const optionItem = options.find(item => typeof item === 'object' && 'value' in item && item.value === value);
             if (optionItem && typeof optionItem === 'object' && 'data' in optionItem) {
                 selected = optionItem as SearchResult;
             }
         }
 
-        console.log('Selected search result:', selected);
+        logger.log('Selected search result:', selected);
 
         if (!selected || !selected.data) {
-            console.warn('GlobalSearch: Kein Item oder Daten für selected value gefunden:', value);
-            console.warn('Available values in searchResults:', searchResults.map(r => r.value));
-            console.warn('Available values in options:', options.map(o => typeof o === 'object' && 'value' in o ? o.value : 'invalid'));
+            logger.warn('GlobalSearch: Kein Item oder Daten für selected value gefunden:', value);
+            logger.warn('Available values in searchResults:', searchResults.map(r => r.value));
+            logger.warn('Available values in options:', options.map(o => typeof o === 'object' && 'value' in o ? o.value : 'invalid'));
             return;
         }
 
@@ -298,22 +299,22 @@ const GlobalSearch: React.FC = () => {
             switch (selected.type) {
                 case 'storage': {
                     const storageItem = selected.data as StorageModel;
-                    console.log('Navigating to storage item:', storageItem);
+                    logger.log('Navigating to storage item:', storageItem);
                     if (storageItem && storageItem.id) {
                         navigate(itemIdRoute(storageItem.id));
                     } else {
-                        console.warn('GlobalSearch: StorageModel hat keine ID:', storageItem);
+                        logger.warn('GlobalSearch: StorageModel hat keine ID:', storageItem);
                         navigate(itemsRoute); // Fallback zur Items-Liste
                     }
                     break;
                 }
                 case 'emergency': {
                     const emergencyData = selected.data as EmergencyCategory;
-                    console.log('Navigating to emergency category:', emergencyData);
+                    logger.log('Navigating to emergency category:', emergencyData);
                     if (emergencyData && emergencyData.path) {
                         navigate(emergencyData.path);
                     } else {
-                        console.warn('GlobalSearch: EmergencyCategory hat keinen path:', emergencyData);
+                        logger.warn('GlobalSearch: EmergencyCategory hat keinen path:', emergencyData);
                         navigate('/'); // Fallback zur Hauptseite
                     }
                     break;
@@ -323,33 +324,33 @@ const GlobalSearch: React.FC = () => {
                     if (pageData && pageData.path) {
                         navigate(pageData.path);
                     } else {
-                        console.warn('GlobalSearch: Page hat keinen path:', pageData);
+                        logger.warn('GlobalSearch: Page hat keinen path:', pageData);
                         navigate('/'); // Fallback zur Hauptseite
                     }
                     break;
                 }
                 case 'shopping': {
                     const basketItem = selected.data as BasketModel;
-                    console.log('Navigating to basket for item:', basketItem);
+                    logger.log('Navigating to basket for item:', basketItem);
                     // Für Einkaufswagen navigieren wir immer zur basket-Seite
                     navigate(basketRoute);
                     break;
                 }
                 case 'checklist': {
                     const checklistItem = selected.data as ChecklistItem;
-                    console.log('Navigating to checklist for item:', checklistItem);
+                    logger.log('Navigating to checklist for item:', checklistItem);
                     // Für Checklist-Items navigieren wir zur Checklist-Seite
                     navigate(checklistRoute);
                     break;
                 }
                 default: {
-                    console.warn('GlobalSearch: Unbekannter type:', selected.type);
+                    logger.warn('GlobalSearch: Unbekannter type:', selected.type);
                     navigate('/'); // Fallback zur Hauptseite
                     break;
                 }
             }
         } catch (error) {
-            console.error('GlobalSearch: Fehler bei Navigation:', error, selected);
+            logger.error('GlobalSearch: Fehler bei Navigation:', error, selected);
             navigate('/'); // Fallback zur Hauptseite
         }
 

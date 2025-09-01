@@ -6,6 +6,7 @@ import { InviteManager, type InviteToken } from '../../utils/inviteManager';
 import { useStore } from '../../store/Store';
 import { useTranslation } from 'react-i18next';
 import { loginRoute, registerRoute, inviteRoute, userRoute, homeRoute } from '../../shared/Constants';
+import logger from '../../utils/logger';
 
 const { Title, Text, Paragraph } = Typography;
 
@@ -53,7 +54,7 @@ const InvitePage: React.FC = () => {
                 invite.expiresAt
             );
 
-            console.log('📝 Invite gespeichert, zeige Login-Buttons an');
+            logger.log('📝 Invite gespeichert, zeige Login-Buttons an');
             // KEINE navigate() mehr - die UI zeigt Login/Register-Buttons
         }
     }, [loading, invite, error, store.user, token, navigate]);
@@ -70,7 +71,7 @@ const InvitePage: React.FC = () => {
 
             setInvite(validatedInvite);
         } catch (error) {
-            console.error('Fehler beim Validieren der Einladung:', error);
+            logger.error('Fehler beim Validieren der Einladung:', error);
             setError(t('invitePage.errors.validate'));
         } finally {
             setLoading(false);
@@ -116,7 +117,7 @@ const InvitePage: React.FC = () => {
                 });
             }
         } catch (error) {
-            console.error('Fehler beim Gruppenbeitritt:', error);
+            logger.error('Fehler beim Gruppenbeitritt:', error);
             setError(t('invitePage.errors.join'));
         } finally {
             setJoining(false);

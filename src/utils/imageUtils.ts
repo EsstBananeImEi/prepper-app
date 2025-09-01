@@ -2,6 +2,7 @@
  * Utility functions for image processing and validation
  */
 import i18n from '../i18n';
+import logger from './logger';
 
 export interface ImageValidationResult {
     isValid: boolean;
@@ -73,7 +74,7 @@ export function validateBase64Image(base64String: string): ImageValidationResult
             const supportedFormats = ['jpeg', 'jpg', 'png', 'gif', 'webp', 'bmp', 'svg+xml'];
 
             if (!supportedFormats.includes(mimeType)) {
-                console.warn(`Unsupported image format detected: ${mimeType}`);
+                logger.warn(`Unsupported image format detected: ${mimeType}`);
                 return {
                     isValid: false,
                     error: t('utils.image.unsupportedFormat', { format: mimeType, supported: supportedFormats.join(', ') })
@@ -257,7 +258,7 @@ export function ensureDataUrlPrefix(base64String: string, mimeType: string = 'im
  */
 export function validateAndCleanStorageItems<T extends { icon?: string; id?: number | string; name?: string }>(items: T[]): T[] {
     if (!items || !Array.isArray(items)) {
-        console.warn('Invalid storage items provided for validation');
+        logger.warn('Invalid storage items provided for validation');
         return [];
     }
 
@@ -273,8 +274,8 @@ export function validateAndCleanStorageItems<T extends { icon?: string; id?: num
                 // Icon is valid, return as is
                 return item;
             } else {                // Icon is corrupted, remove it and log warning
-                console.warn(`Storage item ${index} has corrupted image data:`, validation.error);
-                console.warn('Item details:', {
+                logger.warn(`Storage item ${index} has corrupted image data:`, validation.error);
+                logger.warn('Item details:', {
                     id: item.id,
                     name: item.name,
                     iconLength: item.icon?.length
@@ -286,8 +287,8 @@ export function validateAndCleanStorageItems<T extends { icon?: string; id?: num
                 };
             }
         } catch (error) {            // Error during validation, clear icon
-            console.error(`Error validating image for storage item ${index}:`, error);
-            console.warn('Item details:', {
+            logger.error(`Error validating image for storage item ${index}:`, error);
+            logger.warn('Item details:', {
                 id: item.id,
                 name: item.name,
                 iconLength: item.icon?.length
@@ -351,41 +352,41 @@ export function repairBase64Image(base64String: string): ImageValidationResult {
  * Debug function to analyze image data and provide detailed information
  */
 export function debugImageData(base64String: string, context: string = 'Unknown'): void {
-    console.group(`🔍 Image Debug Analysis - ${context}`);
+    logger.group(`🔍 Image Debug Analysis - ${context}`);
 
     if (!base64String) {
-        console.warn('❌ No image data provided');
-        console.groupEnd();
+        logger.warn('❌ No image data provided');
+        logger.groupEnd();
         return;
     }
 
-    console.log('📊 Basic Info:');
-    console.log('- Length:', base64String.length);
-    console.log('- First 50 chars:', base64String.substring(0, 50));
-    console.log('- Last 50 chars:', base64String.substring(Math.max(0, base64String.length - 50)));
-    console.log('- Contains data URL prefix:', base64String.startsWith('data:'));
+    logger.log('📊 Basic Info:');
+    logger.log('- Length:', base64String.length);
+    logger.log('- First 50 chars:', base64String.substring(0, 50));
+    logger.log('- Last 50 chars:', base64String.substring(Math.max(0, base64String.length - 50)));
+    logger.log('- Contains data URL prefix:', base64String.startsWith('data:'));
 
     if (base64String.startsWith('data:')) {
         const parts = base64String.split(',');
-        console.log('📋 Data URL Info:');
-        console.log('- Header:', parts[0]);
-        console.log('- Data length:', parts[1]?.length || 0);
+        logger.log('📋 Data URL Info:');
+        logger.log('- Header:', parts[0]);
+        logger.log('- Data length:', parts[1]?.length || 0);
 
         if (parts[1]) {
             try {
                 const detectedFormat = detectImageFormat(parts[1]);
-                console.log('- Detected format:', detectedFormat);
+                logger.log('- Detected format:', detectedFormat);
             } catch (error) {
-                console.warn('- Format detection failed:', error);
+                logger.warn('- Format detection failed:', error);
             }
         }
     } else {
         try {
             const detectedFormat = detectImageFormat(base64String);
-            console.log('📋 Format Info:');
-            console.log('- Detected format:', detectedFormat);
+            logger.log('📋 Format Info:');
+            logger.log('- Detected format:', detectedFormat);
         } catch (error) {
-            console.warn('- Format detection failed:', error);
+            logger.warn('- Format detection failed:', error);
         }
     }
 
@@ -394,15 +395,15 @@ export function debugImageData(base64String: string, context: string = 'Unknown'
         const testData = base64String.startsWith('data:') ? base64String.split(',')[1] : base64String;
         if (testData) {
             window.atob(testData.substring(0, Math.min(100, testData.length)));
-            console.log('✅ Base64 validation: VALID');
+            logger.log('✅ Base64 validation: VALID');
         }
     } catch (error) {
-        console.error('❌ Base64 validation: INVALID', error);
+        logger.error('❌ Base64 validation: INVALID', error);
     }
 
     // Run full validation
     const validation = validateBase64Image(base64String);
-    console.log('🔧 Validation Result:', validation);
+    logger.log('🔧 Validation Result:', validation);
 
-    console.groupEnd();
+    logger.groupEnd();
 }

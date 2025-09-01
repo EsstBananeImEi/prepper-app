@@ -8,6 +8,7 @@ import { useTranslation } from 'react-i18next';
 import { useStore } from '../../store/Store';
 import { useNavigate, useParams } from 'react-router-dom';
 import listStyles from '../storage-components/storage-list/StorageList.module.css';
+import logger from '../../utils/logger';
 
 interface ManagedUser {
     id: number;
@@ -56,7 +57,7 @@ export default function AdminUsersPage() {
             const list = await adminApi.listUsers();
             setUsers(list);
         } catch (e) {
-            console.error(e);
+            logger.error(e);
             message.error(t('adminUsers.messages.loadError'));
         } finally {
             setLoading(false);

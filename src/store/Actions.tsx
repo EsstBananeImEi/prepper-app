@@ -5,15 +5,16 @@ import { validateBase64Image, debugImageData } from '../utils/imageUtils';
 import { apiDebugger } from '../utils/apiDebugger';
 import { env } from 'process';
 import createSecureApiClient from '../utils/secureApiClient';
+import logger from '../utils/logger';
 
 export const actionHandler = (action: Action, callback: React.Dispatch<Action>): Promise<void> => {
 
     // Add stack trace for automatic storage updates to help debug
     // if (action.type === 'INCREASE_STORAGE_ITEM' || action.type === 'DECREASE_STORAGE_ITEM' || action.type === 'UPDATE_STORAGE_ITEM') {
-    //     console.group(`🔍 Debugging Storage Action: ${action.type}`);
-    //     console.log('Action details:', action);
-    //     console.trace('Call stack for this storage action');
-    //     console.groupEnd();
+    //     logger.group(`🔍 Debugging Storage Action: ${action.type}`);
+    //     logger.log('Action details:', action);
+    //     logger.trace('Call stack for this storage action');
+    //     logger.groupEnd();
     // }
 
     switch (action.type) {
@@ -106,8 +107,8 @@ function sendStorageRequest(
 
         // If icon looks like it might be a data URL (common mistake), strip the prefix
         // if (requestData.icon.startsWith('data:image/')) {
-        //     console.warn('Icon contains data URL prefix, this might cause API errors');
-        //     console.log('Original icon starts with:', requestData.icon.substring(0, 30));
+        //     logger.warn('Icon contains data URL prefix, this might cause API errors');
+        //     logger.log('Original icon starts with:', requestData.icon.substring(0, 30));
         //     // The sanitizeBase64ForApi should have already handled this, but double-check
         // }
 
@@ -117,20 +118,20 @@ function sendStorageRequest(
                 window.atob(requestData.icon.substring(0, Math.min(requestData.icon.length, 100)));
             }
         } catch (error) {
-            console.error('❌ Icon is not valid Base64:', error);
-            console.error('This will likely cause API errors');
+            logger.error('❌ Icon is not valid Base64:', error);
+            logger.error('This will likely cause API errors');
         }
-        console.groupEnd();
+        logger.groupEnd();
     }
 
     // Log request details for debugging
-    // console.group('🌐 Storage API Request');
-    // console.log('Method:', method);
-    // console.log('URL:', `${baseApiUrl}${path}`);
-    // console.log('Data keys:', Object.keys(requestData));
-    // console.log('Has Icon:', !!requestData.icon);
-    // console.log('Icon length:', requestData.icon?.length || 0); console.log('Has Token:', !!token);
-    // console.groupEnd();
+    // logger.group('🌐 Storage API Request');
+    // logger.log('Method:', method);
+    // logger.log('URL:', `${baseApiUrl}${path}`);
+    // logger.log('Data keys:', Object.keys(requestData));
+    // logger.log('Has Icon:', !!requestData.icon);
+    // logger.log('Icon length:', requestData.icon?.length || 0); logger.log('Has Token:', !!token);
+    // logger.groupEnd();
 
     const startTime = Date.now();
     const requestUrl = `${baseApiUrl}${path}`;
@@ -156,10 +157,10 @@ function sendStorageRequest(
             responseData: response.data
         });
 
-        // console.group('✅ Storage API Response');
-        // console.log('Status:', response.status);
-        // console.log('Response Data:', response.data);
-        // console.groupEnd();
+        // logger.group('✅ Storage API Response');
+        // logger.log('Status:', response.status);
+        // logger.log('Response Data:', response.data);
+        // logger.groupEnd();
 
         // Check if the response contains an error message even with 200 status
         if (response.data && typeof response.data === 'string' &&
@@ -168,10 +169,10 @@ function sendStorageRequest(
                 response.data.includes('error') ||
                 response.data.includes('Error'))) {
 
-            // console.group('⚠️ API Response contains error message');
-            // console.error('Error in successful response:', response.data);
-            // console.error('This indicates backend validation failed');
-            // console.groupEnd();
+            // logger.group('⚠️ API Response contains error message');
+            // logger.error('Error in successful response:', response.data);
+            // logger.error('This indicates backend validation failed');
+            // logger.groupEnd();
 
             // Log the error to API debugger
             apiDebugger.logRequest({
@@ -209,11 +210,11 @@ function sendStorageRequest(
                 responseData: error.response?.data
             });
 
-            // console.group('❌ Storage API Error');
-            // console.error('Status:', error.response?.status);
-            // console.error('Response:', error.response?.data);
-            // console.error('Request Data:', requestData);
-            // console.groupEnd();
+            // logger.group('❌ Storage API Error');
+            // logger.error('Status:', error.response?.status);
+            // logger.error('Response:', error.response?.data);
+            // logger.error('Request Data:', requestData);
+            // logger.groupEnd();
             return Promise.reject(error);
         });
 }

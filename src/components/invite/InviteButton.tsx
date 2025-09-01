@@ -5,6 +5,7 @@ import { InviteManager } from '../../utils/inviteManager';
 import { groupsApiService } from '../../hooks/useGroupsApi';
 import InvitationManager from './InvitationManager';
 import styles from './InviteButton.module.css';
+import logger from '../../utils/logger';
 
 const { Text, Paragraph } = Typography;
 
@@ -48,10 +49,10 @@ const InviteButton: React.FC<InviteButtonProps> = ({
             const url = InviteManager.createInviteUrl(backendToken);
             setInviteUrl(url);
 
-            console.log('✅ Backend-Token erstellt:', backendToken);
-            console.log('🔗 Invite link generated:', url);
+            logger.log('✅ Backend-Token erstellt:', backendToken);
+            logger.log('🔗 Invite link generated:', url);
         } catch (error) {
-            console.error('Fehler beim Erstellen des Invite-Links:', error);
+            logger.error('Fehler beim Erstellen des Invite-Links:', error);
             message.error('Fehler beim Erstellen des Einladungslinks');
         } finally {
             setLoading(false);
@@ -70,7 +71,7 @@ const InviteButton: React.FC<InviteButtonProps> = ({
             await navigator.clipboard.writeText(inviteUrl);
             message.success('Einladungslink in die Zwischenablage kopiert!');
         } catch (error) {
-            console.error('Fehler beim Kopieren:', error);
+            logger.error('Fehler beim Kopieren:', error);
             // Fallback für ältere Browser
             const textArea = document.createElement('textarea');
             textArea.value = inviteUrl;
@@ -127,11 +128,11 @@ const InviteButton: React.FC<InviteButtonProps> = ({
             const url = InviteManager.createInviteUrl(backendToken);
             setInviteUrl(url);
 
-            console.log('✅ Backend-Email gesendet mit Token:', backendToken);
+            logger.log('✅ Backend-Email gesendet mit Token:', backendToken);
             message.success(`Einladung erfolgreich an ${values.email} gesendet!`);
             emailForm.resetFields();
         } catch (error) {
-            console.error('Fehler beim Senden der Email-Einladung:', error);
+            logger.error('Fehler beim Senden der Email-Einladung:', error);
             message.error('Fehler beim Senden der Email-Einladung');
         } finally {
             setSendingEmail(false);

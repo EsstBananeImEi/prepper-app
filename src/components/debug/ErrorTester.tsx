@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Button, Space, Card, Typography, Alert, Divider, message, notification } from 'antd';
 import { BugOutlined, CheckCircleOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
+import logger from '../../utils/logger';
 
 const { Title, Text } = Typography;
 
@@ -18,13 +19,13 @@ const ErrorTester: React.FC = () => {
     if (triggerType === 'typeError') {
         // TypeError im Render-Zyklus - wird von ErrorBoundary abgefangen
         const obj: null = null;
-        console.log((obj as unknown as { someProperty: { nestedProperty: string } }).someProperty.nestedProperty);
+        logger.log((obj as unknown as { someProperty: { nestedProperty: string } }).someProperty.nestedProperty);
     }
 
     if (triggerType === 'referenceError') {
         // ReferenceError im Render-Zyklus - wird von ErrorBoundary abgefangen
         // @ts-expect-error - Bewusster ReferenceError für Testing
-        console.log(nonExistentVariable);
+        logger.log(nonExistentVariable);
     }
 
     if (triggerType === 'networkError') {
@@ -52,7 +53,7 @@ const ErrorTester: React.FC = () => {
         fetch('https://nonexistent-domain-12345.com/api/test')
             .then(response => response.json())
             .catch(error => {
-                console.error('Network Error (nicht von ErrorBoundary abgefangen):', error);
+                logger.error('Network Error (nicht von ErrorBoundary abgefangen):', error);
                 // Zusätzlich in localStorage loggen für Demonstration
                 const networkErrorLog = {
                     timestamp: new Date().toISOString(),
@@ -66,7 +67,7 @@ const ErrorTester: React.FC = () => {
                     existingLogs.push(networkErrorLog);
                     localStorage.setItem('manual_error_logs', JSON.stringify(existingLogs.slice(-20)));
                 } catch (e) {
-                    console.error('Failed to log network error:', e);
+                    logger.error('Failed to log network error:', e);
                 }
             });
     };
@@ -74,14 +75,14 @@ const ErrorTester: React.FC = () => {
     const triggerAsyncError = () => {
         // Async Error - wird NICHT von ErrorBoundary abgefangen
         setTimeout(() => {
-            console.error('Async Error (nicht von ErrorBoundary abgefangen): Dieser Fehler tritt nach 1 Sekunde auf');
+            logger.error('Async Error (nicht von ErrorBoundary abgefangen): Dieser Fehler tritt nach 1 Sekunde auf');
 
             // Demonstriere einen echten async error
             try {
                 const obj: { someProperty: { nestedProperty: string } } | null = null;
-                console.log(obj!.someProperty.nestedProperty);
+                logger.log(obj!.someProperty.nestedProperty);
             } catch (error) {
-                console.error('Async TypeError:', error);
+                logger.error('Async TypeError:', error);
 
                 // In localStorage loggen
                 const asyncErrorLog = {
@@ -96,7 +97,7 @@ const ErrorTester: React.FC = () => {
                     existingLogs.push(asyncErrorLog);
                     localStorage.setItem('manual_error_logs', JSON.stringify(existingLogs.slice(-20)));
                 } catch (e) {
-                    console.error('Failed to log async error:', e);
+                    logger.error('Failed to log async error:', e);
                 }
             }
         }, 1000);
@@ -106,9 +107,9 @@ const ErrorTester: React.FC = () => {
         try {
             // Event Handler Error - wird NICHT von ErrorBoundary abgefangen
             const obj: { someProperty: { nestedProperty: string } } | null = null;
-            console.log(obj!.someProperty.nestedProperty);
+            logger.log(obj!.someProperty.nestedProperty);
         } catch (error) {
-            console.error('Event Handler Error (nicht von ErrorBoundary abgefangen):', error);
+            logger.error('Event Handler Error (nicht von ErrorBoundary abgefangen):', error);
 
             // In localStorage loggen
             const eventErrorLog = {
@@ -123,7 +124,7 @@ const ErrorTester: React.FC = () => {
                 existingLogs.push(eventErrorLog);
                 localStorage.setItem('manual_error_logs', JSON.stringify(existingLogs.slice(-20)));
             } catch (e) {
-                console.error('Failed to log event handler error:', e);
+                logger.error('Failed to log event handler error:', e);
             }
         }
     };
@@ -152,7 +153,7 @@ const ErrorTester: React.FC = () => {
             message.success({ content: t('admin.devPanel.errorTester.messages.networkSuccess'), key: 'network' });
         } catch (error) {
             // ✅ KORREKTE Behandlung von Network-Fehlern
-            console.error('Network Error korrekt behandelt:', error);
+            logger.error('Network Error korrekt behandelt:', error);
 
             message.error({
                 content: t('admin.devPanel.errorTester.messages.networkUserError'),
@@ -176,7 +177,7 @@ const ErrorTester: React.FC = () => {
                 existingLogs.push(properErrorLog);
                 localStorage.setItem('properly_handled_errors', JSON.stringify(existingLogs.slice(-20)));
             } catch (e) {
-                console.error('Failed to log properly handled error:', e);
+                logger.error('Failed to log properly handled error:', e);
             }
         }
     };
@@ -187,7 +188,7 @@ const ErrorTester: React.FC = () => {
             setTimeout(() => {
                 const obj: { someProperty: { nestedProperty: string } } | null = null;
                 try {
-                    console.log(obj!.someProperty.nestedProperty);
+                    logger.log(obj!.someProperty.nestedProperty);
                     resolve('Success');
                 } catch (error) {
                     reject(error);
@@ -203,7 +204,7 @@ const ErrorTester: React.FC = () => {
             })
             .catch((error) => {
                 // ✅ KORREKTE Promise-Fehlerbehandlung
-                console.error('Async Error korrekt behandelt:', error);
+                logger.error('Async Error korrekt behandelt:', error);
 
                 notification.warning({
                     message: t('admin.devPanel.errorTester.messages.asyncFailedTitle'),
@@ -232,7 +233,7 @@ const ErrorTester: React.FC = () => {
                     existingLogs.push(properAsyncLog);
                     localStorage.setItem('properly_handled_errors', JSON.stringify(existingLogs.slice(-20)));
                 } catch (e) {
-                    console.error('Failed to log properly handled async error:', e);
+                    logger.error('Failed to log properly handled async error:', e);
                 }
             });
     };
@@ -241,10 +242,10 @@ const ErrorTester: React.FC = () => {
         try {
             // ✅ KORREKTE Event-Handler Fehlerbehandlung mit try-catch
             const obj: { someProperty: { nestedProperty: string } } | null = null;
-            console.log(obj!.someProperty.nestedProperty);
+            logger.log(obj!.someProperty.nestedProperty);
         } catch (error) {
             // ✅ KORREKTE Behandlung von Event-Handler-Fehlern
-            console.error('Event Handler Error korrekt behandelt:', error);
+            logger.error('Event Handler Error korrekt behandelt:', error);
 
             notification.error({
                 message: t('admin.devPanel.errorTester.messages.userActionFailedTitle'),
@@ -269,7 +270,7 @@ const ErrorTester: React.FC = () => {
                 existingLogs.push(properEventLog);
                 localStorage.setItem('properly_handled_errors', JSON.stringify(existingLogs.slice(-20)));
             } catch (e) {
-                console.error('Failed to log properly handled event error:', e);
+                logger.error('Failed to log properly handled event error:', e);
             }
         }
     };
@@ -456,19 +457,19 @@ const ErrorTester: React.FC = () => {
                         }}>
                             <div style={{ color: '#ff4d4f' }}>{t('admin.devPanel.errorTester.logsInspector.comment.problematic')}</div>
                             <div style={{ wordBreak: 'break-all' }}>
-                                console.log(JSON.parse(localStorage.getItem(&apos;manual_error_logs&apos;) || &apos;[]&apos;));
+                                logger.log(JSON.parse(localStorage.getItem(&apos;manual_error_logs&apos;) || &apos;[]&apos;));
                             </div>
                             <br />
 
                             <div style={{ color: '#52c41a' }}>{t('admin.devPanel.errorTester.logsInspector.comment.proper')}</div>
                             <div style={{ wordBreak: 'break-all' }}>
-                                console.log(JSON.parse(localStorage.getItem(&apos;properly_handled_errors&apos;) || &apos;[]&apos;));
+                                logger.log(JSON.parse(localStorage.getItem(&apos;properly_handled_errors&apos;) || &apos;[]&apos;));
                             </div>
                             <br />
 
                             <div style={{ color: '#1890ff' }}>{t('admin.devPanel.errorTester.logsInspector.comment.boundary')}</div>
                             <div style={{ wordBreak: 'break-all' }}>
-                                console.log(JSON.parse(localStorage.getItem(&apos;error_logs&apos;) || &apos;[]&apos;));
+                                logger.log(JSON.parse(localStorage.getItem(&apos;error_logs&apos;) || &apos;[]&apos;));
                             </div>
                             <br />
 

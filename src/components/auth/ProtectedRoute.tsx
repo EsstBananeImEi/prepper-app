@@ -11,6 +11,7 @@ type AdminValidationResponse = {
     user?: unknown;
 };
 import { useTranslation } from 'react-i18next';
+import logger from '../../utils/logger';
 
 interface ProtectedRouteProps {
     children: React.ReactNode;
@@ -91,7 +92,7 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
                     error: !isAuthorized ? (requireAdmin ? t('auth.protected.adminRequired') : t('auth.protected.unauthorized')) : undefined
                 });
             } catch (error: unknown) {
-                console.error('Auth validation failed:', error);
+                logger.error('Auth validation failed:', error);
 
                 // Fallback: If server validation fails, deny access for admin routes
                 if (requireAdmin) {

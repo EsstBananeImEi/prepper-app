@@ -8,6 +8,7 @@ import { InviteManager } from '../../utils/inviteManager';
 import { useTranslation } from 'react-i18next';
 import styles from './InvitationManager.module.css';
 import type { ColumnsType } from 'antd/es/table';
+import logger from '../../utils/logger';
 
 const { Text } = Typography;
 
@@ -40,7 +41,7 @@ const InvitationManager: React.FC<InvitationManagerProps> = ({
             const response = await groupsApiService.getGroupInvitations(parseInt(groupId));
             setInvitations(response.invitations);
         } catch (error) {
-            console.error('Fehler beim Laden der Einladungen:', error);
+            logger.error('Fehler beim Laden der Einladungen:', error);
             message.error(t('inviteManager.messages.loadError'));
         } finally {
             setRefreshing(false);
@@ -62,7 +63,7 @@ const InvitationManager: React.FC<InvitationManagerProps> = ({
             // Liste neu laden
             await loadInvitations();
         } catch (error) {
-            console.error('Fehler beim Widerrufen der Einladung:', error);
+            logger.error('Fehler beim Widerrufen der Einladung:', error);
             message.error(t('inviteManager.messages.revokeError'));
         } finally {
             setLoading(false);
@@ -76,7 +77,7 @@ const InvitationManager: React.FC<InvitationManagerProps> = ({
             await navigator.clipboard.writeText(url);
             message.success(t('inviteManager.messages.copySuccess'));
         } catch (error) {
-            console.error('Fehler beim Kopieren:', error);
+            logger.error('Fehler beim Kopieren:', error);
             message.error(t('inviteManager.messages.copyError'));
         }
     };

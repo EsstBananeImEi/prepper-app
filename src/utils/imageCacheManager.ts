@@ -1,3 +1,4 @@
+import logger from './logger';
 /**
  * Image cache manager using localStorage with size limits and expiration
  */
@@ -39,9 +40,9 @@ export class ImageCacheManager {
             };
 
             localStorage.setItem(cacheKey, JSON.stringify(cachedImage));
-            console.log(`Image cached for group ${groupId}, size: ${this.formatBytes(imageSize)}`);
+            logger.log(`Image cached for group ${groupId}, size: ${this.formatBytes(imageSize)}`);
         } catch (error) {
-            console.warn('Failed to cache image:', error);
+            logger.warn('Failed to cache image:', error);
             // If localStorage is full, try to clean and retry once
             this.cleanExpiredImages();
             try {
@@ -54,7 +55,7 @@ export class ImageCacheManager {
                 };
                 localStorage.setItem(cacheKey, JSON.stringify(cachedImage));
             } catch (retryError) {
-                console.error('Failed to cache image after cleanup:', retryError);
+                logger.error('Failed to cache image after cleanup:', retryError);
             }
         }
     }
@@ -81,7 +82,7 @@ export class ImageCacheManager {
 
             return cachedImage.data;
         } catch (error) {
-            console.warn('Failed to retrieve cached image:', error);
+            logger.warn('Failed to retrieve cached image:', error);
             return null;
         }
     }
@@ -94,7 +95,7 @@ export class ImageCacheManager {
             const cacheKey = this.getCacheKey(groupId);
             localStorage.removeItem(cacheKey);
         } catch (error) {
-            console.warn('Failed to remove cached image:', error);
+            logger.warn('Failed to remove cached image:', error);
         }
     }
 
@@ -125,7 +126,7 @@ export class ImageCacheManager {
 
         keysToRemove.forEach(key => localStorage.removeItem(key));
         if (keysToRemove.length > 0) {
-            console.log(`Cleaned ${keysToRemove.length} expired images from cache`);
+            logger.log(`Cleaned ${keysToRemove.length} expired images from cache`);
         }
     }
 
@@ -173,7 +174,7 @@ export class ImageCacheManager {
         }
 
         keysToRemove.forEach(key => localStorage.removeItem(key));
-        console.log(`Cleared ${keysToRemove.length} images from cache`);
+        logger.log(`Cleared ${keysToRemove.length} images from cache`);
     }
 
     /**
@@ -233,7 +234,7 @@ export class ImageCacheManager {
             }
         }
 
-        console.log(`Freed ${this.formatBytes(freedSpace)} by removing old images`);
+        logger.log(`Freed ${this.formatBytes(freedSpace)} by removing old images`);
     }
 
     /**
