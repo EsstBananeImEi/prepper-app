@@ -12,10 +12,75 @@ export interface Store {
     storeItems: StorageModel[];
 }
 
+// Session-Handling (Ablauf & Inaktivität)
+type SessionMeta = {
+    lastActiveAt: number; // ms epoch
+    expiresAt: number; // ms epoch
+};
+
+const SESSION_META_KEY = "sessionMeta";
+// Standard-Webapp Richtwerte: Absolut 8 Stunden, Idle 60 Minuten
+const SESSION_TTL_MIN = 480; // 8h absolute Sitzungsdauer
+const IDLE_TTL_MIN = 60;     // 1h Inaktivitäts-Timeout
+const SESSION_TTL_MS = SESSION_TTL_MIN * 60 * 1000;
+const IDLE_TTL_MS = IDLE_TTL_MIN * 60 * 1000;
+
+function readSessionMeta(): SessionMeta | null {
+    try {
+        const raw = localStorage.getItem(SESSION_META_KEY);
+        return raw ? JSON.parse(raw) as SessionMeta : null;
+    } catch {
+        return null;
+    }
+}
+
+function writeSessionMeta(meta: SessionMeta) {
+    localStorage.setItem(SESSION_META_KEY, JSON.stringify(meta));
+}
+
+function clearSessionMeta() {
+    localStorage.removeItem(SESSION_META_KEY);
+}
+
+function startNewSessionMeta(now: number = Date.now()): SessionMeta {
+    return { lastActiveAt: now, expiresAt: now + SESSION_TTL_MS };
+}
+
+function isSessionValid(meta: SessionMeta | null, now: number = Date.now()): boolean {
+    if (!meta) return false;
+    if (now > meta.expiresAt) return false; // absolute Ablauf
+    if (now - meta.lastActiveAt > IDLE_TTL_MS) return false; // Inaktivität
+    return true;
+}
+
+function updateLastActive(now: number = Date.now()) {
+    const meta = readSessionMeta();
+    if (!meta) return;
+    // Nur lastActiveAt aktualisieren; absolute expiresAt bleibt bestehen
+    writeSessionMeta({ ...meta, lastActiveAt: now });
+}
+
+function getInitialUser(): UserModel | null {
+    try {
+        const userRaw = localStorage.getItem("user");
+        const user = userRaw ? (JSON.parse(userRaw) as UserModel) : null;
+        const meta = readSessionMeta();
+        if (!user) return null;
+        if (!isSessionValid(meta)) {
+            localStorage.removeItem("user");
+            clearSessionMeta();
+            return null;
+        }
+        return user;
+    } catch {
+        return null;
+    }
+}
+
 // Initialer Zustand
 export const initialState: Store = {
     shoppingCard: [],
-    user: JSON.parse(localStorage.getItem("user") || "null"), // Benutzer nach Reload wiederherstellen
+    user: getInitialUser(), // Benutzer nach Reload wiederherstellen (mit Session-Validierung)
     storeItems: [],
 };
 
@@ -190,15 +255,18 @@ export function reducer(store: Store, action: Action): Store {
         case 'LOGIN_USER':
             console.log("Set Store User:", action.user);
             localStorage.setItem("user", JSON.stringify(action.user));
+            writeSessionMeta(startNewSessionMeta());
             return { ...store, user: action.user };
 
         // Benutzer Logout
         case 'LOGOUT_USER':
             localStorage.removeItem("user");
             localStorage.removeItem("debugPanelEnabled");
+            clearSessionMeta();
             return { ...store, user: null };
         case 'FORGOT_PASSWORD':
             localStorage.removeItem("user");
+            clearSessionMeta();
             return { ...store, user: null };
         case 'REGISTER_USER':
             // localStorage.setItem("user", JSON.stringify(action.user));
@@ -283,6 +351,29 @@ export function StoreProvider(props: { children: ReactElement, store?: Store }):
             dispatch({ type: 'INITIAL_STORAGE', storageItems: storageItems });
         }
     }, [storageItems, dispatch]);
+
+    // Session Inaktivitäts-/Ablauf-Überwachung
+    useEffect(() => {
+        const activity = () => updateLastActive();
+        const events: (keyof DocumentEventMap)[] = ['click', 'keydown', 'mousemove', 'touchstart', 'visibilitychange'];
+        events.forEach(evt => document.addEventListener(evt, activity, { passive: true } as AddEventListenerOptions));
+
+        const check = () => {
+            const userExists = !!localStorage.getItem('user');
+            const valid = isSessionValid(readSessionMeta());
+            if (userExists && !valid) {
+                dispatch({ type: 'LOGOUT_USER' });
+            }
+        };
+        // Sofort prüfen und anschließend in Intervallen
+        check();
+        const interval = window.setInterval(check, 60 * 1000); // alle 60s prüfen
+
+        return () => {
+            events.forEach(evt => document.removeEventListener(evt, activity as EventListener));
+            window.clearInterval(interval);
+        };
+    }, []);
     return (
         <StoreContext.Provider value={{ store, dispatch }}>
             {props.children}
