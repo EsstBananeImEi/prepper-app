@@ -6,6 +6,7 @@ import { apiDebugger } from '../utils/apiDebugger';
 import { env } from 'process';
 import createSecureApiClient from '../utils/secureApiClient';
 import logger from '../utils/logger';
+import { encryptedPost } from '../utils/authClient';
 
 export const actionHandler = (action: Action, callback: React.Dispatch<Action>): Promise<void> => {
 
@@ -247,7 +248,7 @@ function sendNutrientRequest(
         });
 }
 
-function sendUserRequest(
+async function sendUserRequest(
     method: Method,
     path: string,
     action: LoginUser | RegisterUser | EditUser | ForgotPassword,
@@ -257,6 +258,69 @@ function sendUserRequest(
     const token = userData ? JSON.parse(userData).access_token : null;
     const data = action.type === 'FORGOT_PASSWORD' ? { email: action.email } : { ...action.user };
 
+    // For authless user endpoints (login/register/forgot-password) use encryptedPost
+    const authlessEncryptedPaths = ['/login', '/register', '/forgot-password'];
+    if (authlessEncryptedPaths.includes(path) && method.toUpperCase() === 'POST') {
+        try {
+            const res = await encryptedPost(`${baseApiUrl}${path}`, data);
+            if (!res.ok) {
+                const text = await res.text().catch(() => '');
+                return Promise.reject(new Error(`Request failed: ${res.status} ${text}`));
+            }
+            const respJson = await res.json();
+            if (action.type !== 'FORGOT_PASSWORD') {
+                // Preserve email from request data if backend omits it (type-safe guard)
+                const requestEmail = (() => {
+                    if (data && typeof data === 'object' && Object.prototype.hasOwnProperty.call(data, 'email')) {
+                        const e = (data as Record<string, unknown>)['email'];
+                        return typeof e === 'string' ? e : undefined;
+                    }
+                    return undefined;
+                })();
+                if (!respJson.email && requestEmail) {
+                    respJson.email = requestEmail;
+                }
+                action = { ...action, user: respJson };
+            }
+            callback(action);
+            return Promise.resolve();
+        } catch (err) {
+            // If encryptedPost throws (network/CORS/encryption issues), try a plaintext axios POST as a last resort
+            // This ensures registration/login still proceeds in environments where encryption cannot complete.
+            // Log the original error for debugging (non-sensitive)
+            // eslint-disable-next-line no-console
+            console.warn('encryptedPost failed, falling back to plaintext axios POST:', err);
+            try {
+                const axiosRes = await axios({
+                    method: 'post',
+                    url: `${baseApiUrl}${path}`,
+                    data,
+                    timeout: 8000,
+                    headers: { 'Content-Type': 'application/json', 'X-Client-Encrypted': 'false' },
+                });
+                const respJson = axiosRes.data || {};
+                if (action.type !== 'FORGOT_PASSWORD') {
+                    const requestEmail = (() => {
+                        if (data && typeof data === 'object' && Object.prototype.hasOwnProperty.call(data, 'email')) {
+                            const e = (data as Record<string, unknown>)['email'];
+                            return typeof e === 'string' ? e : undefined;
+                        }
+                        return undefined;
+                    })();
+                    if (!respJson.email && requestEmail) {
+                        respJson.email = requestEmail;
+                    }
+                    action = { ...action, user: respJson };
+                }
+                callback(action);
+                return Promise.resolve();
+            } catch (err2) {
+                return Promise.reject(err2);
+            }
+        }
+    }
+
+    // Default: use axios client (keeps auth headers, etc.)
     const api = createSecureApiClient();
     return api({
         method,
@@ -267,7 +331,18 @@ function sendUserRequest(
     })
         .then((response: AxiosResponse) => {
             if (action.type !== 'FORGOT_PASSWORD') {
-                action = { ...action, user: response.data };
+                const respData = response.data || {};
+                const requestEmail = (() => {
+                    if (data && typeof data === 'object' && Object.prototype.hasOwnProperty.call(data, 'email')) {
+                        const e = (data as Record<string, unknown>)['email'];
+                        return typeof e === 'string' ? e : undefined;
+                    }
+                    return undefined;
+                })();
+                if (!respData.email && requestEmail) {
+                    respData.email = requestEmail;
+                }
+                action = { ...action, user: respData };
             }
             callback(action);
         })
