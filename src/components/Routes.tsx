@@ -20,6 +20,7 @@ import { adminRoute, adminUsersRoute, adminUserIdRoute, adminUserEditRoute, bask
 import Impressum from './legal/Impressum';
 import Privacy from './legal/Privacy';
 import Settings from './settings/Settings';
+import ScannerPro from './scanner/ScannerPro';
 
 export default function AppRoutes(): ReactElement {
     return (
@@ -65,6 +66,13 @@ export default function AppRoutes(): ReactElement {
             <Route path={settingsRoute} element={
                 <ProtectedRoute requireAuth={true}>
                     <Settings />
+                </ProtectedRoute>
+            } />
+
+            {/* Scanner route for testing barcode reads */}
+            <Route path={`/scanner`} element={
+                <ProtectedRoute requireAuth={true}>
+                    <ScannerPro />
                 </ProtectedRoute>
             } />
 

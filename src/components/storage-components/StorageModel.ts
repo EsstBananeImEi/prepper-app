@@ -2,6 +2,7 @@ export interface StorageModel {
     id: number,
     name: string,
     amount: number,
+    barcode?: string,
     categories?: string[],
     lowestAmount: number,
     midAmount: number,

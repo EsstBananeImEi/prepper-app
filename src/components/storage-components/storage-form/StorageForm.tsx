@@ -1,5 +1,6 @@
 import React, { ReactElement, SyntheticEvent, useState, useEffect, useMemo, useRef } from 'react';
 import { Descriptions, Image, Input, Select, Button, Alert, Upload, message, Card, Steps } from 'antd';
+import { Modal } from 'antd';
 import { PlusOutlined, MinusOutlined, UploadOutlined } from '@ant-design/icons';
 import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import type { Location } from 'react-router-dom';
@@ -42,6 +43,8 @@ import {
 } from '../../../shared/Defaults';
 import { getCachedOptions, loadOptionsCache, getOptionsCacheMeta } from '../../../utils/optionsCache';
 import logger from '../../../utils/logger';
+import ScannerPro from '../../scanner/ScannerPro';
+import api from '../../../hooks/StorageApi';
 
 // No‑Op Callback (anstatt leerer Funktionen)
 const noop = () => {
@@ -88,6 +91,15 @@ export default function StorageDetailForm(): ReactElement {
     const [lowestAmount, setLowestAmount] = useState<string>(isNew ? '' : initialItem.lowestAmount.toString());
     const [midAmount, setMidAmount] = useState<string>(isNew ? '' : initialItem.midAmount.toString());
     const [unit, setUnit] = useState<string>(initialItem.unit);
+    const [barcode, setBarcode] = useState<string>(initialItem.barcode || '');
+    const [scannerVisible, setScannerVisible] = useState(false);
+    // Feature flag: enable scan-related backend calls. Default: disabled while backend is not ready.
+    const enableScanApi = (process.env.REACT_APP_ENABLE_SCAN_API === '1') || (typeof window !== 'undefined' && localStorage.getItem('enable_scan_api') === '1');
+    // Admin-only debug toggle: read from localStorage key set by admin tools
+    const isAdminUser = Boolean(store.user && store.user.isAdmin === true);
+    const adminDebugEnabled = typeof window !== 'undefined' && localStorage.getItem('admin_debug_enabled') === '1';
+    const scannerShowDebug = isAdminUser && adminDebugEnabled;
+    const [scanQuota, setScanQuota] = useState<{ is_premium: boolean; remaining: number | null; limit?: number } | null>(null);
     const [packageQuantity, setPackageQuantity] = useState<string>(
         isNew || initialItem.packageQuantity == null ? '' : initialItem.packageQuantity.toString()
     );
@@ -158,6 +170,17 @@ export default function StorageDetailForm(): ReactElement {
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [id, location]);
+
+    // Load scan quota for user (if logged in) - only when scan API enabled
+    useEffect(() => {
+        if (!enableScanApi) return;
+        let mounted = true;
+        api({ method: 'GET', url: '/scans/quota' }).then((res) => {
+            if (!mounted) return;
+            setScanQuota(res.data || null);
+        }).catch(() => { });
+        return () => { mounted = false; };
+    }, [enableScanApi]);
 
     // Fuzzy suggestion-based prefill from existing storage items
     useEffect(() => {
@@ -623,6 +646,7 @@ export default function StorageDetailForm(): ReactElement {
 
         return {
             ...initialItem,
+            barcode: barcode || undefined,
             name: t(name),
             amount: Number(amount) || 0,
             lowestAmount: Number(lowestAmount) || 0,
@@ -869,6 +893,35 @@ export default function StorageDetailForm(): ReactElement {
                                 onChange={(e) => setAmount(e.target.value)}
                                 placeholder={t('form.placeholders.amount')}
                             />
+                        </div>
+                        <div className={css.itemFieldRow}>
+                            <label>{t('form.labels.barcode')}</label>
+                            <div style={{ display: 'flex', gap: 8 }}>
+                                <Input
+                                    value={barcode}
+                                    onChange={(e) => setBarcode(e.target.value)}
+                                    placeholder={t('form.placeholders.barcode') || 'EAN / UPC / Code128'}
+                                />
+                                <Button onClick={async () => {
+                                    if (!enableScanApi) {
+                                        // backend not ready: directly open scanner without any network calls
+                                        setScannerVisible(true);
+                                        return;
+                                    }
+                                    // check quota before opening scanner (optional UX)
+                                    try {
+                                        const res = await api({ method: 'GET', url: '/scans/quota' });
+                                        setScanQuota(res.data || null);
+                                        if (res.data && res.data.remaining === 0 && !res.data.is_premium) {
+                                            message.error(i18n.t('form.notifications.scanQuotaExceeded') || 'Scan-Limit erreicht. Upgrade auf Premium.');
+                                            return;
+                                        }
+                                    } catch (e) {
+                                        // ignore quota check failures and allow scanner
+                                    }
+                                    setScannerVisible(true);
+                                }}>Scan</Button>
+                            </div>
                         </div>
                         <div className={css.itemFieldRow}>
                             <label>{t('form.labels.unitOptional')}</label>
@@ -1190,6 +1243,73 @@ export default function StorageDetailForm(): ReactElement {
                     )}
                 </div>
             </div>
+            {/* Scanner Modal */}
+            <Modal
+                open={scannerVisible}
+                onCancel={() => setScannerVisible(false)}
+                footer={null}
+                width={900}
+                destroyOnClose
+                title={t('form.labels.scanBarcode') || 'Barcode scannen'}
+            >
+                <ScannerPro
+                    minimalView={isNew}
+                    showDebug={scannerShowDebug}
+                    onDetected={async (code: string) => {
+                        // If scan API disabled, just fill barcode locally and close scanner
+                        if (!enableScanApi) {
+                            setBarcode(code);
+                            if (isNew) setScannerVisible(false); else setTimeout(() => setScannerVisible(false), 700);
+                            return;
+                        }
+
+                        // When a code is detected: record scan and try to resolve to item
+                        try {
+                            // record scan
+                            await api({ method: 'POST', url: '/scans', data: { barcode: code } });
+                        } catch (e: unknown) {
+                            // If quota exceeded show message and do not auto-fill
+                            if (axios.isAxiosError(e) && e.response) {
+                                const status = e.response.status;
+                                if (status === 402) {
+                                    message.error(i18n.t('form.notifications.scanQuotaExceeded') || 'Scan-Limit erreicht. Upgrade auf Premium.');
+                                    setScannerVisible(false);
+                                    return;
+                                }
+                            }
+                        }
+
+                        try {
+                            const res = await api({ method: 'GET', url: `/scans/resolve/${encodeURIComponent(code)}` });
+                            if (res && res.data && res.data.found) {
+                                const payload = res.data;
+                                setName((prev) => prev && prev.trim().length > 0 ? prev : (payload.name || ''));
+                                setUnit((prev) => prev && prev.trim().length > 0 ? prev : (payload.unit || ''));
+                                setStorageLocation((prev) => prev && prev.trim().length > 0 ? prev : (payload.storageLocation || ''));
+                                if (payload.icon) setIcon(payload.icon);
+                                setBarcode(payload.barcode || code);
+                                message.success(i18n.t('form.notifications.scanResolved') || 'Artikelvorschlag gefunden und vorgeladen');
+                            } else {
+                                // Not found: just fill barcode field
+                                setBarcode(code);
+                                message.info(i18n.t('form.notifications.scanRecorded') || 'Barcode erfasst');
+                            }
+                        } catch (e) {
+                            setBarcode(code);
+                        }
+
+                        // Close modal immediately for minimal view, otherwise after a short delay
+                        if (isNew) {
+                            setScannerVisible(false);
+                        } else {
+                            setTimeout(() => setScannerVisible(false), 700);
+                        }
+                    }}
+                    initialAutoStart={true}
+                />
+            </Modal>
         </div>
     );
 }
+
+// Scanner Modal handler functions (kept outside main component to avoid re-creation)

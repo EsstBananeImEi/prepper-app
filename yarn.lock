@@ -3027,6 +3027,27 @@
   resolved "https://registry.yarnpkg.com/@xtuc/long/-/long-4.2.2.tgz#d291c6a4e97989b5c61d9acf396ae4fe133a718d"
   integrity sha512-NuHqBY1PB/D8xU6s/thBgOAiAP7HOYDQ32+BFZILJ8ivkUkAHQnWfn6WhL79Owj1qmUnoN/YPhktdIoucipkAQ==
 
+"@zxing/browser@^0.1.5":
+  version "0.1.5"
+  resolved "https://registry.yarnpkg.com/@zxing/browser/-/browser-0.1.5.tgz#94c0cdbc8ab5114a82dadee54939de6d9bf7e313"
+  integrity sha512-4Lmrn/il4+UNb87Gk8h1iWnhj39TASEHpd91CwwSJtY5u+wa0iH9qS0wNLAWbNVYXR66WmT5uiMhZ7oVTrKfxw==
+  optionalDependencies:
+    "@zxing/text-encoding" "^0.9.0"
+
+"@zxing/library@^0.21.3":
+  version "0.21.3"
+  resolved "https://registry.yarnpkg.com/@zxing/library/-/library-0.21.3.tgz#0a4cb777701884131832b05922d7e88ef1b87ab4"
+  integrity sha512-hZHqFe2JyH/ZxviJZosZjV+2s6EDSY0O24R+FQmlWZBZXP9IqMo7S3nb3+2LBWxodJQkSurdQGnqE7KXqrYgow==
+  dependencies:
+    ts-custom-error "^3.2.1"
+  optionalDependencies:
+    "@zxing/text-encoding" "~0.9.0"
+
+"@zxing/text-encoding@^0.9.0", "@zxing/text-encoding@~0.9.0":
+  version "0.9.0"
+  resolved "https://registry.yarnpkg.com/@zxing/text-encoding/-/text-encoding-0.9.0.tgz#fb50ffabc6c7c66a0c96b4c03e3d9be74864b70b"
+  integrity sha512-U/4aVJ2mxI0aDNI8Uq0wEhMgY+u4CNtEb0om3+y3+niDAsoTCOB33UF0sxpzqzdqXLqmvc+vZyAt4O8pPdfkwA==
+
 abab@^2.0.3, abab@^2.0.5:
   version "2.0.6"
   resolved "https://registry.yarnpkg.com/abab/-/abab-2.0.6.tgz#41b80f2c871d19686216b82309231cfd3cb3d291"
@@ -7277,6 +7298,11 @@ jsonpointer@^5.0.0:
   resolved "https://registry.yarnpkg.com/jsonpointer/-/jsonpointer-5.0.1.tgz#2110e0af0900fd37467b5907ecd13a7884a1b559"
   integrity sha512-p/nXbhSEcu3pZRdkW1OfJhpsVtW1gd4Wa1fnQc9YLiTfAjn0312eMKimbdIQzuZl9aa9xUGaRlP9T/CJE/ditQ==
 
+jsqr@^1.4.0:
+  version "1.4.0"
+  resolved "https://registry.yarnpkg.com/jsqr/-/jsqr-1.4.0.tgz#8efb8d0a7cc6863cb6d95116b9069123ce9eb2d1"
+  integrity sha512-dxLob7q65Xg2DvstYkRpkYtmKm2sPJ9oFhrhmudT1dZvNFFTlroai3AWSpLey/w5vMcLBXRgOJsbXpdN9HzU/A==
+
 "jsx-ast-utils@^2.4.1 || ^3.0.0", jsx-ast-utils@^3.3.5:
   version "3.3.5"
   resolved "https://registry.yarnpkg.com/jsx-ast-utils/-/jsx-ast-utils-3.3.5.tgz#4766bd05a8e2a11af222becd19e15575e52a853a"
@@ -10790,6 +10816,11 @@ ts-api-utils@^2.0.1:
   version "2.0.1"
   resolved "https://registry.yarnpkg.com/ts-api-utils/-/ts-api-utils-2.0.1.tgz#660729385b625b939aaa58054f45c058f33f10cd"
   integrity sha512-dnlgjFSVetynI8nzgJ+qF62efpglpWRk8isUEWZGWlJYySCTD6aKvbUDu+zbPeDakk3bg5H4XpitHukgfL1m9w==
+
+ts-custom-error@^3.2.1:
+  version "3.3.1"
+  resolved "https://registry.yarnpkg.com/ts-custom-error/-/ts-custom-error-3.3.1.tgz#8bd3c8fc6b8dc8e1cb329267c45200f1e17a65d1"
+  integrity sha512-5OX1tzOjxWEgsr/YEUWSuPrQ00deKLh6D7OTWcvNHm12/7QPyRh8SYpyWvA4IZv8H/+GQWQEh/kwo95Q9OVW1A==
 
 ts-interface-checker@^0.1.9:
   version "0.1.13"

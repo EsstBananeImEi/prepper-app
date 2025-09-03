@@ -39,6 +39,7 @@ const resources = {
                     customNote: 'Benutzerdefinierte Einheiten werden in einer späteren Version unterstützt.'
                 }
                 ,
+                // scanner translations are defined earlier; duplicate block removed
                 deleteAccount: {
                     title: 'Profil löschen',
                     desc: 'Dein Profil und alle zugehörigen Daten werden dauerhaft gelöscht. Diese Aktion kann nicht rückgängig gemacht werden.',
@@ -108,10 +109,10 @@ const resources = {
                 tools: {
                     title: 'Administrator-Tools',
                     devToolsTitle: 'Entwickler-Tools',
-                    devToolsDesc: 'Nutzen Sie die Browser-Konsole für erweiterte Admin-Funktionen: adminUtils.checkCurrentUserStatus(), adminUtils.enableDebugPanel(), etc.',
+                    devToolsDesc: 'Nutzen Sie die Browser-Konsole für erweiterte Admin-Funktionen: adminUtils.checkCurrentUserStatus(), adminUtils.enableDebugPanel() usw.',
                     enableDebugPanel: 'Debug Panel aktivieren',
                     disableDebugPanel: 'Debug Panel deaktivieren',
-                    devTestingPanel: 'Developer Testing Panel',
+                    devTestingPanel: 'Entwickler-Testbereich',
                     clearLocalStorage: 'LocalStorage zurücksetzen'
                 },
                 modal: {
@@ -120,10 +121,10 @@ const resources = {
                     welcome: 'Willkommen im Administrator-Panel!',
                     intro: 'Dieses Panel bietet Ihnen erweiterte Funktionen zur Verwaltung und Überwachung der Anwendung:',
                     bullets: {
-                        debug: 'Debug Panel: Überwachen Sie API-Requests und Fehler in Echtzeit',
+                        debug: 'Debug-Panel: Überwachen Sie API-Requests und Fehler in Echtzeit',
                         system: 'System-Info: Einsicht in wichtige Systemdaten',
-                        devtools: 'Developer Tools: Zugriff auf erweiterte Debugging-Funktionen',
-                        settings: 'Settings Management: Kontrolle über Debug-Funktionen'
+                        devtools: 'Entwicklertools: Zugriff auf erweiterte Debugging-Funktionen',
+                        settings: 'Einstellungsverwaltung: Kontrolle über Debug-Funktionen'
                     },
                     noteTitle: 'Hinweis',
                     noteDesc: 'Administrator-Funktionen sind nur für autorisierte Benutzer verfügbar und sollten mit Vorsicht verwendet werden.'
@@ -164,6 +165,16 @@ const resources = {
                     }
                 }
                 ,
+                scanner: {
+                    title: 'Barcode-Scanner',
+                    lastScanned: 'Zuletzt gescannter Barcode',
+                    scanNow: 'Jetzt scannen',
+                    clear: 'Löschen',
+                    debugLogsTitle: 'Debug-Protokoll',
+                    cameraError: 'Kamera nicht verfügbar',
+                    minimalHint: 'Tippe auf das Kamerabild um zu scannen'
+                }
+                ,
                 settings: {
                     title: 'Admin-Einstellungen',
                     adminAreaTitle: 'Administrator-Bereich',
@@ -185,18 +196,18 @@ const resources = {
                 }
                 ,
                 devPanel: {
-                    accessDeniedTitle: 'Zugriff verweigert - Developer Testing Panel',
-                    testingToolsOnly: 'Testing-Tools sind nur für autorisierte Entwickler',
-                    title: 'Developer Testing Panel',
+                    accessDeniedTitle: 'Zugriff verweigert - Entwickler-Testbereich',
+                    testingToolsOnly: 'Test-Tools sind nur für autorisierte Entwickler',
+                    title: 'Entwickler-Testbereich',
                     subtitle: 'Umfassende Test-Tools für Entwickler und System-Administratoren zur Überprüfung der Fehlerbehandlung, Logging-Systeme und Anwendungsstabilität.',
                     info: {
                         title: '🔬 Entwickler-Testbereich',
-                        desc: 'Diese Tools sind speziell für das Testen und Validieren der Anwendungsstabilität entwickelt.',
+                        desc: 'Diese Tools sind speziell für das Testen und Validieren der Anwendungsstabilität gedacht.',
                         bullets: {
-                            errorBoundary: 'ErrorBoundary Testing: Testen Sie React Error Boundaries und Fehlerprotokollierung',
-                            errorLogging: 'Error Logging: Überprüfen Sie localStorage und Server-Logging-Funktionen',
-                            emailNotifications: 'Email Notifications: Validieren Sie kritische Fehler-Benachrichtigungen',
-                            recovery: 'Recovery Testing: Testen Sie Anwendungs-Recovery-Mechanismen'
+                            errorBoundary: 'ErrorBoundary-Tests: Testen Sie React Error Boundaries und Fehlerprotokollierung',
+                            errorLogging: 'Fehlerprotokollierung: Überprüfen Sie localStorage- und Server-Logging-Funktionen',
+                            emailNotifications: 'E-Mail-Benachrichtigungen: Validieren Sie kritische Fehler-Benachrichtigungen',
+                            recovery: 'Recovery-Tests: Testen Sie Anwendungs-Recovery-Mechanismen'
                         }
                     },
                     env: {
@@ -225,7 +236,7 @@ const resources = {
                     errorTester: {
                         cardTitle: '🧪 ErrorBoundary Tester',
                         infoAlertTitle: 'ℹ️ Test-Kategorien',
-                        prefilledFromSuggestions: 'Prefilled using suggestions from existing items',
+                        prefilledFromSuggestions: 'Mit Vorschlägen aus vorhandenen Artikeln vorbefüllt',
                         infoAlertDesc1: '🟢 Wird von ErrorBoundary abgefangen: Render-Cycle Fehler',
                         infoAlertDesc2: '🔴 Wird NICHT abgefangen: Async-Fehler, Event-Handler, Network-Requests',
                         infoAlertDesc3: '📝 Alle Tests werden geloggt: Prüfen Sie die Browser-Konsole',
@@ -334,6 +345,7 @@ const resources = {
                     deleteFailed: 'Löschen fehlgeschlagen'
                 }
             },
+            // merged form labels/placeholder keys for DE are defined elsewhere in this file
             // Invitation Manager (Gruppeneinladungen verwalten)
             // Used by components/invite/InvitationManager.tsx
             inviteManager: {
@@ -1156,8 +1168,8 @@ const resources = {
                     unexpected: 'Ein unerwarteter Fehler ist aufgetreten.'
                 },
                 protected: {
-                    impressum: 'Imprint',
-                    privacy: 'Privacy Policy',
+                    impressum: 'Impressum',
+                    privacy: 'Datenschutz',
                     accessDeniedTitle: 'Zugriff verweigert',
                     accessDeniedBody1: 'Sie haben keine Administrator-Berechtigung für diesen Bereich.',
                     securityNote: 'Sicherheitshinweis: Admin-Berechtigungen werden server-seitig validiert und können nicht durch Client-Manipulation umgangen werden.',
@@ -1179,7 +1191,67 @@ const resources = {
                     title: 'Impressum und Datenschutz bestätigen',
                     textPrefix: 'Um fortzufahren, bestätige bitte, dass du unser Impressum und die Datenschutzerklärung gelesen und verstanden hast. Du kannst die Dokumente über die folgenden Links jederzeit einsehen:',
                     closeReader: 'Lesemodus schließen'
-                }
+                },
+                impressum: {
+                    intro: 'Angaben gemäß § 5 TMG und § 18 MStV. Bitte ersetzen Sie die Platzhalter mit Ihren tatsächlichen Angaben.',
+                    title: 'Impressum',
+                    providerTitle: 'Anbieter',
+                    contactTitle: 'Kontakt',
+                    representativeTitle: 'Vertretungsberechtigte Person',
+                    registerEntryTitle: 'Registereintrag',
+                    vatIdTitle: 'Umsatzsteuer-ID',
+                    supervisoryAuthorityTitle: 'Zuständige Aufsichtsbehörde',
+                    professionalInfoTitle: 'Berufsrechtliche Angaben',
+                    responsibleTitle: 'Verantwortlich i.S.d. § 18 Abs. 2 MStV',
+                    userContentTitle: 'Nutzergenerierte Inhalte',
+                    euOdrTitle: 'EU-Streitschlichtung',
+                    liabilityContentTitle: 'Haftung für Inhalte',
+                    liabilityLinksTitle: 'Haftung für Links',
+                    copyrightTitle: 'Urheberrecht',
+                    imageCreditsTitle: 'Bildnachweise'
+                },
+                privacy: {
+                    title: 'Datenschutzerklärung',
+                    responsibleTitle: '1. Verantwortlicher',
+                    responsibleText: 'Verantwortlich für die Verarbeitung personenbezogener Daten in dieser App ist: Sebastian Meine, Hauptstraße 24, 56237 Nauort, Deutschland, E-Mail: webmaster@meinedevpath.de',
+                    dpoTitle: '2. Datenschutzbeauftragter',
+                    dpoText: 'Ein Datenschutzbeauftragter ist nicht bestellt.',
+                    purposesTitle: '3. Verarbeitungszwecke und Rechtsgrundlagen',
+                    purposesIntro: 'Wir verarbeiten personenbezogene Daten für folgende Zwecke:',
+                    purposes: {
+                        a: 'a) Benutzerkonto und Authentifizierung (Art. 6 Abs. 1 lit. b DSGVO): Erstellung eines Kontos, Anmeldung/Abmeldung, Verwaltung von Sitzungen (Access/Refresh Token), Durchsetzung rechtlicher Hinweise (z. B. Zustimmung zu Impressum & Datenschutz).',
+                        b: 'b) Funktion der App (Art. 6 Abs. 1 lit. b DSGVO): Verwaltung von Vorräten, Einkaufslisten, Checklisten und Gruppenfunktionen.',
+                        c: 'c) System- und Sicherheitsprotokolle (Art. 6 Abs. 1 lit. f DSGVO): Technische Protokolle (z. B. Fehlerberichte, API-Request-Logs im lokalen Debug-Panel im Developer-Modus), Missbrauchs- und Betrugsprävention.',
+                        d: 'd) Kommunikation (Art. 6 Abs. 1 lit. b und f DSGVO): E-Mail-Benachrichtigungen, z. B. Einladungen in Gruppen oder sicherheitsrelevante Hinweise.'
+                    },
+                    categoriesTitle: '4. Verarbeitete Datenkategorien',
+                    categoriesText: '• Stammdaten: Benutzername, E-Mail-Adresse, optional Profilbild, Haushaltsgröße/Personenangaben (falls erfasst).',
+                    categories: {
+                        loginData: '• Anmeldedaten: Passwort (gehasht beim Anbieter), Authentifizierungs-Token (Access/Refresh).',
+                        usageData: '• Nutzungsdaten: Request-Zeitpunkte, Statusmeldungen, Fehlermeldungen (im Fehlerfall), Einladungsstatus.',
+                        contentData: '• Inhaltsdaten: Vorrats-/Einkaufslisten- und Checklisten-Einträge, Kategorien/Orte/Einheiten.'
+                    },
+                    recipientsTitle: '5. Empfänger',
+                    recipientsText: '• Hosting/Plattform-Betrieb: Render, Inc. ("Render") – Bereitstellung der App-Infrastruktur/Server. Verarbeitung im Auftrag gemäß Art. 28 DSGVO. Der konkrete Serverstandort richtet sich nach der gewählten Region (z. B. EU-Region, sofern konfiguriert).',
+                    recipientsEmail: '• E-Mail-Dienst & Domain: STRATO AG (Deutschland) – Versand/Empfang von E-Mails (z. B. Einladungen, Systemhinweise); Domain-Registrar/Weiterleitung. Verarbeitung im Auftrag gemäß Art. 28 DSGVO.',
+                    recipientsInternal: '• Interne Empfänger: Administrator/Entwicklung nur, soweit zur Fehlerbehebung erforderlich und unter Vertraulichkeit.',
+                    internationalTransfersTitle: '6. Drittlandübermittlung',
+                    internationalTransfersText: 'Render ist ein US-Unternehmen. Sofern die App in einer EU-Region betrieben wird, erfolgt die Verarbeitung innerhalb des EWR. Sollte eine Verarbeitung außerhalb des EWR (z. B. in den USA) stattfinden, erfolgt die Übermittlung auf Grundlage geeigneter Garantien gemäß Art. 46 DSGVO (insbesondere EU-Standardvertragsklauseln) sowie ggf. zusätzlicher technischer/organisatorischer Maßnahmen. STRATO verarbeitet Daten in der Regel innerhalb Deutschlands/EU; eine Drittlandübermittlung ist hierbei nicht vorgesehen.',
+                    retentionTitle: '7. Speicherdauer',
+                    retentionText: 'Wir speichern personenbezogene Daten solange dies für die jeweiligen Zwecke erforderlich ist. Kontodaten werden bis zur Löschung des Kontos, gesetzliche Aufbewahrungsfristen bleiben unberührt. Protokolle und Fehlermeldungen werden regelmäßig überprüft und gelöscht, sobald nicht mehr erforderlich.',
+                    rightsTitle: '8. Rechte der betroffenen Personen',
+                    rightsText: 'Sie haben das Recht auf Auskunft, Berichtigung, Löschung, Einschränkung der Verarbeitung, Datenübertragbarkeit sowie Widerspruch gegen Verarbeitungen, die auf Art. 6 Abs. 1 lit. f DSGVO beruhen. Soweit eine Verarbeitung auf Ihrer Einwilligung beruht, können Sie diese jederzeit mit Wirkung für die Zukunft widerrufen.',
+                    complaintTitle: '9. Beschwerderecht',
+                    complaintText: 'Sie haben das Recht, sich bei einer Datenschutz-Aufsichtsbehörde über die Verarbeitung Ihrer personenbezogenen Daten zu beschweren.',
+                    automatedDecisionTitle: '10. Automatisierte Entscheidungsfindung / Profiling',
+                    automatedDecisionText: 'Eine automatisierte Entscheidungsfindung einschließlich Profiling findet nicht statt.',
+                    cookiesTitle: '11. Cookies & Tracking',
+                    cookiesText: 'Diese App setzt technisch notwendige Cookies/Storage (z. B. Tokens, Spracheinstellungen). Es findet kein Marketing-Tracking statt. Im Developer-Modus können lokale Debug-Informationen (API-Logs, Fehler) im Browser gespeichert werden – diese Daten verlassen Ihren Browser nicht.',
+                    securityTitle: '12. Sicherheit',
+                    securityText: 'Wir setzen angemessene technische und organisatorische Maßnahmen ein, um Ihre Daten vor Verlust, Missbrauch und unbefugtem Zugriff zu schützen (z. B. HTTPS/TLS, Zugriffskontrollen, serverseitige Validierung, Token-basierte Authentifizierung).',
+                    contactTitle: '13. Kontakt',
+                    contactText: 'Für Anfragen zur Datenverarbeitung wenden Sie sich an: Sebastian Meine, Hauptstraße 24, 56237 Nauort, Deutschland, E-Mail: webmaster@meinedevpath.de'
+                },
             },
             user: {
                 title: 'Benutzerprofil & Gruppenverwaltung',
@@ -1224,8 +1296,8 @@ const resources = {
                     create: 'Gruppe erstellen',
                     join: 'Gruppe beitreten',
                     edit: 'Bearbeiten',
-                    ok: 'Accept',
-                    cancel: 'Decline',
+                    ok: 'OK',
+                    cancel: 'Abbrechen',
                     delete: 'Löschen',
                     leave: 'Verlassen',
                     members: 'Mitglieder',
@@ -1280,9 +1352,9 @@ const resources = {
                     chooseAnotherImage: 'Anderes Bild wählen',
                     removeCurrentImage: 'Aktuelles Bild entfernen',
                     acceptPolicies: {
-                        labelPrefix: 'I accept the',
-                        and: 'and',
-                        required: 'Please accept the policies.'
+                        labelPrefix: 'Ich akzeptiere',
+                        and: 'und',
+                        required: 'Bitte akzeptieren Sie die Richtlinien.'
                     },
                     removeNewSelection: 'Neue Auswahl entfernen',
                     supportedFormats: 'Unterstützte Formate: JPG, PNG, GIF (max. 5MB)',
@@ -1412,6 +1484,8 @@ const resources = {
                 labels: {
                     name: 'Name',
                     amount: 'Menge',
+                    barcode: 'Barcode',
+                    scanBarcode: 'Barcode scannen',
                     unitOptional: 'Mengeneinheit (optional)',
                     categories: 'Kategorien',
                     storageLocation: 'Aufbewahrungsort',
@@ -1425,6 +1499,7 @@ const resources = {
                 },
                 placeholders: {
                     name: 'Name',
+                    barcode: 'Barcode scannen oder eingeben',
                     amount: 'Menge (Zahl)',
                     unit: 'z. B. Stück, kg, l – oder eigenen Wert eingeben',
                     categories: 'Kategorie eingeben oder auswählen',
@@ -1527,7 +1602,11 @@ const resources = {
                     validation: {
                         nameRequired: 'Bitte einen Artikelnamen eingeben',
                         amountMin: 'Menge muss mindestens 1 sein'
-                    }
+                    },
+                    labels: {
+                        // existing labels for the item form live elsewhere; adding scan label here for scanner modal
+                        scanBarcode: 'Barcode scannen'
+                    },
                 },
                 addToStorage: {
                     confirmTitle: 'Nicht im Lager',
@@ -1601,7 +1680,7 @@ const resources = {
                         unknown: 'Ein unerwarteter Fehler ist aufgetreten. Kontaktieren Sie den Support falls das Problem weiterhin besteht.'
                     },
                     debug: {
-                        serverResponse: 'Server Response:'
+                        serverResponse: 'Server-Antwort:'
                     }
                 }
             }
@@ -2606,10 +2685,70 @@ const resources = {
             },
             legal: {
                 policiesGate: {
-                    title: 'Confirm Imprint and Privacy Policy',
-                    textPrefix: 'To continue, please confirm that you have read and understood our Imprint and Privacy Policy. You can review both documents at any time using the links below:',
+                    title: 'Confirm imprint and privacy policy',
+                    textPrefix: 'To continue, please confirm that you have read and understood our imprint and privacy policy. You can view the documents at any time using the links below:',
                     closeReader: 'Close reader'
-                }
+                },
+                impressum: {
+                    intro: 'Information according to § 5 TMG and § 18 MStV. Please replace placeholders with your actual details.',
+                    title: 'Imprint',
+                    providerTitle: 'Provider',
+                    contactTitle: 'Contact',
+                    representativeTitle: 'Authorized representative',
+                    registerEntryTitle: 'Register entry',
+                    vatIdTitle: 'VAT ID',
+                    supervisoryAuthorityTitle: 'Supervisory authority',
+                    professionalInfoTitle: 'Professional information',
+                    responsibleTitle: 'Responsible person (per § 18 (2) MStV)',
+                    userContentTitle: 'User-generated content',
+                    euOdrTitle: 'EU dispute resolution',
+                    liabilityContentTitle: 'Liability for content',
+                    liabilityLinksTitle: 'Liability for links',
+                    copyrightTitle: 'Copyright',
+                    imageCreditsTitle: 'Image credits'
+                },
+                privacy: {
+                    title: 'Privacy Policy',
+                    responsibleTitle: '1. Controller',
+                    responsibleText: 'Controller for processing personal data in this app is: Sebastian Meine, Hauptstraße 24, 56237 Nauort, Germany, Email: webmaster@meinedevpath.de',
+                    dpoTitle: '2. Data Protection Officer',
+                    dpoText: 'No data protection officer has been appointed.',
+                    purposesTitle: '3. Purposes of processing and legal basis',
+                    purposesIntro: 'We process personal data for the following purposes:',
+                    purposes: {
+                        a: 'a) User account and authentication (Art. 6(1)(b) GDPR): account creation, login/logout, session management (access/refresh tokens), enforcement of legal notices (e.g., acceptance of imprint & privacy).',
+                        b: 'b) App functionality (Art. 6(1)(b) GDPR): management of storage items, shopping lists, checklists and group functions.',
+                        c: 'c) System and security logs (Art. 6(1)(f) GDPR): technical logs (e.g., error reports, API request logs in the local debug panel in developer mode), abuse and fraud prevention.',
+                        d: 'd) Communication (Art. 6(1)(b) and (f) GDPR): email notifications, e.g., group invitations or security-relevant notices.'
+                    },
+                    categoriesTitle: '4. Categories of data processed',
+                    categoriesText: '• Master data: username, email address, optional profile image, household size/person data (if recorded).',
+                    categories: {
+                        loginData: '• Login data: password (hashed by the provider), authentication tokens (access/refresh).',
+                        usageData: '• Usage data: request timestamps, status messages, error messages (in case of errors), invitation status.',
+                        contentData: '• Content data: storage/shopping list and checklist entries, categories/locations/units.'
+                    },
+                    recipientsTitle: '5. Recipients',
+                    recipientsText: '• Hosting/platform operation: Render, Inc. ("Render") – providing app infrastructure/servers. Processing on behalf of the controller pursuant to Art. 28 GDPR. The exact server location depends on the selected region (e.g., EU region, if configured).',
+                    recipientsEmail: '• Email service & domain: STRATO AG (Germany) – sending/receiving emails (e.g., invitations, system notices); domain registrar/forwarding. Processing on behalf of the controller pursuant to Art. 28 GDPR.',
+                    recipientsInternal: '• Internal recipients: administrators/developers only to the extent necessary for error correction and under confidentiality.',
+                    internationalTransfersTitle: '6. International transfers',
+                    internationalTransfersText: 'Render is a US company. If the app is operated in an EU region, processing takes place within the EEA. If processing occurs outside the EEA (e.g., in the USA), transfers are based on appropriate safeguards pursuant to Art. 46 GDPR (in particular, EU standard contractual clauses) and, where applicable, additional technical/organizational measures. STRATO typically processes data within Germany/EU; transfers outside the EEA are not intended.',
+                    retentionTitle: '7. Retention period',
+                    retentionText: 'We retain personal data as long as necessary for the respective purposes. Account data is kept until the account is deleted; statutory retention obligations remain unaffected. Logs and error reports are reviewed and deleted regularly when no longer needed.',
+                    rightsTitle: '8. Rights of data subjects',
+                    rightsText: 'You have the right to access, rectification, erasure, restriction of processing, data portability, and objection to processing based on Art. 6(1)(f) GDPR. Where processing is based on consent, you may withdraw consent at any time with future effect.',
+                    complaintTitle: '9. Right to lodge a complaint',
+                    complaintText: 'You have the right to lodge a complaint with a data protection supervisory authority regarding the processing of your personal data.',
+                    automatedDecisionTitle: '10. Automated decision-making / profiling',
+                    automatedDecisionText: 'Automated decision-making including profiling does not take place.',
+                    cookiesTitle: '11. Cookies & tracking',
+                    cookiesText: 'This app uses technically necessary cookies/storage (e.g., tokens, language settings). No marketing tracking takes place. In developer mode, local debug information (API logs, errors) may be stored in the browser — these data do not leave your browser.',
+                    securityTitle: '12. Security',
+                    securityText: 'We implement reasonable technical and organizational measures to protect your data against loss, misuse and unauthorized access (e.g., HTTPS/TLS, access controls, server-side validation, token-based authentication).',
+                    contactTitle: '13. Contact',
+                    contactText: 'For inquiries regarding data processing, contact: Sebastian Meine, Hauptstraße 24, 56237 Nauort, Germany, Email: webmaster@meinedevpath.de'
+                },
             },
             user: {
                 title: 'User profile & group management',
@@ -2813,6 +2952,8 @@ const resources = {
                     imageCompressedInfo: 'Image was compressed for better performance',
                     imageLoadedSuccess: 'Image loaded successfully',
                     imageProcessError: 'Error processing image',
+                    prefilledFromBasket: 'Prefilled from shopping cart',
+                    prefilledFromSuggestions: 'Prefilled from existing item suggestions',
                     createdSuccess: 'Item created successfully',
                     updatedSuccess: 'Item updated successfully'
                 },
@@ -2829,6 +2970,8 @@ const resources = {
                 labels: {
                     name: 'Name',
                     amount: 'Amount',
+                    barcode: 'Barcode',
+                    scanBarcode: 'Scan barcode',
                     unitOptional: 'Unit (optional)',
                     categories: 'Categories',
                     storageLocation: 'Storage location',
@@ -2842,6 +2985,7 @@ const resources = {
                 },
                 placeholders: {
                     name: 'Name',
+                    barcode: 'Scan or enter barcode',
                     amount: 'Amount (number)',
                     unit: 'e.g., pcs, kg, l — or enter a custom value',
                     categories: 'Enter or select a category',
@@ -3018,7 +3162,7 @@ const resources = {
                         unknown: 'An unexpected error occurred. Contact support if the problem persists.'
                     },
                     debug: {
-                        serverResponse: 'Server response:'
+                        serverResponse: 'Server-Antwort:'
                     }
                 }
             }

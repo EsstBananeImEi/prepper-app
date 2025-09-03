@@ -1,5 +1,6 @@
 import React from 'react';
 import { Card, Typography, Space, Alert, Button, Divider, Spin } from 'antd';
+import { Switch, message } from 'antd';
 import {
     BugOutlined,
     ExperimentOutlined,
@@ -235,6 +236,41 @@ const DeveloperTestingPanel: React.FC = () => {
                             </div>
 
                             <Divider />
+
+                            {/* Scanner Debug Controls */}
+                            <div>
+                                <Text strong>🔧 Scanner Debug</Text>
+                                <div style={{ marginTop: 8, marginBottom: 8 }}>
+                                    <Space align="center">
+                                        <Text type="secondary">Enable scanner debug logs (local only)</Text>
+                                        <Switch
+                                            checked={localStorage.getItem('admin_debug_enabled') === '1'}
+                                            onChange={(v) => {
+                                                try {
+                                                    if (v) localStorage.setItem('admin_debug_enabled', '1'); else localStorage.removeItem('admin_debug_enabled');
+                                                    message.success('Scanner debug ' + (v ? 'enabled' : 'disabled'));
+                                                    // trigger a reload so components pick up change where necessary
+                                                    // do not force full reload; instruct user to re-open scanner if needed
+                                                } catch (e) {
+                                                    message.error('Could not update localStorage');
+                                                }
+                                            }}
+                                        />
+                                    </Space>
+                                </div>
+                                <Space>
+                                    <Button onClick={() => {
+                                        try {
+                                            const logs = JSON.parse(localStorage.getItem('scanner_debug_logs') || '[]');
+                                            console.log('scanner_debug_logs', logs);
+                                            message.info('Scanner logs printed to console');
+                                        } catch (e) {
+                                            message.error('No scanner logs found');
+                                        }
+                                    }}>Print scanner logs</Button>
+                                    <Button onClick={() => { localStorage.removeItem('scanner_debug_logs'); message.success('Scanner logs cleared'); }}>Clear scanner logs</Button>
+                                </Space>
+                            </div>
 
                             {/* Manuelle Logs */}
                             <div>

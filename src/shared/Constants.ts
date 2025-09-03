@@ -1,7 +1,7 @@
 // ✅ API Base URL Configuration
 // In development, prefer relative URLs and CRA proxy to avoid CORS/preflight.
 const isDev = process.env.NODE_ENV === 'development';
-export const baseApiUrl = process.env.REACT_APP_API_URL || (isDev ? '' : '');
+export const baseApiUrl = process.env.REACT_APP_API_URL || (isDev ? 'http://localhost:5000' : '');
 export const baseLocalApiUrl = baseApiUrl;
 
 // ✅ Helper function to build full API URLs

@@ -96,13 +96,15 @@ export function getOptionsCacheMeta() {
 }
 
 // Dev helper: attach to window for quick inspection in browser console
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-const _globalAny: any = (typeof globalThis !== 'undefined' ? globalThis : undefined) as any;
-if (_globalAny && typeof _globalAny === 'object' && !_globalAny.__optionsCache) {
-    _globalAny.__optionsCache = {
-        get: getCachedOptions,
-        load: loadOptionsCache,
-        clear: clearOptionsCache,
-        meta: getOptionsCacheMeta,
-    };
+const _maybeGlobal = (typeof globalThis !== 'undefined' ? globalThis : undefined) as unknown;
+if (_maybeGlobal && typeof _maybeGlobal === 'object') {
+    const g = _maybeGlobal as Window & { __optionsCache?: unknown };
+    if (!g.__optionsCache) {
+        g.__optionsCache = {
+            get: getCachedOptions,
+            load: loadOptionsCache,
+            clear: clearOptionsCache,
+            meta: getOptionsCacheMeta,
+        } as unknown;
+    }
 }
