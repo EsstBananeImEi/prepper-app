@@ -93,8 +93,8 @@ export default function StorageDetailForm(): ReactElement {
     const [unit, setUnit] = useState<string>(initialItem.unit);
     const [barcode, setBarcode] = useState<string>(initialItem.barcode || '');
     const [scannerVisible, setScannerVisible] = useState(false);
-    // Feature flag: enable scan-related backend calls. Default: disabled while backend is not ready.
-    const enableScanApi = (process.env.REACT_APP_ENABLE_SCAN_API === '1') || (typeof window !== 'undefined' && localStorage.getItem('enable_scan_api') === '1');
+    // Scan API is enabled by default now that backend is implemented
+    const enableScanApi = true;
     // Admin-only debug toggle: read from localStorage key set by admin tools
     const isAdminUser = Boolean(store.user && store.user.isAdmin === true);
     const adminDebugEnabled = typeof window !== 'undefined' && localStorage.getItem('admin_debug_enabled') === '1';
@@ -173,14 +173,13 @@ export default function StorageDetailForm(): ReactElement {
 
     // Load scan quota for user (if logged in) - only when scan API enabled
     useEffect(() => {
-        if (!enableScanApi) return;
         let mounted = true;
         api({ method: 'GET', url: '/scans/quota' }).then((res) => {
             if (!mounted) return;
             setScanQuota(res.data || null);
         }).catch(() => { });
         return () => { mounted = false; };
-    }, [enableScanApi]);
+    }, []);
 
     // Fuzzy suggestion-based prefill from existing storage items
     useEffect(() => {
@@ -773,6 +772,32 @@ export default function StorageDetailForm(): ReactElement {
 
                 message.success(i18n.t('form.notifications.updatedSuccess'));
             }
+            // Persist scanned barcode for this item (best-effort). Do not block user flow on failure.
+            try {
+                if (enableScanApi && barcode && barcode.trim().length > 0) {
+                    let targetId: number | null = null;
+                    if (id) targetId = parseInt(id);
+                    if (!targetId) {
+                        // try to find created/updated item in store
+                        const found = store.storeItems.find((it) => {
+                            try {
+                                return it.name === updatedItem.name && String(it.amount) === String(updatedItem.amount) && it.unit === updatedItem.unit;
+                            } catch { return false; }
+                        });
+                        if (found && found.id) targetId = found.id;
+                    }
+                    if (targetId) {
+                        try {
+                            await api({ method: 'POST', url: `/api/storage-item/${targetId}/add-barcode`, data: { barcode } });
+                        } catch (e) {
+                            logger.warn('[Scan] Failed to persist scanned barcode', e);
+                        }
+                    }
+                }
+            } catch (err) {
+                // ignore
+            }
+
             history(itemsRoute);
         } catch (error: unknown) {
             logger.group('🚨 Save Error Details');
@@ -903,11 +928,6 @@ export default function StorageDetailForm(): ReactElement {
                                     placeholder={t('form.placeholders.barcode') || 'EAN / UPC / Code128'}
                                 />
                                 <Button onClick={async () => {
-                                    if (!enableScanApi) {
-                                        // backend not ready: directly open scanner without any network calls
-                                        setScannerVisible(true);
-                                        return;
-                                    }
                                     // check quota before opening scanner (optional UX)
                                     try {
                                         const res = await api({ method: 'GET', url: '/scans/quota' });
@@ -1060,7 +1080,7 @@ export default function StorageDetailForm(): ReactElement {
                             <Image
                                 width={150}
                                 alt={name || 'Storage Item'}
-                                src={icon ? ensureDataUrlPrefix(icon) : '/default.png'}
+                                src={icon ? (typeof icon === 'string' && (icon.startsWith('http://') || icon.startsWith('https://')) ? icon : ensureDataUrlPrefix(icon)) : '/default.png'}
                                 placeholder={
                                     <div style={{
                                         width: 150,
@@ -1256,60 +1276,48 @@ export default function StorageDetailForm(): ReactElement {
                     minimalView={isNew}
                     showDebug={scannerShowDebug}
                     onDetected={async (code: string) => {
-                        // If scan API disabled, just fill barcode locally and close scanner
-                        if (!enableScanApi) {
-                            setBarcode(code);
-                            if (isNew) setScannerVisible(false); else setTimeout(() => setScannerVisible(false), 700);
-                            return;
-                        }
+                        // Immediately show scanned barcode in the input
+                        setBarcode(code);
+                        // If amount empty, default to 1 when scanning
+                        if (!amount || amount.trim() === '') setAmount('1');
+                        // Always call backend lookup for scanned barcode
 
-                        // When a code is detected: record scan and try to resolve to item
+                        // When a code is detected: try public product lookup (cache-aware)
                         try {
-                            // record scan
-                            await api({ method: 'POST', url: '/scans', data: { barcode: code } });
-                        } catch (e: unknown) {
-                            // If quota exceeded show message and do not auto-fill
-                            if (axios.isAxiosError(e) && e.response) {
-                                const status = e.response.status;
-                                if (status === 402) {
-                                    message.error(i18n.t('form.notifications.scanQuotaExceeded') || 'Scan-Limit erreicht. Upgrade auf Premium.');
-                                    setScannerVisible(false);
-                                    return;
-                                }
-                            }
-                        }
-
-                        try {
-                            const res = await api({ method: 'GET', url: `/scans/resolve/${encodeURIComponent(code)}` });
-                            if (res && res.data && res.data.found) {
-                                const payload = res.data;
-                                setName((prev) => prev && prev.trim().length > 0 ? prev : (payload.name || ''));
-                                setUnit((prev) => prev && prev.trim().length > 0 ? prev : (payload.unit || ''));
-                                setStorageLocation((prev) => prev && prev.trim().length > 0 ? prev : (payload.storageLocation || ''));
-                                if (payload.icon) setIcon(payload.icon);
-                                setBarcode(payload.barcode || code);
+                            console.debug('[Scan] calling backend barcode lookup for', code);
+                            const lookup = await api({ method: 'POST', url: '/api/barcode/lookup', data: { barcode: code } });
+                            console.debug('[Scan] lookup response', lookup && lookup.data ? lookup.data : lookup);
+                            const body = lookup && lookup.data ? lookup.data : null;
+                            if (body && body.product) {
+                                const payload = body.product;
+                                // Prefer product_name, fallback to generic name
+                                if (payload.product_name || payload.name) setName(String(payload.product_name || payload.name));
+                                // Use quantity (e.g. "330 g") or unit if available
+                                const maybeUnit = (payload.quantity && String(payload.quantity)) || (payload.unit && String(payload.unit)) || '';
+                                if (maybeUnit) setUnit(maybeUnit);
+                                // Keep existing storageLocation (do not overwrite)
+                                if (payload.image_url) setIcon(String(payload.image_url));
+                                setBarcode(String(payload.barcode || code));
                                 message.success(i18n.t('form.notifications.scanResolved') || 'Artikelvorschlag gefunden und vorgeladen');
                             } else {
                                 // Not found: just fill barcode field
                                 setBarcode(code);
                                 message.info(i18n.t('form.notifications.scanRecorded') || 'Barcode erfasst');
                             }
-                        } catch (e) {
+                        } catch (e: unknown) {
+                            // On error, fall back to local fill
                             setBarcode(code);
                         }
 
-                        // Close modal immediately for minimal view, otherwise after a short delay
-                        if (isNew) {
-                            setScannerVisible(false);
-                        } else {
-                            setTimeout(() => setScannerVisible(false), 700);
-                        }
+                        // Close modal after lookup completed so user sees prefilled values.
+                        // For minimal view keep immediate close to keep compact UX.
+                        // small delay to ensure UI updates are visible before modal closes
+                        setTimeout(() => setScannerVisible(false), 300);
                     }}
                     initialAutoStart={true}
                 />
             </Modal>
         </div>
     );
-}
 
-// Scanner Modal handler functions (kept outside main component to avoid re-creation)
+}
