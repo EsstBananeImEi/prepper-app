@@ -14,6 +14,11 @@ export interface StorageModel {
     lastChanged?: string,
     nutrients?: NutrientModel,
     icon?: string  // Base64 encoded string or null if no icon
+    // Optional raw OpenFoodFacts payload fragments (kept for server-side normalization)
+    ingredients?: unknown,
+    nutriments?: unknown,
+    packagings?: unknown,
+    _raw?: unknown,
 }
 
 export interface NutrientModel {

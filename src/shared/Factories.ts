@@ -58,11 +58,16 @@ export function NutrientFactory(): NutrientFactoryType[] {
         },
         {
             name: "Zucker", color: '#E85F5C', id: 4, values: [
-                { typ: 'kcal', value: 0 },
+                { typ: 'g', value: 0 },
             ],
         },
         {
             name: "Ballaststoffe", color: '#4D5360', id: 5, values: [
+                { typ: 'g', value: 0 },
+            ],
+        },
+        {
+            name: "Salz", color: '#B8B8B8', id: 6, values: [
                 { typ: 'g', value: 0 },
             ],
         },

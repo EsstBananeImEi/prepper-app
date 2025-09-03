@@ -99,7 +99,7 @@ export default function StorageDetailForm(): ReactElement {
     const isAdminUser = Boolean(store.user && store.user.isAdmin === true);
     const adminDebugEnabled = typeof window !== 'undefined' && localStorage.getItem('admin_debug_enabled') === '1';
     const scannerShowDebug = isAdminUser && adminDebugEnabled;
-    const [scanQuota, setScanQuota] = useState<{ is_premium: boolean; remaining: number | null; limit?: number } | null>(null);
+    // scanQuota removed - no backend `/scans/quota` endpoint in use
     const [packageQuantity, setPackageQuantity] = useState<string>(
         isNew || initialItem.packageQuantity == null ? '' : initialItem.packageQuantity.toString()
     );
@@ -108,6 +108,15 @@ export default function StorageDetailForm(): ReactElement {
     const [categories, setCategories] = useState<string[]>(initialItem.categories || []);
     // icon wird als Base64-String gespeichert
     const [icon, setIcon] = useState<string>(initialItem.icon || '');
+    // OpenFoodFacts derived raw fields (kept as-is and sent to backend for normalization)
+    // Use `unknown` instead of `any` to satisfy lint rules; backend accepts arbitrary JSON.
+    const [of_ingredients, setOfIngredients] = useState<unknown | null>(null);
+    const [of_nutriments, setOfNutriments] = useState<unknown | null>(null);
+    const [of_packagings, setOfPackagings] = useState<unknown | null>(null);
+    // raw payload container from OpenFoodFacts (kept for backend normalization)
+    const [of_raw, setOfRaw] = useState<unknown | null>(null);
+    // When lookup returns 'product not found' from OpenFoodFacts, store message here so UI can show it
+    const [lookupNotFound, setLookupNotFound] = useState<string>('');
     const [nutrientDescription, setNutrientDescription] = useState<string>(initialItem.nutrients?.description || '');
     const [nutrientUnit, setNutrientUnit] = useState<string>(initialItem.nutrients?.unit || '');
     const [nutrientAmount, setNutrientAmount] = useState<string>(
@@ -116,6 +125,15 @@ export default function StorageDetailForm(): ReactElement {
     const [nutrients, setNutrients] = useState<NutrientValueModel[]>(
         initialItem.nutrients?.values || []
     );
+
+    // Provide a stable, non-mutating sorted view of nutrients for render
+    const sortedNutrients = useMemo(() => {
+        try {
+            return [...(nutrients || [])].sort((a, b) => a.id - b.id);
+        } catch {
+            return nutrients || [];
+        }
+    }, [nutrients]);
 
     // Run-once guard for suggestion-based prefill
     const suggestionsAppliedRef = useRef<boolean>(false);
@@ -171,15 +189,7 @@ export default function StorageDetailForm(): ReactElement {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [id, location]);
 
-    // Load scan quota for user (if logged in) - only when scan API enabled
-    useEffect(() => {
-        let mounted = true;
-        api({ method: 'GET', url: '/scans/quota' }).then((res) => {
-            if (!mounted) return;
-            setScanQuota(res.data || null);
-        }).catch(() => { });
-        return () => { mounted = false; };
-    }, []);
+    // quota check removed - /scans/quota is not used
 
     // Fuzzy suggestion-based prefill from existing storage items
     useEffect(() => {
@@ -385,6 +395,19 @@ export default function StorageDetailForm(): ReactElement {
             setStorageLocation(storageItem.storageLocation);
             setCategories(storageItem.categories || []);
             setIcon(storageItem.icon || ''); // icon kommt als Base64-String aus der DB sonst leerer ba
+            // Preserve raw OpenFoodFacts fields if present on the item (avoid `any` casts)
+            try {
+                const si = storageItem as unknown as { ingredients?: unknown; nutriments?: unknown; packagings?: unknown };
+                setOfIngredients(si.ingredients ?? null);
+            } catch { /* ignore */ }
+            try {
+                const si = storageItem as unknown as { ingredients?: unknown; nutriments?: unknown; packagings?: unknown };
+                setOfNutriments(si.nutriments ?? null);
+            } catch { /* ignore */ }
+            try {
+                const si = storageItem as unknown as { ingredients?: unknown; nutriments?: unknown; packagings?: unknown };
+                setOfPackagings(si.packagings ?? null);
+            } catch { /* ignore */ }
             setNutrientDescription(storageItem.nutrients?.description || '');
             setNutrientUnit(storageItem.nutrients?.unit || '');
             setNutrientAmount(
@@ -592,52 +615,29 @@ export default function StorageDetailForm(): ReactElement {
             logger.log('Original icon length:', icon.length);
             logger.log('Icon starts with data URL:', icon.startsWith('data:'));
 
-            const iconValidation = validateBase64Image(icon); logger.log('Icon validation result:', iconValidation); if (iconValidation.isValid) {
-                // EXPERIMENTAL: Try data URL format first since backend might expect it
-                // Many backends expect the full data URL instead of just Base64
-                processedIcon = ensureDataUrlPrefix(iconValidation.processedData || icon);
-                logger.log('Processed icon with data URL prefix');
-                logger.log('Processed icon length:', processedIcon.length);
-                logger.log('First 50 chars:', processedIcon.substring(0, 50));
-
-                // Additional debugging: Test what backend might expect
-                logger.group('🔬 Backend Format Testing'); logger.log('Option 1 - With data URL (NEW APPROACH):', processedIcon.substring(0, 50) + '...');
-                logger.log('Option 2 - Pure Base64 (old approach):', sanitizeBase64ForApi(processedIcon).substring(0, 30) + '...');
-                logger.log('Option 3 - Original icon:', icon.substring(0, 50) + '...');
-
-                // Test if it's a valid image format
-                try {
-                    const binaryTest = window.atob(processedIcon.substring(0, 20));
-                    const bytes = new Uint8Array(binaryTest.length);
-                    for (let i = 0; i < binaryTest.length; i++) {
-                        bytes[i] = binaryTest.charCodeAt(i);
-                    }
-
-                    // Check image signature
-                    if (bytes[0] === 0xFF && bytes[1] === 0xD8) {
-                        logger.log('✅ Detected JPEG format');
-                    } else if (bytes[0] === 0x89 && bytes[1] === 0x50) {
-                        logger.log('✅ Detected PNG format');
-                    } else {
-                        logger.warn('❓ Unknown image format, first bytes:', Array.from(bytes.slice(0, 8)).map(b => b.toString(16).padStart(2, '0')).join(' '));
-                    }
-                } catch (e) {
-                    logger.error('❌ Cannot decode Base64 for format detection:', e);
-                }
-                logger.groupEnd();
+            // If icon is a remote URL, accept it as-is (no Base64 validation)
+            if (typeof icon === 'string' && (icon.startsWith('http://') || icon.startsWith('https://'))) {
+                processedIcon = icon;
+                logger.log('Using remote image URL as processedIcon');
             } else {
-                logger.warn('Invalid icon data, attempting repair:', iconValidation.error);
-                logger.warn('Icon preview:', icon.substring(0, 100));
-
-                // Try to repair the image data
-                const repairResult = repairBase64Image(icon);
-                if (repairResult.isValid && repairResult.processedData) {
-                    logger.log('✅ Image data repaired successfully');
-                    processedIcon = ensureDataUrlPrefix(repairResult.processedData);
+                const iconValidation = validateBase64Image(icon);
+                logger.log('Icon validation result:', iconValidation);
+                if (iconValidation.isValid) {
+                    processedIcon = ensureDataUrlPrefix(iconValidation.processedData || icon);
+                    logger.log('Processed icon with data URL prefix');
                 } else {
-                    logger.error('❌ Could not repair image data:', repairResult.error);
-                    // Set empty icon if repair also fails
-                    processedIcon = '';
+                    logger.warn('Invalid icon data, attempting repair:', iconValidation.error);
+                    logger.warn('Icon preview:', icon.substring(0, 100));
+
+                    const repairResult = repairBase64Image(icon);
+                    if (repairResult.isValid && repairResult.processedData) {
+                        logger.log('✅ Image data repaired successfully');
+                        processedIcon = ensureDataUrlPrefix(repairResult.processedData);
+                    } else {
+                        logger.error('❌ Could not repair image data:', repairResult.error);
+                        // Set empty icon if repair also fails
+                        processedIcon = '';
+                    }
                 }
             }
             logger.groupEnd();
@@ -667,6 +667,11 @@ export default function StorageDetailForm(): ReactElement {
                     values: (nutrient.values || []).filter(val => t(val.typ) !== '') // Remove empty values
                 })).filter(nutrient => nutrient.name !== '') // Remove empty nutrients
             },
+            // Attach raw OpenFoodFacts-derived fields (if any). Backend will persist raw JSON and may normalize.
+            ingredients: of_ingredients || undefined,
+            nutriments: of_nutriments || undefined,
+            packagings: of_packagings || undefined,
+            _raw: of_raw || undefined,
         };
     }
 
@@ -698,11 +703,13 @@ export default function StorageDetailForm(): ReactElement {
             errors.push('Packungsgröße muss eine positive Zahl sein');
         }
 
-        // Validate icon if present
+        // Validate icon if present (accept remote URLs as valid)
         if (icon && icon.trim() !== '') {
-            const iconValidation = validateBase64Image(icon);
-            if (!iconValidation.isValid) {
-                errors.push(`Bild ungültig: ${iconValidation.error}`);
+            if (!icon.startsWith('http://') && !icon.startsWith('https://')) {
+                const iconValidation = validateBase64Image(icon);
+                if (!iconValidation.isValid) {
+                    errors.push(`Bild ungültig: ${iconValidation.error}`);
+                }
             }
         }
 
@@ -798,6 +805,8 @@ export default function StorageDetailForm(): ReactElement {
                 // ignore
             }
 
+            // Clear any 'not found' hint after we saved a manual entry so next scans use stored data
+            setLookupNotFound('');
             history(itemsRoute);
         } catch (error: unknown) {
             logger.group('🚨 Save Error Details');
@@ -887,6 +896,9 @@ export default function StorageDetailForm(): ReactElement {
             {saveError && (
                 <Alert style={{ marginBottom: 16 }} message={saveError} type="error" showIcon />
             )}
+            {lookupNotFound && (
+                <Alert style={{ marginBottom: 16 }} message={lookupNotFound} type="info" showIcon />
+            )}
 
             <Card className={css.tabsCard} bordered>
                 <div className={css.stepsScroller} ref={stepsScrollerRef}>
@@ -906,7 +918,7 @@ export default function StorageDetailForm(): ReactElement {
                             <label>{t('form.labels.name')}<span style={{ color: 'red' }}> *</span></label>
                             <Input
                                 value={name}
-                                onChange={(e) => setName(e.target.value)}
+                                onChange={(e) => { setName(e.target.value); if (lookupNotFound) setLookupNotFound(''); }}
                                 placeholder={t('form.placeholders.name')}
                             />
                         </div>
@@ -924,23 +936,10 @@ export default function StorageDetailForm(): ReactElement {
                             <div style={{ display: 'flex', gap: 8 }}>
                                 <Input
                                     value={barcode}
-                                    onChange={(e) => setBarcode(e.target.value)}
+                                    onChange={(e) => { setBarcode(e.target.value); if (lookupNotFound) setLookupNotFound(''); }}
                                     placeholder={t('form.placeholders.barcode') || 'EAN / UPC / Code128'}
                                 />
-                                <Button onClick={async () => {
-                                    // check quota before opening scanner (optional UX)
-                                    try {
-                                        const res = await api({ method: 'GET', url: '/scans/quota' });
-                                        setScanQuota(res.data || null);
-                                        if (res.data && res.data.remaining === 0 && !res.data.is_premium) {
-                                            message.error(i18n.t('form.notifications.scanQuotaExceeded') || 'Scan-Limit erreicht. Upgrade auf Premium.');
-                                            return;
-                                        }
-                                    } catch (e) {
-                                        // ignore quota check failures and allow scanner
-                                    }
-                                    setScannerVisible(true);
-                                }}>Scan</Button>
+                                <Button onClick={() => { setLookupNotFound(''); setScannerVisible(true); }}>Scan</Button>
                             </div>
                         </div>
                         <div className={css.itemFieldRow}>
@@ -1153,85 +1152,83 @@ export default function StorageDetailForm(): ReactElement {
                                 </div>
                             </div>
                             <div className={css.nutrientCardsContainer}>
-                                {nutrients
-                                    .sort((a, b) => a.id - b.id)
-                                    .map((nutrient, nutrientIndex) => (
-                                        <div key={nutrient.id} className={css.nutrientCard}>
-                                            <div className={css.nutrientHeader}>
-                                                <div className={css.nutrientHeaderLeft}>
-                                                    <div
-                                                        className={css.nutrientColor}
-                                                        style={{ backgroundColor: nutrient.color }}
-                                                    ></div>
-                                                    <Input
-                                                        value={nutrient.color}
-                                                        placeholder={t('form.placeholders.colorCode')}
-                                                        onChange={(e) =>
-                                                            onChangeNutrientColorCode(nutrientIndex, e.target.value)
-                                                        }
-                                                        className={css.nutrientColorInput}
-                                                    />
-                                                </div>
-                                            </div>
-                                            <div className={css.nutrientHeader}>
+                                {sortedNutrients.map((nutrient, nutrientIndex) => (
+                                    <div key={nutrient.id} className={css.nutrientCard}>
+                                        <div className={css.nutrientHeader}>
+                                            <div className={css.nutrientHeaderLeft}>
+                                                <div
+                                                    className={css.nutrientColor}
+                                                    style={{ backgroundColor: nutrient.color }}
+                                                ></div>
                                                 <Input
-                                                    value={nutrient.name}
-                                                    placeholder={t('form.placeholders.nutrientName')}
+                                                    value={nutrient.color}
+                                                    placeholder={t('form.placeholders.colorCode')}
                                                     onChange={(e) =>
-                                                        onChangeNutrient(nutrientIndex, 'name', e.target.value)
+                                                        onChangeNutrientColorCode(nutrientIndex, e.target.value)
                                                     }
-                                                    className={css.nutrientNameInput}
+                                                    className={css.nutrientColorInput}
                                                 />
                                             </div>
-                                            <div className={css.nutrientValues}>
-                                                {nutrient.values.map((nutrientType, typeIndex) => (
-                                                    <div key={typeIndex} className={css.nutrientValueRow}>
-                                                        <Input
-                                                            type="number"
-                                                            value={nutrientType.value}
-                                                            placeholder={t('form.placeholders.nutrientValue')}
-                                                            onChange={(e) =>
-                                                                onChangeNutrientType(nutrientIndex, typeIndex, 'value', e.target.value)
-                                                            }
-                                                            className={css.nutrientValueInput}
-                                                        />
-                                                        <Select
-                                                            value={nutrientType.typ ? nutrientType.typ : ''}
-                                                            placeholder={t('form.placeholders.nutrientUnit')}
-                                                            onChange={(val: string) =>
-                                                                onChangeNutrientType(nutrientIndex, typeIndex, 'typ', val || '')
-                                                            }
-                                                            className={css.nutrientTypeSelect}
-                                                            style={{ fontWeight: 'normal' }}
-                                                        >
-                                                            {mergedNutrientUnits.map((nu) => (
-                                                                <Select.Option key={`nu-${nu}`} value={nu}>
-                                                                    {nu}
-                                                                </Select.Option>
-                                                            ))}
-                                                        </Select>
-                                                        <div className={css.nutrientValueActions}>
-                                                            <MinusOutlined
-                                                                onClick={() => removeNutrientType(nutrientIndex, typeIndex)}
-                                                                className={css.removeNutrientTypeIcon}
-                                                            />
-                                                            {typeIndex === nutrient.values.length - 1 && (
-                                                                <PlusOutlined
-                                                                    onClick={() => addNutrientType(nutrientIndex)}
-                                                                    className={css.addNutrientTypeButton}
-                                                                />
-                                                            )}
-                                                        </div>
-                                                    </div>
-                                                ))}
-                                            </div>
-                                            <div className={css.nutrientCardFooter}>
-                                                <Button onClick={() => removeNutrient(nutrientIndex)} danger>
-                                                    {t('form.buttons.removeNutrient')}
-                                                </Button>
-                                            </div>
                                         </div>
-                                    ))}
+                                        <div className={css.nutrientHeader}>
+                                            <Input
+                                                value={nutrient.name}
+                                                placeholder={t('form.placeholders.nutrientName')}
+                                                onChange={(e) =>
+                                                    onChangeNutrient(nutrientIndex, 'name', e.target.value)
+                                                }
+                                                className={css.nutrientNameInput}
+                                            />
+                                        </div>
+                                        <div className={css.nutrientValues}>
+                                            {nutrient.values.map((nutrientType, typeIndex) => (
+                                                <div key={typeIndex} className={css.nutrientValueRow}>
+                                                    <Input
+                                                        type="number"
+                                                        value={nutrientType.value}
+                                                        placeholder={t('form.placeholders.nutrientValue')}
+                                                        onChange={(e) =>
+                                                            onChangeNutrientType(nutrientIndex, typeIndex, 'value', e.target.value)
+                                                        }
+                                                        className={css.nutrientValueInput}
+                                                    />
+                                                    <Select
+                                                        value={nutrientType.typ ? nutrientType.typ : ''}
+                                                        placeholder={t('form.placeholders.nutrientUnit')}
+                                                        onChange={(val: string) =>
+                                                            onChangeNutrientType(nutrientIndex, typeIndex, 'typ', val || '')
+                                                        }
+                                                        className={css.nutrientTypeSelect}
+                                                        style={{ fontWeight: 'normal' }}
+                                                    >
+                                                        {mergedNutrientUnits.map((nu) => (
+                                                            <Select.Option key={`nu-${nu}`} value={nu}>
+                                                                {nu}
+                                                            </Select.Option>
+                                                        ))}
+                                                    </Select>
+                                                    <div className={css.nutrientValueActions}>
+                                                        <MinusOutlined
+                                                            onClick={() => removeNutrientType(nutrientIndex, typeIndex)}
+                                                            className={css.removeNutrientTypeIcon}
+                                                        />
+                                                        {typeIndex === nutrient.values.length - 1 && (
+                                                            <PlusOutlined
+                                                                onClick={() => addNutrientType(nutrientIndex)}
+                                                                className={css.addNutrientTypeButton}
+                                                            />
+                                                        )}
+                                                    </div>
+                                                </div>
+                                            ))}
+                                        </div>
+                                        <div className={css.nutrientCardFooter}>
+                                            <Button onClick={() => removeNutrient(nutrientIndex)} danger>
+                                                {t('form.buttons.removeNutrient')}
+                                            </Button>
+                                        </div>
+                                    </div>
+                                ))}
                                 <Button
                                     icon={<PlusOutlined />}
                                     onClick={addNutrient}
@@ -1288,25 +1285,231 @@ export default function StorageDetailForm(): ReactElement {
                             const lookup = await api({ method: 'POST', url: '/api/barcode/lookup', data: { barcode: code } });
                             console.debug('[Scan] lookup response', lookup && lookup.data ? lookup.data : lookup);
                             const body = lookup && lookup.data ? lookup.data : null;
-                            if (body && body.product) {
+                            // Handle OpenFoodFacts 'product not found' responses (several possible backend shapes)
+                            if (body && (
+                                body.status === 0 ||
+                                (body.status_verbose && String(body.status_verbose).toLowerCase().includes('not found')) ||
+                                (typeof body.message === 'string' && body.message.toLowerCase().includes('not found')) ||
+                                // backend may return { message: 'not found', product: null, source: 'openfoodfacts' }
+                                (body.product == null && body.source === 'openfoodfacts')
+                            )) {
+                                // Show an informative message to user and keep barcode populated
+                                setLookupNotFound(i18n.t('form.notifications.scanProductNotFound', { barcode: code, defaultValue: `Produkt für Barcode ${code} nicht gefunden — Formular manuell ausfüllen und speichern.` }));
+                                setBarcode(code);
+                            } else if (body && body.product) {
                                 const payload = body.product;
+                                // Apply additional fields from OF payload
+                                try {
+                                    const p = payload as unknown as Record<string, unknown>;
+                                    // categories may be a comma-separated string or an array
+                                    if (typeof p.categories === 'string' && (p.categories as string).trim() !== '') {
+                                        const cats = (p.categories as string).split(',').map(s => s.trim()).filter(Boolean);
+                                        if (cats.length > 0) setCategories(cats.slice(0, 5));
+                                    } else if (Array.isArray(p.categories) && (p.categories as string[]).length > 0) {
+                                        setCategories((p.categories as string[]).slice(0, 5));
+                                    } else if (Array.isArray(p.categories_tags) && (p.categories_tags as string[]).length > 0) {
+                                        // fallback: use tags (e.g. 'en:seafood') -> 'seafood'
+                                        const tags = (p.categories_tags as string[]).map(tag => String(tag).replace(/^.*:/, '').replace(/[-_]/g, ' ')).filter(Boolean);
+                                        if (tags.length > 0) setCategories(tags.slice(0, 5));
+                                    }
+                                } catch { /* ignore */ }
+                                try {
+                                    const p = payload as unknown as Record<string, unknown>;
+                                    // product.quantity may be like "330 g" or "1 L"
+                                    if (typeof p.quantity === 'string') {
+                                        const q = String(p.quantity).trim();
+                                        const m = q.match(/^\s*([0-9.,]+)\s*(.*)$/);
+                                        if (m) {
+                                            const qty = m[1].replace(',', '.');
+                                            setPackageQuantity(String(Number(qty) || ''));
+                                            const unitPart = (m[2] || '').trim();
+                                            if (unitPart) setPackageUnit(unitPart);
+                                        } else {
+                                            setPackageUnit(q);
+                                        }
+                                    }
+                                } catch { /* ignore */ }
+                                try {
+                                    // avoid explicit `any` - treat payload as unknown and narrow
+                                    const pWithRaw = payload as unknown as { _raw?: unknown } | null;
+                                    if (pWithRaw && typeof pWithRaw === 'object' && pWithRaw._raw) {
+                                        setOfRaw(pWithRaw._raw);
+                                    }
+                                } catch { /* ignore */ }
+                                // Apply richer OpenFoodFacts payload fields to local state so they are sent on save
+                                try {
+                                    if (payload.ingredients) setOfIngredients(payload.ingredients);
+                                } catch { /* ignore */ }
+                                try {
+                                    if (payload.nutriments) setOfNutriments(payload.nutriments);
+                                } catch { /* ignore */ }
+                                try {
+                                    if (payload.packagings) setOfPackagings(payload.packagings);
+                                } catch { /* ignore */ }
                                 // Prefer product_name, fallback to generic name
                                 if (payload.product_name || payload.name) setName(String(payload.product_name || payload.name));
-                                // Use quantity (e.g. "330 g") or unit if available
-                                const maybeUnit = (payload.quantity && String(payload.quantity)) || (payload.unit && String(payload.unit)) || '';
-                                if (maybeUnit) setUnit(maybeUnit);
+                                // Use quantity/unit: prefer explicit unit from _raw.product_quantity_unit or parse from quantity
+                                const p2 = payload as unknown as Record<string, unknown>;
+                                try {
+                                    let unitOnly = '';
+                                    if (p2._raw && typeof p2._raw === 'object' && (p2._raw as Record<string, unknown>).product_quantity_unit) {
+                                        unitOnly = String((p2._raw as Record<string, unknown>).product_quantity_unit);
+                                    } else if (typeof p2.quantity === 'string') {
+                                        const m2 = String(p2.quantity).trim().match(/^\s*([0-9.,]+)\s*(.*)$/);
+                                        if (m2) unitOnly = (m2[2] || '').trim();
+                                    } else if (typeof p2.unit === 'string') {
+                                        unitOnly = String(p2.unit).trim();
+                                    }
+                                    if (unitOnly) setUnit(unitOnly);
+                                } catch { /* ignore */ }
                                 // Keep existing storageLocation (do not overwrite)
                                 if (payload.image_url) setIcon(String(payload.image_url));
                                 setBarcode(String(payload.barcode || code));
                                 message.success(i18n.t('form.notifications.scanResolved') || 'Artikelvorschlag gefunden und vorgeladen');
+                                // If nutriments are present, prefill nutrient form fields
+                                try {
+                                    const pnut = (payload as unknown as Record<string, unknown>).nutriments as Record<string, unknown> | undefined;
+                                    if (pnut && typeof pnut === 'object') {
+                                        const base = NutrientFactory();
+                                        // helper to extract numeric value; check multiple possible OF key variants
+                                        const getVal = (k: string) => {
+                                            const candidates: string[] = [];
+                                            candidates.push(k + '_value', k + '_100g', k + '_serving', k + '_unit', k);
+                                            // common alternative spellings for fiber
+                                            if (k === 'fiber') {
+                                                candidates.push('dietary-fiber', 'dietary_fiber', 'dietary-fiber_100g', 'fiber_100g');
+                                            }
+                                            // try each candidate in order
+                                            for (const c of candidates) {
+                                                const v = (pnut as Record<string, unknown>)[c];
+                                                if (typeof v === 'number') return v;
+                                                if (typeof v === 'string') {
+                                                    const n = Number(String(v).replace(',', '.'));
+                                                    if (!isNaN(n)) return n;
+                                                }
+                                            }
+                                            return NaN;
+                                        };
+                                        // Map common keys
+                                        const mapping: Record<string, string> = {
+                                            'Proteine': 'proteins',
+                                            'Kohlenhydrate': 'carbohydrates',
+                                            'Fett': 'fat',
+                                            'Zucker': 'sugars',
+                                            'Ballaststoffe': 'fiber',
+                                            'gesättigte Fettsäuren': 'saturated-fat',
+                                            'Energie': 'energy-kcal',
+                                            'Salz': 'salt',
+                                        };
+                                        // Also accept OF keys mapping provided by the user for completeness
+                                        const ofToGerman: Record<string, string> = {
+                                            'carbohydrates': 'Kohlenhydrate',
+                                            'energy': 'Energie',
+                                            'energy-kcal': 'Energie',
+                                            'fat': 'Fett',
+                                            'fruits-vegetables-legumes-estimate-from-ingredients': 'fruechte-gemuese-huelsenfruechte-geschaetzt',
+                                            'fruits-vegetables-nuts-estimate-from-ingredients': 'fruechte-gemuese-nuesse-geschaetzt',
+                                            'nova-group': 'nova-gruppe',
+                                            'nutrition-score-fr': 'ernaehrungs-score-fr',
+                                            'proteins': 'Proteine',
+                                            'salt': 'Salz',
+                                            'saturated-fat': 'gesaettigte-fettsaeuren',
+                                            'sodium': 'Salz',
+                                            'sugars': 'Zucker'
+                                        };
+                                        // Support alternative OF keys for fiber/sugars (many variants exist)
+                                        const altKeys = (baseName: string) => [
+                                            baseName,
+                                            `${baseName}_100g`,
+                                            `${baseName}_value`,
+                                            `${baseName}_serving`
+                                        ];
+                                        for (const nf of base) {
+                                            let key = mapping[nf.name];
+                                            // fallback: try reverse lookup in ofToGerman (if mapping absent)
+                                            if (!key) {
+                                                // find OF key that maps to this german name
+                                                const found = Object.entries(ofToGerman).find(([, g]) => g === nf.name || g.toLowerCase() === nf.name.toLowerCase());
+                                                if (found) key = found[0];
+                                            }
+                                            if (!key) continue;
+                                            const val = getVal(key);
+                                            if (!isNaN(val)) {
+                                                if (nf.values && nf.values.length > 0) nf.values[0].value = Number(val);
+                                            }
+                                        }
+                                        // Add extra nutrient entries for OF keys that don't exist in base
+                                        for (const [ofKey, germanName] of Object.entries(ofToGerman)) {
+                                            // skip those that are already in base
+                                            if (base.some(b => b.name === germanName || b.name.toLowerCase() === germanName.toLowerCase())) continue;
+                                            const val = getVal(ofKey);
+                                            if (!isNaN(val)) {
+                                                // Create a NutrientFactoryType-shaped object instead of using `any`
+                                                const extra: import('../../../types/Types').NutrientFactoryType = {
+                                                    id: Date.now(),
+                                                    name: germanName,
+                                                    color: '#999999',
+                                                    values: [{ typ: 'g', value: Number(val) }]
+                                                };
+                                                base.push(extra);
+                                            }
+                                        }
+                                        // NutrientFactory() returns an array compatible with NutrientValueModel[]
+                                        setNutrients(base as unknown as NutrientValueModel[]);
+                                        // set nutrient meta fields
+                                        setNutrientDescription(i18n.t('form.nutrientsFromOpenFoodFacts', { defaultValue: 'Nährwerte (OpenFoodFacts)' }));
+                                        // prefer energy unit if available
+                                        const enUnit = (pnut && (pnut['energy-kcal_unit'] ?? pnut['energy_unit'])) as unknown;
+                                        if (enUnit && typeof enUnit === 'string') setNutrientUnit(String(enUnit));
+                                        setNutrientAmount((pnut && (pnut['energy-kcal_100g'] ?? pnut['energy_100g'])) ? String(Number(pnut['energy-kcal_100g'] || pnut['energy_100g'])) : '100');
+                                    }
+                                } catch { /* ignore */ }
                             } else {
                                 // Not found: just fill barcode field
                                 setBarcode(code);
                                 message.info(i18n.t('form.notifications.scanRecorded') || 'Barcode erfasst');
                             }
                         } catch (e: unknown) {
-                            // On error, fall back to local fill
-                            setBarcode(code);
+                            // On error, try to extract JSON body (some backends return 404 with a JSON payload)
+                            try {
+                                // Narrow the error shape without using `any` to satisfy eslint
+                                type AxiosErrorLike = { response?: { data?: unknown } };
+                                type BarcodeLookupBody = {
+                                    status?: number;
+                                    status_verbose?: string;
+                                    message?: string;
+                                    product?: unknown;
+                                    source?: string;
+                                    barcode?: string;
+                                };
+                                const errLike = e as AxiosErrorLike;
+                                const body = (errLike?.response?.data ?? null) as BarcodeLookupBody | null;
+                                // If the backend included an OpenFoodFacts 'not found' payload, show a friendly info alert
+                                if (body && (
+                                    body.status === 0 ||
+                                    (body.status_verbose && String(body.status_verbose).toLowerCase().includes('not found')) ||
+                                    (typeof body.message === 'string' && body.message.toLowerCase().includes('not found')) ||
+                                    (body.product == null && body.source === 'openfoodfacts')
+                                )) {
+                                    const backendMsg = (body.message || body.status_verbose || null) as string | null;
+                                    // If backend only returns the generic 'not found' message, prefer a user-friendly localized string
+                                    let msg: string;
+                                    const normalized = backendMsg && typeof backendMsg === 'string' ? backendMsg.trim().toLowerCase() : '';
+                                    if (normalized && normalized !== 'not found') {
+                                        msg = `${backendMsg} (${code})`;
+                                    } else {
+                                        msg = i18n.t('form.notifications.scanProductNotFound', { barcode: code, defaultValue: `Produkt für Barcode ${code} nicht gefunden — Formular manuell ausfüllen und speichern.` });
+                                    }
+                                    setLookupNotFound(msg);
+                                    setBarcode(code);
+                                } else {
+                                    // Generic fallback: keep barcode populated so the user can manually fill
+                                    setBarcode(code);
+                                }
+                            } catch (innerErr) {
+                                // If anything goes wrong while interpreting the error, fallback to basic behavior
+                                setBarcode(code);
+                            }
                         }
 
                         // Close modal after lookup completed so user sees prefilled values.
