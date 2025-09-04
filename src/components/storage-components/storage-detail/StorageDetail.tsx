@@ -166,51 +166,156 @@ export default function StorageDetail(): ReactElement {
                 </div>
             </div>
 
-            {/* Nährwerte */}
-            {storageItem.nutrients && (
-                <div className={css.itemFormCard}>
-                    <div className={css.nutrientSectionHeader}>
-                        {t('detail.nutrientsHeader', { amount: storageItem.nutrients.amount, unit: storageItem.nutrients.unit })}
+            {/* Zutaten + Nährwerte: versuche zuerst das rohe OpenFoodFacts-Objekt `nutriments` zu nutzen, dann Fallback */}
+            <div className={css.itemFormCard}>
+                <div className={css.itemHeader}>{t('detail.sections.nutrients')}</div>
+
+                {/* Zutaten: aus ingredients ein kommagetrennter Satz, sortiert nach rank */}
+                <div className={css.itemFields}>
+                    <div style={{ marginBottom: 12 }}>
+                        <label style={{ fontWeight: 600 }}>{t('detail.labels.ingredients')}: </label>
+                        <span>
+                            {Array.isArray(storageItem.ingredients) && storageItem.ingredients.length > 0
+                                ? (() => {
+                                    // Ingredient shape expected from backend
+                                    interface Ingredient {
+                                        text?: string;
+                                        percent?: number;
+                                        rank?: number;
+                                    }
+
+                                    const ings = Array.isArray(storageItem.ingredients) ? (storageItem.ingredients.slice() as Ingredient[]) : [];
+                                    const L = ings.length;
+                                    return ings
+                                        .sort((a, b) => (a.rank ?? 0) - (b.rank ?? 0))
+                                        .map((ing, idx) => {
+                                            const pct = typeof ing.percent === 'number' ? ` (${ing.percent}%)` : '';
+                                            const txt = ing.text ?? '';
+                                            return `${txt}${pct}${idx < L - 1 ? ', ' : ''}`;
+                                        })
+                                        .join('');
+                                })()
+                                : t('detail.labels.ingredientsNotAvailable')}
+                        </span>
                     </div>
-                    {storageItem.nutrients.description && (
-                        <div style={{ marginBottom: 12, textAlign: 'center' }}>
-                            {storageItem.nutrients.description}
-                        </div>
-                    )}
-                    <div className={css.nutrientCardsContainer}>
-                        {orderNutrientValues(storageItem.nutrients.values).map((nutrientValue, index) => (
-                            <div key={index} className={css.nutrientCard}>
-                                <div className={css.nutrientHeader}>
-                                    <div
-                                        className={css.nutrientColor}
-                                        style={{ backgroundColor: nutrientValue.color }}
-                                    ></div>
-                                    <div className={css.nutrientName}>{nutrientValue.name}</div>
-                                    <div className={css.nutrientColorCode}>{nutrientValue.color}</div>
-                                </div>
-                                <div className={css.nutrientValues}>
-                                    <table>
+
+                    {/* Wenn das rohe nutriments-Objekt vorhanden ist: baue eine produktähnliche Tabelle (100g / Portion) */}
+                    {storageItem.nutriments && typeof storageItem.nutriments === 'object' ? (
+                        (() => {
+                            const n = storageItem.nutriments as Record<string, unknown>;
+                            // Eine kleine Auswahl an üblichen Feldern in gewünschter Reihenfolge
+                            const rows = [
+                                { key: 'energy-kcal', label: 'Energie (kcal)' },
+                                { key: 'energy', label: 'Energie (kJ)' },
+                                { key: 'fat', label: 'Fett' },
+                                { key: 'saturated-fat', label: 'davon: gesättigte Fettsäuren' },
+                                { key: 'carbohydrates', label: 'Kohlenhydrate' },
+                                { key: 'sugars', label: 'davon: Zucker' },
+                                { key: 'proteins', label: 'Eiweiß' },
+                                { key: 'fiber', label: 'Ballaststoffe' },
+                                { key: 'salt', label: 'Salz' }
+                            ];
+
+                            const getVal = (baseKey: string, scope: '100g' | 'serving') => {
+                                const suffix = scope === '100g' ? '_100g' : '_serving';
+                                const k1 = `${baseKey}${suffix}`;
+                                const k2 = `${baseKey}_${scope}`; // fallback (some variants)
+                                const raw = n[k1] ?? n[k2] ?? n[`${baseKey}_${scope}`] ?? null;
+                                if (raw === null || raw === undefined) return '-';
+                                // coerce to string for safe rendering
+                                try {
+                                    return typeof raw === 'object' ? JSON.stringify(raw) : String(raw);
+                                } catch {
+                                    return '-';
+                                }
+                            };
+
+                            // detect if there is any serving value
+                            const hasServing = rows.some(r => getVal(r.key, 'serving') !== '-');
+
+                            return (
+                                <div>
+                                    <table className={css.nutritionTable} style={{ width: '100%', borderCollapse: 'collapse' }}>
                                         <thead>
                                             <tr>
-                                                <th style={{ textAlign: 'right' }}>{t('detail.table.value')}</th>
-                                                <th style={{ textAlign: 'right' }}>{t('detail.table.unit')}</th>
+                                                <th style={{ textAlign: 'left' }}></th>
+                                                <th style={{ textAlign: 'right' }}>pro 100 g</th>
+                                                {hasServing && <th style={{ textAlign: 'right' }}>pro Portion</th>}
                                             </tr>
                                         </thead>
                                         <tbody>
-                                            {nutrientValue.values.map((val, i) => (
-                                                <tr key={i}>
-                                                    <td className={css.text_right}>{val.value}</td>
-                                                    <td className={css.unit}>{val.typ}</td>
-                                                </tr>
-                                            ))}
+                                            {rows.map((r) => {
+                                                const v100 = getVal(r.key, '100g');
+                                                const vServ = hasServing ? getVal(r.key, 'serving') : null;
+                                                return (
+                                                    <tr key={r.key}>
+                                                        <td style={{ padding: '6px 8px' }}>{r.label}</td>
+                                                        <td style={{ textAlign: 'right', padding: '6px 8px' }}>{v100}</td>
+                                                        {hasServing && <td style={{ textAlign: 'right', padding: '6px 8px' }}>{vServ}</td>}
+                                                    </tr>
+                                                );
+                                            })}
                                         </tbody>
                                     </table>
+                                    {/* Falls noch raw-objekt spezifische Energie-Einheiten vorhanden sind, zeige kurze Meta-Zeile */}
+                                    <div style={{ marginTop: 8, color: '#666' }}>
+                                        {n['energy-kcal_unit'] ? `Energie-Einheit: ${String(n['energy-kcal_unit'])}` : ''}
+                                    </div>
                                 </div>
-                            </div>
-                        ))}
-                    </div>
+                            );
+                        })()
+                    ) : (
+                        // Fallback: existierende Karten-Ansicht für das erste nutrients-Element
+                        Array.isArray(storageItem.nutrients) && storageItem.nutrients.length > 0 && (() => {
+                            const sN = storageItem.nutrients[0];
+                            return (
+                                <div>
+                                    <div className={css.nutrientSectionHeader}>
+                                        {t('detail.nutrientsHeader', { amount: sN.amount, unit: sN.unit })}
+                                    </div>
+                                    {sN.description && (
+                                        <div style={{ marginBottom: 12, textAlign: 'center' }}>
+                                            {sN.description}
+                                        </div>
+                                    )}
+                                    <div className={css.nutrientCardsContainer}>
+                                        {orderNutrientValues(sN.values).map((nutrientValue, index) => (
+                                            <div key={index} className={css.nutrientCard}>
+                                                <div className={css.nutrientHeader}>
+                                                    <div
+                                                        className={css.nutrientColor}
+                                                        style={{ backgroundColor: nutrientValue.color }}
+                                                    ></div>
+                                                    <div className={css.nutrientName}>{nutrientValue.name}</div>
+                                                    <div className={css.nutrientColorCode}>{nutrientValue.color}</div>
+                                                </div>
+                                                <div className={css.nutrientValues}>
+                                                    <table>
+                                                        <thead>
+                                                            <tr>
+                                                                <th style={{ textAlign: 'right' }}>{t('detail.table.value')}</th>
+                                                                <th style={{ textAlign: 'right' }}>{t('detail.table.unit')}</th>
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody>
+                                                            {nutrientValue.values.map((val, i) => (
+                                                                <tr key={i}>
+                                                                    <td className={css.text_right}>{val.value}</td>
+                                                                    <td className={css.unit}>{val.typ}</td>
+                                                                </tr>
+                                                            ))}
+                                                        </tbody>
+                                                    </table>
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+                            );
+                        })()
+                    )}
                 </div>
-            )}
+            </div>
 
             {/* Aktions-Buttons (sticky, wie im Formular) */}
             <div className={css.actionBar}>

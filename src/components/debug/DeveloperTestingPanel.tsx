@@ -18,6 +18,7 @@ import styles from './DeveloperTestingPanel.module.css';
 import { useTranslation } from 'react-i18next';
 import { adminRoute, homeRoute } from '../../shared/Constants';
 import logger from '../../utils/logger';
+import acc from '../../styles/accessibility.module.css';
 
 const { Title, Text, Paragraph } = Typography;
 

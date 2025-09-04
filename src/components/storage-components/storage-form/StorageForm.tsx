@@ -117,13 +117,14 @@ export default function StorageDetailForm(): ReactElement {
     const [of_raw, setOfRaw] = useState<unknown | null>(null);
     // When lookup returns 'product not found' from OpenFoodFacts, store message here so UI can show it
     const [lookupNotFound, setLookupNotFound] = useState<string>('');
-    const [nutrientDescription, setNutrientDescription] = useState<string>(initialItem.nutrients?.description || '');
-    const [nutrientUnit, setNutrientUnit] = useState<string>(initialItem.nutrients?.unit || '');
+    const initialNutr = Array.isArray(initialItem.nutrients) ? (initialItem.nutrients[0] || null) : initialItem.nutrients;
+    const [nutrientDescription, setNutrientDescription] = useState<string>(initialNutr?.description || '');
+    const [nutrientUnit, setNutrientUnit] = useState<string>(initialNutr?.unit || '');
     const [nutrientAmount, setNutrientAmount] = useState<string>(
-        isNew || !initialItem.nutrients?.amount ? '' : initialItem.nutrients.amount.toString()
+        isNew || !initialNutr?.amount ? '' : initialNutr.amount.toString()
     );
     const [nutrients, setNutrients] = useState<NutrientValueModel[]>(
-        initialItem.nutrients?.values || []
+        initialNutr?.values || []
     );
 
     // Provide a stable, non-mutating sorted view of nutrients for render
@@ -408,17 +409,18 @@ export default function StorageDetailForm(): ReactElement {
                 const si = storageItem as unknown as { ingredients?: unknown; nutriments?: unknown; packagings?: unknown };
                 setOfPackagings(si.packagings ?? null);
             } catch { /* ignore */ }
-            setNutrientDescription(storageItem.nutrients?.description || '');
-            setNutrientUnit(storageItem.nutrients?.unit || '');
+            const sN = Array.isArray(storageItem.nutrients) ? (storageItem.nutrients[0] || null) : storageItem.nutrients;
+            setNutrientDescription(sN?.description || '');
+            setNutrientUnit(sN?.unit || '');
             setNutrientAmount(
-                storageItem.nutrients && storageItem.nutrients.amount
-                    ? storageItem.nutrients.amount.toString()
+                sN && sN.amount
+                    ? sN.amount.toString()
                     : ''
             );
-            if (!storageItem.nutrients || storageItem.nutrients.values.length === 0) {
+            if (!sN || !sN.values || sN.values.length === 0) {
                 setNutrients(NutrientFactory());
             } else {
-                setNutrients(storageItem.nutrients.values);
+                setNutrients(sN.values);
             }
         }
     }, [id]); // Only depend on id, not the entire storageItem

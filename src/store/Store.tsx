@@ -302,7 +302,7 @@ export function reducer(store: Store, action: Action): Store {
             return { ...store, storeItems: store.storeItems.map(item => item.id === action.storageItem.id ? action.storageItem : item) };
         case 'UPDATE_NUTRIENT_ITEM':
             return {
-                ...store, storeItems: store.storeItems.map(item => item.id === action.storageItem.id ? { ...item, nutrients: action.storageItem.nutrients } : item)
+                ...store, storeItems: store.storeItems.map(item => item.id === action.storageItem.id ? { ...item, nutrients: Array.isArray(action.storageItem.nutrients) ? (action.storageItem.nutrients[0] || null) : action.storageItem.nutrients } : item)
             };
         default:
             return store;

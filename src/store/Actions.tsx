@@ -233,7 +233,8 @@ function sendNutrientRequest(
     return api({
         method,
         url: `${path}`,
-        data: { ...action.storageItem.nutrients },
+        // backend now returns nutrients as a list; use first element for existing UI shape
+        data: { ...(Array.isArray(action.storageItem.nutrients) ? action.storageItem.nutrients[0] : action.storageItem.nutrients) },
         timeout: 3500,
         headers: {},
     })
