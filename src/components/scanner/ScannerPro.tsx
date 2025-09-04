@@ -12,6 +12,7 @@ declare global {
 
 import React, { useEffect, useRef, useState } from 'react';
 import { Button, Input, Space } from 'antd';
+import { useTranslation } from 'react-i18next';
 import jsQR from 'jsqr';
 import { BrowserMultiFormatReader } from '@zxing/browser';
 
@@ -49,11 +50,18 @@ export default function ScannerPro({ onDetected, initialAutoStart = true, minima
 
     // (global BarcodeDetector constructor is declared at file top-level)
     const detectorRef = useRef<MinimalBarcodeDetector | null>(null);
+    const streamRef = useRef<MediaStream | null>(null);
     const rafRef = useRef<number | null>(null);
     const pollRef = useRef<number | null>(null);
     const stoppedRef = useRef(false);
     const zxingBusyRef = useRef(false);
+    const [torchAvailable, setTorchAvailable] = useState<boolean>(false);
+    const [torchOn, setTorchOn] = useState<boolean>(false);
     const [logs, setLogs] = useState<string[]>([]);
+    const { t } = useTranslation();
+
+    // Local narrow types for device capabilities/constraints that may not be present in TS lib
+    type TorchCapabilities = MediaTrackCapabilities & { torch?: boolean };
 
     function appendScannerLog(entry: string) {
         if (!showDebug) return;
@@ -83,10 +91,45 @@ export default function ScannerPro({ onDetected, initialAutoStart = true, minima
         const v = videoRef.current;
         if (v && v.srcObject) {
             const s = v.srcObject as MediaStream;
+            // try to turn torch off (use safe cast because `torch` is not in TS lib by default)
+            try {
+                const tracks = s.getVideoTracks();
+                if (tracks && tracks.length > 0) {
+                    const t = tracks[0];
+                    try {
+                        // MediaTrackConstraints doesn't include `torch` in many lib versions; cast locally
+                        const c = { advanced: [{ torch: false }] } as unknown as MediaTrackConstraints;
+                        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+                        // @ts-ignore - applying vendor-specific torch constraint
+                        t.applyConstraints(c);
+                    } catch (e) { /* ignore */ }
+                }
+            } catch (e) { /* ignore */ }
             try { s.getTracks().forEach((t) => t.stop()); } catch (e) { /* ignore */ }
             v.srcObject = null;
+            streamRef.current = null;
+            setTorchOn(false);
+            setTorchAvailable(false);
         }
     }
+
+    const toggleTorch = async (on: boolean) => {
+        try {
+            const s = streamRef.current;
+            if (!s) return;
+            const tracks = s.getVideoTracks();
+            if (!tracks || tracks.length === 0) return;
+            const track = tracks[0];
+            const c = { advanced: [{ torch: !!on }] } as unknown as MediaTrackConstraints;
+            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+            // @ts-ignore - vendor-specific torch constraint
+            await track.applyConstraints(c);
+            setTorchOn(!!on);
+        } catch (err) {
+            setTorchAvailable(false);
+            setTorchOn(false);
+        }
+    };
 
     useEffect(() => {
         let mounted = true;
@@ -98,6 +141,21 @@ export default function ScannerPro({ onDetected, initialAutoStart = true, minima
                 if (videoRef.current) {
                     videoRef.current.srcObject = stream;
                     await videoRef.current.play();
+                }
+                // store stream for torch control
+                streamRef.current = stream;
+                // detect torch capability
+                try {
+                    const tracks = stream.getVideoTracks();
+                    if (tracks && tracks.length > 0) {
+                        const track = tracks[0];
+                        const caps = (track as MediaStreamTrack & { getCapabilities?: () => MediaTrackCapabilities }).getCapabilities?.() || {};
+                        const tc = caps as TorchCapabilities;
+                        if (tc && tc.torch === true) setTorchAvailable(true);
+                        else setTorchAvailable(false);
+                    }
+                } catch (e) {
+                    setTorchAvailable(false);
                 }
 
                 // Init BarcodeDetector if available
@@ -361,6 +419,11 @@ export default function ScannerPro({ onDetected, initialAutoStart = true, minima
                         {/* overlay with centered scan box */}
                         <div style={overlayStyle} aria-hidden>
                             <div style={boxStyle} />
+                            {torchAvailable && (
+                                <div style={{ position: 'absolute', right: 12, top: 12, pointerEvents: 'auto' }}>
+                                    <Button size="small" onClick={() => toggleTorch(!torchOn)}>{torchOn ? t('scanner.flash.off', { defaultValue: '🔦 Off' }) : t('scanner.flash.on', { defaultValue: '🔦 On' })}</Button>
+                                </div>
+                            )}
                         </div>
                     </div>
                 </div>

@@ -171,6 +171,10 @@ const resources = {
                     scanNow: 'Jetzt scannen',
                     clear: 'Löschen',
                     debugLogsTitle: 'Debug-Protokoll',
+                    flash: {
+                        on: '🔦 An',
+                        off: '🔦 Aus'
+                    },
                     cameraError: 'Kamera nicht verfügbar',
                     minimalHint: 'Tippe auf das Kamerabild um zu scannen'
                 }

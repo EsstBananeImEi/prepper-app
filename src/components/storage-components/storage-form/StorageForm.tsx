@@ -1404,7 +1404,7 @@ export default function StorageDetailForm(): ReactElement {
                 title={t('form.labels.scanBarcode') || 'Barcode scannen'}
             >
                 <ScannerPro
-                    minimalView={isNew}
+                    minimalView={true}
                     showDebug={scannerShowDebug}
                     onDetected={async (code: string) => {
                         // Immediately show scanned barcode in the input
