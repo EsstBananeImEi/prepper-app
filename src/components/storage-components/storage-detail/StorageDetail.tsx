@@ -12,6 +12,7 @@ import { actionHandler } from '../../../store/Actions';
 import { handleApiError } from '../../../hooks/useApi';
 import { ensureDataUrlPrefix } from '../../../utils/imageUtils';
 import { useTranslation } from 'react-i18next';
+import i18n from '../../../i18n';
 
 export default function StorageDetail(): ReactElement {
     const { t } = useTranslation();
@@ -70,6 +71,43 @@ export default function StorageDetail(): ReactElement {
     };
 
     const fq = formatQuantity(storageItem.amount, storageItem.unit, unitPrefs);
+
+    const normalizeKey = (s?: string) => String(s || '').toLowerCase().replace(/[^a-z0-9]+/g, '_').replace(/^_+|_+$/g, '');
+    // prefer nutrient group's metadata (amount/unit) when present
+    const nutrientGroup = Array.isArray(storageItem.nutrients) ? (storageItem.nutrients[0] || null) : (storageItem.nutrients || null);
+    const nutrientAmountDisplay = nutrientGroup && nutrientGroup.amount ? nutrientGroup.amount : undefined;
+    const nutrientUnitDisplay = nutrientGroup && nutrientGroup.unit ? nutrientGroup.unit : undefined;
+
+    const unitAbbreviations: Record<string, string> = {
+        'milliliter': 'ml',
+        'liter': 'l',
+        'gramm': 'g',
+        'kilogramm': 'kg',
+        'stück': 'Stk',
+        'päckchen': 'Pck',
+        'packung': 'Pck',
+        'dose': 'Dose',
+        'glas': 'Glas',
+        'flasche': 'Fl',
+        'beutel': 'Beutel',
+        'kartons': 'Kart',
+        'mg': 'mg',
+        'g': 'g',
+        'kg': 'kg',
+        'kcal': 'kcal',
+        'kj': 'kJ'
+    };
+    const unitShortFor = (full?: string) => {
+        const norm = normalizeKey(full);
+        try {
+            const key = `units.short.${norm}`;
+            if (i18n.exists && i18n.exists(key)) {
+                const v = i18n.t(key);
+                if (v && typeof v === 'string' && v.trim() !== '') return v;
+            }
+        } catch { /* ignore */ }
+        return unitAbbreviations[norm] || (full || '');
+    };
 
     return (
         <div className={css.container}>
@@ -233,13 +271,15 @@ export default function StorageDetail(): ReactElement {
                             // detect if there is any serving value
                             const hasServing = rows.some(r => getVal(r.key, 'serving') !== '-');
 
+                            const headerAmount = (nutrientAmountDisplay !== undefined && nutrientAmountDisplay !== null && nutrientAmountDisplay !== '') ? nutrientAmountDisplay : fq.value;
+                            const headerUnit = (nutrientUnitDisplay && String(nutrientUnitDisplay).trim() !== '') ? unitShortFor(String(nutrientUnitDisplay)) : unitShortFor(fq.unit || storageItem.unit);
                             return (
                                 <div>
                                     <table className={css.nutritionTable} style={{ width: '100%', borderCollapse: 'collapse' }}>
                                         <thead>
                                             <tr>
                                                 <th style={{ textAlign: 'left' }}></th>
-                                                <th style={{ textAlign: 'right' }}>pro 100 g</th>
+                                                <th style={{ textAlign: 'right' }}>{`pro ${headerAmount} ${headerUnit}`}</th>
                                                 {hasServing && <th style={{ textAlign: 'right' }}>pro Portion</th>}
                                             </tr>
                                         </thead>
@@ -265,47 +305,29 @@ export default function StorageDetail(): ReactElement {
                             );
                         })()
                     ) : (
-                        // Fallback: existierende Karten-Ansicht für das erste nutrients-Element
+                        // Fallback: simple list view for legacy `nutrients` groups (no card layout)
                         Array.isArray(storageItem.nutrients) && storageItem.nutrients.length > 0 && (() => {
                             const sN = storageItem.nutrients[0];
                             return (
                                 <div>
                                     <div className={css.nutrientSectionHeader}>
-                                        {t('detail.nutrientsHeader', { amount: sN.amount, unit: sN.unit })}
+                                        {`pro ${(nutrientAmountDisplay !== undefined && nutrientAmountDisplay !== null && nutrientAmountDisplay !== '') ? nutrientAmountDisplay : fq.value} ${(nutrientUnitDisplay && String(nutrientUnitDisplay).trim() !== '') ? unitShortFor(String(nutrientUnitDisplay)) : unitShortFor(fq.unit || storageItem.unit)}`}
                                     </div>
                                     {sN.description && (
                                         <div style={{ marginBottom: 12, textAlign: 'center' }}>
                                             {sN.description}
                                         </div>
                                     )}
-                                    <div className={css.nutrientCardsContainer}>
+                                    <div style={{ display: 'grid', gap: 12 }}>
                                         {orderNutrientValues(sN.values).map((nutrientValue, index) => (
-                                            <div key={index} className={css.nutrientCard}>
-                                                <div className={css.nutrientHeader}>
-                                                    <div
-                                                        className={css.nutrientColor}
-                                                        style={{ backgroundColor: nutrientValue.color }}
-                                                    ></div>
-                                                    <div className={css.nutrientName}>{nutrientValue.name}</div>
-                                                    <div className={css.nutrientColorCode}>{nutrientValue.color}</div>
-                                                </div>
-                                                <div className={css.nutrientValues}>
-                                                    <table>
-                                                        <thead>
-                                                            <tr>
-                                                                <th style={{ textAlign: 'right' }}>{t('detail.table.value')}</th>
-                                                                <th style={{ textAlign: 'right' }}>{t('detail.table.unit')}</th>
-                                                            </tr>
-                                                        </thead>
-                                                        <tbody>
-                                                            {nutrientValue.values.map((val, i) => (
-                                                                <tr key={i}>
-                                                                    <td className={css.text_right}>{val.value}</td>
-                                                                    <td className={css.unit}>{val.typ}</td>
-                                                                </tr>
-                                                            ))}
-                                                        </tbody>
-                                                    </table>
+                                            <div key={index} style={{ borderBottom: '1px solid #eee', padding: '8px 0' }}>
+                                                <div style={{ fontWeight: 600 }}>{nutrientValue.name}</div>
+                                                <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 12 }}>
+                                                    {nutrientValue.values.map((val, i) => (
+                                                        <div key={i} style={{ textAlign: 'right' }}>
+                                                            {val.value} {val.typ}
+                                                        </div>
+                                                    ))}
                                                 </div>
                                             </div>
                                         ))}

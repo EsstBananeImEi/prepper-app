@@ -270,64 +270,7 @@ tr {
 }
 
 /* ----------------- Nutrient Card Layout ----------------- */
-.nutrientCardsContainer {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-    gap: 16px;
-}
-
-.nutrientCard {
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    min-height: 180px;
-    padding: 16px;
-    border: 1px solid #ddd;
-    border-radius: 8px;
-    background-color: #fff;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-    position: relative;
-}
-
-.nutrientHeader {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    border-bottom: 1px solid #ddd;
-    padding-bottom: 8px;
-    margin-bottom: 8px;
-}
-
-.nutrientHeaderLeft {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-}
-
-.nutrientColor {
-    width: 24px;
-    height: 24px;
-    border-radius: 4px;
-    flex-shrink: 0;
-}
-
-.nutrientName {
-    font-weight: bold;
-    font-size: 16px;
-}
-
-.nutrientColorCode {
-    text-align: left;
-    max-width: 100px;
-    font-size: 16px;
-    color: #666;
-}
-
-.nutrientValues {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-}
+/* nutrient card layout removed - replaced by compact list/table styles */
 
 .nutrientValueRow {
     display: flex;
@@ -348,39 +291,6 @@ tr {
     align-items: center;
     gap: 8px;
     justify-content: flex-end;
-}
-
-.nutrientCardFooter {
-    display: flex;
-    justify-content: flex-end;
-    margin-top: auto;
-}
-
-.nutrientCardFooter button {
-    margin-top: 10px;
-}
-
-.nutrientAmountUnit {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 16px;
-    margin-bottom: 16px;
-    text-align: left;
-    background-color: #fff;
-    padding: 16px;
-    border: 1px solid #ddd;
-    border-radius: 8px;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-}
-
-.nutrientField {
-    display: flex;
-    flex-direction: column;
-}
-
-.nutrientField label {
-    font-weight: bold;
-    margin-bottom: 4px;
 }
 
 /* ----------------- Mobile-spezifische Anpassungen ----------------- */
@@ -405,42 +315,7 @@ tr {
         padding-right: 8px;
     }
 
-    .nutrientCardsContainer {
-        display: flex;
-        flex-direction: column;
-        gap: 16px;
-    }
-
-    .nutrientCard {
-        padding: 8px;
-    }
-
-    .nutrientHeader {
-        flex-direction: row !important;
-        align-items: center;
-        justify-content: space-between;
-    }
-
-    .nutrientValueRow {
-        flex-direction: row !important;
-        align-items: center;
-        justify-content: space-between;
-    }
-
-    .nutrientValueActions {
-        margin-left: auto;
-    }
-
-    .nutrientAmountUnit {
-        grid-template-columns: 1fr;
-    }
-
-    .nutrientNameInput,
-    .nutrientValueInput,
-    .nutrientTypeSelect {
-        width: auto;
-        flex: 1;
-    }
+    /* Nutrient card styles fully removed. Compact editor uses table/inline styles. */
 }
 
 /* Globale Styles für Input, Select und Textarea innerhalb des Containers */

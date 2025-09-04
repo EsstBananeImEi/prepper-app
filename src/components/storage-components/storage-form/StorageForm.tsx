@@ -1,7 +1,7 @@
 import React, { ReactElement, SyntheticEvent, useState, useEffect, useMemo, useRef } from 'react';
 import { Descriptions, Image, Input, Select, Button, Alert, Upload, message, Card, Steps } from 'antd';
 import { Modal } from 'antd';
-import { PlusOutlined, MinusOutlined, UploadOutlined } from '@ant-design/icons';
+import { UploadOutlined } from '@ant-design/icons';
 import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import type { Location } from 'react-router-dom';
 import axios from 'axios';
@@ -113,6 +113,26 @@ export default function StorageDetailForm(): ReactElement {
     const [of_ingredients, setOfIngredients] = useState<unknown | null>(null);
     const [of_nutriments, setOfNutriments] = useState<unknown | null>(null);
     const [of_packagings, setOfPackagings] = useState<unknown | null>(null);
+    // Local text field for user-friendly ingredient editing (comma separated)
+    const [ingredientsText, setIngredientsText] = useState<string>('');
+    // Compact nutriments editor (per 100g and per serving) for common nutrients
+    type NutriRow = { key: string; label: string };
+    const compactRows: NutriRow[] = [
+        { key: 'energy-kcal', label: 'Energie (kcal)' },
+        { key: 'energy', label: 'Energie (kJ)' },
+        { key: 'fat', label: 'Fett' },
+        { key: 'saturated-fat', label: 'davon: gesättigte Fettsäuren' },
+        { key: 'carbohydrates', label: 'Kohlenhydrate' },
+        { key: 'sugars', label: 'davon: Zucker' },
+        { key: 'proteins', label: 'Eiweiß' },
+        { key: 'fiber', label: 'Ballaststoffe' },
+        { key: 'salt', label: 'Salz' }
+    ];
+    const [compactNutriments, setCompactNutriments] = useState<Record<string, { '100g': string; serving: string }>>(() => {
+        const init: Record<string, { '100g': string; serving: string }> = {};
+        for (const r of compactRows) init[r.key] = { '100g': '', serving: '' };
+        return init;
+    });
     // raw payload container from OpenFoodFacts (kept for backend normalization)
     const [of_raw, setOfRaw] = useState<unknown | null>(null);
     // When lookup returns 'product not found' from OpenFoodFacts, store message here so UI can show it
@@ -123,9 +143,7 @@ export default function StorageDetailForm(): ReactElement {
     const [nutrientAmount, setNutrientAmount] = useState<string>(
         isNew || !initialNutr?.amount ? '' : initialNutr.amount.toString()
     );
-    const [nutrients, setNutrients] = useState<NutrientValueModel[]>(
-        initialNutr?.values || []
-    );
+    const [nutrients, setNutrients] = useState<NutrientValueModel[]>(initialNutr?.values || []);
 
     // Provide a stable, non-mutating sorted view of nutrients for render
     const sortedNutrients = useMemo(() => {
@@ -135,6 +153,50 @@ export default function StorageDetailForm(): ReactElement {
             return nutrients || [];
         }
     }, [nutrients]);
+
+    // Helpers: parse ingredients text -> array of { text, percent?, rank }
+    const parseIngredientsText = (text: string) => {
+        const parts = String(text || '').split(',').map(p => p.trim()).filter(Boolean);
+        return parts.map((p, idx) => {
+            const m = p.match(/^(.*)\s*\((\s*([0-9.,]+)\s*%)\)\s*$/);
+            if (m) {
+                const txt = m[1].trim();
+                const pct = Number(String(m[3]).replace(',', '.'));
+                return { text: txt, percent: isNaN(pct) ? undefined : pct, rank: idx };
+            }
+            return { text: p, rank: idx };
+        });
+    };
+
+    // Compose of_nutriments object from compact editor
+    const buildOfNutrimentsFromCompact = (compact: Record<string, { '100g': string; serving: string }>) => {
+        const out: Record<string, string | number> = {};
+        for (const [k, v] of Object.entries(compact)) {
+            if (v['100g'] && v['100g'].trim() !== '') out[`${k}_100g`] = Number(String(v['100g']).replace(',', '.'));
+            if (v.serving && v.serving.trim() !== '') out[`${k}_serving`] = Number(String(v.serving).replace(',', '.'));
+        }
+        return out;
+    };
+
+    // Populate compact editor from an existing of_nutriments object
+    const populateCompactFromOf = (ofn: unknown | null) => {
+        try {
+            if (!ofn || typeof ofn !== 'object') return;
+            const obj = ofn as Record<string, unknown>;
+            const newCompact: Record<string, { '100g': string; serving: string }> = {};
+            for (const r of compactRows) {
+                const v100 = obj[`${r.key}_100g`] ?? obj[`${r.key}_value`] ?? obj[`${r.key}_100g_value`] ?? obj[`${r.key}_100g_value`];
+                const vs = obj[`${r.key}_serving`] ?? obj[`${r.key}_serving_value`] ?? null;
+                newCompact[r.key] = {
+                    '100g': v100 == null ? '' : String(v100),
+                    serving: vs == null ? '' : String(vs),
+                };
+            }
+            setCompactNutriments(newCompact);
+        } catch {
+            // ignore
+        }
+    };
 
     // Run-once guard for suggestion-based prefill
     const suggestionsAppliedRef = useRef<boolean>(false);
@@ -404,6 +466,7 @@ export default function StorageDetailForm(): ReactElement {
             try {
                 const si = storageItem as unknown as { ingredients?: unknown; nutriments?: unknown; packagings?: unknown };
                 setOfNutriments(si.nutriments ?? null);
+                try { populateCompactFromOf(si.nutriments ?? null); } catch { /* ignore */ }
             } catch { /* ignore */ }
             try {
                 const si = storageItem as unknown as { ingredients?: unknown; nutriments?: unknown; packagings?: unknown };
@@ -411,12 +474,9 @@ export default function StorageDetailForm(): ReactElement {
             } catch { /* ignore */ }
             const sN = Array.isArray(storageItem.nutrients) ? (storageItem.nutrients[0] || null) : storageItem.nutrients;
             setNutrientDescription(sN?.description || '');
-            setNutrientUnit(sN?.unit || '');
-            setNutrientAmount(
-                sN && sN.amount
-                    ? sN.amount.toString()
-                    : ''
-            );
+            // If legacy nutrient group provided amount/unit, populate top-level amount/unit when empty
+            if ((!amount || amount === '') && sN && sN.amount) setAmount(sN.amount.toString());
+            if ((!unit || unit === '') && sN && sN.unit) setUnit(sN.unit || '');
             if (!sN || !sN.values || sN.values.length === 0) {
                 setNutrients(NutrientFactory());
             } else {
@@ -424,6 +484,61 @@ export default function StorageDetailForm(): ReactElement {
             }
         }
     }, [id]); // Only depend on id, not the entire storageItem
+
+    // Locale-aware mapping of long unit names -> abbreviation for display in Selects and in headers.
+    // Prefer i18n resource keys under `units.short.<normalized>` (e.g. units.short.milliliter = "ml").
+    const unitAbbreviations: Record<string, string> = {
+        'Milliliter': 'ml',
+        'Liter': 'l',
+        'Gramm': 'g',
+        'Kilogramm': 'kg',
+        'Stück': 'Stk',
+        'Päckchen': 'Pck',
+        'Packung': 'Pck',
+        'Dose': 'Dose',
+        'Glas': 'Glas',
+        'Flasche': 'Fl',
+        'Beutel': 'Beutel',
+        'Kartons': 'Kart',
+        'mg': 'mg',
+        'g': 'g',
+        'kg': 'kg',
+        'kcal': 'kcal',
+        'kJ': 'kJ'
+    };
+
+    const normalizeKey = (s?: string) => String(s || '').toLowerCase().replace(/[^a-z0-9]+/g, '_').replace(/^_+|_+$/g, '');
+
+    const renderUnitLabel = (full: string) => {
+        const normalized = normalizeKey(full);
+        // try i18n resource first
+        try {
+            const i18nKey = `units.short.${normalized}`;
+            const val = i18n.exists(i18nKey) ? i18n.t(i18nKey) : null;
+            if (val && typeof val === 'string' && val.trim() !== '') return (<span title={full}>{val}</span>);
+        } catch { /* ignore i18n failures */ }
+
+        const abbr = unitAbbreviations[full] || unitAbbreviations[full.trim()] || full;
+        return (<span title={full}>{abbr}</span>);
+    };
+
+    const unitShortFor = (full: string) => {
+        const normalized = normalizeKey(full);
+        try {
+            const i18nKey = `units.short.${normalized}`;
+            const val = i18n.exists(i18nKey) ? i18n.t(i18nKey) : null;
+            if (val && typeof val === 'string' && val.trim() !== '') return String(val);
+        } catch { /* ignore */ }
+        return unitAbbreviations[full] || unitAbbreviations[full.trim()] || full;
+    };
+
+    // If compact editor changes, reflect values into nutrients list so the saved list matches the compact display
+    useEffect(() => {
+        try {
+            const derived = compactToNutrients(compactNutriments);
+            if (derived && derived.length > 0) setNutrients(derived as unknown as NutrientValueModel[]);
+        } catch { /* ignore */ }
+    }, [compactNutriments]);
 
     // Load user-created options with session cache to avoid repeated network calls
     useEffect(() => {
@@ -564,50 +679,28 @@ export default function StorageDetailForm(): ReactElement {
         });
     };
 
-    const addNutrient = () => {
-        setNutrients((curr) => [
-            ...curr,
-            {
-                id: Date.now(),
-                name: '',
-                color: '#000000',
-                values: [
-                    {
-                        typ: '',
-                        value: 0,
-                    },
-                ],
-            },
-        ]);
+    // Compact -> nutrients synchronization
+    const compactToNutrients = (compact: Record<string, { '100g': string; serving: string }>) => {
+        const out: NutrientValueModel[] = [];
+        let idCounter = Date.now();
+        for (const r of compactRows) {
+            const entry = compact[r.key];
+            if (!entry) continue;
+            const vals: { typ: string; value: number }[] = [];
+            if (entry['100g'] && String(entry['100g']).trim() !== '') {
+                const v = Number(String(entry['100g']).replace(',', '.'));
+                if (!isNaN(v)) vals.push({ typ: '100g', value: v });
+            }
+            if (entry.serving && String(entry.serving).trim() !== '') {
+                const v2 = Number(String(entry.serving).replace(',', '.'));
+                if (!isNaN(v2)) vals.push({ typ: 'portion', value: v2 });
+            }
+            if (vals.length > 0) {
+                out.push({ id: idCounter++, name: r.label, color: '#999999', values: vals as unknown as import('../StorageModel').NutrientTypModel[] });
+            }
+        }
+        return out;
     };
-
-    const removeNutrient = (nutrientIndex: number) => {
-        setNutrients((curr) => {
-            const updated = [...curr];
-            updated.splice(nutrientIndex, 1);
-            return updated;
-        });
-    };
-
-    const addNutrientType = (nutrientIndex: number) => {
-        setNutrients((curr) => {
-            const updated = [...curr];
-            const nutrient = { ...updated[nutrientIndex] };
-            nutrient.values = [...nutrient.values, { typ: '', value: 0 }];
-            updated[nutrientIndex] = nutrient;
-            return updated;
-        });
-    };
-
-    const removeNutrientType = (nutrientIndex: number, typeIndex: number) => {
-        setNutrients((curr) => {
-            const updated = [...curr];
-            const nutrient = { ...updated[nutrientIndex] };
-            nutrient.values = nutrient.values.filter((_, idx) => idx !== typeIndex);
-            updated[nutrientIndex] = nutrient;
-            return updated;
-        });
-    };    // Beim Speichern werden numerische Werte konvertiert und Daten validiert
     const getUpdatedItem = (): StorageModel => {
         const t = (s?: string | null) => (s ?? '').trim();
         // Validate and sanitize icon data for API
@@ -660,8 +753,8 @@ export default function StorageDetailForm(): ReactElement {
             icon: processedIcon,
             nutrients: {
                 description: t(nutrientDescription),
-                unit: t(nutrientUnit),
-                amount: Number(nutrientAmount) || 100,
+                unit: t(nutrientUnit || unit),
+                amount: Number(nutrientAmount || amount) || 100,
                 values: (nutrients || []).map(nutrient => ({
                     ...nutrient,
                     name: t(nutrient.name),
@@ -670,8 +763,16 @@ export default function StorageDetailForm(): ReactElement {
                 })).filter(nutrient => nutrient.name !== '') // Remove empty nutrients
             },
             // Attach raw OpenFoodFacts-derived fields (if any). Backend will persist raw JSON and may normalize.
-            ingredients: of_ingredients || undefined,
-            nutriments: of_nutriments || undefined,
+            ingredients: (ingredientsText && ingredientsText.trim().length > 0) ? parseIngredientsText(ingredientsText) : (of_ingredients || undefined),
+            nutriments: (function () {
+                // prefer compact editor values if any provided
+                try {
+                    const compactObj = buildOfNutrimentsFromCompact(compactNutriments);
+                    // If compactObj contains any numeric keys, use it
+                    if (Object.keys(compactObj).length > 0) return compactObj;
+                } catch { /* ignore */ }
+                return of_nutriments || undefined;
+            })(),
             packagings: of_packagings || undefined,
             _raw: of_raw || undefined,
         };
@@ -957,14 +1058,14 @@ export default function StorageDetailForm(): ReactElement {
                                     <Select.OptGroup label={t('form.common.popular')}>
                                         {popularUnits.map((u) => (
                                             <Select.Option key={`pop-u-${u}`} value={u}>
-                                                {u}
+                                                {renderUnitLabel(u)}
                                             </Select.Option>
                                         ))}
                                     </Select.OptGroup>
                                 )}
                                 {itemUnitsFiltered.map((u) => (
                                     <Select.Option key={`u-${u}`} value={u}>
-                                        {u}
+                                        {renderUnitLabel(u)}
                                     </Select.Option>
                                 ))}
                             </Select>
@@ -1060,14 +1161,14 @@ export default function StorageDetailForm(): ReactElement {
                                     <Select.OptGroup label={t('form.common.popular')}>
                                         {popularPackageUnits.map((pu) => (
                                             <Select.Option key={`pop-pu-${pu}`} value={pu}>
-                                                {pu}
+                                                {renderUnitLabel(pu)}
                                             </Select.Option>
                                         ))}
                                     </Select.OptGroup>
                                 )}
                                 {packageUnitsFiltered.map((pu) => (
                                     <Select.Option key={`pu-${pu}`} value={pu}>
-                                        {pu}
+                                        {renderUnitLabel(pu)}
                                     </Select.Option>
                                 ))}
                             </Select>
@@ -1126,118 +1227,84 @@ export default function StorageDetailForm(): ReactElement {
                             marginTop: 16,
                         }}
                     >
-                        <Descriptions.Item label={t('form.nutrientsHeader', { amount: nutrientAmount || 100, unit: nutrientUnit })} style={{ fontWeight: 'bold', padding: '10px 10px', display: 'block', textAlign: 'center' }}>
-                            <div className={css.nutrientAmountUnit}>
-                                <div className={css.nutrientField}>
-                                    <label>{t('form.labels.amount')}</label>
+                        {/* Nährwerte-Tab: use inline fields below; remove the prominent label */}
+                        <Descriptions.Item style={{ padding: '10px 10px', display: 'block' }}>
+                            <div style={{ display: 'flex', gap: 12, alignItems: 'flex-end', marginBottom: 8 }}>
+                                <div style={{ display: 'flex', flexDirection: 'column' }}>
+                                    <label style={{ fontWeight: 600 }}>{t('form.labels.amount')}</label>
                                     <Input
                                         type="number"
                                         value={nutrientAmount}
                                         onChange={(e) => setNutrientAmount(e.target.value)}
                                         placeholder={t('form.placeholders.nutrientAmount')}
+                                        style={{ width: 120 }}
                                     />
                                 </div>
-                                <div className={css.nutrientField}>
-                                    <label>{t('detail.table.unit')}</label>
+                                <div style={{ display: 'flex', flexDirection: 'column' }}>
+                                    <label style={{ fontWeight: 600 }}>{t('detail.table.unit')}</label>
                                     <Select
-                                        style={{ width: '100%' }}
+                                        style={{ width: 160 }}
                                         value={nutrientUnit || ''}
                                         placeholder={t('form.placeholders.nutrientUnit')}
                                         onChange={(val: string) => setNutrientUnit(val || '')}
                                     >
                                         {mergedItemUnits.map((u) => (
                                             <Select.Option key={`mu-${u}`} value={u}>
-                                                {u}
+                                                {renderUnitLabel(u)}
                                             </Select.Option>
                                         ))}
                                     </Select>
                                 </div>
                             </div>
-                            <div className={css.nutrientCardsContainer}>
-                                {sortedNutrients.map((nutrient, nutrientIndex) => (
-                                    <div key={nutrient.id} className={css.nutrientCard}>
-                                        <div className={css.nutrientHeader}>
-                                            <div className={css.nutrientHeaderLeft}>
-                                                <div
-                                                    className={css.nutrientColor}
-                                                    style={{ backgroundColor: nutrient.color }}
-                                                ></div>
-                                                <Input
-                                                    value={nutrient.color}
-                                                    placeholder={t('form.placeholders.colorCode')}
-                                                    onChange={(e) =>
-                                                        onChangeNutrientColorCode(nutrientIndex, e.target.value)
-                                                    }
-                                                    className={css.nutrientColorInput}
-                                                />
-                                            </div>
-                                        </div>
-                                        <div className={css.nutrientHeader}>
-                                            <Input
-                                                value={nutrient.name}
-                                                placeholder={t('form.placeholders.nutrientName')}
-                                                onChange={(e) =>
-                                                    onChangeNutrient(nutrientIndex, 'name', e.target.value)
-                                                }
-                                                className={css.nutrientNameInput}
-                                            />
-                                        </div>
-                                        <div className={css.nutrientValues}>
-                                            {nutrient.values.map((nutrientType, typeIndex) => (
-                                                <div key={typeIndex} className={css.nutrientValueRow}>
+                            {/* Ingredients editor (compact textarea) */}
+                            <div style={{ margin: '12px 0' }}>
+                                <label style={{ fontWeight: 600 }}>{t('detail.labels.ingredients')}: </label>
+                                <Input.TextArea
+                                    value={ingredientsText}
+                                    onChange={(e) => setIngredientsText(e.target.value)}
+                                    placeholder={t('detail.labels.ingredients')}
+                                    autoSize={{ minRows: 2, maxRows: 6 }}
+                                />
+                                <div style={{ marginTop: 6, color: '#666' }}>{t('form.nutrientsIngredientsHint', { defaultValue: 'Liste von Zutaten, durch Kommas getrennt. Prozentangaben in Klammern erlaubt, z. B. "Tomaten (50%), Salz"' })}</div>
+                            </div>
+
+                            {/* Compact nutriments editor (per 100g / per serving) */}
+                            <div style={{ margin: '12px 0' }}>
+                                <label style={{ fontWeight: 600 }}>{t('form.nutrientsFromOpenFoodFacts', { defaultValue: 'Nährwerte (OpenFoodFacts)' })}</label>
+                                <table style={{ width: '100%', borderCollapse: 'collapse', marginTop: 8 }}>
+                                    <thead>
+                                        <tr>
+                                            <th style={{ textAlign: 'left' }}></th>
+                                            <th style={{ textAlign: 'right' }}>{`pro ${nutrientAmount || 100} ${unitShortFor(nutrientUnit || unit || '')}`}</th>
+                                            <th style={{ textAlign: 'right' }}>pro Portion</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {compactRows.map(r => (
+                                            <tr key={r.key}>
+                                                <td style={{ padding: '6px 8px' }}>{r.label}</td>
+                                                <td style={{ padding: '6px 8px' }}>
                                                     <Input
-                                                        type="number"
-                                                        value={nutrientType.value}
-                                                        placeholder={t('form.placeholders.nutrientValue')}
-                                                        onChange={(e) =>
-                                                            onChangeNutrientType(nutrientIndex, typeIndex, 'value', e.target.value)
-                                                        }
-                                                        className={css.nutrientValueInput}
+                                                        value={compactNutriments[r.key]?.['100g'] || ''}
+                                                        onChange={(e) => setCompactNutriments(curr => ({ ...curr, [r.key]: { ...curr[r.key], '100g': e.target.value } }))}
+                                                        style={{ width: '100%' }}
                                                     />
-                                                    <Select
-                                                        value={nutrientType.typ ? nutrientType.typ : ''}
-                                                        placeholder={t('form.placeholders.nutrientUnit')}
-                                                        onChange={(val: string) =>
-                                                            onChangeNutrientType(nutrientIndex, typeIndex, 'typ', val || '')
-                                                        }
-                                                        className={css.nutrientTypeSelect}
-                                                        style={{ fontWeight: 'normal' }}
-                                                    >
-                                                        {mergedNutrientUnits.map((nu) => (
-                                                            <Select.Option key={`nu-${nu}`} value={nu}>
-                                                                {nu}
-                                                            </Select.Option>
-                                                        ))}
-                                                    </Select>
-                                                    <div className={css.nutrientValueActions}>
-                                                        <MinusOutlined
-                                                            onClick={() => removeNutrientType(nutrientIndex, typeIndex)}
-                                                            className={css.removeNutrientTypeIcon}
-                                                        />
-                                                        {typeIndex === nutrient.values.length - 1 && (
-                                                            <PlusOutlined
-                                                                onClick={() => addNutrientType(nutrientIndex)}
-                                                                className={css.addNutrientTypeButton}
-                                                            />
-                                                        )}
-                                                    </div>
-                                                </div>
-                                            ))}
-                                        </div>
-                                        <div className={css.nutrientCardFooter}>
-                                            <Button onClick={() => removeNutrient(nutrientIndex)} danger>
-                                                {t('form.buttons.removeNutrient')}
-                                            </Button>
-                                        </div>
-                                    </div>
-                                ))}
-                                <Button
-                                    icon={<PlusOutlined />}
-                                    onClick={addNutrient}
-                                    className={css.addNutrientButton}
-                                >
-                                    {t('form.buttons.addNutrient')}
-                                </Button>
+                                                </td>
+                                                <td style={{ padding: '6px 8px' }}>
+                                                    <Input
+                                                        value={compactNutriments[r.key]?.serving || ''}
+                                                        onChange={(e) => setCompactNutriments(curr => ({ ...curr, [r.key]: { ...curr[r.key], serving: e.target.value } }))}
+                                                        style={{ width: '100%' }}
+                                                    />
+                                                </td>
+                                            </tr>
+                                        ))}
+                                    </tbody>
+                                </table>
+                            </div>
+
+                            <div style={{ padding: 8, color: '#444' }}>
+                                {t('form.nutrientsCompactOnlyNote', { defaultValue: 'Nährwerte werden über das kompakte Editor-Panel oben oder per Barcode-Scan verwaltet.' })}
                             </div>
                         </Descriptions.Item>
                     </Descriptions>
@@ -1340,10 +1407,31 @@ export default function StorageDetailForm(): ReactElement {
                                 } catch { /* ignore */ }
                                 // Apply richer OpenFoodFacts payload fields to local state so they are sent on save
                                 try {
-                                    if (payload.ingredients) setOfIngredients(payload.ingredients);
+                                    if (payload.ingredients) {
+                                        setOfIngredients(payload.ingredients);
+                                        try {
+                                            // convert payload.ingredients to comma-separated text
+                                            if (typeof payload.ingredients === 'string') setIngredientsText(payload.ingredients as string);
+                                            else if (Array.isArray(payload.ingredients)) {
+                                                // join ingredient texts if array
+                                                const joined = (payload.ingredients as unknown[]).map((it) => {
+                                                    if (it && typeof it === 'object' && 'text' in (it as Record<string, unknown>)) {
+                                                        const obj = it as Record<string, unknown>;
+                                                        const tval = obj['text'];
+                                                        return typeof tval === 'string' ? tval : String(tval ?? '');
+                                                    }
+                                                    return String(it ?? '');
+                                                }).filter(Boolean).join(', ');
+                                                setIngredientsText(joined);
+                                            }
+                                        } catch { /* ignore */ }
+                                    }
                                 } catch { /* ignore */ }
                                 try {
-                                    if (payload.nutriments) setOfNutriments(payload.nutriments);
+                                    if (payload.nutriments) {
+                                        setOfNutriments(payload.nutriments);
+                                        try { populateCompactFromOf(payload.nutriments); } catch { /* ignore */ }
+                                    }
                                 } catch { /* ignore */ }
                                 try {
                                     if (payload.packagings) setOfPackagings(payload.packagings);
@@ -1460,10 +1548,17 @@ export default function StorageDetailForm(): ReactElement {
                                         setNutrients(base as unknown as NutrientValueModel[]);
                                         // set nutrient meta fields
                                         setNutrientDescription(i18n.t('form.nutrientsFromOpenFoodFacts', { defaultValue: 'Nährwerte (OpenFoodFacts)' }));
-                                        // prefer energy unit if available
+                                        // prefer energy unit if available and populate nutrient-specific fields
                                         const enUnit = (pnut && (pnut['energy-kcal_unit'] ?? pnut['energy_unit'])) as unknown;
-                                        if (enUnit && typeof enUnit === 'string') setNutrientUnit(String(enUnit));
-                                        setNutrientAmount((pnut && (pnut['energy-kcal_100g'] ?? pnut['energy_100g'])) ? String(Number(pnut['energy-kcal_100g'] || pnut['energy_100g'])) : '100');
+                                        if ((!nutrientUnit || nutrientUnit === '') && enUnit && typeof enUnit === 'string') setNutrientUnit(String(enUnit));
+                                        if ((!nutrientAmount || nutrientAmount === '') && (pnut && (pnut['energy-kcal_100g'] ?? pnut['energy_100g']))) {
+                                            setNutrientAmount(String(Number(pnut['energy-kcal_100g'] || pnut['energy_100g'])));
+                                        }
+                                        // keep previous behavior: if top-level amount/unit empty, fill them too
+                                        if ((!unit || unit === '') && enUnit && typeof enUnit === 'string') setUnit(String(enUnit));
+                                        if ((!amount || amount === '') && (pnut && (pnut['energy-kcal_100g'] ?? pnut['energy_100g']))) {
+                                            setAmount(String(Number(pnut['energy-kcal_100g'] || pnut['energy_100g'])));
+                                        }
                                     }
                                 } catch { /* ignore */ }
                             } else {

@@ -104,82 +104,7 @@
 }
 
 /* Container für alle Nutrient-Cards */
-.nutrientCardsContainer {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-    gap: 16px;
-}
-
-/* Jede einzelne Nutrient-Karte */
-.nutrientCard {
-    display: flex;
-    flex-direction: column;
-    /* justify-content: space-between; */
-    min-height: 180px;
-    padding: 16px;
-    border: 1px solid #ddd;
-    border-radius: 8px;
-    background-color: #fff;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-}
-
-/* Header der Nutrient-Karte */
-.nutrientHeader {
-    display: flex;
-    align-items: center;
-    justify-content: flex-start;
-    border-bottom: 1px solid #ddd;
-    padding-bottom: 8px;
-    margin-bottom: 8px;
-    gap: 10px;
-}
-
-.nutrientHeaderLeft {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-}
-
-.nutrientColor {
-    width: 24px;
-    height: 24px;
-    border-radius: 4px;
-    flex-shrink: 0;
-}
-
-.nutrientName {
-    font-weight: bold;
-    font-size: 16px;
-}
-
-.nutrientColorCode {
-    font-size: 14px;
-    color: #666;
-    margin-left: 8px;
-}
-
-/* Bereich für die Anzeige der Nutrient-Werte */
-.nutrientValues {
-    margin-top: 8px;
-}
-
-.nutrientValues table {
-    width: 100%;
-    border-collapse: collapse;
-}
-
-.nutrientValues th,
-.nutrientValues td {
-    border: 1px solid #ddd;
-    padding: 4px;
-    text-align: right;
-}
-
-.nutrientValues th {
-    background-color: #eee;
-}
-
-/* Alignment helpers to mirror form styles */
+/* Nutrition list/table styles remain in module; card layout removed */
 .text_right {
     text-align: right;
     width: 70px;
@@ -193,9 +118,5 @@
 
 /* ----------------- Mobile-spezifische Anpassungen ----------------- */
 @media (max-width: 768px) {
-    .nutrientCardsContainer {
-        display: flex;
-        flex-direction: column;
-        gap: 16px;
-    }
+    /* Responsive adjustments for nutrition list */
 }
