@@ -150,6 +150,10 @@ export default function StorageDetail(): ReactElement {
                         <div>{storageItem.id}</div>
                     </div>
                     <div className={css.itemFieldRow}>
+                        <label>{t('detail.labels.barcode')}</label>
+                        <div>{(storageItem as unknown as { barcode?: string }).barcode || '-'}</div>
+                    </div>
+                    <div className={css.itemFieldRow}>
                         <label>{t('detail.labels.amount')}</label>
                         <div>{fq.value}</div>
                     </div>

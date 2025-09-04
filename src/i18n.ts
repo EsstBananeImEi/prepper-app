@@ -1439,6 +1439,7 @@ const resources = {
                 },
                 labels: {
                     id: 'ID',
+                    barcode: 'Barcode',
                     amount: 'Menge',
                     unit: 'Mengeneinheit',
                     categories: 'Kategorien',
@@ -2927,6 +2928,7 @@ const resources = {
                 },
                 labels: {
                     id: 'ID',
+                    barcode: 'Barcode',
                     amount: 'Amount',
                     unit: 'Unit',
                     categories: 'Categories',

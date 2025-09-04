@@ -52,6 +52,8 @@ export const defaultNutrientUnits: string[] = [
     'mg',
     'g',
     'kg',
+    'Milliliter',
+    'Liter',
     'kcal',
     'kJ'
 ];

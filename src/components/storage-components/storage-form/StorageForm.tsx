@@ -576,9 +576,72 @@ export default function StorageDetailForm(): ReactElement {
 
 
 
+    // Ensure form fields are populated when editing an existing item.
+    // Some fields (nutrients, ingredients, barcode) may come from backend-only payloads
+    // and must be mapped into the form state when the user navigates from detail -> edit.
+    useEffect(() => {
+        if (!storageItem) return;
+
+        try {
+            // Barcode
+            const maybeBarcode = (storageItem as unknown as { barcode?: string }).barcode || null;
+            if (maybeBarcode && (!barcode || barcode.trim() === '')) setBarcode(String(maybeBarcode));
+
+            // Raw OF fragments
+            const si = storageItem as unknown as { ingredients?: unknown; nutriments?: unknown; packagings?: unknown; _raw?: unknown };
+            if ((of_ingredients === null || of_ingredients === undefined) && typeof si.ingredients !== 'undefined') setOfIngredients(si.ingredients ?? null);
+            if ((of_nutriments === null || of_nutriments === undefined) && typeof si.nutriments !== 'undefined') {
+                setOfNutriments(si.nutriments ?? null);
+                // populate compact editor so nutrient tab shows values
+                try {
+                    const comp = populateCompactFromOf(si.nutriments ?? null);
+                    if (comp) setCompactNutriments(comp);
+                } catch { /* ignore */ }
+            }
+            if ((of_packagings === null || of_packagings === undefined) && typeof si.packagings !== 'undefined') setOfPackagings(si.packagings ?? null);
+            // set _raw if present
+            try {
+                const rawVal = (si as { _raw?: unknown })._raw;
+                if ((of_raw === null || of_raw === undefined) && typeof rawVal !== 'undefined') setOfRaw(rawVal ?? null);
+            } catch { /* ignore */ }
+
+            // Ingredients text
+            try {
+                if ((!ingredientsText || ingredientsText.trim() === '') && si.ingredients) {
+                    const ingVal = si.ingredients as unknown;
+                    if (Array.isArray(ingVal)) {
+                        const txt = (ingVal as Array<unknown>).map((x) => {
+                            if (x && typeof x === 'object' && 'text' in (x as Record<string, unknown>)) {
+                                const xx = x as { text?: unknown };
+                                return typeof xx.text === 'string' ? xx.text : '';
+                            }
+                            if (typeof x === 'string') return x;
+                            return '';
+                        }).filter(Boolean).join(', ');
+                        if (txt) setIngredientsText(txt);
+                    } else if (typeof ingVal === 'string') {
+                        setIngredientsText(ingVal);
+                    }
+                }
+            } catch { /* ignore */ }
+
+            // Nutrients: if the nutrients editor is empty, populate from storageItem.nutrients (legacy) or from compact
+            const sN = Array.isArray(storageItem.nutrients) ? (storageItem.nutrients[0] || null) : storageItem.nutrients;
+            try {
+                if ((!nutrients || nutrients.length === 0) && sN && sN.values && sN.values.length > 0) {
+                    setNutrients(sN.values);
+                }
+                if ((!nutrientDescription || nutrientDescription === '') && sN && sN.description) setNutrientDescription(sN.description || '');
+                if ((!nutrientAmount || nutrientAmount === '') && sN && sN.amount) setNutrientAmount(String(sN.amount));
+                if ((!nutrientUnit || nutrientUnit === '') && sN && sN.unit) setNutrientUnit(sN.unit || '');
+            } catch { /* ignore */ }
+        } catch { /* ignore any mapping errors */ }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [storageItem]);
+
     if (!storageItem && !isNew) {
         return <LoadingSpinner message={t('detail.loadingItems')} />;
-    }    // Enhanced Upload Handler with validation and compression
+    }
     const handleBeforeUpload = async (file: File) => {
         try {
             message.loading(i18n.t('form.notifications.imageProcessing'), 0);
