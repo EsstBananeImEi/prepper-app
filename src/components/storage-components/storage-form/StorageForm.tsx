@@ -193,9 +193,11 @@ export default function StorageDetailForm(): ReactElement {
                 };
             }
             setCompactNutriments(newCompact);
+            return newCompact;
         } catch {
             // ignore
         }
+        return null;
     };
 
     // Run-once guard for suggestion-based prefill
@@ -1248,7 +1250,7 @@ export default function StorageDetailForm(): ReactElement {
                                         placeholder={t('form.placeholders.nutrientUnit')}
                                         onChange={(val: string) => setNutrientUnit(val || '')}
                                     >
-                                        {mergedItemUnits.map((u) => (
+                                        {mergedNutrientUnits.map((u) => (
                                             <Select.Option key={`mu-${u}`} value={u}>
                                                 {renderUnitLabel(u)}
                                             </Select.Option>
@@ -1430,7 +1432,31 @@ export default function StorageDetailForm(): ReactElement {
                                 try {
                                     if (payload.nutriments) {
                                         setOfNutriments(payload.nutriments);
-                                        try { populateCompactFromOf(payload.nutriments); } catch { /* ignore */ }
+                                        try {
+                                            const compact = populateCompactFromOf(payload.nutriments);
+                                            // If populateCompactFromOf returned a compact object, derive nutrients immediately
+                                            if (compact && typeof compact === 'object') {
+                                                try {
+                                                    const derived = compactToNutrients(compact as Record<string, { '100g': string; serving: string }>);
+                                                    if (derived && derived.length > 0) setNutrients(derived as unknown as NutrientValueModel[]);
+                                                } catch { /* ignore derived conversion errors */ }
+                                            }
+
+                                            // If the payload includes any *_100g keys, prefer showing 'pro 100 g'
+                                            try {
+                                                const pnut = payload.nutriments as Record<string, unknown> | undefined;
+                                                if (pnut && typeof pnut === 'object') {
+                                                    const has100g = Object.keys(pnut).some(k => /_100g$/.test(k));
+                                                    if (has100g) {
+                                                        setNutrientAmount('100');
+                                                        // If a unit is present in an energy key, use that, else default to 'g'
+                                                        const possibleUnit = (pnut['energy-kcal_unit'] ?? pnut['energy_unit'] ?? pnut['proteins_unit'] ?? pnut['fat_unit'] ?? pnut['carbohydrates_unit']) as unknown;
+                                                        if (possibleUnit && typeof possibleUnit === 'string') setNutrientUnit(String(possibleUnit));
+                                                        else setNutrientUnit('g');
+                                                    }
+                                                }
+                                            } catch { /* ignore */ }
+                                        } catch { /* ignore */ }
                                     }
                                 } catch { /* ignore */ }
                                 try {
