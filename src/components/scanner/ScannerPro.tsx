@@ -101,7 +101,11 @@ export default function ScannerPro({ onDetected, initialAutoStart = true, minima
                         const c = { advanced: [{ torch: false }] } as unknown as MediaTrackConstraints;
                         // eslint-disable-next-line @typescript-eslint/ban-ts-comment
                         // @ts-ignore - applying vendor-specific torch constraint
-                        t.applyConstraints(c);
+                        // Call applyConstraints but swallow any promise rejection to avoid Uncaught (in promise)
+                        const p = (t.applyConstraints as unknown as (c: MediaTrackConstraints) => Promise<void>)(c);
+                        if (p && typeof (p as Promise<void>).catch === 'function') {
+                            (p as Promise<void>).catch(() => { /* ignore */ });
+                        }
                     } catch (e) { /* ignore */ }
                 }
             } catch (e) { /* ignore */ }
